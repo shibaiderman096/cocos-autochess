@@ -11,6 +11,8 @@ export interface Placement {
   side: Side;
   x: number;
   y: number;
+  /** 星级（M2）：影响数值倍率，默认 1 */
+  star?: number;
 }
 
 export interface BattleOptions {
@@ -41,7 +43,16 @@ export class BattleSim {
       if (p.x < 0 || p.y < 0 || p.x >= w || p.y >= h) {
         throw new Error(`placement out of bounds: (${p.x}, ${p.y})`);
       }
-      this.units.push(new Unit(i + 1, p.side, p.cfg, p.x, p.y));
+      let effCfg = p.cfg;
+      if (p.star && p.star > 1) {
+        const mult = Math.pow(1.8, p.star - 1);
+        effCfg = {
+          ...p.cfg,
+          hp: Math.round(p.cfg.hp * mult),
+          atk: Math.round(p.cfg.atk * mult),
+        };
+      }
+      this.units.push(new Unit(i + 1, p.side, effCfg, p.x, p.y));
     });
   }
 

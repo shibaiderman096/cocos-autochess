@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot\..
 $srcs = @(
-  'tests/unit-tests.ts', 'tests/smoke.ts', 'tests/economy-tests.ts',
+  'tests/unit-tests.ts', 'tests/smoke.ts', 'tests/economy-tests.ts', 'tests/shop-tests.ts',
   'assets/scripts/battle/HexMath.ts',
   'assets/scripts/battle/BattleSim.ts',
   'assets/scripts/battle/Unit.ts',
@@ -16,6 +16,11 @@ $srcs = @(
   'assets/scripts/core/EconomySystem.ts',
   'assets/scripts/core/LevelSystem.ts',
   'assets/scripts/core/SaveData.ts',
+  'assets/scripts/core/ShopConfig.ts',
+  'assets/scripts/core/CardPool.ts',
+  'assets/scripts/core/OwnedUnits.ts',
+  'assets/scripts/core/ShopSystem.ts',
+  'assets/scripts/core/ShopSave.ts',
   'assets/scripts/core/index.ts'
 )
 npx tsc --target ES2020 --module CommonJS --moduleResolution Node --esModuleInterop --skipLibCheck --strict false --outDir .test-build @srcs
@@ -27,8 +32,11 @@ $unitCode = $LASTEXITCODE
 Write-Host "`n--- 经济/等级/存档测试 ---" -ForegroundColor Cyan
 node .test-build/tests/economy-tests.js
 $ecoCode = $LASTEXITCODE
+Write-Host "`n--- 商店/卡池测试 ---" -ForegroundColor Cyan
+node .test-build/tests/shop-tests.js
+$shopCode = $LASTEXITCODE
 Write-Host "`n--- 冒烟测试 ---" -ForegroundColor Cyan
 node .test-build/tests/smoke.js
 $smokeCode = $LASTEXITCODE
 Remove-Item -Recurse -Force .test-build
-if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $smokeCode -ne 0) { exit 1 }
+if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0) { exit 1 }

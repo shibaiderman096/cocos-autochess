@@ -5,6 +5,8 @@
 export interface UnitConfigData {
   id: string;
   name: string;
+  /** 费用档位 1~5，默认 1 */
+  cost?: number;
   hp: number;
   atk: number;
   armor: number;

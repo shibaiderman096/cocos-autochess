@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, Color, resources } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, Color, resources, UIOpacity } from 'cc';
 import { UI_SPRITE } from '../view/ArtPaths';
 import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem } from '../core/LevelSystem';
@@ -38,6 +38,9 @@ export class BattleUI extends Component {
   onFight: () => void = () => {};
   onSpeed: (s: number) => void = () => {};
   onRestart: () => void = () => {};
+  onBuy: (slot: number) => void = () => {};
+  onRefresh: () => void = () => {};
+  onSell: (uid: number) => void = () => {};
 
   private speed = 1;
   private fightBtn: Node;
@@ -55,6 +58,8 @@ export class BattleUI extends Component {
   private expBarFill: Node;
   private expLabel: Label;
   private capLabel: Label;
+  private shopRoot: Node;
+  private shopSlots: Array<{ node: Node; nameLabel: Label; costLabel: Label; unitId: string | null }> = [];
 
   init() {
     // ─── 顶部状态栏 ───
@@ -125,6 +130,34 @@ export class BattleUI extends Component {
       this.onSpeed(this.speed);
     });
     this.node.addChild(speedBtn.node);
+
+    // ─── 商店面板（底部） ───
+    const shopRoot = new Node('shopRoot');
+    shopRoot.setPosition(0, -330, 0);
+    this.node.addChild(shopRoot);
+    this.shopRoot = shopRoot;
+
+    // 刷新按钮
+    const rfBtn = makeSpriteNode(UI_SPRITE.btnSecondary, 110, 44);
+    rfBtn.node.setPosition(-290, 0, 0);
+    rfBtn.node.addChild(makeLabel('刷新 2G', 18, Color.WHITE));
+    rfBtn.node.on(Node.EventType.TOUCH_END, () => this.onRefresh());
+    shopRoot.addChild(rfBtn.node);
+
+    // 5 个商店格子
+    for (let i = 0; i < 5; i++) {
+      const slotN = makeSpriteNode(UI_SPRITE.panel, 96, 56);
+      slotN.node.setPosition(-200 + i * 110, 0, 0);
+      const nameL = makeLabel('', 14, Color.WHITE);
+      slotN.node.addChild(nameL);
+      const costL = makeLabel('', 12, new Color(255, 215, 0, 255));
+      costL.setPosition(0, -16, 0);
+      slotN.node.addChild(costL);
+      this.shopSlots.push({ node: slotN.node, nameLabel: nameL.getComponent(Label)!, costLabel: costL.getComponent(Label)!, unitId: null });
+      const idx = i;
+      slotN.node.on(Node.EventType.TOUCH_END, () => this.onBuy(idx));
+      shopRoot.addChild(slotN.node);
+    }
 
     // ─── 结算弹窗 ───
     const panel = makeSpriteNode(UI_SPRITE.panel, 480, 360);
@@ -214,4 +247,47 @@ export class BattleUI extends Component {
   }
 
   hideResult(): void { if (this.resultPanel) this.resultPanel.active = false; }
+
+  /** 商店 UI 刷新（BattleStage 在 reroll/购买/战斗切换时调用） */
+  refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number }>): void {
+    for (let i = 0; i < this.shopSlots.length; i++) {
+      const ui = this.shopSlots[i];
+      const data = slots[i];
+      if (!data || !data.unitId) {
+        ui.nameLabel.string = '';
+        ui.costLabel.string = '';
+        ui.node.getComponent(UIOpacity)!.opacity = 120;
+        ui.unitId = null;
+      } else {
+        ui.nameLabel.string = `${data.name}`;
+        ui.costLabel.string = `${data.price}G 剩${data.poolLeft}`;
+        ui.node.getComponent(UIOpacity)!.opacity = 255;
+        ui.unitId = data.unitId;
+      }
+    }
+  }
+
+  setShopVisible(v: boolean): void { if (this.shopRoot) this.shopRoot.active = v; }
+
+  private warnLabel: Label;
+  private warnTimer = 0;
+
+  /** 顶部中间短暂提示（超员等） */
+  showWarn(msg: string): void {
+    if (!this.warnLabel) {
+      const n = makeLabel('', 20, new Color(255, 200, 80, 255));
+      n.setPosition(0, 200, 0);
+      this.node.addChild(n);
+      this.warnLabel = n.getComponent(Label)!;
+    }
+    this.warnLabel.string = msg;
+    this.warnTimer = 2.0;
+  }
+
+  update(dt: number) {
+    if (this.warnTimer > 0) {
+      this.warnTimer -= dt;
+      if (this.warnTimer <= 0 && this.warnLabel) this.warnLabel.string = '';
+    }
+  }
 }
