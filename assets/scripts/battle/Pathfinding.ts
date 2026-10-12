@@ -1,13 +1,12 @@
 import { Pos } from './types';
+import { hexDist, hexNeighbors } from './HexMath';
 
-const DIRS: ReadonlyArray<readonly [number, number]> = [[0, -1], [-1, 0], [1, 0], [0, 1]];
-
-export const dist = (a: Pos, b: Pos): number => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+export { hexDist as dist } from './HexMath';
 
 /**
- * BFS，返回朝 goalTest 满足的格子前进的下一步。
+ * 六边形 BFS，返回朝 goalTest 满足的格子前进的下一步。
  * blocked 由调用方提供（占位格子为 true）。
- * DIRS 固定顺序保证同种子结果可复现。
+ * hexNeighbors 固定顺序保证同种子结果可复现。
  */
 export function nextStep(
   from: Pos,
@@ -30,14 +29,12 @@ export function nextStep(
       while (prev.get(k) !== startKey) k = prev.get(k)!;
       return { x: k % w, y: Math.floor(k / w) };
     }
-    for (const [dx, dy] of DIRS) {
-      const nx = c.x + dx;
-      const ny = c.y + dy;
-      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-      const k = key(nx, ny);
-      if (prev.has(k) || blocked(nx, ny)) continue;
+    for (const n of hexNeighbors(c.x, c.y)) {
+      if (n.x < 0 || n.y < 0 || n.x >= w || n.y >= h) continue;
+      const k = key(n.x, n.y);
+      if (prev.has(k) || blocked(n.x, n.y)) continue;
       prev.set(k, key(c.x, c.y));
-      q.push({ x: nx, y: ny });
+      q.push(n);
     }
   }
   return null;

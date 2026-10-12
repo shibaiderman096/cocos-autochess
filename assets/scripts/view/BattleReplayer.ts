@@ -3,13 +3,12 @@ import { BattleSim } from '../battle/BattleSim';
 import { BattleEvent } from '../battle/types';
 import { UnitView } from './UnitView';
 import { FloatText, FloatTextPool } from './FloatText';
+import { BoardView } from './BoardView';
 
 const { ccclass } = _decorator;
 
 /**
  * 战斗回放器：消费 sim.events，把逻辑事件映射到 UnitView 表现。
- * - sim 由 BattleStage 持有并推进（TickDriver），本组件只消费新增事件。
- * - 倍速由 BattleStage 控制（TickDriver advance 的 dt 乘 speed）。
  */
 @ccclass('BattleReplayer')
 export class BattleReplayer extends Component {
@@ -18,19 +17,18 @@ export class BattleReplayer extends Component {
   private unitViews = new Map<number, UnitView>();
   private cellSize = 64;
   private fxRoot: Node;
+  private boardView: BoardView;
 
-  bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number) {
+  bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView) {
     this.sim = sim;
     this.unitViews = views;
     this.cellSize = cellSize;
+    this.boardView = boardView;
     this.eventCursor = 0;
   }
 
-  setFxRoot(root: Node): void {
-    this.fxRoot = root;
-  }
+  setFxRoot(root: Node): void { this.fxRoot = root; }
 
-  /** 每帧由 BattleStage 调用：消费 sim.events 中尚未处理的事件 */
   consumeEvents() {
     if (!this.sim) return;
     const events = this.sim.events;
@@ -42,10 +40,8 @@ export class BattleReplayer extends Component {
 
   private play(e: BattleEvent) {
     switch (e.t) {
-      case 'battle_start':
-        break;
-      case 'move':
-        break;
+      case 'battle_start': break;
+      case 'move': break;
       case 'attack': {
         const uv = this.unitViews.get(e.id);
         const tv = this.unitViews.get(e.target);
@@ -63,7 +59,6 @@ export class BattleReplayer extends Component {
         const tv = this.unitViews.get(e.id);
         if (tv) {
           tv.playHit();
-          // 飘字
           if (this.fxRoot) {
             const ft = FloatTextPool.get();
             const color = FloatText.colorForType(e.dmgType);
@@ -83,18 +78,19 @@ export class BattleReplayer extends Component {
         if (uv) uv.playDeath();
         break;
       }
-      case 'end':
-        break;
+      case 'end': break;
     }
   }
 
-  /** BattleStage 每帧调用，按 id 顺序把 sim.units 快照同步到视图 */
   syncViews(dt: number) {
-    if (!this.sim) return;
+    if (!this.sim || !this.boardView) return;
     for (const u of this.sim.units) {
       const uv = this.unitViews.get(u.id);
       if (!uv) continue;
-      if (u.alive) uv.sync(u.snapshot(), this.cellSize, dt);
+      if (u.alive) {
+        const target = this.boardView.cellToWorld(u.x, u.y);
+        uv.sync(u.snapshot(), target, this.cellSize, dt);
+      }
     }
   }
 }

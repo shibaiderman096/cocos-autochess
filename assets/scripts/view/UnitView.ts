@@ -5,7 +5,7 @@ import { UNIT_SPRITE, UI_SPRITE, unitSpriteKey } from './ArtPaths';
 const { ccclass } = _decorator;
 
 /**
- * 棋子视图（M1 占位 → 正式素材）。
+ * 棋子视图。
  * - 挂在棋盘节点的子节点上，由 BattleStage 按 sim.units 创建。
  * - 每帧同步 sim 快照：位置插值、血条/蓝条、死亡淡出。
  * - 只读 sim，不回写逻辑状态。
@@ -22,7 +22,6 @@ export class UnitView extends Component {
   private hpBarBg: Node;
   private loaded = false;
 
-  /** 由 BattleStage 创建后调用 */
   setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number) {
     this.unitId = unitId;
     this.side = side;
@@ -35,7 +34,6 @@ export class UnitView extends Component {
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.node.addChild(body);
 
-    // 血条背景（细条，位于棋子头顶偏上）
     this.hpBarBg = new Node('hpBar');
     this.hpBarBg.addComponent(UITransform).setContentSize(size * 0.9, 6);
     this.hpBarBg.addComponent(Sprite);
@@ -49,7 +47,6 @@ export class UnitView extends Component {
     this.hpBarBg.addChild(hpFillNode);
     hpFillNode.setPosition(0, 0, 0);
 
-    // 蓝条（仅 maxMana > 0 的棋子有）
     const manaFillNode = new Node('manaFill');
     manaFillNode.addComponent(UITransform).setContentSize(size * 0.9, 3);
     this.manaFill = manaFillNode.addComponent(Sprite);
@@ -66,7 +63,6 @@ export class UnitView extends Component {
       this.loaded = true;
       this.refreshBarsColor();
     });
-    // 占位底色（素材加载前可见）
     this.bodySprite.color = side === 0 ? new Color(80, 120, 200, 255) : new Color(200, 80, 80, 255);
   }
 
@@ -77,23 +73,18 @@ export class UnitView extends Component {
     loadSf(UI_SPRITE.barBg, sf => { if (this.hpBarBg) this.hpBarBg.getComponent(Sprite).spriteFrame = sf; });
     loadSf(this.side === 0 ? UI_SPRITE.hpFillAlly : UI_SPRITE.hpFillEnemy, sf => { if (this.hpFill) this.hpFill.spriteFrame = sf; });
     if (this.side === 0) loadSf(UI_SPRITE.manaFill, sf => { if (this.manaFill) this.manaFill.spriteFrame = sf; });
-    else this.manaFill.node.active = false; // 敌方 M1 不显示蓝条
+    else this.manaFill.node.active = false;
   }
 
-  /** 每帧由 BattleStage 调用：用 sim 快照驱动视图 */
-  sync(snap: UnitRuntime, cellSize: number, dt: number) {
-    // 位置插值：向逻辑格坐标缓动
-    const target = this.node.parent?.getComponent('BoardView')
-      ? (this.node.parent.getComponent('BoardView') as unknown as { cellToWorld(x: number, y: number): Vec3 }).cellToWorld(snap.pos.x, snap.pos.y)
-      : new Vec3(snap.pos.x * cellSize, snap.pos.y * cellSize, 0);
+  /** 每帧由 BattleReplayer 调用：用 sim 快照 + 目标世界坐标驱动视图 */
+  sync(snap: UnitRuntime, targetPos: Vec3, cellSize: number, dt: number) {
     const cur = this.node.position;
-    const k = Math.min(1, dt * 12); // 简单缓动系数
+    const k = Math.min(1, dt * 12);
     this.node.setPosition(
-      cur.x + (target.x - cur.x) * k,
-      cur.y + (target.y - cur.y) * k,
+      cur.x + (targetPos.x - cur.x) * k,
+      cur.y + (targetPos.y - cur.y) * k,
       0,
     );
-    // 血条 / 蓝条比例
     if (this.hpFill && snap.maxHp > 0) {
       this.hpFill.node.getComponent(UITransform).setContentSize(
         Math.max(0, (snap.hp / snap.maxHp)) * this.hpBarBg.getComponent(UITransform).contentSize.width,
@@ -108,7 +99,6 @@ export class UnitView extends Component {
     }
   }
 
-  /** 死亡表现：淡出后隐藏 */
   playDeath() {
     if (!this.node.active) return;
     let op = this.node.getComponent(UIOpacity);
@@ -119,7 +109,6 @@ export class UnitView extends Component {
       .start();
   }
 
-  /** 受击表现：短暂闪红 */
   playHit() {
     if (!this.bodySprite || !this.loaded) return;
     const orig = this.bodySprite.color.clone();
@@ -130,7 +119,6 @@ export class UnitView extends Component {
       .start();
   }
 
-  /** 攻击表现：身体前突一下（M1 简化为轻微位移回弹） */
   playAttack(dirToTarget: Vec3) {
     if (!this.loaded) return;
     const orig = this.node.position.clone();

@@ -10,7 +10,7 @@ export interface UnitConfigData {
   armor: number;
   mr: number;
   atkSpeed: number;      // 次/秒
-  range: number;         // 攻击距离（格，Manhattan）
+  range: number;         // 攻击距离（格，hex 距离）
   moveTicks: number;     // 移动一格所需 tick
   maxMana: number;
   startMana: number;
@@ -38,9 +38,7 @@ export class ConfigManager {
   private units: Record<string, UnitConfigData> = {};
   private skills: Record<string, SkillConfigData> = {};
   battle: BattleConfigData = {
-    boardWidth: 8,
-    boardHeight: 8,
-    ownRows: 4,
+    boardWidth: 8, boardHeight: 6, ownRows: 3,
     maxTicks: 1200,
     tickMs: 50,
   };
