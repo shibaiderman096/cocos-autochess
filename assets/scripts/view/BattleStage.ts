@@ -6,6 +6,9 @@ import { BoardView } from './BoardView';
 import { UnitView } from './UnitView';
 import { BattleReplayer } from './BattleReplayer';
 import { BattleUI } from '../ui/BattleUI';
+import { EconomySystem } from '../core/EconomySystem';
+import { LevelSystem, EXP_PER_BATTLE } from '../core/LevelSystem';
+import { SaveData, loadSave, writeSave, freshSave } from '../core/SaveData';
 
 const { ccclass, property } = _decorator;
 
@@ -30,7 +33,11 @@ export class BattleStage extends Component {
   private fighting = false;
   private ui: BattleUI;
   private speed = 1;
-  private resultShown = false;
+
+  // 经济 / 等级 / 存档
+  private economy: EconomySystem;
+  private levelSys: LevelSystem;
+  private save: SaveData;  private resultShown = false;
 
   // 拖拽状态
   private draggingId = 0;          // 被拖拽的 unit id（0 = 无）
@@ -39,6 +46,13 @@ export class BattleStage extends Component {
   private touchOffset: Vec3 = new Vec3();
 
   async start() {
+    this.save = loadSave() ?? freshSave();
+    this.economy = new EconomySystem(undefined, {
+      gold: this.save.gold,
+      winStreak: this.save.winStreak,
+      loseStreak: this.save.loseStreak,
+    });
+    this.levelSys = new LevelSystem({ level: this.save.level, exp: this.save.exp });
     await this.loadConfigs();
     this.buildBoard();
     this.createSim(false);
@@ -56,6 +70,7 @@ export class BattleStage extends Component {
     this.ui.onFight = () => this.startFight();
     this.ui.onSpeed = (s) => { this.speed = s; };
     this.ui.onRestart = () => this.restart();
+    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
     this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
     this.setupTouchEvents();
     this.loaded = true;
@@ -241,6 +256,8 @@ export class BattleStage extends Component {
     this.fighting = false;
     this.resultShown = false;
     this.resetDrag();
+    this.save.floor++;
+    writeSave(this.save);
     this.createSim(false);
     this.createViews();
     const bv = this.boardNode.getComponent(BoardView)!;
@@ -255,6 +272,26 @@ export class BattleStage extends Component {
     this.ui.showFightBtn();
   }
 
+  /** 战斗结束结算：连胜/连败 → 金币 → 经验 → 存档 → UI。一场战斗只走一次（由 resultShown 保证）。 */
+  private settleBattleEnd() {
+    const breakdown = this.economy.settleBattle(this.save.floor, { winner: this.sim.winner });
+    const ups = this.levelSys.addExp(EXP_PER_BATTLE);
+    this.save.gold = this.economy.gold;
+    this.save.level = this.levelSys.level;
+    this.save.exp = this.levelSys.exp;
+    this.save.winStreak = this.economy.winStreak;
+    this.save.loseStreak = this.economy.loseStreak;
+    writeSave(this.save);
+    this.ui.showResult(
+      this.sim.winner,
+      breakdown,
+      EXP_PER_BATTLE,
+      ups.length,
+      this.levelSys.level,
+    );
+    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+  }
+
   update(dt: number) {
     if (!this.loaded || !this.sim) return;
     if (this.fighting && !this.sim.finished) {
@@ -264,7 +301,7 @@ export class BattleStage extends Component {
     } else if (this.sim.finished && !this.resultShown) {
       this.resultShown = true;
       this.replayer.consumeEvents();
-      this.ui.showResult(this.sim.winner);
+      this.settleBattleEnd();
     }
   }
 }
