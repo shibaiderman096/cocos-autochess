@@ -109,10 +109,20 @@ export class BattleStage extends Component {
     const old = this.boardNode.getChildByName('units');
     if (old) old.destroy();
     const root = new Node('units');
+    // 关键：units 根节点必须有 UITransform + 足够大的 contentSize，
+    // 否则 Cocos 触摸事件系统在 _sortPointerEventProcessorList 时读不到 cameraPriority 崩溃
+    const ut = root.addComponent(UITransform);
+    ut.setContentSize(
+      this.cfg.battle.boardWidth * this.cellSize * 1.5,
+      this.cfg.battle.boardHeight * this.cellSize,
+    );
     this.boardNode.addChild(root);
     this.views.clear();
     for (const u of this.sim.units) {
       const node = new Node(`unit_${u.id}`);
+      // 每个 unit 节点也需要 UITransform，否则触摸命中区域为 0
+      const utt = node.addComponent(UITransform);
+      utt.setContentSize(this.cellSize, this.cellSize);
       const uv = node.addComponent(UnitView);
       uv.setup(u.cfg.id, u.side, u.id, this.cellSize);
       const p = bv.cellToWorld(u.x, u.y);
@@ -125,9 +135,13 @@ export class BattleStage extends Component {
   // ─── 拖拽布阵 ───
 
   private setupTouchEvents() {
-    // 在棋盘的 units 根节点上监听触摸
     const unitsRoot = this.boardNode.getChildByName('units');
     if (!unitsRoot) return;
+    // 先 off 再 on，防止 restart 后重复注册
+    unitsRoot.off(Node.EventType.TOUCH_START);
+    unitsRoot.off(Node.EventType.TOUCH_MOVE);
+    unitsRoot.off(Node.EventType.TOUCH_END);
+    unitsRoot.off(Node.EventType.TOUCH_CANCEL);
     unitsRoot.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
     unitsRoot.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     unitsRoot.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
@@ -135,15 +149,13 @@ export class BattleStage extends Component {
   }
 
   private onTouchStart(event: EventTouch) {
-    if (this.fighting) return;
+    if (this.fighting || !this.loaded) return;
     const unitsRoot = this.boardNode.getChildByName('units');
     if (!unitsRoot) return;
-    const bv = this.boardNode.getComponent(BoardView)!;
-    // 触摸点转棋盘本地坐标
     const worldPos = event.getUILocation();
-    const local = unitsRoot.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
-    // 棋盘本地坐标 = unitsRoot 本地坐标（unitsRoot 在 boardNode 下，boardNode 可能也有偏移）
-    const boardLocal = this.boardNode.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+    // 直接用 boardNode 的 UITransform 做坐标转换（它一定有 UITransform）
+    const boardUT = this.boardNode.getComponent(UITransform) ?? this.boardNode.addComponent(UITransform);
+    const local = boardUT.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
 
     // 查找点击的己方棋子
     for (const [id, uv] of this.views) {
@@ -157,7 +169,6 @@ export class BattleStage extends Component {
         this.dragging = uv;
         this.dragOriginalPos.set(uv.node.position.x, uv.node.position.y, 0);
         this.touchOffset.set(dx, dy, 0);
-        // 视觉反馈：放大
         uv.node.setScale(1.15, 1.15, 1);
         return;
       }
@@ -166,10 +177,9 @@ export class BattleStage extends Component {
 
   private onTouchMove(event: EventTouch) {
     if (!this.dragging) return;
-    const unitsRoot = this.boardNode.getChildByName('units');
-    if (!unitsRoot) return;
     const worldPos = event.getUILocation();
-    const local = unitsRoot.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+    const boardUT = this.boardNode.getComponent(UITransform) ?? this.boardNode.addComponent(UITransform);
+    const local = boardUT.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
     this.dragging.node.setPosition(local.x - this.touchOffset.x, local.y - this.touchOffset.y, 0);
   }
 
@@ -177,22 +187,17 @@ export class BattleStage extends Component {
     if (!this.dragging) return;
     const uv = this.dragging;
     const bv = this.boardNode.getComponent(BoardView)!;
-    const unitsRoot = this.boardNode.getChildByName('units');
     uv.node.setScale(1, 1, 1);
 
-    // 当前棋子位置 → 棋盘本地坐标
     const curPos = uv.node.position.clone();
-    // unitsRoot 是 boardNode 的子节点，坐标已在棋盘空间
     const cell = bv.worldToCell(curPos.x, curPos.y);
 
     if (!cell || !bv.isOwnCell(cell.y)) {
-      // 无效目标：返回原位
       uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
       this.dragging = null;
       return;
     }
 
-    // 找到对应的 sim unit
     const dragUnit = this.sim.units.find(u => u.id === uv.unitId);
     if (!dragUnit) {
       uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
@@ -200,30 +205,23 @@ export class BattleStage extends Component {
       return;
     }
 
-    // 检查目标格是否有己方棋子
     const occupant = this.sim.units.find(u => u.alive && u.id !== dragUnit.id && u.x === cell.x && u.y === cell.y);
     if (occupant) {
-      // 交换位置
       const occUv = this.views.get(occupant.id);
       const oldX = dragUnit.x, oldY = dragUnit.y;
-      const occOldPos = occUv ? occUv.node.position.clone() : new Vec3();
       dragUnit.x = cell.x;
       dragUnit.y = cell.y;
       occupant.x = oldX;
       occupant.y = oldY;
-      // 动画：被交换的棋子滑到原位
       if (occUv) {
         const targetPos = bv.cellToWorld(oldX, oldY);
         occUv.node.setPosition(targetPos.x, targetPos.y, 0);
       }
-      // 拖拽棋子吸附到目标格
       const targetPos = bv.cellToWorld(cell.x, cell.y);
       uv.node.setPosition(targetPos.x, targetPos.y, 0);
     } else if (cell.x === dragUnit.x && cell.y === dragUnit.y) {
-      // 放回原位
       uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
     } else {
-      // 移动到空格
       dragUnit.x = cell.x;
       dragUnit.y = cell.y;
       const targetPos = bv.cellToWorld(cell.x, cell.y);
