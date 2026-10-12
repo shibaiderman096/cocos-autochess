@@ -37,7 +37,9 @@ export class BattleStage extends Component {
     this.createViews();
     this.replayer = this.node.addComponent(BattleReplayer);
     this.replayer.bind(this.sim, this.views, this.cellSize);
-
+    const fxRoot = new Node('fx');
+    this.boardNode.addChild(fxRoot);
+    this.replayer.setFxRoot(fxRoot);
     const uiNode = new Node('battleUI');
     this.node.parent?.addChild(uiNode);
     this.ui = uiNode.addComponent(BattleUI);
@@ -127,6 +129,9 @@ export class BattleStage extends Component {
     this.createSim(false);
     this.createViews();
     this.replayer.bind(this.sim, this.views, this.cellSize);
+    const fxRoot = new Node('fx');
+    this.boardNode.addChild(fxRoot);
+    this.replayer.setFxRoot(fxRoot);
     this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
     this.ui.showFightBtn();
   }

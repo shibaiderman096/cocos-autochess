@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, Vec3 } from 'cc';
+import { _decorator, Component, Node, Vec3, Color } from 'cc';
 import { BattleSim } from '../battle/BattleSim';
 import { BattleEvent } from '../battle/types';
 import { UnitView } from './UnitView';
+import { FloatText, FloatTextPool } from './FloatText';
 
 const { ccclass } = _decorator;
 
@@ -16,11 +17,17 @@ export class BattleReplayer extends Component {
   private eventCursor = 0;
   private unitViews = new Map<number, UnitView>();
   private cellSize = 64;
+  private fxRoot: Node;
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number) {
     this.sim = sim;
     this.unitViews = views;
     this.cellSize = cellSize;
+    this.eventCursor = 0;
+  }
+
+  setFxRoot(root: Node): void {
+    this.fxRoot = root;
   }
 
   /** 每帧由 BattleStage 调用：消费 sim.events 中尚未处理的事件 */
@@ -36,12 +43,9 @@ export class BattleReplayer extends Component {
   private play(e: BattleEvent) {
     switch (e.t) {
       case 'battle_start':
-        // 无需表现
         break;
-      case 'move': {
-        // 位置由 sync 插值，不需要 tween；这里不做事
+      case 'move':
         break;
-      }
       case 'attack': {
         const uv = this.unitViews.get(e.id);
         const tv = this.unitViews.get(e.target);
@@ -57,11 +61,19 @@ export class BattleReplayer extends Component {
       }
       case 'hit': {
         const tv = this.unitViews.get(e.id);
-        if (tv) tv.playHit();
+        if (tv) {
+          tv.playHit();
+          // 飘字
+          if (this.fxRoot) {
+            const ft = FloatTextPool.get();
+            const color = FloatText.colorForType(e.dmgType);
+            const pos = tv.node.position.clone();
+            ft.show(`-${e.dmg}`, color, pos, this.fxRoot);
+          }
+        }
         break;
       }
       case 'cast': {
-        // M1：施法先只让主目标闪一下；后续加火球特效
         const tv = this.unitViews.get(e.target);
         if (tv) tv.playHit();
         break;
@@ -72,7 +84,6 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'end':
-        // 弹窗由 BattleStage 处理
         break;
     }
   }
