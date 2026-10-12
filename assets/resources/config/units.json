@@ -1,0 +1,45 @@
+[
+  {
+    "id": "warrior",
+    "name": "战士",
+    "hp": 700,
+    "atk": 55,
+    "armor": 40,
+    "mr": 20,
+    "atkSpeed": 0.7,
+    "range": 1,
+    "moveTicks": 6,
+    "maxMana": 0,
+    "startMana": 0,
+    "manaPerHit": 0
+  },
+  {
+    "id": "archer",
+    "name": "弓手",
+    "hp": 450,
+    "atk": 60,
+    "armor": 15,
+    "mr": 15,
+    "atkSpeed": 0.9,
+    "range": 4,
+    "moveTicks": 6,
+    "maxMana": 0,
+    "startMana": 0,
+    "manaPerHit": 0
+  },
+  {
+    "id": "mage",
+    "name": "法师",
+    "hp": 400,
+    "atk": 30,
+    "armor": 10,
+    "mr": 30,
+    "atkSpeed": 0.7,
+    "range": 3,
+    "moveTicks": 6,
+    "maxMana": 80,
+    "startMana": 20,
+    "manaPerHit": 10,
+    "skillId": "fireball"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "fireball": {
+    "id": "fireball",
+    "dmgType": "magic",
+    "power": 220,
+    "radius": 1,
+    "targeting": "nearest"
+  }
+}

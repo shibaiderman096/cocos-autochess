@@ -1,0 +1,15 @@
+{
+  "name": "autochess-m1",
+  "uuid": "410c65eb-8b37-4385-b993-edbbc92de453",
+  "creator": {
+    "version": "3.8.8"
+  },
+  "scripts": {
+    "smoke": "tsx tests/smoke.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
+  }
+}
