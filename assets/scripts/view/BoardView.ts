@@ -1,18 +1,19 @@
 import { _decorator, Component, Graphics, Node, Vec3, Color, UITransform } from 'cc';
 import { Grid } from '../battle/Grid';
-import { offsetToWorld, worldToOffset, SQRT3 } from '../battle/HexMath';
+import { SQRT3 } from '../battle/HexMath';
 
 const { ccclass, property } = _decorator;
 
 /**
  * 六边形棋盘渲染（平顶六边形，odd-q offset）。
- * - Graphics 绘制蜂窝格子，己方区暖色、敌方区冷色。
- * - cellToWorld / worldToCell 使用 HexMath 统一坐标转换。
+ * - 所有格子世界坐标按实际包围盒居中（画布中心 = 棋盘中心）。
+ * - cellToWorld 用预计算表；worldToCell 用像素最近邻（与视觉绝对一致）。
+ * - 自动把本节点 UITransform 的 contentSize 设为棋盘包围盒，供触摸命中。
  */
 @ccclass('BoardView')
 export class BoardView extends Component {
   @property
-  hexSize = 36; // 六边形外接圆半径（中心到顶点）
+  hexSize = 36;
 
   @property
   boardWidth = 8;
@@ -22,46 +23,63 @@ export class BoardView extends Component {
 
   grid: Grid;
   private g: Graphics;
-  private tilesRoot: Node;
-
-  /** 缓存所有格子的世界坐标，供 worldToCell 快速查找 */
-  private cellWorlds: Map<string, { x: number; y: number }> = new Map();
+  private cellWorlds = new Map<string, { x: number; y: number }>();
+  boardPixelW = 0;
+  boardPixelH = 0;
 
   start() {
     this.grid = new Grid(this.boardWidth, this.boardHeight);
-    this.tilesRoot = new Node('tiles');
-    this.tilesRoot.addComponent(UITransform);
-    this.node.addChild(this.tilesRoot);
     this.g = this.getComponent(Graphics) ?? this.node.addComponent(Graphics);
     this.buildHexGrid();
   }
 
-  private getOffset(): { ox: number; oy: number } {
-    const totalW = this.hexSize * 1.5 * (this.boardWidth - 1);
-    const totalH = this.hexSize * SQRT3 * (this.boardHeight - 0.5);
-    return { ox: -totalW / 2, oy: totalH / 2 };
+  /** odd-q 平顶六边形原始坐标（未居中） */
+  private rawCellPos(x: number, y: number): { x: number; y: number } {
+    return {
+      x: this.hexSize * 1.5 * x,
+      y: this.hexSize * SQRT3 * (y + x / 2),
+    };
   }
 
   private buildHexGrid() {
     this.cellWorlds.clear();
-    this.tilesRoot.destroyAllChildren();
-    const { ox, oy } = this.getOffset();
 
+    // 计算包围盒
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (let y = 0; y < this.boardHeight; y++) {
       for (let x = 0; x < this.boardWidth; x++) {
-        const w = offsetToWorld(x, y, this.hexSize, ox, oy);
-        this.cellWorlds.set(`${x},${y}`, w);
+        const p = this.rawCellPos(x, y);
+        minX = Math.min(minX, p.x - this.hexSize);
+        maxX = Math.max(maxX, p.x + this.hexSize);
+        minY = Math.min(minY, p.y - this.hexSize);
+        maxY = Math.max(maxY, p.y + this.hexSize);
       }
     }
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+
+    // 居中后的格子坐标表
+    for (let y = 0; y < this.boardHeight; y++) {
+      for (let x = 0; x < this.boardWidth; x++) {
+        const p = this.rawCellPos(x, y);
+        this.cellWorlds.set(`${x},${y}`, { x: p.x - cx, y: p.y - cy });
+      }
+    }
+    this.boardPixelW = maxX - minX;
+    this.boardPixelH = maxY - minY;
+
+    // 本节点 UITransform 覆盖棋盘包围盒，触摸事件才能命中
+    const ut = this.getComponent(UITransform) ?? this.node.addComponent(UITransform);
+    ut.setContentSize(this.boardPixelW, this.boardPixelH);
+
     this.redraw();
   }
 
   /** 画一个平顶六边形路径 */
   private hexPath(g: Graphics, cx: number, cy: number, size: number) {
-    // 平顶六边形 6 个顶点
     const pts: [number, number][] = [];
     for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i; // 0, 60, 120, 180, 240, 300
+      const angle = (Math.PI / 3) * i;
       pts.push([cx + size * Math.cos(angle), cy + size * Math.sin(angle)]);
     }
     g.moveTo(pts[0][0], pts[0][1]);
@@ -72,12 +90,11 @@ export class BoardView extends Component {
   redraw() {
     const g = this.g;
     g.clear();
-    const { ox, oy } = this.getOffset();
     const ownRows = this.boardHeight / 2;
 
     for (let y = 0; y < this.boardHeight; y++) {
       for (let x = 0; x < this.boardWidth; x++) {
-        const w = offsetToWorld(x, y, this.hexSize, ox, oy);
+        const w = this.cellWorlds.get(`${x},${y}`)!;
         const own = y < ownRows;
         const checker = (x + y) % 2 === 0;
         const base = own
@@ -86,7 +103,6 @@ export class BoardView extends Component {
         g.fillColor = base;
         this.hexPath(g, w.x, w.y, this.hexSize * 0.92);
         g.fill();
-        // 描边
         g.strokeColor = new Color(40, 30, 20, 120);
         g.lineWidth = 1.5;
         this.hexPath(g, w.x, w.y, this.hexSize * 0.92);
@@ -94,49 +110,46 @@ export class BoardView extends Component {
       }
     }
 
-    // 中线
-    const midY = offsetToWorld(0, ownRows, this.hexSize, ox, oy).y;
-    const midY2 = offsetToWorld(this.boardWidth - 1, ownRows - 1, this.hexSize, ox, oy).y;
-    const midLineY = (midY + midY2) / 2;
+    // 己方/敌方分界线（沿 y = ownRows-0.5 行的横向中线）
+    const left = this.cellWorlds.get(`0,${ownRows - 1}`)!;
+    const right = this.cellWorlds.get(`${this.boardWidth - 1},${ownRows}`)!;
+    const midLineY = (left.y + right.y) / 2 + this.hexSize * 0.3;
+    const lx = this.cellWorlds.get('0,0')!.x - this.hexSize;
+    const rx = this.cellWorlds.get(`${this.boardWidth - 1},0`)!.x + this.hexSize;
     g.strokeColor = new Color(255, 220, 120, 160);
     g.lineWidth = 2;
-    const leftX = offsetToWorld(0, 0, this.hexSize, ox, oy).x - this.hexSize;
-    const rightX = offsetToWorld(this.boardWidth - 1, 0, this.hexSize, ox, oy).x + this.hexSize;
-    g.moveTo(leftX, midLineY);
-    g.lineTo(rightX, midLineY);
+    g.moveTo(lx, midLineY);
+    g.lineTo(rx, midLineY);
     g.stroke();
   }
 
-  /** 格子坐标 → 本地世界坐标 */
+  /** 格子坐标 → 本地世界坐标（预计算表，与绘制完全一致） */
   cellToWorld(x: number, y: number): Vec3 {
     const cached = this.cellWorlds.get(`${x},${y}`);
     if (cached) return new Vec3(cached.x, cached.y, 0);
-    const { ox, oy } = this.getOffset();
-    const w = offsetToWorld(x, y, this.hexSize, ox, oy);
-    return new Vec3(w.x, w.y, 0);
+    return new Vec3(0, 0, 0);
   }
 
-  /** 本地世界坐标 → 最近格子坐标；出界返回 null */
-  worldToCell(wx: number, wy: number): { x: number; y: number } | null {
-    const { ox, oy } = this.getOffset();
-    const off = worldToOffset(wx, wy, this.hexSize, ox, oy);
-    if (this.grid.inBounds(off.col, off.row)) return { x: off.col, y: off.row };
-    // 找最近的有效格
+  /**
+   * 本地世界坐标 → 最近格子；距离超过 maxDist（默认 1.2 倍 hexSize）视为棋盘外返回 null。
+   * 像素最近邻保证与视觉完全一致。
+   */
+  worldToCell(wx: number, wy: number, maxDist = this.hexSize * 1.2): { x: number; y: number } | null {
     let best: { x: number; y: number } | null = null;
     let bd = Infinity;
-    for (let y = 0; y < this.boardHeight; y++) {
-      for (let x = 0; x < this.boardWidth; x++) {
-        const c = this.cellWorlds.get(`${x},${y}`)!;
-        const dx = c.x - wx, dy = c.y - wy;
-        const d = dx * dx + dy * dy;
-        if (d < bd) { bd = d; best = { x, y }; }
-      }
+    for (const [key, c] of this.cellWorlds) {
+      const dx = c.x - wx, dy = c.y - wy;
+      const d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = { x: Number(key.split(',')[0]), y: Number(key.split(',')[1]) }; }
     }
+    if (!best) return null;
+    const bc = this.cellWorlds.get(`${best.x},${best.y}`)!;
+    const dist = Math.sqrt((bc.x - wx) ** 2 + (bc.y - wy) ** 2);
+    if (dist > maxDist) return null;
     return best;
   }
 
-  /** 己方半场判定 */
   isOwnCell(y: number): boolean {
-    return this.grid.isOwnHalf(y);
+    return y < this.boardHeight / 2;
   }
 }

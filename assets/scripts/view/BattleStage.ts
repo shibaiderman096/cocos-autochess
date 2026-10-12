@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Sprite } from 'cc';
+import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color } from 'cc';
 import { ConfigManager, UnitConfigData } from '../core/ConfigManager';
 import { BattleSim, Placement } from '../battle/BattleSim';
 import { TickDriver } from '../core/TickDriver';
@@ -11,9 +11,9 @@ const { ccclass, property } = _decorator;
 
 /**
  * 战斗舞台：组装 BoardView + UnitView + BattleSim + TickDriver + BattleUI。
- * - 准备阶段：可以拖拽己方棋子调整站位（空格移动、有棋子则交换、无效格返回原位）。
- * - 战斗阶段：禁止拖拽，TickDriver 驱动自动战斗。
- * - 战斗结束后返回准备阶段，重新允许调整。
+ * - 准备阶段：拖拽己方棋子调整站位（空格移动 / 占格交换 / 无效返回）。
+ * - 战斗阶段：禁止拖拽。
+ * - 战斗结束返回准备阶段后重新允许调整。
  */
 @ccclass('BattleStage')
 export class BattleStage extends Component {
@@ -25,15 +25,17 @@ export class BattleStage extends Component {
   private driver: TickDriver;
   private replayer: BattleReplayer;
   private views = new Map<number, UnitView>();
-  private cellSize = 64;
+  private cellSize = 52;   // hexSize 的视觉直径参考（棋子贴图尺寸）
   private loaded = false;
   private fighting = false;
   private ui: BattleUI;
   private speed = 1;
+  private resultShown = false;
 
   // 拖拽状态
+  private draggingId = 0;          // 被拖拽的 unit id（0 = 无）
   private dragging: UnitView | null = null;
-  private dragOriginalPos: Vec3 = new Vec3();
+  private dragOrigPos: Vec3 = new Vec3();
   private touchOffset: Vec3 = new Vec3();
 
   async start() {
@@ -109,18 +111,12 @@ export class BattleStage extends Component {
     const old = this.boardNode.getChildByName('units');
     if (old) old.destroy();
     const root = new Node('units');
-    // 关键：units 根节点必须有 UITransform + 足够大的 contentSize，
-    // 否则 Cocos 触摸事件系统在 _sortPointerEventProcessorList 时读不到 cameraPriority 崩溃
     const ut = root.addComponent(UITransform);
-    ut.setContentSize(
-      this.cfg.battle.boardWidth * this.cellSize * 1.5,
-      this.cfg.battle.boardHeight * this.cellSize,
-    );
+    ut.setContentSize(bv.boardPixelW || 600, bv.boardPixelH || 400);
     this.boardNode.addChild(root);
     this.views.clear();
     for (const u of this.sim.units) {
       const node = new Node(`unit_${u.id}`);
-      // 每个 unit 节点也需要 UITransform，否则触摸命中区域为 0
       const utt = node.addComponent(UITransform);
       utt.setContentSize(this.cellSize, this.cellSize);
       const uv = node.addComponent(UnitView);
@@ -137,97 +133,99 @@ export class BattleStage extends Component {
   private setupTouchEvents() {
     const unitsRoot = this.boardNode.getChildByName('units');
     if (!unitsRoot) return;
-    // 先 off 再 on，防止 restart 后重复注册
-    unitsRoot.off(Node.EventType.TOUCH_START);
-    unitsRoot.off(Node.EventType.TOUCH_MOVE);
-    unitsRoot.off(Node.EventType.TOUCH_END);
-    unitsRoot.off(Node.EventType.TOUCH_CANCEL);
+    unitsRoot.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    unitsRoot.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+    unitsRoot.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    unitsRoot.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     unitsRoot.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
     unitsRoot.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
     unitsRoot.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
     unitsRoot.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
   }
 
-  private onTouchStart(event: EventTouch) {
-    if (this.fighting || !this.loaded) return;
-    const unitsRoot = this.boardNode.getChildByName('units');
-    if (!unitsRoot) return;
+  /** 触摸点 → boardNode 本地坐标 */
+  private touchToBoard(event: EventTouch): Vec3 {
     const worldPos = event.getUILocation();
-    // 直接用 boardNode 的 UITransform 做坐标转换（它一定有 UITransform）
-    const boardUT = this.boardNode.getComponent(UITransform) ?? this.boardNode.addComponent(UITransform);
-    const local = boardUT.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+    const bvUt = this.boardNode.getComponent(UITransform) ?? this.boardNode.addComponent(UITransform);
+    return bvUt.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+  }
 
-    // 查找点击的己方棋子
-    for (const [id, uv] of this.views) {
-      const u = this.sim.units.find(uu => uu.id === id);
-      if (!u || !u.alive || u.side !== 0) continue;
-      const unitPos = uv.node.position;
-      const dx = local.x - unitPos.x;
-      const dy = local.y - unitPos.y;
-      const distSq = dx * dx + dy * dy;
-      if (distSq < (this.cellSize * 0.5) ** 2) {
-        this.dragging = uv;
-        this.dragOriginalPos.set(uv.node.position.x, uv.node.position.y, 0);
-        this.touchOffset.set(dx, dy, 0);
-        uv.node.setScale(1.15, 1.15, 1);
-        return;
-      }
+  private onTouchStart(event: EventTouch) {
+    if (this.fighting || !this.loaded || this.draggingId) return;
+    const boardPos = this.touchToBoard(event);
+
+    // 用「像素距离到棋子所在格子中心」判断命中（与渲染完全一致）
+    let bestId = 0;
+    let bestDist = Infinity;
+    for (const u of this.sim.units) {
+      if (!u.alive || u.side !== 0) continue;
+      const c = this.boardNode.getComponent(BoardView)!.cellToWorld(u.x, u.y);
+      const d = (boardPos.x - c.x) ** 2 + (boardPos.y - c.y) ** 2;
+      if (d < bestDist) { bestDist = d; bestId = u.id; }
     }
+    if (!bestId || bestDist > (this.cellSize * 0.6) ** 2) return;
+
+    const uv = this.views.get(bestId);
+    if (!uv) return;
+    this.draggingId = bestId;
+    this.dragging = uv;
+    this.dragOrigPos.set(uv.node.position.x, uv.node.position.y, 0);
+    this.touchOffset.set(boardPos.x - uv.node.position.x, boardPos.y - uv.node.position.y, 0);
+    uv.node.setScale(1.15, 1.15, 1);
   }
 
   private onTouchMove(event: EventTouch) {
-    if (!this.dragging) return;
-    const worldPos = event.getUILocation();
-    const boardUT = this.boardNode.getComponent(UITransform) ?? this.boardNode.addComponent(UITransform);
-    const local = boardUT.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
-    this.dragging.node.setPosition(local.x - this.touchOffset.x, local.y - this.touchOffset.y, 0);
+    if (!this.draggingId || !this.dragging) return;
+    const boardPos = this.touchToBoard(event);
+    this.dragging.node.setPosition(boardPos.x - this.touchOffset.x, boardPos.y - this.touchOffset.y, 0);
   }
 
-  private onTouchEnd(event: EventTouch) {
-    if (!this.dragging) return;
+  private onTouchEnd(_event: EventTouch) {
+    if (!this.draggingId || !this.dragging) return;
     const uv = this.dragging;
     const bv = this.boardNode.getComponent(BoardView)!;
     uv.node.setScale(1, 1, 1);
 
-    const curPos = uv.node.position.clone();
+    const curPos = uv.node.position;
     const cell = bv.worldToCell(curPos.x, curPos.y);
 
-    if (!cell || !bv.isOwnCell(cell.y)) {
-      uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
-      this.dragging = null;
-      return;
-    }
+    const dragUnit = this.sim.units.find(u => u.id === this.draggingId);
+    if (!dragUnit) { this.resetDrag(); return; }
 
-    const dragUnit = this.sim.units.find(u => u.id === uv.unitId);
-    if (!dragUnit) {
-      uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
-      this.dragging = null;
+    if (!cell || !bv.isOwnCell(cell.y)) {
+      // 无效目标：回原位
+      uv.node.setPosition(this.dragOrigPos.x, this.dragOrigPos.y, 0);
+      this.resetDrag();
       return;
     }
 
     const occupant = this.sim.units.find(u => u.alive && u.id !== dragUnit.id && u.x === cell.x && u.y === cell.y);
     if (occupant) {
+      // 交换
       const occUv = this.views.get(occupant.id);
       const oldX = dragUnit.x, oldY = dragUnit.y;
-      dragUnit.x = cell.x;
-      dragUnit.y = cell.y;
-      occupant.x = oldX;
-      occupant.y = oldY;
+      dragUnit.x = cell.x; dragUnit.y = cell.y;
+      occupant.x = oldX; occupant.y = oldY;
       if (occUv) {
-        const targetPos = bv.cellToWorld(oldX, oldY);
-        occUv.node.setPosition(targetPos.x, targetPos.y, 0);
+        const target = bv.cellToWorld(oldX, oldY);
+        occUv.node.setPosition(target.x, target.y, 0);
       }
-      const targetPos = bv.cellToWorld(cell.x, cell.y);
-      uv.node.setPosition(targetPos.x, targetPos.y, 0);
+      const target = bv.cellToWorld(cell.x, cell.y);
+      uv.node.setPosition(target.x, target.y, 0);
     } else if (cell.x === dragUnit.x && cell.y === dragUnit.y) {
-      uv.node.setPosition(this.dragOriginalPos.x, this.dragOriginalPos.y, 0);
+      uv.node.setPosition(this.dragOrigPos.x, this.dragOrigPos.y, 0);
     } else {
+      // 移动到空格
       dragUnit.x = cell.x;
       dragUnit.y = cell.y;
-      const targetPos = bv.cellToWorld(cell.x, cell.y);
-      uv.node.setPosition(targetPos.x, targetPos.y, 0);
+      const target = bv.cellToWorld(cell.x, cell.y);
+      uv.node.setPosition(target.x, target.y, 0);
     }
+    this.resetDrag();
+  }
 
+  private resetDrag() {
+    this.draggingId = 0;
     this.dragging = null;
   }
 
@@ -242,19 +240,20 @@ export class BattleStage extends Component {
     this.ui.hideResult();
     this.fighting = false;
     this.resultShown = false;
+    this.resetDrag();
     this.createSim(false);
     this.createViews();
     const bv = this.boardNode.getComponent(BoardView)!;
     this.replayer.bind(this.sim, this.views, this.cellSize, bv);
-    const fxRoot = new Node('fx');
-    this.boardNode.addChild(fxRoot);
-    this.replayer.setFxRoot(fxRoot);
+    const fxRoot = this.boardNode.getChildByName('fx');
+    if (fxRoot) fxRoot.destroy();
+    const newFx = new Node('fx');
+    this.boardNode.addChild(newFx);
+    this.replayer.setFxRoot(newFx);
     this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
     this.setupTouchEvents();
     this.ui.showFightBtn();
   }
-
-  private resultShown = false;
 
   update(dt: number) {
     if (!this.loaded || !this.sim) return;
