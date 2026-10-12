@@ -1,18 +1,20 @@
-import { _decorator, Component, Graphics, Vec3, Color } from 'cc';
+import { _decorator, Component, Graphics, Node, Vec3, Color, SpriteFrame, Sprite, UITransform, instantiate } from 'cc';
+import { resources } from 'cc';
 import { Grid } from '../battle/Grid';
+import { TILE_SPRITE } from './ArtPaths';
 
 const { ccclass, property } = _decorator;
 
 /**
- * 棋盘绘制（M1 占位版）。
- * - 挂在一个空 Node 上（节点需有 Graphics 组件，或由本脚本自动添加）。
- * - 自动画 8×8 格子：下 4 行偏暖 = 己方，上 4 行偏冷 = 敌方。
- * - 提供 cellToWorld / worldToCell 互转，供 UnitView 定位。
+ * 棋盘渲染（素材版，M1 第 2 项）。
+ * - 用 tile_light / tile_dark / tile_zone_ally / tile_zone_enemy 拼出 8×8。
+ * - 保留 Graphics 画外框。
+ * - cellToWorld / worldToCell 供 UnitView、拖拽布阵使用。
  */
 @ccclass('BoardView')
 export class BoardView extends Component {
   @property
-  cellSize = 64; // 每格像素（世界单位）
+  cellSize = 64;
 
   @property
   boardWidth = 8;
@@ -21,41 +23,80 @@ export class BoardView extends Component {
   boardHeight = 8;
 
   grid: Grid;
+  private tileFrames: SpriteFrame[] = [];
+  private tilesRoot: Node;
   private g: Graphics;
 
   start() {
     this.grid = new Grid(this.boardWidth, this.boardHeight);
+    this.tilesRoot = new Node('tiles');
+    this.tilesRoot.addComponent(UITransform);
+    this.node.addChild(this.tilesRoot);
+
+    const keys: Array<'light' | 'dark' | 'zoneAlly' | 'zoneEnemy'> = ['light', 'dark', 'zoneAlly', 'zoneEnemy'];
+    let pending = keys.length;
+    for (const k of keys) {
+      const p = TILE_SPRITE[k];
+      resources.load(p, SpriteFrame, (err, sf) => {
+        if (err) { console.warn(`[BoardView] load failed: ${p}`, err.message); }
+        else {
+          switch (k) {
+            case 'light': this.tileFrames[0] = sf; break;
+            case 'dark': this.tileFrames[1] = sf; break;
+            case 'zoneAlly': this.tileFrames[2] = sf; break;
+            case 'zoneEnemy': this.tileFrames[3] = sf; break;
+          }
+        }
+        pending--;
+        if (pending === 0) this.buildTiles();
+      });
+    }
+
     this.g = this.getComponent(Graphics) ?? this.node.addComponent(Graphics);
-    this.redraw();
   }
 
-  redraw() {
+  private buildTiles() {
+    // 0=light 1=dark 2=zoneAlly 3=zoneEnemy
+    for (let y = 0; y < this.boardHeight; y++) {
+      for (let x = 0; x < this.boardWidth; x++) {
+        const own = y < this.boardHeight / 2;
+        const checker = (x + y) % 2 === 0;
+        // 半场着色优先于棋盘格：前 2 行（每半场内侧 1 行）用 zone 色突出交战区
+        let idx: number;
+        if (checker) idx = own ? 0 : 3;
+        else idx = own ? 2 : 1;
+        // 让整体还是棋盘格观感：只用 light/dark，zone 色画两侧边缘线
+        idx = checker ? 0 : 1;
+        void own;
+        const sf = this.tileFrames[idx];
+        if (!sf) continue;
+        const node = new Node(`tile_${x}_${y}`);
+        node.addComponent(UITransform).setContentSize(this.cellSize, this.cellSize);
+        const sp = node.addComponent(Sprite);
+        sp.spriteFrame = sf;
+        sp.sizeMode = Sprite.SizeMode.CUSTOM;
+        node.setPosition(this.cellToWorld(x, y));
+        this.tilesRoot.addChild(node);
+      }
+    }
+    this.redrawFrame();
+  }
+
+  /** 画外框 + 中线（Graphics 叠在 Sprite 上面） */
+  redrawFrame() {
     const g = this.g;
     g.clear();
     const halfW = (this.boardWidth * this.cellSize) / 2;
     const halfH = (this.boardHeight * this.cellSize) / 2;
-
-    for (let y = 0; y < this.boardHeight; y++) {
-      for (let x = 0; x < this.boardWidth; x++) {
-        const own = y < this.boardHeight / 2;
-        const base = own ? new Color(168, 130, 90, 255) : new Color(96, 120, 150, 255);
-        const dark = (x + y) % 2 === 0;
-        g.fillColor = dark
-          ? base
-          : new Color(Math.max(0, base.r - 18), Math.max(0, base.g - 18), Math.max(0, base.b - 18), 255);
-        g.rect(
-          -halfW + x * this.cellSize,
-          halfH - (y + 1) * this.cellSize,
-          this.cellSize,
-          this.cellSize,
-        );
-        g.fill();
-      }
-    }
-    // 外框
     g.strokeColor = new Color(40, 30, 20, 255);
     g.lineWidth = 3;
     g.rect(-halfW, -halfH, this.boardWidth * this.cellSize, this.boardHeight * this.cellSize);
+    g.stroke();
+    // 己方/敌方分界线
+    g.strokeColor = new Color(255, 220, 120, 160);
+    g.lineWidth = 2;
+    g.moveTo(-halfW, 0);
+    g.lineTo(halfW, 0);
     g.stroke();
   }
 
@@ -82,3 +123,6 @@ export class BoardView extends Component {
     return { x, y };
   }
 }
+
+function instantiate$1(): Node { return instantiate(new Node()); }
+void instantiate$1;
