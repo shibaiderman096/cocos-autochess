@@ -102,11 +102,11 @@ export class BattleStage extends Component {
     this.ui.onRestart = () => this.restart();
     this.ui.onBuy = (slot) => this.buyFromShop(slot);
     this.ui.onRefresh = () => this.refreshShop();
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.updateTop(this.economy.gold, this.save.floor, this.levelSys);
     this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
     this.setupTouchEvents();
     this.refreshShopUI();
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.updateTop(this.economy.gold, this.save.floor, this.levelSys);
     this.loaded = true;
   }
 
@@ -380,7 +380,7 @@ export class BattleStage extends Component {
     }
     this.persistShopState();
     this.refreshShopUI();
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.updateTop(this.economy.gold, this.save.floor, this.levelSys);
   }
 
   private refreshShop() {
@@ -392,7 +392,7 @@ export class BattleStage extends Component {
     }
     this.persistShopState();
     this.refreshShopUI();
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.updateTop(this.economy.gold, this.save.floor, this.levelSys);
   }
 
   private persistShopState() {
@@ -437,7 +437,7 @@ export class BattleStage extends Component {
       ups.length,
       this.levelSys.level,
     );
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.updateTop(this.economy.gold, this.save.floor, this.levelSys);
     this.persistShopState();
   }
 
