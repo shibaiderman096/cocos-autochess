@@ -1,7 +1,8 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, tween, UIOpacity, Graphics, Color } from 'cc';
 import { UnitRuntime } from '../battle/types';
 import { UNIT_SPRITE, UI_SPRITE, unitSpriteKey } from './ArtPaths';
-import { drawStarRing } from './StarRing';
+import { drawFactionRing } from './FactionRing';
+import { setStarBadge } from '../ui/UISkin';
 
 const { ccclass } = _decorator;
 
@@ -22,8 +23,7 @@ export class UnitView extends Component {
   private manaFill: Sprite;
   private hpBarBg: Node;
   private loaded = false;
-  private starRing: Graphics;
-  private bodySize = 0;
+  private starBadge: Node;
 
   setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number, artId = cfgId, tint?: string) {
     this.unitId = unitId;
@@ -31,17 +31,20 @@ export class UnitView extends Component {
     this.cfgId = cfgId;
 
     const size = cellSize * 0.82;
-    this.bodySize = size;
     const body = new Node('body');
     body.addComponent(UITransform).setContentSize(size, size);
     this.bodySprite = body.addComponent(Sprite);
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.node.addChild(body);
 
-    // Overlay the baked faction-colored base with a star-colored ground ring.
-    const base = new Node('starRing');
+    // Faction and rank have independent visual markers.
+    const base = new Node('factionRing');
     this.node.addChild(base);
-    this.starRing = base.addComponent(Graphics);
+    drawFactionRing(base.addComponent(Graphics), size, side);
+    this.starBadge = new Node('starBadge');
+    this.starBadge.addComponent(UITransform).setContentSize(size * 1.2, size * 0.4);
+    this.starBadge.setPosition(0, size * 0.95, 0);
+    this.node.addChild(this.starBadge);
     this.setStar(1);
 
     this.hpBarBg = new Node('hpBar');
@@ -78,10 +81,9 @@ export class UnitView extends Component {
     if (tint) { const color = new Color(); color.fromHEX(tint); this.bodySprite.color = color; }
   }
 
-  /** One star: white; two: silver; three: gold. No star text is rendered. */
+  /** Rank uses the supplied one-, two-, and three-star image badges. */
   setStar(star: number): void {
-    if (!this.starRing) return;
-    drawStarRing(this.starRing, this.bodySize, star);
+    if (this.starBadge) setStarBadge(this.starBadge, star);
   }
 
   private refreshBarsColor() {
