@@ -1,6 +1,7 @@
 {
   "roundsPerStage": 10,
   "stageStatGrowth": 0.25,
+  "roundStatGrowth": 0.02,
   "starterUnitId": "warrior",
   "monsters": [
     { "id": "slime", "name": "小史莱姆", "hp": 180, "atk": 1, "armor": 0, "mr": 0, "atkSpeed": 0.5, "range": 1, "moveTicks": 6, "maxMana": 100, "startMana": 0, "manaPerHit": 0, "artId": "warrior", "tint": "91C766" },
