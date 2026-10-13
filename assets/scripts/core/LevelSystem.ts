@@ -2,6 +2,7 @@
  * 等级与经验系统（纯逻辑，无 cc）。
  * - 初始 1 级，上限 10 级。
  * - 每回合战斗结束 +2 经验。
+ * - 备战期可单次花费 4 金币购买 4 经验。
  * - 升级表：2→3 需 2，3→4 需 6，4→5 需 10，5→6 需 20，6→7 需 36，7→8 需 56，8→9 需 68，9→10 需 68。
  * - 支持一次奖励连续升级；剩余经验保留。
  * - 当前等级 = 上阵棋子数上限；降级不会发生；升级不删除已有棋子（超员提示由调用方处理）。
@@ -10,6 +11,8 @@
 export const MAX_LEVEL = 10;
 /** 每回合战斗结束后获得的经验 */
 export const EXP_PER_BATTLE = 2;
+/** One preparation-phase purchase exchanges four gold for four experience. */
+export const EXP_PURCHASE = { gold: 4, exp: 4 } as const;
 
 /** level → 升到下一级所需经验；索引 1 = 1→2 = 2 ... 索引 9 = 9→10 = 68 */
 export const LEVEL_UP_EXP: ReadonlyArray<number> = [

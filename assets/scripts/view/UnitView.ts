@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, tween, UIOpacity, Label, Color } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, tween, UIOpacity, Graphics, Color } from 'cc';
 import { UnitRuntime } from '../battle/types';
 import { UNIT_SPRITE, UI_SPRITE, unitSpriteKey } from './ArtPaths';
+import { drawStarRing } from './StarRing';
 
 const { ccclass } = _decorator;
 
@@ -21,6 +22,8 @@ export class UnitView extends Component {
   private manaFill: Sprite;
   private hpBarBg: Node;
   private loaded = false;
+  private starRing: Graphics;
+  private bodySize = 0;
 
   setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number) {
     this.unitId = unitId;
@@ -28,11 +31,18 @@ export class UnitView extends Component {
     this.cfgId = cfgId;
 
     const size = cellSize * 0.82;
+    this.bodySize = size;
     const body = new Node('body');
     body.addComponent(UITransform).setContentSize(size, size);
     this.bodySprite = body.addComponent(Sprite);
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.node.addChild(body);
+
+    // Overlay the baked faction-colored base with a star-colored ground ring.
+    const base = new Node('starRing');
+    this.node.addChild(base);
+    this.starRing = base.addComponent(Graphics);
+    this.setStar(1);
 
     this.hpBarBg = new Node('hpBar');
     this.hpBarBg.addComponent(UITransform).setContentSize(size * 0.9, 6);
@@ -65,6 +75,12 @@ export class UnitView extends Component {
       this.refreshBarsColor();
     });
     this.bodySprite.color = Color.WHITE;
+  }
+
+  /** One star: white; two: silver; three: gold. No star text is rendered. */
+  setStar(star: number): void {
+    if (!this.starRing) return;
+    drawStarRing(this.starRing, this.bodySize, star);
   }
 
   private refreshBarsColor() {

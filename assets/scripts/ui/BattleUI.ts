@@ -1,7 +1,8 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, Color, Graphics, resources, UIOpacity } from 'cc';
 import { UNIT_SPRITE } from '../view/ArtPaths';
+import { drawStarRing, STAR_RING_COLORS } from '../view/StarRing';
 import { SettlementBreakdown } from '../core/EconomySystem';
-import { LevelSystem } from '../core/LevelSystem';
+import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 
 const { ccclass } = _decorator;
 const INK = new Color(13, 27, 35);
@@ -48,6 +49,7 @@ export class BattleUI extends Component {
   onRestart = () => {};
   onBuy = (slot: number) => {};
   onRefresh = () => {};
+  onBuyExp = () => {};
   onSell = (uid: number) => {};
   private speed = 1;
   private backdrop: Node;
@@ -61,6 +63,9 @@ export class BattleUI extends Component {
   private levelLabel: Label;
   private expGraphic: Graphics;
   private expLabel: Label;
+  private buyExpBtn: Node;
+  private buyExpLabel: Label;
+  private canBuyExp = false;
   private capLabel: Label;
   private phaseLabel: Label;
   private formationLabels: Label[] = [];
@@ -88,6 +93,14 @@ export class BattleUI extends Component {
     label(this.node, '敌 方 阵 地', 0, 270, 12, MUTED);
     label(this.node, '己 方 布 阵', -484, -28, 13, TEAL, 190);
     label(this.node, '7 列 × 4 排', -484, -51, 12, MUTED, 190);
+    const legend = new Node('starLegend'); this.node.addChild(legend); legend.setPosition(-484, -91, 0);
+    const ring = legend.addComponent(Graphics);
+    STAR_RING_COLORS.forEach((color, i) => {
+      const x = -54 + i * 54;
+      ring.strokeColor = color; ring.lineWidth = i === 0 ? 1.5 : 2.5;
+      ring.ellipse(x, 0, 11, 4); ring.stroke();
+      label(legend, `${i + 1}星`, x, -19, 11, color, 50);
+    });
 
     const command = panel(this.node, 'command', 488, 111, 192, 180, new Color(16, 33, 40), new Color(85, 113, 109));
     label(command, '远征指令', 0, 56, 19, GOLD, 170);
@@ -99,17 +112,21 @@ export class BattleUI extends Component {
     label(this.node, '9 个席位', 425, -173, 12, MUTED, 150);
 
     const dock = panel(this.node, 'shopDock', 0, -281, 1180, 150, new Color(12, 25, 33), new Color(135, 113, 69));
-    const gold = panel(dock, 'gold', -481, 48, 178, 38, new Color(30, 45, 45), GOLD);
-    this.goldLabel = label(gold, '20 金币', 0, 0, 22, GOLD, 170);
-    this.levelLabel = label(dock, '等级 1', -481, 6, 20, TEXT, 170);
-    this.expLabel = label(dock, '经验 0 / 2', -481, -19, 12, MUTED, 160);
-    const exp = new Node('experience'); dock.addChild(exp); exp.setPosition(-481, -37, 0);
+    const gold = panel(dock, 'gold', -481, 56, 178, 28, new Color(30, 45, 45), GOLD);
+    this.goldLabel = label(gold, '20 金币', 0, 0, 20, GOLD, 170);
+    this.levelLabel = label(dock, '等级 1', -481, 27, 16, TEXT, 170);
+    this.expLabel = label(dock, '经验 0 / 2', -481, 9, 11, MUTED, 160);
+    const exp = new Node('experience'); dock.addChild(exp); exp.setPosition(-481, -4, 0);
     this.expGraphic = exp.addComponent(Graphics);
     label(dock, '招募棋子', -277, 58, 13, GOLD, 166);
     label(dock, '集齐三个相同星级棋子可升星', 279, 58, 12, MUTED, 350);
 
     this.shopRoot = new Node('inventory'); this.node.addChild(this.shopRoot);
-    button(this.shopRoot, '刷新   ↻   2 金币', -481, -333, 174, 30, () => this.onRefresh());
+    this.buyExpBtn = button(this.shopRoot, '', -481, -306, 174, 28, () => { if (this.canBuyExp) this.onBuyExp(); });
+    this.buyExpBtn.addComponent(UIOpacity);
+    this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
+    this.buyExpLabel.fontSize = 13; this.buyExpLabel.lineHeight = 18;
+    button(this.shopRoot, '刷新   ↻   2 金币', -481, -338, 174, 28, () => this.onRefresh());
     for (let i = 0; i < 5; i++) {
       const n = panel(this.shopRoot, `shop_${i}`, -277 + i * 176, -286, 164, 104, new Color(25, 43, 50), TIERS[1]);
       n.addComponent(UIOpacity);
@@ -120,6 +137,8 @@ export class BattleUI extends Component {
       const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
       const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       portrait.setPosition(0, 15, 0); n.addChild(portrait);
+      const base = new Node('starRing'); portrait.addChild(base);
+      drawStarRing(base.addComponent(Graphics), 62, 1);
       const card: ShopCard = { node: n, portrait: sprite, name: label(n, '', -19, -28, 17, TEXT, 110),
         price: label(n, '', 57, -28, 16, GOLD, 40), role: label(n, '', -49, 35, 10, MUTED, 65),
         border: n.getComponent(Graphics)!, unitId: null };
@@ -175,7 +194,11 @@ export class BattleUI extends Component {
   refreshTop(gold: number, floor: number, lv: LevelSystem): void {
     this.goldLabel.string = `${gold} 金币`; this.floorLabel.string = `第 ${floor} 层`;
     this.levelLabel.string = `等级 ${lv.level}`; this.cap = lv.unitCap; this.updateCap();
-    const max = lv.level >= 10, need = max ? 1 : lv.expToNext();
+    const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
+    this.canBuyExp = !max && gold >= EXP_PURCHASE.gold;
+    this.buyExpLabel.string = max ? '已达最高等级' : `购买经验  ${EXP_PURCHASE.gold}金币 → ${EXP_PURCHASE.exp}经验`;
+    this.buyExpLabel.color = this.canBuyExp ? TEAL : MUTED;
+    this.buyExpBtn.getComponent(UIOpacity)!.opacity = this.canBuyExp ? 255 : 90;
     this.expLabel.string = max ? '经验已满' : `经验 ${lv.exp} / ${need}`;
     const g = this.expGraphic; g.clear(); g.fillColor = new Color(41, 60, 64); g.rect(-73, -2, 146, 4); g.fill();
     const ratio = max ? 1 : Math.max(0, Math.min(1, lv.exp / need));

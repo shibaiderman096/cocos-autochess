@@ -63,7 +63,10 @@ class BoardView {
   }
   isOwnCell(y) { return y >= 0 && y < this.boardHeight / 2; }
 }
-class UnitView { setup(cfgId, side, unitId) { Object.assign(this, { cfgId, side, unitId }); } }
+class UnitView {
+  setup(cfgId, side, unitId) { Object.assign(this, { cfgId, side, unitId }); this.star = 1; }
+  setStar(star) { this.star = star; }
+}
 class BattleReplayer {
   bind(sim, views) { this.sim = sim; this.views = views; this.eventCursor = 0; }
   setFxRoot(root) { this.fxRoot = root; }
@@ -71,7 +74,8 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
-  init() {} refreshTop() {} hideFightBtn() {} showFightBtn() {}
+  init() {} hideFightBtn() {} showFightBtn() {}
+  refreshTop(gold, floor, lv) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; }
   refreshFormation() {}
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
@@ -105,6 +109,51 @@ function drag(stage, from, to) {
 }
 
 (async () => {
+  await test('experience button exchanges exactly four gold for four XP and persists upgrades', async () => {
+    const stage = await makeStage(), beforeShop = stage.shop.snapshot();
+    const original = stage.owned.snapshot(), gold = stage.economy.gold;
+    stage.ui.onBuyExp();
+    assert.equal(stage.economy.gold, gold - 4);
+    assert.equal(stage.levelSys.level, 3); assert.equal(stage.levelSys.exp, 0); assert.equal(stage.levelSys.unitCap, 3);
+    assert.deepEqual(stage.ui.top, { gold: gold - 4, floor: 1, level: 3, exp: 0, cap: 3 });
+    assert.deepEqual(stage.shop.snapshot(), beforeShop); assert.deepEqual(stage.owned.snapshot(), original);
+    const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(reloaded.economy.gold, gold - 4); assert.equal(reloaded.levelSys.level, 3);
+  });
+  await test('XP purchase rejects insufficient gold, max level, and battle phase without spending', async () => {
+    const poor = await makeStage({ ...freshSaveV2(), gold: 3 });
+    const before = storage.get(SAVE_KEY); poor.ui.onBuyExp();
+    assert.equal(poor.economy.gold, 3); assert.equal(poor.levelSys.exp, 0); assert.equal(poor.levelSys.level, 1);
+    assert.equal(storage.get(SAVE_KEY), before); assert.equal(poor.ui.warn, '金币不足');
+    const max = await makeStage({ ...freshSaveV2(), level: 10 }); max.ui.onBuyExp();
+    assert.equal(max.economy.gold, 20); assert.equal(max.levelSys.exp, 0); assert.equal(max.ui.warn, '已达最高等级');
+    const fighting = await makeStage();
+    fighting.owned.move(fighting.owned.all()[0].uid, { location: 'board', x: 2, y: 3 }); fighting.startFight();
+    fighting.ui.onBuyExp(); assert.equal(fighting.economy.gold, 20); assert.equal(fighting.levelSys.level, 1);
+  });
+  await test('XP purchase carries remaining XP and stops charging after reaching level ten', async () => {
+    const stage = await makeStage({ ...freshSaveV2(), level: 9, exp: 66 });
+    stage.ui.onBuyExp();
+    assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.level, 10); assert.equal(stage.levelSys.exp, 2);
+    stage.ui.onBuyExp(); assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.exp, 2);
+    const normal = await makeStage({ ...freshSaveV2(), level: 3, exp: 3 }); normal.ui.onBuyExp();
+    assert.equal(normal.levelSys.level, 4); assert.equal(normal.levelSys.exp, 1);
+  });
+  await test('star rank reaches bench and combat views and updates after merging', async () => {
+    const saved = freshSaveV2(); saved.owned = [
+      { uid: 1, unitId: 'warrior', star: 3, location: 'board', x: 2, y: 3 },
+      { uid: 2, unitId: 'mage', star: 2, location: 'bench', x: -1, y: 0 },
+      { uid: 3, unitId: 'archer', star: 1, location: 'bench', x: -1, y: 1 },
+    ];
+    const stage = await makeStage(saved);
+    for (const ou of stage.owned.all()) assert.equal(stage.ownedViews.get(ou.uid).star, ou.star);
+    stage.startFight(); assert.equal(stage.ownedViews.get(1).star, 3);
+    for (const enemy of stage.sim.units.filter(u => u.side === 1)) assert.equal(stage.views.get(enemy.id).star, 1);
+    const merged = await makeStage();
+    merged.owned.forceAdd('warrior'); merged.owned.forceAdd('warrior'); merged.owned.tryMerge('warrior'); merged.resetBattle(false);
+    const warrior = merged.owned.all().find(u => u.unitId === 'warrior');
+    assert.equal(warrior.star, 2); assert.equal(merged.ownedViews.get(warrior.uid).star, 2);
+  });
   await test('perspective hex centers round trip, edges reject outside points', () => {
     const board = new BoardGeometry(7, 8, 48);
     assert.equal(board.cells.length, 56);

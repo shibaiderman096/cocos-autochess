@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics, Label } from 'cc';
+import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics } from 'cc';
 import { ConfigManager } from '../core/ConfigManager';
 import { BattleSim, Placement } from '../battle/BattleSim';
 import { TickDriver } from '../core/TickDriver';
@@ -7,7 +7,7 @@ import { UnitView } from './UnitView';
 import { BattleReplayer } from './BattleReplayer';
 import { BattleUI } from '../ui/BattleUI';
 import { EconomySystem } from '../core/EconomySystem';
-import { LevelSystem, EXP_PER_BATTLE } from '../core/LevelSystem';
+import { LevelSystem, EXP_PER_BATTLE, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { Rng } from '../core/Rng';
 import { CardPool } from '../core/CardPool';
 import { OwnedUnits } from '../core/OwnedUnits';
@@ -98,6 +98,7 @@ export class BattleStage extends Component {
     this.ui.onRestart = () => this.restart();
     this.ui.onBuy = (slot) => this.buyFromShop(slot);
     this.ui.onRefresh = () => this.refreshShop();
+    this.ui.onBuyExp = () => this.buyExperience();
     this.resetBattle(false);
     this.persistShopState();
     this.refreshShopUI();
@@ -226,14 +227,7 @@ export class BattleStage extends Component {
     }
     for (const ou of this.owned.all()) {
       const uv = this.ownedViews.get(ou.uid)!;
-      const stars = new Node('stars');
-      stars.addComponent(UITransform).setContentSize(56, 18);
-      const label = stars.addComponent(Label);
-      label.string = '★'.repeat(ou.star);
-      label.fontSize = 14; label.lineHeight = 18;
-      label.color = new Color(255, 215, 0, 255);
-      stars.setPosition(0, -21, 0);
-      uv.node.addChild(stars);
+      uv.setStar(ou.star);
     }
   }
 
@@ -447,6 +441,15 @@ export class BattleStage extends Component {
     }
     this.persistShopState();
     this.refreshShopUI();
+    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+  }
+
+  private buyExperience(): void {
+    if (this.fighting || !this.loaded) return;
+    if (this.levelSys.level >= MAX_LEVEL) { this.ui.showWarn('已达最高等级'); return; }
+    if (!this.economy.spend(EXP_PURCHASE.gold)) { this.ui.showWarn('金币不足'); return; }
+    this.levelSys.addExp(EXP_PURCHASE.exp);
+    this.persistShopState();
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
   }
 
