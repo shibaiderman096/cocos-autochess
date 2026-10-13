@@ -122,9 +122,10 @@ export class OwnedUnits {
    * 注意：只处理 1→2 星、2→3 星；3 星不再升。
    */
   tryMerge(unitId: string): OwnedUnit | null {
+    let merged: OwnedUnit | null = null;
     for (let star = 1; star < 3; star++) {
-      const same = this.list.filter(u => u.unitId === unitId && u.star === star);
-      if (same.length >= MERGE_COUNT) {
+      let same = this.list.filter(u => u.unitId === unitId && u.star === star);
+      while (same.length >= MERGE_COUNT) {
         // 保留第一个，删除其余
         const keep = same[0];
         for (let i = 1; i < MERGE_COUNT; i++) {
@@ -132,10 +133,11 @@ export class OwnedUnits {
           if (idx >= 0) this.list.splice(idx, 1);
         }
         keep.star = star + 1;
-        return keep;
+        merged = keep;
+        same = this.list.filter(u => u.unitId === unitId && u.star === star);
       }
     }
-    return null;
+    return merged;
   }
 
   /** 存档快照 */

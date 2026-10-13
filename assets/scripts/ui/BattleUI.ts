@@ -3,6 +3,8 @@ import { UNIT_SPRITE } from '../view/ArtPaths';
 import { drawStarRing, STAR_RING_COLORS } from '../view/StarRing';
 import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
+import { RoundSettlement } from '../core/RoundFlow';
+import { UnitConfigData } from '../core/ConfigManager';
 
 const { ccclass } = _decorator;
 const INK = new Color(13, 27, 35);
@@ -51,6 +53,18 @@ export class BattleUI extends Component {
   onRefresh = () => {};
   onBuyExp = () => {};
   onSell = (uid: number) => {};
+  onLock = () => {};
+  private lockLabel: Label;
+  private healthLabel: Label;
+  private waveLabel: Label;
+  private sellNode: Node;
+  private sellLabel: Label;
+  private nextLabel: Label;
+  private reportLabel: Label;
+  private unitPanel: Node;
+  private unitTitle: Label;
+  private unitDetail: Label;
+  private waveTotal = 7;
   private speed = 1;
   private backdrop: Node;
   private fightBtn: Node;
@@ -78,12 +92,14 @@ export class BattleUI extends Component {
   private warnTimer = 0;
 
   init(): void {
+    this.node.addComponent(UITransform).setContentSize(1280, 720);
     this.drawArena();
     const header = panel(this.node, 'roundBar', 0, 310, 330, 54, new Color(17, 35, 42), GOLD);
     this.floorLabel = label(header, '第 1 层', -78, 0, 22, GOLD, 130);
     this.phaseLabel = label(header, '准备阶段', 76, 0, 17, TEAL, 130);
     label(this.node, '浮 空 棋 境', -490, 313, 24, GOLD, 240);
-    label(this.node, 'P V E  ·  远 征', 490, 313, 14, MUTED, 230);
+    this.healthLabel = label(this.node, '生命 20 / 20', 490, 320, 19, TEAL, 230);
+    this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 260);
 
     const army = panel(this.node, 'formation', -488, 137, 192, 230, new Color(16, 33, 40), new Color(85, 113, 109));
     label(army, '我的阵容', 0, 83, 19, GOLD, 170);
@@ -108,6 +124,9 @@ export class BattleUI extends Component {
     this.fightBtn = button(this.node, '开始战斗  ›', 488, 99, 166, 48, () => this.onFight(), true);
     const speed = button(this.node, '', 488, 43, 166, 36, () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
     this.speedLabel = label(speed, '战斗速度  ×1', 0, 0, 15, MUTED, 155);
+    this.sellNode = panel(this.node, 'sellArea', 488, -75, 192, 74, new Color(35, 31, 35), new Color(142, 119, 72));
+    label(this.sellNode, '出 售 棋 子', 0, 18, 15, GOLD, 180);
+    this.sellLabel = label(this.sellNode, '拖到此处 · 返还金币', 0, -12, 12, MUTED, 185);
     label(this.node, '备 战 席', -426, -173, 15, GOLD, 150);
     label(this.node, '9 个席位', 425, -173, 12, MUTED, 150);
 
@@ -122,6 +141,9 @@ export class BattleUI extends Component {
     label(dock, '集齐三个相同星级棋子可升星', 279, 58, 12, MUTED, 350);
 
     this.shopRoot = new Node('inventory'); this.node.addChild(this.shopRoot);
+    const lock = button(this.shopRoot, '', -80, -223, 106, 24, () => this.onLock());
+    this.lockLabel = lock.getChildByName('text')!.getComponent(Label)!;
+    this.lockLabel.fontSize = 12; this.lockLabel.lineHeight = 17; this.setLocked(false);
     this.buyExpBtn = button(this.shopRoot, '', -481, -306, 174, 28, () => { if (this.canBuyExp) this.onBuyExp(); });
     this.buyExpBtn.addComponent(UIOpacity);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
@@ -150,14 +172,25 @@ export class BattleUI extends Component {
     this.resultPanel = new Node('settlement'); this.node.addChild(this.resultPanel);
     const shade = panel(this.resultPanel, 'modalShield', 0, 0, 1280, 720, new Color(4, 12, 19, 200), new Color(0, 0, 0, 0));
     shade.on(Node.EventType.TOUCH_START, () => {});
-    const result = panel(this.resultPanel, 'result', 0, 35, 510, 320, new Color(17, 35, 43), GOLD);
-    label(result, '远 征 战 报', 0, 120, 13, GOLD, 450);
-    this.resultLabel = label(result, '', 0, 72, 38, TEXT, 450);
-    this.detailLabel = label(result, '', 0, -6, 17, MUTED, 470);
-    this.detailLabel.node.getComponent(UITransform)!.setContentSize(470, 100);
-    button(result, '继续远征  ›', 0, -110, 220, 46, () => this.onRestart(), true);
+    const result = panel(this.resultPanel, 'result', 0, 35, 550, 380, new Color(17, 35, 43), GOLD);
+    this.reportLabel = label(result, '远 征 战 报', 0, 150, 13, GOLD, 500);
+    this.resultLabel = label(result, '', 0, 100, 36, TEXT, 500);
+    this.detailLabel = label(result, '', 0, -5, 16, MUTED, 510);
+    this.detailLabel.node.getComponent(UITransform)!.setContentSize(510, 160);
+    const next = button(result, '继续远征  ›', 0, -145, 240, 46, () => this.onRestart(), true);
+    this.nextLabel = next.getChildByName('text')!.getComponent(Label)!;
     this.resultPanel.active = false;
     this.warnLabel = label(this.node, '', 0, -140, 17, GOLD, 640);
+    this.unitPanel = new Node('unitDetail'); this.node.addChild(this.unitPanel);
+    const shield = panel(this.unitPanel, 'detailShield', 0, 0, 1280, 720, new Color(4, 12, 19, 200), new Color(0, 0, 0, 0));
+    shield.on(Node.EventType.TOUCH_END, () => { this.unitPanel.active = false; });
+    const info = panel(this.unitPanel, 'detailCard', 0, 20, 530, 390);
+    info.on(Node.EventType.TOUCH_END, (e) => { e.propagationStopped = true; });
+    this.unitTitle = label(info, '', 0, 142, 25, GOLD, 510);
+    this.unitDetail = label(info, '', 0, 3, 18, TEXT, 510);
+    this.unitDetail.node.getComponent(UITransform)!.setContentSize(510, 240);
+    button(info, '关闭', 0, -150, 160, 36, () => { this.unitPanel.active = false; });
+    this.unitPanel.active = false;
   }
 
   private drawArena(): void {
@@ -192,7 +225,7 @@ export class BattleUI extends Component {
   hideFightBtn(): void { if (this.fightBtn) this.fightBtn.active = false; }
 
   refreshTop(gold: number, floor: number, lv: LevelSystem): void {
-    this.goldLabel.string = `${gold} 金币`; this.floorLabel.string = `第 ${floor} 层`;
+    this.goldLabel.string = `${gold} 金币`; this.floorLabel.string = `第 ${floor} / ${this.waveTotal} 波`;
     this.levelLabel.string = `等级 ${lv.level}`; this.cap = lv.unitCap; this.updateCap();
     const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
     this.canBuyExp = !max && gold >= EXP_PURCHASE.gold;
@@ -204,27 +237,28 @@ export class BattleUI extends Component {
     const ratio = max ? 1 : Math.max(0, Math.min(1, lv.exp / need));
     if (ratio > 0) { g.fillColor = TEAL; g.rect(-73, -2, 146 * ratio, 4); g.fill(); }
   }
-  refreshFormation(units: Array<{ unitId: string; location: string }>): void {
+  refreshFormation(units: Array<{ unitId: string; location: string }>, configs: UnitConfigData[] = []): void {
     const board = units.filter(u => u.location === 'board'); this.deployed = board.length; this.updateCap();
-    const names = ['战士', '弓手', '法师'], roles = ['前排', '远程', '法术'];
-    ['warrior', 'archer', 'mage'].forEach((id, i) => {
-      const count = board.filter(u => u.unitId === id).length;
-      this.formationLabels[i].string = `${names[i]}  ·  ${roles[i]}    ${count}`;
+    const roles = ['前排', '远程', '法术'];
+    ['frontline', 'ranged', 'caster'].forEach((role, i) => {
+      const count = board.filter(u => configs.find(c => c.id === u.unitId)?.role === role).length;
+      this.formationLabels[i].string = `${roles[i]}    ${count}`;
       this.formationLabels[i].color = count ? TEXT : MUTED;
     });
   }
   private updateCap(): void { if (this.capLabel) this.capLabel.string = `已上阵  ${this.deployed} / ${this.cap}`; }
 
-  refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number }>): void {
+  refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number; artId?: string; role?: string; tint?: string }>): void {
     this.shopSlots.forEach((card, i) => {
       const data = slots[i], id = data?.unitId ?? null; card.unitId = id;
       card.node.getComponent(UIOpacity)!.opacity = id ? 255 : 95;
       card.name.string = id ? data.name : '已招募'; card.price.string = id ? `${data.price}` : '';
-      card.role.string = id ? ({ warrior: '前排', archer: '远程', mage: '法术' }[id] ?? '') : '';
+      card.role.string = id ? ({ frontline:'前排', ranged:'远程', caster:'法术' }[data.role ?? ''] ?? '') : '';
+      const tint = new Color(255, 255, 255); if (data?.tint) tint.fromHEX(data.tint); card.portrait.color = tint;
       card.portrait.node.active = !!id;
       paintPanel(card.border, 164, 104, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
       card.portrait.spriteFrame = null;
-      if (id) resources.load(UNIT_SPRITE[`${id}_ally`], SpriteFrame, (err, sf) => {
+      if (id) resources.load(UNIT_SPRITE[`${data.artId ?? id}_ally`], SpriteFrame, (err, sf) => {
         if (!err && card.portrait.isValid && card.unitId === id) card.portrait.spriteFrame = sf;
       });
     });
@@ -233,15 +267,34 @@ export class BattleUI extends Component {
     this.shopRoot.active = v; this.battleHint.active = !v;
     this.phaseLabel.string = v ? '准备阶段' : '战斗阶段'; this.phaseLabel.color = v ? TEAL : GOLD;
   }
-  showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number): void {
-    this.resultLabel.string = winner === 0 ? '战斗胜利' : winner === 1 ? '战斗失利' : '势均力敌';
-    this.resultLabel.color = winner === 0 ? TEAL : winner === 1 ? new Color(229, 139, 122) : GOLD;
-    this.phaseLabel.string = '战斗结算';
+  showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number, round?: RoundSettlement): void {
+    const ended = !!round?.runResult, win = ended ? round.runResult === 'victory' : winner === 0;
+    this.resultLabel.string = ended ? (win ? '远征胜利' : '远征失败') : winner === 0 ? '战斗胜利' : winner === 1 ? '战斗失利' : '势均力敌';
+    this.resultLabel.color = win ? TEAL : new Color(229, 139, 122);
+    this.phaseLabel.string = ended ? '整局结束' : '战斗结算';
+    this.reportLabel.string = ended ? '整 局 结 束' : '远 征 战 报';
+    this.nextLabel.string = ended ? '重开一局  ↻' : '下一波  ›';
     const gold = settle ? `阶段 +${settle.floorIncome}    胜利 +${settle.winBonus}    利息 +${settle.interest}\n连胜 / 连败 +${settle.streakBonus}    金币合计 +${settle.total}\n` : '';
-    this.detailLabel.string = `${gold}经验 +${expGained}${levelUps ? `    升至等级 ${newLevel}` : ''}`;
+    const health = round ? `第 ${round.waveId} 波 · 敌方存活 ${round.enemySurvivors}\n生命 -${round.healthLost}    剩余生命 ${round.healthRemaining}\n` : '';
+    this.detailLabel.string = `${health}${gold}经验 +${expGained}${levelUps ? `    升至等级 ${newLevel}` : ''}`;
     this.resultPanel.active = true;
   }
   hideResult(): void { this.resultPanel.active = false; }
+  refreshRun(health: number, max: number, wave: number, total: number, name: string): void {
+    this.waveTotal = total;
+    this.healthLabel.string = `生命 ${health} / ${max}`;
+    this.healthLabel.color = health <= max / 3 ? new Color(229, 139, 122) : TEAL;
+    this.floorLabel.string = `第 ${wave} / ${total} 波`; this.waveLabel.string = name;
+  }
+  setLocked(locked: boolean): void { this.lockLabel.string = locked ? '已锁店 · 解锁' : '锁定商店'; this.lockLabel.color = locked ? GOLD : MUTED; }
+  isInSellArea(x: number, y: number): boolean { return Math.abs(x - 488) <= 96 && Math.abs(y + 75) <= 37; }
+  showSellPreview(name: string, gold: number, hover: boolean): void {
+    this.sellLabel.string = `${name} · 返还 ${gold} 金币`;
+    this.sellLabel.color = hover ? GOLD : TEXT;
+    paintPanel(this.sellNode.getComponent(Graphics)!, 192, 74, hover ? new Color(66, 45, 40) : new Color(35, 31, 35), hover ? GOLD : MUTED);
+  }
+  clearSellPreview(): void { this.sellLabel.string = '拖到此处 · 返还金币'; this.sellLabel.color = MUTED; paintPanel(this.sellNode.getComponent(Graphics)!, 192, 74, new Color(35, 31, 35)); }
+  showUnitDetail(title: string, detail: string): void { this.unitTitle.string = title; this.unitDetail.string = detail; this.unitPanel.active = true; }
   showWarn(msg: string): void { this.warnLabel.string = msg; this.warnTimer = 2; }
   update(dt: number): void {
     if (this.warnTimer > 0) { this.warnTimer -= dt; if (this.warnTimer <= 0) this.warnLabel.string = ''; }

@@ -25,7 +25,7 @@ export class UnitView extends Component {
   private starRing: Graphics;
   private bodySize = 0;
 
-  setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number) {
+  setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number, artId = cfgId, tint?: string) {
     this.unitId = unitId;
     this.side = side;
     this.cfgId = cfgId;
@@ -64,7 +64,7 @@ export class UnitView extends Component {
     this.hpBarBg.addChild(manaFillNode);
     manaFillNode.setPosition(0, -6, 0);
 
-    const key = unitSpriteKey(cfgId, side);
+    const key = unitSpriteKey(artId, side);
     const path = UNIT_SPRITE[key];
     if (!path) { console.warn(`[UnitView] no sprite for ${key}`); return; }
     resources.load(path, SpriteFrame, (err, sf) => {
@@ -75,6 +75,7 @@ export class UnitView extends Component {
       this.refreshBarsColor();
     });
     this.bodySprite.color = Color.WHITE;
+    if (tint) { const color = new Color(); color.fromHEX(tint); this.bodySprite.color = color; }
   }
 
   /** One star: white; two: silver; three: gold. No star text is rendered. */

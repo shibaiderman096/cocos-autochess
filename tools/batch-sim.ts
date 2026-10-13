@@ -15,7 +15,7 @@ const skills = JSON.parse(readFileSync(resolve(root, 'assets/resources/config/sk
 const cfg = new ConfigManager();
 cfg.setUnits(units);
 cfg.setSkills(skills);
-cfg.setBattle({ maxTicks: 1200, tickMs: 50 });
+cfg.setBattle(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/battle.json'), 'utf8')));
 
 const N = Number(process.argv[2] ?? 1000);
 const baseSeed = Number(process.argv[3] ?? 1);
@@ -45,7 +45,7 @@ for (let i = 0; i < N; i++) {
   totalEvents += r.events.length;
 }
 
-const avgSecs = (totalTicks / N) * 0.05;
+const avgSecs = (totalTicks / N) * cfg.battle.tickMs / 1000;
 console.log('=== 批量模拟结果 ===');
 console.log(`场次:        ${N}`);
 console.log(`己方胜:      ${winOwn} (${((winOwn / N) * 100).toFixed(1)}%)`);

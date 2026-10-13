@@ -43,8 +43,10 @@ node tests/regression-tests.cjs
 $regressionCode = $LASTEXITCODE
 node tests/fairness-tests.cjs
 $fairnessCode = $LASTEXITCODE
+node tests/progression-tests.cjs
+$progressionCode = $LASTEXITCODE
 $taskBuildRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $taskBuildPath = [IO.Path]::GetFullPath((Join-Path $taskBuildRoot '.test-build'))
 if ($taskBuildPath -ne (Join-Path $taskBuildRoot '.test-build')) { throw 'Invalid test output path' }
 Remove-Item -LiteralPath $taskBuildPath -Recurse -Force
-if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0 -or $fairnessCode -ne 0) { exit 1 }
+if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0 -or $fairnessCode -ne 0 -or $progressionCode -ne 0) { exit 1 }

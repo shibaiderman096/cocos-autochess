@@ -1,9 +1,56 @@
 {
   "fireball": {
-    "id": "fireball",
+    "name": "火球",
+    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
     "dmgType": "magic",
     "power": 220,
     "radius": 1,
-    "targeting": "nearest"
+    "targeting": "nearest",
+    "id": "fireball"
+  },
+  "cleave": {
+    "name": "横扫",
+    "description": "对最近敌人及其周围 1 格敌人造成物理伤害。",
+    "dmgType": "physical",
+    "power": 160,
+    "radius": 1,
+    "targeting": "nearest",
+    "id": "cleave"
+  },
+  "piercing_shot": {
+    "name": "精准射击",
+    "description": "对射程内生命比例最低的敌人造成物理伤害。",
+    "dmgType": "physical",
+    "power": 200,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "id": "piercing_shot"
+  },
+  "lightning": {
+    "name": "雷击",
+    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
+    "dmgType": "magic",
+    "power": 170,
+    "radius": 1,
+    "targeting": "nearest",
+    "id": "lightning"
+  },
+  "arcane_burst": {
+    "name": "奥术爆发",
+    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
+    "dmgType": "magic",
+    "power": 260,
+    "radius": 1,
+    "targeting": "nearest",
+    "id": "arcane_burst"
+  },
+  "judgment": {
+    "name": "裁决",
+    "description": "对射程内生命比例最低的敌人造成真实伤害。",
+    "dmgType": "true",
+    "power": 180,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "id": "judgment"
   }
 }

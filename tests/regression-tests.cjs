@@ -74,9 +74,13 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
-  init() {} hideFightBtn() {} showFightBtn() {}
+  init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
   refreshTop(gold, floor, lv) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; }
   refreshFormation() {}
+  refreshRun(...args) { this.run = args; } setLocked(v) { this.locked = v; }
+  clearSellPreview() {} showSellPreview(...args) { this.sale = args; }
+  isInSellArea(x,y) { return Math.abs(x-488)<=96 && Math.abs(y+75)<=37; }
+  showUnitDetail(title, detail) { this.detail = { title, detail }; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
   setShopVisible(v) { this.shopVisible = v; }
@@ -109,6 +113,56 @@ function drag(stage, from, to) {
 }
 
 (async () => {
+  await test('locked shop retains exact slots and inventory across waves and reload', async () => {
+    const stage = await makeStage(); stage.ui.onLock();
+    const slots = stage.shop.snapshot(), pool = stage.pool.snapshot();
+    stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown = true; stage.fighting = true;
+    stage.restart();
+    assert.deepEqual(stage.shop.snapshot(),slots); assert.deepEqual(stage.pool.snapshot(),pool);
+    const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(reloaded.shop.locked,true); assert.equal(reloaded.ui.locked,true);
+    assert.deepEqual(reloaded.shop.snapshot(),slots);
+    const gold = reloaded.economy.gold; reloaded.refreshShop();
+    assert.equal(reloaded.economy.gold,gold-2,'explicit refresh still rerolls while locked');
+  });
+  await test('tap opens star-scaled attributes and skill without moving or selling', async () => {
+    const stage = await makeStage(), before = stage.owned.snapshot(), gold = stage.economy.gold;
+    const p = stage.benchSlotWorld(2); stage.onTouchStart(touch(p)); stage.onTouchEnd(touch(p));
+    assert.match(stage.ui.detail.title,/法师/); assert.match(stage.ui.detail.detail,/火球/);
+    assert.deepEqual(stage.owned.snapshot(),before); assert.equal(stage.economy.gold,gold);
+  });
+  await test('drag sale refunds discounted upgraded unit and restores original cards once', async () => {
+    const saved = freshSaveV2(); saved.shopReserved = true;
+    saved.pool = {mage:15};
+    saved.owned = [{uid:1,unitId:'mage',star:2,location:'bench',x:-1,y:0}];
+    const stage = await makeStage(saved), pool = stage.pool.count('mage'), gold = stage.economy.gold;
+    drag(stage,stage.benchSlotWorld(0),new Vec3(488,-75));
+    assert.equal(stage.owned.all().length,0); assert.equal(stage.economy.gold,gold+8);
+    assert.equal(stage.pool.count('mage'),pool+3);
+    stage.onTouchEnd(touch(new Vec3(488,-75))); assert.equal(stage.economy.gold,gold+8);
+    assert.equal(JSON.parse(storage.get(SAVE_KEY)).owned.length,0);
+  });
+  await test('settlement reload does not grant duplicate income and advances exactly one wave', async () => {
+    const stage = await makeStage(); stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
+    stage.sim.run(); stage.update(.1);
+    const saved = JSON.parse(storage.get(SAVE_KEY)), gold = stage.economy.gold, health = stage.flow.health;
+    const restored = await makeStage(saved); restored.update(10);
+    assert.equal(restored.economy.gold,gold); assert.equal(restored.flow.health,health);
+    assert.equal(restored.resultShown,true); assert.equal(restored.ui.shopVisible,false);
+    restored.restart(); assert.equal(restored.flow.waveIndex,1); assert.equal(restored.flow.phase,'prepare');
+    restored.restart(); assert.equal(restored.flow.waveIndex,1);
+  });
+  await test('run end restarts health, economy, levels, inventory, lock, and wave together', async () => {
+    const stage = await makeStage(); stage.flow.startBattle(); stage.flow.settle(1,99);
+    stage.shop.locked=true; stage.resultShown=true; stage.fighting=true; stage.persistShopState();
+    const restored = await makeStage(JSON.parse(storage.get(SAVE_KEY))); restored.restart();
+    assert.equal(restored.flow.phase,'prepare'); assert.equal(restored.flow.health,20);
+    assert.equal(restored.flow.waveIndex,0); assert.equal(restored.economy.gold,20);
+    assert.equal(restored.levelSys.level,1); assert.equal(restored.owned.all().length,3);
+    assert.equal(restored.shop.locked,false); assert.equal(restored.shop.slots.filter(s=>s.unitId).length,5);
+    const total = new CardPool(units).total();
+    assert.equal(restored.pool.total()+3+5,total);
+  });
   await test('experience button exchanges exactly four gold for four XP and persists upgrades', async () => {
     const stage = await makeStage(), beforeShop = stage.shop.snapshot();
     const original = stage.owned.snapshot(), gold = stage.economy.gold;
@@ -212,7 +266,7 @@ function drag(stage, from, to) {
     assert.equal(shop.buy(0).error, undefined);
   });
   await test('zero inventory survives save migration and reload', () => {
-    const pool = new CardPool(units, { warrior: 0, archer: 0, mage: 0 });
+    const pool = new CardPool(units, Object.fromEntries(units.map(u => [u.id, 0])));
     const migrated = migrateSaveV2({ pool: pool.snapshot() });
     assert.equal(new CardPool(units, migrated.pool).total(), 0);
   });

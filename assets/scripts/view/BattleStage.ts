@@ -13,7 +13,8 @@ import { CardPool } from '../core/CardPool';
 import { OwnedUnits } from '../core/OwnedUnits';
 import { ShopSystem } from '../core/ShopSystem';
 import { loadSaveV2, writeSaveV2, freshSaveV2, SaveDataV2 } from '../core/ShopSave';
-import { COST_PRICE, Cost } from '../core/ShopConfig';
+import { COST_PRICE, Cost, sellPrice } from '../core/ShopConfig';
+import { RoundFlow, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
 
 const { ccclass, property } = _decorator;
@@ -52,6 +53,10 @@ export class BattleStage extends Component {
   private shop: ShopSystem;
   private rng: Rng;
   private resultShown = false;
+  private flow: RoundFlow;
+  private waves: WaveConfig[];
+  private dragStart = new Vec3();
+  private dragMoved = false;
 
   // 拖拽状态
   private draggingId = 0;          // 被拖拽的 unit id（0 = 无）
@@ -68,6 +73,8 @@ export class BattleStage extends Component {
     });
     this.levelSys = new LevelSystem({ level: this.save.level, exp: this.save.exp });
     await this.loadConfigs();
+    this.flow = new RoundFlow(this.waves, this.cfg.battle, this.save.round ?? undefined);
+    this.save.floor = this.flow.waveIndex + 1;
     this.rng = new Rng(Date.now() % 2147483647);
     this.pool = new CardPool(this.cfgUnits(), this.save.pool);
     this.restoreFormation();
@@ -87,6 +94,7 @@ export class BattleStage extends Component {
       restoreShop ? this.save.shop : undefined,
       this.save.shopReserved,
     );
+    this.shop.locked = this.save.shopLocked;
     this.buildBoard();
     this.replayer = this.node.addComponent(BattleReplayer);
     const uiNode = new Node('battleUI');
@@ -99,17 +107,26 @@ export class BattleStage extends Component {
     this.ui.onBuy = (slot) => this.buyFromShop(slot);
     this.ui.onRefresh = () => this.refreshShop();
     this.ui.onBuyExp = () => this.buyExperience();
+    this.ui.onLock = () => {
+      if (!this.loaded || this.flow.phase !== 'prepare') return;
+      this.shop.locked = !this.shop.locked; this.persistShopState(); this.ui.setLocked(this.shop.locked);
+    };
     this.resetBattle(false);
     this.persistShopState();
     this.refreshShopUI();
     this.ui.setShopVisible(true);
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
     this.loaded = true;
+    this.refreshRunUI();
+    if (this.flow.phase === 'settlement' || this.flow.phase === 'ended') {
+      this.fighting = true; this.resultShown = true; this.ui.hideFightBtn(); this.ui.setShopVisible(false);
+      this.showSettlement();
+    }
   }
 
   private loadConfigs(): Promise<void> {
     return new Promise((res, rej) => {
-      let pending = 3;
+      let pending = 4;
       const done = () => { if (--pending === 0) res(); };
       const fail = (e: Error) => { pending = -1; rej(e); };
       resources.load('config/units', JsonAsset, (e, a) => {
@@ -127,14 +144,14 @@ export class BattleStage extends Component {
         this.cfg.setBattle(a.json as BattleConfigData);
         done();
       });
+      resources.load('config/waves', JsonAsset, (e, a) => {
+        if (e) { fail(e); return; } this.waves = a.json as WaveConfig[]; done();
+      });
     });
   }
 
   private cfgUnits(): UnitConfigData[] {
-    // 从 ConfigManager 拿所有 unit（借助内部 map 需要暴露，这里用 tryGet 遍历已知 id）
-    return ['warrior', 'archer', 'mage']
-      .map(id => { try { return this.cfg.getUnit(id); } catch { return null; } })
-      .filter((u): u is UnitConfigData => u !== null);
+    return this.cfg.allUnits();
   }
 
   private unitMap(): Map<string, UnitConfigData> {
@@ -168,13 +185,8 @@ export class BattleStage extends Component {
   private createSim(battle: boolean) {
     const placements: Placement[] = [];
     this.battleIds.clear();
-    // 敌方固定阵容（按层数增强留 M2-8；当前固定）
-    const P = (cfgId: string, side: 0 | 1, x: number, y: number): Placement =>
-      ({ cfg: this.cfg.getUnit(cfgId), side, x, y });
-    const front = this.cfg.battle.ownRows;
-    placements.push(P('warrior', 1, 2, front));
-    placements.push(P('archer', 1, 4, front + 2));
-    placements.push(P('mage', 1, 6, front + 3));
+    for (const e of this.flow.wave.enemies) placements.push({ cfg:this.cfg.getUnit(e.unitId), side:1,
+      x:e.x, y:e.y, star:e.star, statMultiplier:e.statMultiplier });
 
     // 己方：从 owned 数据生成（board 位置）
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
@@ -207,6 +219,7 @@ export class BattleStage extends Component {
     for (const u of this.sim.units) {
       const uv = this.makeUnitView(root, u.cfg.id, u.side, u.id, bv.cellToWorld(u.x, u.y));
       this.views.set(u.id, uv);
+      uv.setStar(u.star);
     }
     for (const ou of this.owned.onBoard()) {
       const uv = this.views.get(this.battleIds.get(ou.uid)!)!;
@@ -241,7 +254,8 @@ export class BattleStage extends Component {
     node.addComponent(UITransform).setContentSize(this.cellSize, this.cellSize);
     root.addChild(node);
     const uv = node.addComponent(UnitView);
-    uv.setup(cfgId, side, id, this.cellSize);
+    const cfg = this.cfg.getUnit(cfgId);
+    uv.setup(cfgId, side, id, this.cellSize, cfg.artId ?? cfgId, cfg.tint);
     node.setPosition(pos);
     return uv;
   }
@@ -250,7 +264,7 @@ export class BattleStage extends Component {
   private resetBattle(battle: boolean): void {
     this.createSim(battle);
     this.createViews();
-    this.ui.refreshFormation(this.owned.all());
+    this.ui.refreshFormation(this.owned.all(), this.cfgUnits());
     const bv = this.boardNode.getComponent(BoardView)!;
     this.replayer.bind(this.sim, this.views, this.cellSize, bv);
     const oldFx = this.boardNode.getChildByName('fx');
@@ -265,11 +279,17 @@ export class BattleStage extends Component {
   // ─── 拖拽布阵 ───
 
   private setupTouchEvents() {
-    for (const uv of this.ownedViews.values()) {
+    for (const [uid, uv] of this.ownedViews) {
       uv.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
       uv.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-      uv.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+      uv.node.on(Node.EventType.TOUCH_END, (event: EventTouch) => {
+        if (this.flow.phase === 'battle') this.showOwnedDetail(uid);
+        else this.onTouchEnd(event);
+      });
       uv.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    }
+    for (const u of this.sim.units.filter(u => u.side === 1)) {
+      this.views.get(u.id)!.node.on(Node.EventType.TOUCH_END, () => this.showDetail(u.cfg.id, u.star, u.cfg, u.skillScale));
     }
   }
 
@@ -281,7 +301,7 @@ export class BattleStage extends Component {
   }
 
   private onTouchStart(event: EventTouch) {
-    if (this.fighting || !this.loaded || this.draggingId) return;
+    if (this.fighting || !this.loaded || this.flow.phase !== 'prepare' || this.draggingId) return;
     const boardPos = this.touchToBoard(event);
 
     // 用视图本地坐标检测己方棋盘和备战席棋子。
@@ -298,6 +318,7 @@ export class BattleStage extends Component {
     if (!uv) return;
     this.draggingId = bestId;
     this.dragging = uv;
+    this.dragStart.set(boardPos.x, boardPos.y, 0); this.dragMoved = false;
     this.touchOffset.set(boardPos.x - uv.node.position.x, boardPos.y - uv.node.position.y, 0);
     uv.node.setScale(1.15, 1.15, 1);
   }
@@ -305,7 +326,11 @@ export class BattleStage extends Component {
   private onTouchMove(event: EventTouch) {
     if (!this.draggingId || !this.dragging) return;
     const boardPos = this.touchToBoard(event);
+    if (Math.hypot(boardPos.x - this.dragStart.x, boardPos.y - this.dragStart.y) > 8) this.dragMoved = true;
+    if (!this.dragMoved) return;
     this.dragging.node.setPosition(boardPos.x - this.touchOffset.x, boardPos.y - this.touchOffset.y, 0);
+    const u = this.owned.get(this.draggingId)!;
+    this.ui.showSellPreview(this.cfg.getUnit(u.unitId).name, sellPrice(this.pool.costOfUnit(u.unitId), u.star), this.overSell(event));
   }
 
   private onTouchEnd(event: EventTouch) {
@@ -319,6 +344,14 @@ export class BattleStage extends Component {
 
     const ou = this.owned.get(this.draggingId);
     if (!ou) { this.resetDrag(); return; }
+    if (event.type !== Node.EventType.TOUCH_CANCEL && !this.dragMoved) {
+      uv.node.setPosition(ou.location === 'board' ? bv.cellToWorld(ou.x, ou.y) : this.benchSlotWorld(ou.y));
+      this.resetDrag(); this.showOwnedDetail(ou.uid); return;
+    }
+    if (event.type !== Node.EventType.TOUCH_CANCEL && this.overSell(event)) {
+      this.shop.sell(ou.uid); this.resetDrag(); this.resetBattle(false); this.persistShopState();
+      this.refreshShopUI(); this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys); return;
+    }
 
     const benchSlot = this.benchSlotAt(curPos.x, curPos.y);
     if (event.type === Node.EventType.TOUCH_CANCEL || (benchSlot === null && (!cell || !bv.isOwnCell(cell.y)))) {
@@ -381,19 +414,47 @@ export class BattleStage extends Component {
   }
 
   private resetDrag() {
+    if (this.dragging) this.dragging.node.setScale(1, 1, 1);
     this.draggingId = 0;
     this.dragging = null;
+    this.ui?.clearSellPreview();
+  }
+
+  private overSell(event: EventTouch): boolean {
+    const p = event.getUILocation();
+    const local = this.ui.node.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(p.x, p.y, 0));
+    return this.ui.isInSellArea(local.x, local.y);
+  }
+  private showOwnedDetail(uid: number): void {
+    const u = this.owned.get(uid); if (!u) return;
+    const base = this.cfg.getUnit(u.unitId);
+    this.showDetail(u.unitId, u.star, this.cfg.scaleUnit(base, u.star), this.cfg.battle.starScaling[u.star - 1].skill);
+  }
+  private showDetail(id: string, star: number, cfg: UnitConfigData, skillScale: number): void {
+    const base = this.cfg.getUnit(id), skill = cfg.skillId ? this.cfg.getSkill(cfg.skillId) : null;
+    this.ui.showUnitDetail(`${base.name}  ·  ${star} 星  ·  ${base.cost ?? 1} 费`,
+      `生命 ${cfg.hp}    攻击 ${cfg.atk}\n护甲 ${cfg.armor}    魔抗 ${cfg.mr}\n攻速 ${cfg.atkSpeed}    射程 ${cfg.range}\n法力 ${cfg.startMana} / ${cfg.maxMana}\n\n${skill ? `${skill.name ?? cfg.skillId}  ·  伤害 ${Math.round(skill.power * skillScale)}\n${skill.description ?? ''}` : '无主动技能 · 普通攻击输出'}`);
+  }
+  private refreshRunUI(): void {
+    this.ui.refreshRun(this.flow.health, this.cfg.battle.initialHealth, this.flow.waveIndex + 1, this.waves.length, this.flow.wave.name);
+    this.ui.setLocked(this.shop.locked);
+  }
+  private showSettlement(): void {
+    const s = this.flow.lastSettlement; if (!s) return;
+    const r = this.save.lastReward;
+    this.ui.showResult(s.winner, r?.breakdown ?? null, r?.expGained ?? 0, r?.levelUps ?? 0, this.levelSys.level, s);
   }
 
 
 
   private startFight() {
-    if (this.fighting || !this.loaded) return;
+    if (this.fighting || !this.loaded || this.flow.phase !== 'prepare') return;
     if (this.owned.onBoard().length === 0) {
       this.ui.showWarn('请先将棋子拖到己方棋盘');
       return;
     }
     this.resetDrag();
+    this.flow.startBattle();
     this.persistShopState();
     this.fighting = true;
     this.resultShown = false;
@@ -403,19 +464,29 @@ export class BattleStage extends Component {
   }
 
   private restart() {
-    if (!this.sim.finished || !this.resultShown) return;
+    if (!this.resultShown || !['settlement', 'ended'].includes(this.flow.phase)) return;
+    const ended = this.flow.phase === 'ended';
     this.ui.hideResult();
     this.fighting = false;
     this.resultShown = false;
     this.resetDrag();
-    this.save.floor++;
-    this.shop.nextRound();
+    if (ended) {
+      this.save = freshSaveV2(); this.flow.restart();
+      this.economy = new EconomySystem(); this.levelSys = new LevelSystem();
+      this.pool = new CardPool(this.cfgUnits()); this.owned = new OwnedUnits();
+      for (const id of ['warrior', 'archer', 'mage']) {
+        if (this.pool.take(id)) this.owned.addToBench(id, this.save.benchSlots);
+      }
+      this.shop = new ShopSystem(this.pool, this.owned, this.economy, this.unitMap(), this.rng, () => this.levelSys.level, this.save.benchSlots);
+    } else { this.flow.nextWave(); this.shop.nextRound(); }
+    this.save.floor = this.flow.waveIndex + 1; this.save.lastReward = undefined;
     this.resetBattle(false);
     this.persistShopState();
     this.refreshShopUI();
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
     this.ui.setShopVisible(true);
     this.ui.showFightBtn();
+    this.refreshRunUI();
   }
 
   // ─── 商店操作（战斗期间锁定） ───
@@ -466,6 +537,7 @@ export class BattleStage extends Component {
     this.save.gold = this.economy.gold;
     this.save.level = this.levelSys.level;
     this.save.exp = this.levelSys.exp;
+    this.save.round = this.flow.snapshot(); this.save.shopLocked = this.shop.locked;
     writeSaveV2(this.save);
   }
 
@@ -479,6 +551,7 @@ export class BattleStage extends Component {
         name: cfg.name,
         cost, price: COST_PRICE[cost],
         poolLeft: this.pool.count(s.unitId),
+        artId:cfg.artId, role:cfg.role, tint:cfg.tint,
       };
     });
     this.ui.refreshShop(slots);
@@ -486,6 +559,8 @@ export class BattleStage extends Component {
 
   /** 一场战斗只结算一次（由 resultShown 保证）。 */
   private settleBattleEnd() {
+    const round = this.flow.settle(this.sim.winner, this.sim.units.filter(u => u.side === 1 && u.alive).length);
+    if (!round) return;
     const breakdown = this.economy.settleBattle(this.save.floor, { winner: this.sim.winner });
     const ups = this.levelSys.addExp(EXP_PER_BATTLE);
     this.save.gold = this.economy.gold;
@@ -493,16 +568,18 @@ export class BattleStage extends Component {
     this.save.exp = this.levelSys.exp;
     this.save.winStreak = this.economy.winStreak;
     this.save.loseStreak = this.economy.loseStreak;
-    writeSaveV2(this.save);
+    this.save.lastReward = { breakdown, expGained:EXP_PER_BATTLE, levelUps:ups.length };
     this.ui.showResult(
       this.sim.winner,
       breakdown,
       EXP_PER_BATTLE,
       ups.length,
       this.levelSys.level,
+      round,
     );
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
     this.persistShopState();
+    this.refreshRunUI();
   }
 
   update(dt: number) {

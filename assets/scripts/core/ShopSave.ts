@@ -7,6 +7,8 @@ import { SaveData, migrateSave as migrateV1 } from './SaveData';
 import { ShopSlot } from './ShopSystem';
 import { OwnedUnit } from './OwnedUnits';
 import { DEFAULT_BENCH_SLOTS } from './ShopConfig';
+import { RoundSnapshot } from './RoundFlow';
+import { SettlementBreakdown } from './EconomySystem';
 
 export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'autochess_save_v2';
@@ -22,6 +24,9 @@ export interface SaveDataV2 extends SaveData {
   pool: Record<string, number>;
   /** 备战席格子数 */
   benchSlots: number;
+  round: RoundSnapshot | null;
+  shopLocked: boolean;
+  lastReward?: { breakdown: SettlementBreakdown; expGained: number; levelUps: number };
 }
 
 export function migrateSaveV2(raw: unknown): SaveDataV2 {
@@ -60,11 +65,20 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
   }
 
   const benchSlots = Math.max(1, Math.min(12, Math.floor(Number(d.benchSlots)) || DEFAULT_BENCH_SLOTS));
+  const r = d.round;
+  const round: RoundSnapshot | null = r && Number.isFinite(r.health) && Number.isInteger(r.waveIndex)
+    && ['prepare', 'battle', 'settlement', 'ended'].includes(r.phase) ? {
+      phase:r.phase, waveIndex:Math.max(0, r.waveIndex), health:Math.max(0, r.health),
+      result:r.result === 'victory' || r.result === 'defeat' ? r.result : null,
+      lastSettlement:r.lastSettlement && Number.isFinite(r.lastSettlement.healthRemaining) ? { ...r.lastSettlement } : null,
+    } : null;
 
   return {
     ...v1,
     version: SAVE_VERSION,
     shop, owned, pool, benchSlots, shopReserved: d.shopReserved === true,
+    round, shopLocked: d.shopLocked === true,
+    lastReward: d.lastReward && Number.isFinite(d.lastReward.breakdown?.total) ? d.lastReward : undefined,
   };
 }
 

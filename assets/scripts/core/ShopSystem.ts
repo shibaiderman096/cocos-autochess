@@ -30,6 +30,7 @@ export type ShopError =
 
 export class ShopSystem {
   slots: ShopSlot[] = [];
+  locked = false;
 
   constructor(
     private pool: CardPool,
@@ -92,12 +93,14 @@ export class ShopSystem {
    */
   refresh(): ShopError | null {
     if (!this.economy.spend(REFRESH_COST)) return 'not_enough_gold';
-    this.nextRound();
+    this.returnUnbought();
+    this.reroll();
     return null;
   }
 
   /** 下一轮免费更换商品，也用于返还上一轮未购买的预留卡。 */
   nextRound(): void {
+    if (this.locked) return;
     this.returnUnbought();
     this.reroll();
   }
