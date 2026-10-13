@@ -15,7 +15,7 @@ const skills = JSON.parse(readFileSync(resolve(root, 'assets/resources/config/sk
 const cfg = new ConfigManager();
 cfg.setUnits(units);
 cfg.setSkills(skills);
-cfg.setBattle({ boardWidth: 8, boardHeight: 8, maxTicks: 1200, tickMs: 50 });
+cfg.setBattle({ maxTicks: 1200, tickMs: 50 });
 
 const N = Number(process.argv[2] ?? 1000);
 const baseSeed = Number(process.argv[3] ?? 1);
@@ -36,7 +36,7 @@ let totalTicks = 0, totalEvents = 0;
 const t0 = Date.now();
 
 for (let i = 0; i < N; i++) {
-  const sim = new BattleSim(cfg, placements, { seed: baseSeed + i, w: 8, h: 8, maxTicks: 1200 });
+  const sim = new BattleSim(cfg, placements, { seed: baseSeed + i, w: cfg.battle.boardWidth, h: cfg.battle.boardHeight, maxTicks: cfg.battle.maxTicks });
   const r = sim.run();
   if (r.winner === 0) winOwn++;
   else if (r.winner === 1) winEnemy++;

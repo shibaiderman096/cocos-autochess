@@ -13,6 +13,7 @@ const { ShopSystem } = core('ShopSystem');
 const { EconomySystem } = core('EconomySystem');
 const { Rng } = core('Rng');
 const { migrateSaveV2, freshSaveV2, SAVE_KEY } = core('ShopSave');
+const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
 const units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
 const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
 let passed = 0, failed = 0;
@@ -47,13 +48,20 @@ class Graphics { rect() {} roundRect() {} fill() {} stroke() {} }
 class Label {}
 class BoardView {
   boardPixelW = 530; boardPixelH = 342;
-  initialize(w, h) { this.boardWidth = w; this.boardHeight = h; }
-  cellToWorld(x, y) { return new Vec3((x - 3.5) * 60, (y - 2.5) * 54); }
-  worldToCell(x, y) {
-    const col = Math.round(x / 60 + 3.5), row = Math.round(y / 54 + 2.5);
-    return col >= 0 && col < 8 && row >= 0 && row < 6 ? { x: col, y: row } : null;
+  initialize(w, h, size) {
+    this.boardWidth = w; this.boardHeight = h;
+    this.geometry = new BoardGeometry(w, h, size);
+    this.boardPixelW = this.geometry.width; this.boardPixelH = this.geometry.height;
   }
-  isOwnCell(y) { return y >= 0 && y < 3; }
+  cellToWorld(x, y) {
+    const c = this.geometry.cells.find(c => c.x === x && c.y === y).center;
+    return new Vec3(c.x, c.y);
+  }
+  worldToCell(x, y) {
+    const c = this.geometry.cellAt(x, y);
+    return c ? { x: c.x, y: c.y } : null;
+  }
+  isOwnCell(y) { return y >= 0 && y < this.boardHeight / 2; }
 }
 class UnitView { setup(cfgId, side, unitId) { Object.assign(this, { cfgId, side, unitId }); } }
 class BattleReplayer {
@@ -64,6 +72,7 @@ class BattleReplayer {
 }
 class BattleUI {
   init() {} refreshTop() {} hideFightBtn() {} showFightBtn() {}
+  refreshFormation() {}
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
   setShopVisible(v) { this.shopVisible = v; }
@@ -96,6 +105,43 @@ function drag(stage, from, to) {
 }
 
 (async () => {
+  await test('perspective hex centers round trip, edges reject outside points', () => {
+    const board = new BoardGeometry(7, 8, 48);
+    assert.equal(board.cells.length, 56);
+    for (const cell of board.cells) {
+      const hit = board.cellAt(cell.center.x, cell.center.y);
+      assert.equal(hit.x, cell.x); assert.equal(hit.y, cell.y);
+      for (const p of cell.polygon) {
+        const x = cell.center.x + (p.x - cell.center.x) * 0.85;
+        const y = cell.center.y + (p.y - cell.center.y) * 0.85;
+        assert.equal(board.cellAt(x, y), cell);
+      }
+    }
+    assert.equal(board.cellAt(0, -board.height / 2 - 1), null);
+    assert.equal(board.cellAt(board.width / 2 + 10, 0), null);
+  });
+  await test('fourth deployment row is playable and enemy formation stays in its half', async () => {
+    const stage = await makeStage(), bv = stage.boardNode.getComponent(BoardView);
+    assert.equal(bv.boardWidth, 7); assert.equal(bv.boardHeight, 8);
+    const first = stage.owned.all()[0];
+    drag(stage, stage.benchSlotWorld(first.y), bv.cellToWorld(6, 3));
+    assert.equal(first.x, 6); assert.equal(first.y, 3); assert.equal(first.location, 'board');
+    for (const u of stage.sim.units.filter(u => u.side === 1)) assert.ok(u.y >= 4 && u.y < 8);
+    drag(stage, bv.cellToWorld(6, 3), bv.cellToWorld(6, 4));
+    assert.equal(first.y, 3, 'enemy half must reject deployment');
+  });
+  await test('old eighth-column save retains unit identity and star in a free valid cell', async () => {
+    const saved = freshSaveV2();
+    saved.owned = [{ uid: 1, unitId: 'warrior', star: 2, location: 'board', x: 7, y: 2 },
+      { uid: 2, unitId: 'archer', star: 1, location: 'board', x: 6, y: 2 }];
+    const stage = await makeStage(saved), migrated = stage.owned.get(1);
+    assert.equal(migrated.star, 2); assert.equal(migrated.location, 'board');
+    assert.ok(migrated.x < 7 && migrated.y < 4);
+    assert.notEqual(`${migrated.x},${migrated.y}`, '6,2');
+    assert.equal(stage.owned.all().length, 2);
+    const persisted = JSON.parse(storage.get(SAVE_KEY));
+    assert.deepEqual(persisted.owned, stage.owned.snapshot());
+  });
   await test('refresh conserves cards across owned, shop and remaining pool', () => {
     const pool = new CardPool(units); const owned = new OwnedUnits();
     const shop = new ShopSystem(pool, owned, new EconomySystem(undefined, { gold: 100 }), new Map(units.map(u => [u.id, u])), new Rng(42), () => 1, 9);

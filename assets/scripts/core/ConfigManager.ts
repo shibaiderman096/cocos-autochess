@@ -40,7 +40,7 @@ export class ConfigManager {
   private units: Record<string, UnitConfigData> = {};
   private skills: Record<string, SkillConfigData> = {};
   battle: BattleConfigData = {
-    boardWidth: 8, boardHeight: 6, ownRows: 3,
+    boardWidth: 7, boardHeight: 8, ownRows: 4,
     maxTicks: 1200,
     tickMs: 50,
   };

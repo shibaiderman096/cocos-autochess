@@ -288,8 +288,8 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "hexSize": 36,
-    "boardWidth": 8,
+    "hexSize": 48,
+    "boardWidth": 7,
     "boardHeight": 8,
     "_id": "8e19W+UEFLP7XgEp2UxKH/"
   },

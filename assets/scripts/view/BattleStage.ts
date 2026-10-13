@@ -37,7 +37,7 @@ export class BattleStage extends Component {
   /** 战斗回放按 sim id 索引；布阵操作按持有棋子的 uid 索引。 */
   private ownedViews = new Map<number, UnitView>();
   private battleIds = new Map<number, number>();
-  private cellSize = 52;   // hexSize 的视觉直径参考（棋子贴图尺寸）
+  private cellSize = 56;
   private loaded = false;
   private fighting = false;
   private ui: BattleUI;
@@ -70,6 +70,7 @@ export class BattleStage extends Component {
     await this.loadConfigs();
     this.rng = new Rng(Date.now() % 2147483647);
     this.pool = new CardPool(this.cfgUnits(), this.save.pool);
+    this.restoreFormation();
     this.owned = new OwnedUnits(this.save.owned);
     // 新局先发初始棋子；抽商品时才预留剩余库存。
     if (!loadedSave || (!this.save.shopReserved && this.owned.all().length === 0)) {
@@ -138,7 +139,24 @@ export class BattleStage extends Component {
 
   private buildBoard() {
     const bv = this.boardNode.getComponent(BoardView) ?? this.boardNode.addComponent(BoardView);
-    bv.initialize(this.cfg.battle.boardWidth, this.cfg.battle.boardHeight, 36);
+    this.boardNode.setPosition(0, 60, 0);
+    bv.initialize(this.cfg.battle.boardWidth, this.cfg.battle.boardHeight, 48);
+  }
+
+  /** Old eight-column saves retain their units when the arena becomes seven columns. */
+  private restoreFormation(): void {
+    const { boardWidth, ownRows } = this.cfg.battle;
+    const board = this.save.owned.filter(u => u.location === 'board');
+    const valid = (u: { x: number; y: number }) => u.x >= 0 && u.x < boardWidth && u.y >= 0 && u.y < ownRows;
+    const occupied = new Set(board.filter(valid).map(u => `${u.x},${u.y}`));
+    for (const u of board.filter(u => !valid(u))) {
+      const row = Math.max(0, Math.min(ownRows - 1, u.y));
+      const preferred = { x: Math.max(0, Math.min(boardWidth - 1, u.x)), y: row };
+      const candidates = [preferred];
+      for (let y = 0; y < ownRows; y++) for (let x = 0; x < boardWidth; x++) candidates.push({ x, y });
+      const target = candidates.find(c => !occupied.has(`${c.x},${c.y}`));
+      if (target) { u.x = target.x; u.y = target.y; occupied.add(`${u.x},${u.y}`); }
+    }
   }
 
   private createSim(battle: boolean) {
@@ -147,9 +165,10 @@ export class BattleStage extends Component {
     // 敌方固定阵容（按层数增强留 M2-8；当前固定）
     const P = (cfgId: string, side: 0 | 1, x: number, y: number): Placement =>
       ({ cfg: this.cfg.getUnit(cfgId), side, x, y });
-    placements.push(P('warrior', 1, 2, 3));
-    placements.push(P('archer', 1, 4, 4));
-    placements.push(P('mage', 1, 6, 5));
+    const front = this.cfg.battle.ownRows;
+    placements.push(P('warrior', 1, 2, front));
+    placements.push(P('archer', 1, 4, front + 2));
+    placements.push(P('mage', 1, 6, front + 3));
 
     // 己方：从 owned 数据生成（board 位置）
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
@@ -190,14 +209,16 @@ export class BattleStage extends Component {
     // 备战席与棋盘共用持有数据，但备战棋子不进入战斗回放索引。
     for (let slot = 0; slot < this.save.benchSlots; slot++) {
       const node = new Node(`bench_${slot}`);
-      node.addComponent(UITransform).setContentSize(56, 56);
+      node.addComponent(UITransform).setContentSize(62, 50);
       node.setPosition(this.benchSlotWorld(slot));
       root.addChild(node);
       const g = node.addComponent(Graphics);
-      g.fillColor = new Color(40, 50, 65, 210);
-      g.rect(-28, -28, 56, 56); g.fill();
-      g.strokeColor = new Color(140, 155, 175, 255);
-      g.lineWidth = 2; g.rect(-28, -28, 56, 56); g.stroke();
+      g.fillColor = new Color(16, 33, 39, 255);
+      g.roundRect(-31, -25, 62, 50, 4); g.fill();
+      g.strokeColor = new Color(142, 119, 72, 255);
+      g.lineWidth = 1.5; g.roundRect(-31, -25, 62, 50, 4); g.stroke();
+      g.fillColor = new Color(42, 64, 65, 255);
+      g.rect(-21, -22, 42, 2); g.fill();
     }
     for (const ou of this.owned.inBench()) {
       const uv = this.makeUnitView(root, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y));
@@ -211,7 +232,7 @@ export class BattleStage extends Component {
       label.string = '★'.repeat(ou.star);
       label.fontSize = 14; label.lineHeight = 18;
       label.color = new Color(255, 215, 0, 255);
-      stars.setPosition(0, -26, 0);
+      stars.setPosition(0, -21, 0);
       uv.node.addChild(stars);
     }
   }
@@ -230,6 +251,7 @@ export class BattleStage extends Component {
   private resetBattle(battle: boolean): void {
     this.createSim(battle);
     this.createViews();
+    this.ui.refreshFormation(this.owned.all());
     const bv = this.boardNode.getComponent(BoardView)!;
     this.replayer.bind(this.sim, this.views, this.cellSize, bv);
     const oldFx = this.boardNode.getChildByName('fx');
@@ -342,10 +364,10 @@ export class BattleStage extends Component {
 
   /** 备战席槽位的世界坐标（棋盘下方一排） */
   private benchSlotWorld(slot: number): Vec3 {
-    // 棋盘本地坐标下，棋盘下边缘往下 60px，槽位横向排列。
+    // Screen position is shared by rendering and hit testing, including perspective.
     const bv = this.boardNode.getComponent(BoardView)!;
-    const y = -bv.boardPixelH / 2 - 60;
-    const spacing = 64;
+    const y = -bv.boardPixelH / 2 - 53;
+    const spacing = 68;
     const totalW = (this.save.benchSlots - 1) * spacing;
     const x = -totalW / 2 + slot * spacing;
     return new Vec3(x, y, 0);
@@ -354,7 +376,7 @@ export class BattleStage extends Component {
   private benchSlotAt(x: number, y: number): number | null {
     for (let slot = 0; slot < this.save.benchSlots; slot++) {
       const pos = this.benchSlotWorld(slot);
-      if (Math.abs(x - pos.x) <= 28 && Math.abs(y - pos.y) <= 28) return slot;
+      if (Math.abs(x - pos.x) <= 31 && Math.abs(y - pos.y) <= 25) return slot;
     }
     return null;
   }

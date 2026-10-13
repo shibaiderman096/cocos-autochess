@@ -64,7 +64,7 @@ export class UnitView extends Component {
       this.loaded = true;
       this.refreshBarsColor();
     });
-    this.bodySprite.color = side === 0 ? new Color(80, 120, 200, 255) : new Color(200, 80, 80, 255);
+    this.bodySprite.color = Color.WHITE;
   }
 
   private refreshBarsColor() {

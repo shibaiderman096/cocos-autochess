@@ -1,151 +1,83 @@
-import { _decorator, Component, Graphics, Node, Vec3, Color, UITransform } from 'cc';
+import { _decorator, Component, Graphics, Vec3, Color, UITransform } from 'cc';
 import { Grid } from '../battle/Grid';
-import { SQRT3 } from '../battle/HexMath';
+import { BoardGeometry, BoardPoint } from './BoardGeometry';
 
 const { ccclass, property } = _decorator;
 
-/**
- * 六边形棋盘渲染（尖顶六边形，odd-r）。
- * - 行水平对齐并排，奇数行横向错开半格 → 整体呈矩形蜂窝。
- * - 包围盒居中；cellToWorld 用预计算表；worldToCell 像素最近邻。
- */
+/** Seven columns, four rows per side; shallow perspective is entirely visual. */
 @ccclass('BoardView')
 export class BoardView extends Component {
-  @property
-  hexSize = 36;
-
-  @property
-  boardWidth = 8;
-
-  @property
-  boardHeight = 6;
-
+  @property hexSize = 48;
+  @property boardWidth = 7;
+  @property boardHeight = 8;
   grid: Grid;
   private g: Graphics;
-  private cellWorlds = new Map<string, { x: number; y: number }>();
+  private geometry: BoardGeometry;
   boardPixelW = 0;
   boardPixelH = 0;
 
   start() {
-    this.initialize(this.boardWidth, this.boardHeight, this.hexSize);
+    if (!this.geometry) this.initialize(this.boardWidth, this.boardHeight, this.hexSize);
   }
 
-  /** Stage 加载配置后立即初始化，避免等待 start 导致棋子坐标尚未生成。 */
   initialize(width: number, height: number, hexSize: number): void {
-    this.boardWidth = width;
-    this.boardHeight = height;
-    this.hexSize = hexSize;
-    this.grid = new Grid(this.boardWidth, this.boardHeight);
+    this.boardWidth = width; this.boardHeight = height; this.hexSize = hexSize;
+    this.grid = new Grid(width, height);
+    this.geometry = new BoardGeometry(width, height, hexSize);
+    this.boardPixelW = this.geometry.width; this.boardPixelH = this.geometry.height;
     this.g = this.getComponent(Graphics) ?? this.node.addComponent(Graphics);
-    this.buildHexGrid();
-  }
-
-  /** odd-r 尖顶六边形原始坐标（未居中，y 向上） */
-  private rawCellPos(x: number, y: number): { x: number; y: number } {
-    return {
-      x: this.hexSize * SQRT3 * (x + 0.5 * (y & 1)),
-      y: this.hexSize * 1.5 * y,
-    };
-  }
-
-  private buildHexGrid() {
-    this.cellWorlds.clear();
-
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    for (let y = 0; y < this.boardHeight; y++) {
-      for (let x = 0; x < this.boardWidth; x++) {
-        const p = this.rawCellPos(x, y);
-        minX = Math.min(minX, p.x - this.hexSize * SQRT3 / 2);
-        maxX = Math.max(maxX, p.x + this.hexSize * SQRT3 / 2);
-        minY = Math.min(minY, p.y - this.hexSize);
-        maxY = Math.max(maxY, p.y + this.hexSize);
-      }
-    }
-    const cx = (minX + maxX) / 2;
-    const cy = (minY + maxY) / 2;
-
-    for (let y = 0; y < this.boardHeight; y++) {
-      for (let x = 0; x < this.boardWidth; x++) {
-        const p = this.rawCellPos(x, y);
-        this.cellWorlds.set(`${x},${y}`, { x: p.x - cx, y: p.y - cy });
-      }
-    }
-    this.boardPixelW = maxX - minX;
-    this.boardPixelH = maxY - minY;
-
     const ut = this.getComponent(UITransform) ?? this.node.addComponent(UITransform);
-    ut.setContentSize(this.boardPixelW, this.boardPixelH);
-
+    ut.setContentSize(this.boardPixelW + 80, this.boardPixelH + 80);
     this.redraw();
   }
 
-  /** 画一个尖顶六边形路径（顶点朝上/下） */
-  private hexPath(g: Graphics, cx: number, cy: number, size: number) {
-    const pts: [number, number][] = [];
-    for (let i = 0; i < 6; i++) {
-      const angle = Math.PI / 6 + (Math.PI / 3) * i; // 30°, 90°, 150°, 210°, 270°, 330°
-      pts.push([cx + size * Math.cos(angle), cy + size * Math.sin(angle)]);
-    }
-    g.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < 6; i++) g.lineTo(pts[i][0], pts[i][1]);
-    g.close();
-  }
-
-  redraw() {
+  private polygon(points: BoardPoint[], fill: Color, stroke: Color, thickness = 1): void {
     const g = this.g;
-    g.clear();
-    const ownRows = this.boardHeight / 2;
+    g.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) g.lineTo(points[i].x, points[i].y);
+    g.close(); g.fillColor = fill; g.fill();
+    g.lineWidth = thickness; g.strokeColor = stroke; g.stroke();
+  }
 
-    for (let y = 0; y < this.boardHeight; y++) {
-      for (let x = 0; x < this.boardWidth; x++) {
-        const w = this.cellWorlds.get(`${x},${y}`)!;
-        const own = y < ownRows;
-        const checker = (x + y) % 2 === 0;
-        const base = own
-          ? (checker ? new Color(168, 130, 90, 235) : new Color(150, 112, 72, 235))
-          : (checker ? new Color(96, 120, 150, 235) : new Color(78, 102, 132, 235));
-        g.fillColor = base;
-        this.hexPath(g, w.x, w.y, this.hexSize * 0.94);
-        g.fill();
-        g.strokeColor = new Color(40, 30, 20, 120);
-        g.lineWidth = 1.5;
-        this.hexPath(g, w.x, w.y, this.hexSize * 0.94);
-        g.stroke();
-      }
+  redraw(): void {
+    const g = this.g; g.clear();
+    const w = this.boardPixelW / 2 + 24, h = this.boardPixelH / 2 + 18;
+    const outline = [{ x: -w, y: -h }, { x: w, y: -h }, { x: w - 25, y: h }, { x: -w + 25, y: h }];
+    this.polygon(outline.map(p => ({ x: p.x, y: p.y - 14 })), new Color(9, 18, 24), new Color(22, 38, 43), 5);
+    this.polygon(outline, new Color(27, 48, 51), new Color(146, 122, 71), 3);
+    this.polygon(outline.map(p => ({ x: p.x * 0.98, y: p.y * 0.96 })), new Color(34, 59, 59), new Color(76, 105, 99), 1);
+
+    for (const cell of this.geometry.cells) {
+      const own = this.isOwnCell(cell.y), alternate = (cell.x + cell.y) % 2;
+      const points = cell.polygon.map(p => ({
+        x: cell.center.x + (p.x - cell.center.x) * 0.95,
+        y: cell.center.y + (p.y - cell.center.y) * 0.95,
+      }));
+      this.polygon(points,
+        own ? new Color(49 + alternate * 4, 80 + alternate * 4, 76 + alternate * 4) : new Color(43 + alternate * 4, 63 + alternate * 4, 65 + alternate * 4),
+        own ? new Color(100, 145, 132, 155) : new Color(99, 116, 113, 100));
+      const { x, y } = cell.center;
+      this.polygon([{ x, y: y + 2 }, { x: x + 3, y }, { x, y: y - 2 }, { x: x - 3, y }],
+        new Color(119, 148, 125, own ? 90 : 35), new Color(0, 0, 0, 0), 0);
     }
+    g.strokeColor = new Color(189, 160, 94, 100); g.lineWidth = 1;
+    g.moveTo(-w + 14, 0); g.lineTo(w - 14, 0); g.stroke();
+    for (const side of [-1, 1]) for (const end of [-1, 1]) {
+      const x = side * (w - (end > 0 ? 26 : 6)), y = end * h;
+      this.polygon([{ x, y: y + 11 }, { x: x + 11, y }, { x, y: y - 11 }, { x: x - 11, y }],
+        new Color(33, 54, 57), new Color(206, 174, 105), 2);
+    }
+  }
 
-    // 己方/敌方分界线（水平中线）
-    const midLineY = (this.cellWorlds.get(`0,${ownRows - 1}`)!.y + this.cellWorlds.get(`0,${ownRows}`)!.y) / 2;
-    g.strokeColor = new Color(255, 220, 120, 160);
-    g.lineWidth = 2;
-    g.moveTo(-this.boardPixelW / 2, midLineY);
-    g.lineTo(this.boardPixelW / 2, midLineY);
-    g.stroke();  }
-
-  /** 格子坐标 → 本地世界坐标 */
   cellToWorld(x: number, y: number): Vec3 {
-    const cached = this.cellWorlds.get(`${x},${y}`);
-    if (cached) return new Vec3(cached.x, cached.y, 0);
-    return new Vec3(0, 0, 0);
+    const cell = this.geometry.cells.find(c => c.x === x && c.y === y);
+    return new Vec3(cell?.center.x ?? 0, cell?.center.y ?? 0, 0);
   }
 
-  /** 本地世界坐标 → 最近格子；距离超过 maxDist 视为棋盘外返回 null */
-  worldToCell(wx: number, wy: number, maxDist = this.hexSize * 1.2): { x: number; y: number } | null {
-    let best: { x: number; y: number } | null = null;
-    let bd = Infinity;
-    for (const [key, c] of this.cellWorlds) {
-      const dx = c.x - wx, dy = c.y - wy;
-      const d = dx * dx + dy * dy;
-      if (d < bd) { bd = d; best = { x: Number(key.split(',')[0]), y: Number(key.split(',')[1]) }; }
-    }
-    if (!best) return null;
-    const bc = this.cellWorlds.get(`${best.x},${best.y}`)!;
-    const dist = Math.sqrt((bc.x - wx) ** 2 + (bc.y - wy) ** 2);
-    if (dist > maxDist) return null;
-    return best;
+  worldToCell(x: number, y: number): { x: number; y: number } | null {
+    const cell = this.geometry.cellAt(x, y);
+    return cell ? { x: cell.x, y: cell.y } : null;
   }
 
-  isOwnCell(y: number): boolean {
-    return y < this.boardHeight / 2;
-  }
+  isOwnCell(y: number): boolean { return y >= 0 && y < this.boardHeight / 2; }
 }
