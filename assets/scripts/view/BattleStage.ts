@@ -6,6 +6,7 @@ import { BoardView } from './BoardView';
 import { UnitView } from './UnitView';
 import { BattleReplayer } from './BattleReplayer';
 import { BattleUI } from '../ui/BattleUI';
+import { setUISkin } from '../ui/UISkin';
 import { EconomySystem } from '../core/EconomySystem';
 import { LevelSystem, EXP_PER_BATTLE, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { Rng } from '../core/Rng';
@@ -238,6 +239,7 @@ export class BattleStage extends Component {
       g.lineWidth = 1.5; g.roundRect(-31, -25, 62, 50, 4); g.stroke();
       g.fillColor = new Color(42, 64, 65, 255);
       g.rect(-21, -22, 42, 2); g.fill();
+      setUISkin(node, 'bench_slot', g);
     }
     for (const ou of this.owned.inBench()) {
       const uv = this.makeUnitView(root, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y));
