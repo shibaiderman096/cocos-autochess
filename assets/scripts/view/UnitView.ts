@@ -55,17 +55,19 @@ export class UnitView extends Component {
 
     const hpFillNode = new Node('hpFill');
     hpFillNode.addComponent(UITransform).setContentSize(size * 0.9, 4);
+    hpFillNode.getComponent(UITransform).setAnchorPoint(0, 0.5);
     this.hpFill = hpFillNode.addComponent(Sprite);
     this.hpFill.sizeMode = Sprite.SizeMode.CUSTOM;
     this.hpBarBg.addChild(hpFillNode);
-    hpFillNode.setPosition(0, 0, 0);
+    hpFillNode.setPosition(-size * 0.9 / 2, 0, 0);
 
     const manaFillNode = new Node('manaFill');
     manaFillNode.addComponent(UITransform).setContentSize(size * 0.9, 3);
+    manaFillNode.getComponent(UITransform).setAnchorPoint(0, 0.5);
     this.manaFill = manaFillNode.addComponent(Sprite);
     this.manaFill.sizeMode = Sprite.SizeMode.CUSTOM;
     this.hpBarBg.addChild(manaFillNode);
-    manaFillNode.setPosition(0, -6, 0);
+    manaFillNode.setPosition(-size * 0.9 / 2, -6, 0);
 
     const key = unitSpriteKey(artId, side);
     const path = UNIT_SPRITE[key];
@@ -105,16 +107,18 @@ export class UnitView extends Component {
       cur.y + (targetPos.y - cur.y) * k,
       0,
     );
-    if (this.hpFill && snap.maxHp > 0) {
+    if (this.hpFill) {
       this.hpFill.node.getComponent(UITransform).setContentSize(
-        Math.max(0, (snap.hp / snap.maxHp)) * this.hpBarBg.getComponent(UITransform).contentSize.width,
+        (snap.maxHp > 0 ? Math.max(0, Math.min(1, snap.hp / snap.maxHp)) : 0)
+          * this.hpBarBg.getComponent(UITransform).contentSize.width,
         4,
       );
     }
     if (this.manaFill) this.manaFill.node.active = this.side === 0 && snap.maxMana > 0;
-    if (this.manaFill && this.side === 0 && snap.maxMana > 0) {
+    if (this.manaFill && this.side === 0) {
       this.manaFill.node.getComponent(UITransform).setContentSize(
-        Math.max(0, (snap.mana / snap.maxMana)) * this.hpBarBg.getComponent(UITransform).contentSize.width,
+        (snap.maxMana > 0 ? Math.max(0, Math.min(1, snap.mana / snap.maxMana)) : 0)
+          * this.hpBarBg.getComponent(UITransform).contentSize.width,
         3,
       );
     }
