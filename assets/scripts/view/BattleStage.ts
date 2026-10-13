@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics } from 'cc';
+import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics, director } from 'cc';
 import { ConfigManager, BattleConfigData } from '../core/ConfigManager';
 import { BattleSim, Placement } from '../battle/BattleSim';
 import { TickDriver } from '../core/TickDriver';
@@ -17,6 +17,7 @@ import { loadSaveV2, writeSaveV2, freshSaveV2, SaveDataV2 } from '../core/ShopSa
 import { COST_PRICE, Cost, sellPrice } from '../core/ShopConfig';
 import { RoundFlow, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
+import { RunConfig, buildRunWaves } from '../core/RunSetup';
 
 const { ccclass, property } = _decorator;
 
@@ -56,6 +57,7 @@ export class BattleStage extends Component {
   private resultShown = false;
   private flow: RoundFlow;
   private waves: WaveConfig[];
+  private runConfig: RunConfig;
   private dragStart = new Vec3();
   private dragMoved = false;
 
@@ -74,17 +76,17 @@ export class BattleStage extends Component {
     });
     this.levelSys = new LevelSystem({ level: this.save.level, exp: this.save.exp });
     await this.loadConfigs();
+    this.cfg.setEnemyUnits(this.runConfig.monsters);
+    this.waves = buildRunWaves(this.save.stageCount, this.runConfig, this.waves);
     this.flow = new RoundFlow(this.waves, this.cfg.battle, this.save.round ?? undefined);
-    this.save.floor = this.flow.waveIndex + 1;
+    this.save.floor = this.flow.wave.stage!;
     this.rng = new Rng(Date.now() % 2147483647);
     this.pool = new CardPool(this.cfgUnits(), this.save.pool);
     this.restoreFormation();
     this.owned = new OwnedUnits(this.save.owned);
     // 新局先发初始棋子；抽商品时才预留剩余库存。
     if (!loadedSave || (!this.save.shopReserved && this.owned.all().length === 0)) {
-      for (const id of ['warrior', 'archer', 'mage']) {
-        if (this.pool.take(id) && !this.owned.addToBench(id, this.save.benchSlots)) this.pool.give(id);
-      }
+      this.grantStarter();
     }
     const restoreShop = loadedSave && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
     this.shop = new ShopSystem(
@@ -105,6 +107,10 @@ export class BattleStage extends Component {
     this.ui.onFight = () => this.startFight();
     this.ui.onSpeed = (s) => { this.speed = s; };
     this.ui.onRestart = () => this.restart();
+    this.ui.onHome = () => {
+      if (this.draggingId || this.flow.phase === 'battle') return;
+      this.persistShopState(); director.loadScene('main');
+    };
     this.ui.onBuy = (slot) => this.buyFromShop(slot);
     this.ui.onRefresh = () => this.refreshShop();
     this.ui.onBuyExp = () => this.buyExperience();
@@ -127,7 +133,7 @@ export class BattleStage extends Component {
 
   private loadConfigs(): Promise<void> {
     return new Promise((res, rej) => {
-      let pending = 4;
+      let pending = 5;
       const done = () => { if (--pending === 0) res(); };
       const fail = (e: Error) => { pending = -1; rej(e); };
       resources.load('config/units', JsonAsset, (e, a) => {
@@ -148,7 +154,16 @@ export class BattleStage extends Component {
       resources.load('config/waves', JsonAsset, (e, a) => {
         if (e) { fail(e); return; } this.waves = a.json as WaveConfig[]; done();
       });
+      resources.load('config/run', JsonAsset, (e, a) => {
+        if (e) { fail(e); return; } this.runConfig = a.json as RunConfig; done();
+      });
     });
+  }
+
+  private grantStarter(): void {
+    const id = this.runConfig.starterUnitId;
+    if (this.cfg.getUnit(id).cost !== 1) throw new Error('Starter must be a one-cost unit');
+    if (this.pool.take(id) && !this.owned.addToBench(id, this.save.benchSlots)) this.pool.give(id);
   }
 
   private cfgUnits(): UnitConfigData[] {
@@ -445,11 +460,12 @@ export class BattleStage extends Component {
   }
   private showDetail(id: string, star: number, cfg: UnitConfigData, skillScale: number): void {
     const base = this.cfg.getUnit(id), skill = cfg.skillId ? this.cfg.getSkill(cfg.skillId) : null;
-    this.ui.showUnitDetail(`${base.name}  ·  ${star} 星  ·  ${base.cost ?? 1} 费`,
+    this.ui.showUnitDetail(`${base.name}  ·  ${star} 星${base.cost ? `  ·  ${base.cost} 费` : '  ·  野怪'}`,
       `生命 ${cfg.hp}    攻击 ${cfg.atk}\n护甲 ${cfg.armor}    魔抗 ${cfg.mr}\n攻速 ${cfg.atkSpeed}    射程 ${cfg.range}\n法力 ${cfg.startMana} / ${cfg.maxMana}\n\n${skill ? `${skill.name ?? cfg.skillId}  ·  伤害 ${Math.round(skill.power * skillScale)}\n${skill.description ?? ''}` : '无主动技能 · 普通攻击输出'}`);
   }
   private refreshRunUI(): void {
-    this.ui.refreshRun(this.flow.health, this.cfg.battle.initialHealth, this.flow.waveIndex + 1, this.waves.length, this.flow.wave.name);
+    this.ui.refreshRun(this.flow.health, this.cfg.battle.initialHealth, this.flow.waveIndex + 1, this.waves.length, this.flow.wave.name,
+      this.flow.wave, this.save.stageCount);
     this.ui.setLocked(this.shop.locked);
   }
   private showSettlement(): void {
@@ -484,15 +500,13 @@ export class BattleStage extends Component {
     this.resultShown = false;
     this.resetDrag();
     if (ended) {
-      this.save = freshSaveV2(); this.flow.restart();
+      this.save = freshSaveV2(this.save.stageCount); this.flow.restart();
       this.economy = new EconomySystem(); this.levelSys = new LevelSystem();
       this.pool = new CardPool(this.cfgUnits()); this.owned = new OwnedUnits();
-      for (const id of ['warrior', 'archer', 'mage']) {
-        if (this.pool.take(id)) this.owned.addToBench(id, this.save.benchSlots);
-      }
+      this.grantStarter();
       this.shop = new ShopSystem(this.pool, this.owned, this.economy, this.unitMap(), this.rng, () => this.levelSys.level, this.save.benchSlots);
     } else { this.flow.nextWave(); this.shop.nextRound(); }
-    this.save.floor = this.flow.waveIndex + 1; this.save.lastReward = undefined;
+    this.save.floor = this.flow.wave.stage!; this.save.lastReward = undefined;
     this.resetBattle(false);
     this.persistShopState();
     this.refreshShopUI();

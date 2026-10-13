@@ -4,14 +4,26 @@ const { RoundFlow } = require('../assets/scripts/core/RoundFlow.ts');
 const { ConfigManager } = require('../assets/scripts/core/ConfigManager.ts');
 const { BattleSim } = require('../assets/scripts/battle/BattleSim.ts');
 const { OwnedUnits } = require('../assets/scripts/core/OwnedUnits.ts');
+const { buildRunWaves, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
 const units = require('../assets/resources/config/units.json');
 const skills = require('../assets/resources/config/skills.json');
 const rules = require('../assets/resources/config/battle.json');
-const waves = require('../assets/resources/config/waves.json');
+const templates = require('../assets/resources/config/waves.json');
+const runConfig = require('../assets/resources/config/run.json');
+const waves = buildRunWaves(3,runConfig,templates);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
+cfg.setEnemyUnits(runConfig.monsters);
 assert.equal(units.length, 10);
 assert.deepEqual([1,2,3].map(cost => units.filter(u => u.cost === cost).length), [4,3,3]);
-assert.ok(waves.length >= 5 && waves.length <= 8);
+assert.equal(cfg.allUnits().length,10,'monsters must stay out of shop inventory');
+assert.equal(waves.length,23); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,10,10]);
+assert.deepEqual([waves[0],waves[2],waves[3],waves[12],waves[13],waves[22]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-10','3-1','3-10']);
+assert.equal(buildRunWaves(4,runConfig,templates).length,33);
+assert.equal(runRoundCount(5,runConfig),43);
+for(const v of [-9,0,2,NaN,Infinity,undefined]) assert.equal(normalizeStageCount(v),3);
+assert.equal(normalizeStageCount(4.9),4);
+assert.deepEqual(buildRunWaves(3,runConfig,templates),waves,'generation is deterministic');
+assert.ok(waves[13].enemies[0].statMultiplier>waves[3].enemies[0].statMultiplier);
 for (const wave of waves) {
   const cells = new Set();
   for (const e of wave.enemies) {
@@ -21,6 +33,13 @@ for (const wave of waves) {
   }
 }
 for (const u of units) { assert.ok(u.artId); if (u.skillId) assert.ok(skills[u.skillId]); }
+// Every starter encounter is winnable by the original one-star, one-cost piece alone.
+for(const wave of waves.filter(w=>w.stage===1)) {
+  const enemies=wave.enemies.map(e=>({cfg:cfg.getUnit(e.unitId),side:1,...e}));
+  assert.ok(enemies.every(e=>e.cfg.hp<=60&&e.cfg.atk<=3));
+  const sim=new BattleSim(cfg,[...enemies,{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
+  sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
+}
 const flow = new RoundFlow(waves, rules);
 assert.equal(flow.nextWave(), false); assert.equal(flow.settle(1, 3), null);
 assert.equal(flow.startBattle(), true); assert.equal(flow.startBattle(), false);
@@ -44,7 +63,7 @@ for (let i = 0; i < waves.length; i++) {
   const sim = new BattleSim(cfg, placements, {seed:42, w:7, h:8, maxTicks:rules.maxTicks}); sim.start(); sim.run();
   assert.equal(sim.winner, 0, `strong formation must beat wave ${i+1}`);
   run.settle(sim.winner, sim.units.filter(u => u.side===1 && u.alive).length);
-  if(i<waves.length-1) assert.equal(run.nextWave(), true);
+  if(i<waves.length-1) { assert.equal(run.result,null); assert.equal(run.nextWave(), true); }
 }
 assert.equal(run.result, 'victory'); assert.equal(run.phase, 'ended'); assert.equal(run.health, 20);
 // Exercise every configured skill through the shared pipeline, including low-HP targeting.

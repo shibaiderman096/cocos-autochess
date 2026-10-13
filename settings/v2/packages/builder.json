@@ -1,3 +1,14 @@
 {
-  "__version__": "1.3.9"
+  "__version__": "1.3.9",
+  "startScene": "e3041672-7bfd-46bb-a833-416a349ab97b",
+  "scenes": [
+    {
+      "url": "db://assets/main.scene",
+      "uuid": "e3041672-7bfd-46bb-a833-416a349ab97b"
+    },
+    {
+      "url": "db://assets/scene.scene",
+      "uuid": "913c4649-63c1-4d9e-8ad0-21092b31c3ab"
+    }
+  ]
 }

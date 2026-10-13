@@ -9,11 +9,13 @@ import { OwnedUnit } from './OwnedUnits';
 import { DEFAULT_BENCH_SLOTS } from './ShopConfig';
 import { RoundSnapshot } from './RoundFlow';
 import { SettlementBreakdown } from './EconomySystem';
+import { DEFAULT_STAGE_COUNT, normalizeStageCount } from './RunSetup';
 
 export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'autochess_save_v2';
 
 export interface SaveDataV2 extends SaveData {
+  stageCount: number;
   /** 商店 5 格内容 */
   shop: ShopSlot[];
   /** true 表示商店商品已从 pool 预留；缺省为旧版未预留存档。 */
@@ -76,6 +78,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
   return {
     ...v1,
     version: SAVE_VERSION,
+    stageCount: normalizeStageCount(d.stageCount ?? DEFAULT_STAGE_COUNT),
     shop, owned, pool, benchSlots, shopReserved: d.shopReserved === true,
     round, shopLocked: d.shopLocked === true,
     lastReward: d.lastReward && Number.isFinite(d.lastReward.breakdown?.total) ? d.lastReward : undefined,
@@ -102,6 +105,6 @@ export function writeSaveV2(data: SaveDataV2): void {
   } catch {}
 }
 
-export function freshSaveV2(): SaveDataV2 {
-  return migrateSaveV2({});
+export function freshSaveV2(stageCount = DEFAULT_STAGE_COUNT): SaveDataV2 {
+  return migrateSaveV2({ stageCount });
 }

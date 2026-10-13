@@ -3,10 +3,14 @@ import { Side } from '../battle/types';
 export type RoundPhase = 'prepare' | 'battle' | 'settlement' | 'ended';
 export type RunResult = 'victory' | 'defeat' | null;
 export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number }
-export interface WaveConfig { id: number; name: string; enemies: WaveEnemy[] }
+export interface WaveConfig {
+  id: number; name: string; enemies: WaveEnemy[];
+  stage?: number; round?: number; roundsInStage?: number;
+}
 export interface RoundSettlement {
   waveId: number; winner: Side | -1; enemySurvivors: number;
   healthLost: number; healthRemaining: number; runResult: RunResult;
+  stage?: number; round?: number;
 }
 export interface RoundSnapshot {
   phase: RoundPhase; waveIndex: number; health: number; result: RunResult;
@@ -55,7 +59,7 @@ export class RoundFlow {
     this.state.health -= healthLost;
     this.state.result = this.health === 0 ? 'defeat' : this.waveIndex === this.waves.length - 1 ? 'victory' : null;
     this.state.phase = this.result ? 'ended' : 'settlement';
-    return this.state.lastSettlement = { waveId:this.wave.id, winner, enemySurvivors, healthLost,
+    return this.state.lastSettlement = { waveId:this.wave.id, stage:this.wave.stage, round:this.wave.round, winner, enemySurvivors, healthLost,
       healthRemaining:this.health, runResult:this.result };
   }
   nextWave(): boolean {

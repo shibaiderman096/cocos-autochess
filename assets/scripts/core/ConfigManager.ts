@@ -46,6 +46,7 @@ export interface BattleConfigData {
 
 export class ConfigManager {
   private units: Record<string, UnitConfigData> = {};
+  private enemies: Record<string, UnitConfigData> = {};
   private skills: Record<string, SkillConfigData> = {};
   battle: BattleConfigData = {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
@@ -65,12 +66,18 @@ export class ConfigManager {
     this.skills = data;
   }
 
+  /** PvE monsters never enter the purchasable roster or shared card pool. */
+  setEnemyUnits(data: UnitConfigData[]): void {
+    this.enemies = {};
+    for (const unit of data) this.enemies[unit.id] = unit;
+  }
+
   setBattle(data: Partial<BattleConfigData>): void {
     Object.assign(this.battle, data);
   }
 
   getUnit(id: string): UnitConfigData {
-    const u = this.units[id];
+    const u = this.units[id] ?? this.enemies[id];
     if (!u) throw new Error(`unit config not found: ${id}`);
     return u;
   }
