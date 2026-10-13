@@ -172,25 +172,35 @@ export class BattleUI extends Component {
       rate.node.name = `cost${i + 1}`; this.rateLabels.push(rate);
     }
     this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
-    this.buyExpBtn = button(this.economyControls, '', 0, 15, 148, 82,
+    const cost = (parent: Node, amount: number, y: number) => {
+      const coin = new Node('goldCost'); coin.addComponent(UITransform).setContentSize(14, 14);
+      parent.addChild(coin); coin.setPosition(34, y, 0);
+      const sprite = coin.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
+      resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
+        if (!err && sprite.isValid) sprite.spriteFrame = frame;
+      });
+      label(parent, `${amount}`, 54, y, 14, GOLD, 26);
+    };
+    this.buyExpBtn = button(this.economyControls, '', 0, 34, 148, 62,
       () => { if (this.canBuyExp && this.shopAvailable && !this.dragging) this.onBuyExp(); });
     this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
-    picture(this.buyExpBtn, 'badge_level', -52, 18, 28);
-    this.levelBadgeLabel = label(this.buyExpBtn, '1', -52, 18, 14, GOLD, 24);
-    this.expLabel = label(this.buyExpBtn, '0 / 2', 12, 19, 11, MUTED, 96);
+    picture(this.buyExpBtn, 'badge_level', -52, 13, 24);
+    this.levelBadgeLabel = label(this.buyExpBtn, '1', -52, 13, 14, GOLD, 24);
+    this.expLabel = label(this.buyExpBtn, '0 / 2', 12, 13, 11, MUTED, 96);
     const exp = new Node('experience'); this.buyExpBtn.addChild(exp); exp.setPosition(0, -3, 0);
     picture(exp, 'exp_bar_bg', 0, 0, 130, 8);
     this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 126, 4, sprite => {
       sprite.type = Sprite.Type.FILLED; sprite.fillType = Sprite.FillType.HORIZONTAL;
       sprite.fillStart = 0; sprite.fillRange = this.expRatio;
     });
+    picture(this.buyExpBtn, 'icon_exp', -46, -18, 18);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
-    this.buyExpLabel.fontSize = 14; this.buyExpLabel.lineHeight = 18; this.buyExpLabel.node.setPosition(-17, -24, 0);
-    this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(98, 24);
-    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 52, -24, 12, GOLD, 36);
-    const refresh = button(this.economyControls, '', 0, -55, 148, 30, () => this.onRefresh());
-    refresh.name = 'refresh'; label(refresh, '刷新', -17, 0, 14, TEXT, 98);
-    label(refresh, '2金', 52, 0, 12, GOLD, 36);
+    this.buyExpLabel.fontSize = 12; this.buyExpLabel.lineHeight = 16; this.buyExpLabel.node.setPosition(-17, -18, 0);
+    this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(42, 24);
+    cost(this.buyExpBtn, EXP_PURCHASE.gold, -18);
+    const refresh = button(this.economyControls, '', 0, -34, 148, 62, () => this.onRefresh());
+    refresh.name = 'refresh'; picture(refresh, 'icon_refresh', -32, 0, 28);
+    cost(refresh, 2, 0);
     const lock = new Node('lock'); lock.addComponent(UITransform).setContentSize(24, 24);
     this.shopHeader.addChild(lock); lock.setPosition(354, -225, 0);
     this.lockIcon = setUISkin(lock, 'btn_lock_off'); lock.on(Node.EventType.TOUCH_END, () => this.onLock());
@@ -341,11 +351,11 @@ export class BattleUI extends Component {
     this.levelBadgeLabel.string = `${lv.level}`;
     const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
     this.canBuyExp = !max && gold >= EXP_PURCHASE.gold;
-    this.buyExpLabel.string = max ? '满级' : `+${EXP_PURCHASE.exp}经验`;
+    this.buyExpLabel.string = max ? '' : `+${EXP_PURCHASE.exp}`;
     this.buyExpLabel.color = this.canBuyExp ? TEAL : MUTED;
     this.buyExpBtn.getComponent(UIOpacity)!.opacity = this.canBuyExp ? 255 : 140;
     setUISkin(this.buyExpBtn, this.canBuyExp ? 'btn_secondary' : 'btn_disabled', this.buyExpBtn.getComponent(Graphics)!);
-    this.expLabel.string = max ? 'MAX' : `${lv.exp} / ${need}`;
+    this.expLabel.string = max ? '∞' : `${lv.exp} / ${need}`;
     const ratio = max ? 1 : Math.max(0, Math.min(1, lv.exp / need));
     this.expRatio = ratio;
     if (this.expFill.spriteFrame) this.expFill.fillRange = ratio;

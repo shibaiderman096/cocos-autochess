@@ -17,7 +17,11 @@ class Node {
   on(type,fn) { this.events.set(type,fn); }
   destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
 }
-class UITransform { setContentSize(width,height) { this.contentSize={width,height}; } }
+class UITransform {
+  anchorPoint={x:.5,y:.5};
+  setContentSize(width,height) { this.contentSize={width,height}; }
+  setAnchorPoint(x,y) { this.anchorPoint={x,y}; }
+}
 class Sprite {
   static SizeMode={CUSTOM:0}; static Type={SIMPLE:0,SLICED:1,FILLED:2}; static FillType={HORIZONTAL:0};
   isValid=true;
@@ -55,6 +59,7 @@ const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,m
 ui.showUnitDetail(warriorDetail);
 assert.ok(ui.unitPanel.position.x>350); assert.equal(ui.node.getChildByName('detailShield'),undefined,'details do not block the board');
 flush(); assert.equal(ui.hpMeter.fill.fillRange,.5);assert.equal(ui.manaMeter.fill.fillRange,.2);
+assert.equal(ui.hpMeter.fill.fillStart,0);assert.equal(ui.manaMeter.fill.fillStart,0,'detail bars also begin at the left');
 assert.equal(ui.hpMeter.value.string,'350 / 700');assert.match(ui.unitStats[4].string,/1格/);
 ui.updateUnitVitals(0,700,0,0);assert.equal(ui.hpMeter.fill.fillRange,0);assert.equal(ui.manaMeter.fill.fillRange,0);
 ui.updateUnitVitals(999,700,200,100);assert.equal(ui.hpMeter.fill.fillRange,1);assert.equal(ui.manaMeter.fill.fillRange,1);
@@ -89,6 +94,18 @@ for(const card of ui.shopSlots) {
   assert.ok(ui.isInSellArea(card.node.position.x+size.width*card.node.scale.x/2,card.node.position.y));
 }
 assert.equal(ui.buyExpBtn.position.x,ui.economyControls.getChildByName('refresh').position.x,'TFT controls stack in left column');
+const refreshButton=ui.economyControls.getChildByName('refresh');
+assert.deepEqual(ui.buyExpBtn.getComponent(UITransform).contentSize,refreshButton.getComponent(UITransform).contentSize,'XP and refresh use equal hit areas');
+for(const button of [ui.buyExpBtn,refreshButton]) {
+  const size=button.getComponent(UITransform).contentSize;
+  assert.ok(Math.abs(button.position.y)+size.height/2<=SHOP_DROP_AREA.height/2,'controls fit the compact dock');
+  assert.ok(button.getChildByName('goldCost').getComponent(Sprite).spriteFrame,'cost uses the supplied coin image');
+  assert.ok(!button.children.some(n=>/经验|刷新|金/.test(n.getComponent(Label)?.string??'')),'actions use icons instead of words');
+}
+assert.ok(ui.buyExpBtn.getChildByName('icon_exp'));assert.ok(refreshButton.getChildByName('icon_refresh'));
+let xpBought=0,refreshed=0;ui.onBuyExp=()=>xpBought++;ui.onRefresh=()=>refreshed++;
+ui.buyExpBtn.events.get('end')();refreshButton.events.get('end')();assert.equal(xpBought,1);assert.equal(refreshed,1);
+ui.refreshTop(3,1,new LevelSystem());ui.buyExpBtn.events.get('end')();assert.equal(xpBought,1,'icon purchase still rejects insufficient gold');
 ui.refreshRun(20,20,4,23,'边境哨卫',{stage:2,round:1,roundsInStage:10},3); flush();
 assert.equal(ui.floorLabel.string,'2-1'); assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,10);
 ui.refreshTop(10,2,new LevelSystem()); assert.equal(ui.floorLabel.string,'2-1','economy updates retain stage-round header');
@@ -98,6 +115,26 @@ const delayedUI=new BattleUI();delayedUI.node=new Node('delayedUI');new Node('Ca
 delayedUI.showUnitDetail(warriorDetail);delayedUI.updateUnitVitals(175,700,60,100);flush();
 assert.equal(delayedUI.hpMeter.fill.fillRange,.25);assert.equal(delayedUI.manaMeter.fill.fillRange,.6,'live values survive delayed texture loading');
 console.log('PASS actual UI: merged XP, colored odds, gold header, range/live vitals, asynchronous bars, drag sale, and combat shop');
+
+const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
+const unitView=new UnitView();unitView.node=new Node('unit');unitView.node.setPosition(0,0,0);
+unitView.setup('warrior',0,1,56);
+const barWidth=unitView.hpBarBg.getComponent(UITransform).contentSize.width;
+const checkBar=(sprite,ratio)=>{
+  const transform=sprite.node.getComponent(UITransform);
+  const left=sprite.node.position.x-transform.anchorPoint.x*transform.contentSize.width;
+  assert.ok(Math.abs(left+barWidth/2)<1e-8,'left edge stays fixed as HP or mana changes');
+  assert.ok(Math.abs(left+transform.contentSize.width-(-barWidth/2+barWidth*ratio))<1e-8,'only the right edge moves');
+};
+for(const [hp,mana,hpRatio,manaRatio] of [[100,100,1,1],[50,25,.5,.25],[25,50,.25,.5],[0,0,0,0],[150,120,1,1],[-1,-5,0,0]]) {
+  unitView.sync({hp,maxHp:100,mana,maxMana:100},{x:0,y:0,z:0},56,.1);
+  checkBar(unitView.hpFill,hpRatio);checkBar(unitView.manaFill,manaRatio);
+}
+unitView.sync({hp:25,maxHp:100,mana:50,maxMana:100},{x:0,y:0,z:0},56,.1);flush();
+checkBar(unitView.hpFill,.25);checkBar(unitView.manaFill,.5);
+unitView.sync({hp:0,maxHp:0,mana:0,maxMana:0},{x:0,y:0,z:0},56,.1);
+checkBar(unitView.hpFill,0);checkBar(unitView.manaFill,0);assert.equal(unitView.manaFill.node.active,false);
+console.log('PASS actual UnitView: fixed left edges, independent HP/mana widths, clamped values, and delayed texture loading');
 
 const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
 const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
