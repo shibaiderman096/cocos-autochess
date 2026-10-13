@@ -211,12 +211,16 @@ console.log('[7] 金币不足');
   assert(r === 'not_enough_gold', '刷新余额不足应返回错误');
 }
 
-// ─── 8. 战斗期间禁止商店操作 ───
-console.log('[8] 战斗锁定');
+// ─── 8. 商店逻辑在战斗期间仍可调用（阶段 / 备战席保护由联动回归验证） ───
+console.log('[8] 连续交易');
 {
-  // 锁定由 BattleStage.fighting 拦截（UI 层），纯逻辑层由调用方保证。
-  // 这里测 ShopSystem 本身无 fighting 概念 → 跳过，但记录约定。
-  assert(true, '战斗锁定在 view 层实现（fighting 标志拦截 onBuy/onRefresh）');
+  const {shop,economy}=makeShop(4,60);
+  const gold=economy.gold;
+  const unitId=shop.slots[0].unitId!;
+  const price=UNITS.find(u=>u.id===unitId)!.cost!;
+  assert(!shop.buy(0).error,'购买可正常完成');
+  assert(shop.refresh()===null,'刷新可正常完成');
+  assert(economy.gold===gold-price-2,'交易按购买费用和刷新费用扣款');
 }
 
 // ─── 9. 存档读写一致 ───

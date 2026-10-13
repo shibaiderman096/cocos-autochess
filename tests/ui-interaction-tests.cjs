@@ -51,8 +51,18 @@ ui.refreshShop(Array.from({length:5},()=>({unitId:'warrior',name:'战士',cost:1
 flush(); assert.equal(ui.expFill.fillRange,2/6,'progress survives asynchronous image loading');
 assert.equal(ui.capLabel.node.active,false,'population stays hidden outside a drag');
 assert.equal(ui.node.getChildByName('formation'),undefined); assert.equal(ui.node.getChildByName('starLegend'),undefined);
-ui.showUnitDetail('战士 · 1星','生命 700\n攻击 55');
+const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,skillName:'斩击',skillDescription:'造成伤害'};
+ui.showUnitDetail(warriorDetail);
 assert.ok(ui.unitPanel.position.x>350); assert.equal(ui.node.getChildByName('detailShield'),undefined,'details do not block the board');
+flush(); assert.equal(ui.hpMeter.fill.fillRange,.5);assert.equal(ui.manaMeter.fill.fillRange,.2);
+assert.equal(ui.hpMeter.value.string,'350 / 700');assert.match(ui.unitStats[4].string,/1格/);
+ui.updateUnitVitals(0,700,0,0);assert.equal(ui.hpMeter.fill.fillRange,0);assert.equal(ui.manaMeter.fill.fillRange,0);
+ui.updateUnitVitals(999,700,200,100);assert.equal(ui.hpMeter.fill.fillRange,1);assert.equal(ui.manaMeter.fill.fillRange,1);
+assert.equal(ui.expLabel.node.parent,ui.buyExpBtn,'XP display is part of the purchase button');
+assert.equal(ui.expFill.node.parent.parent.parent,ui.buyExpBtn,'XP bar is part of the purchase button');
+assert.equal(ui.goldLabel.node.parent,ui.shopHeader);assert.ok(ui.goldLabel.node.position.y>ui.shopSlots[0].node.position.y);
+assert.deepEqual(ui.rateLabels.map(l=>l.string),['75%','25%','0%','0%','0%']);
+assert.equal(new Set(ui.rateLabels.map(l=>`${l.color.r},${l.color.g},${l.color.b}`)).size,5);
 let bought=0; ui.onBuy=()=>bought++;
 ui.showSellPreview('战士',1,false,4);
 assert.equal(ui.capLabel.string,'4 / 3'); assert.equal(ui.capLabel.color.r,229,'over-cap preview turns red');
@@ -66,8 +76,11 @@ assert.equal(ui.capLabel.node.active,false); assert.equal(ui.sellNode.active,fal
 ui.shopSlots[0].node.events.get('end')(); assert.equal(bought,1);
 ui.setShopVisible(false); ui.showSellPreview('战士',1,true,0); flush();
 assert.equal(ui.sellNode.active,false); assert.equal(ui.shopRoot.active,false); assert.equal(ui.economyControls.active,false);
-assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),false,'combat disables the sale target');
+assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),false,'settlement disables the sale target');
 ui.setShopVisible(true); assert.equal(ui.economyControls.active,true);
+ui.setCombatActive(true);flush();assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.shopRoot.active,true);assert.equal(ui.homeButton.active,false);
+assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),true,'combat keeps the reserve sale target enabled');
+ui.setCombatActive(false);
 assert.ok(ui.node.getChildByName('command').position.y<-230);
 assert.equal(SHOP_DROP_AREA.height,150);
 for(const card of ui.shopSlots) {
@@ -81,7 +94,10 @@ assert.equal(ui.floorLabel.string,'2-1'); assert.equal(ui.waveTrack.children.fil
 ui.refreshTop(10,2,new LevelSystem()); assert.equal(ui.floorLabel.string,'2-1','economy updates retain stage-round header');
 ui.refreshRun(20,20,1,23,'史莱姆营地',{stage:1,round:1,roundsInStage:3},3); flush();
 assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,3);
-console.log('PASS actual UI: async XP, non-modal sidebar, drag shop sale/population, cancellation, command exclusion, and combat lock');
+const delayedUI=new BattleUI();delayedUI.node=new Node('delayedUI');new Node('Canvas').addChild(delayedUI.node);delayedUI.init();
+delayedUI.showUnitDetail(warriorDetail);delayedUI.updateUnitVitals(175,700,60,100);flush();
+assert.equal(delayedUI.hpMeter.fill.fillRange,.25);assert.equal(delayedUI.manaMeter.fill.fillRange,.6,'live values survive delayed texture loading');
+console.log('PASS actual UI: merged XP, colored odds, gold header, range/live vitals, asynchronous bars, drag sale, and combat shop');
 
 const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
 const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));

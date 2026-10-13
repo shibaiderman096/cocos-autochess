@@ -124,7 +124,10 @@ export class OwnedUnits {
   tryMerge(unitId: string): OwnedUnit | null {
     let merged: OwnedUnit | null = null;
     for (let star = 1; star < 3; star++) {
-      let same = this.list.filter(u => u.unitId === unitId && u.star === star);
+      // Preserve a deployed slot when purchases combine board and reserve copies.
+      const candidates = () => this.list.filter(u => u.unitId === unitId && u.star === star)
+        .sort((a, b) => Number(b.location === 'board') - Number(a.location === 'board') || a.uid - b.uid);
+      let same = candidates();
       while (same.length >= MERGE_COUNT) {
         // 保留第一个，删除其余
         const keep = same[0];
@@ -134,7 +137,7 @@ export class OwnedUnits {
         }
         keep.star = star + 1;
         merged = keep;
-        same = this.list.filter(u => u.unitId === unitId && u.star === star);
+        same = candidates();
       }
     }
     return merged;

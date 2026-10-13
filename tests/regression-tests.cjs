@@ -85,12 +85,15 @@ class BattleReplayer {
 }
 class BattleUI {
   init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
-  refreshTop(gold, floor, lv) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; }
+  refreshTop(gold, floor, lv, rates) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; this.rates=rates; }
   refreshFormation() {}
   refreshRun(...args) { this.run = args; } setLocked(v) { this.locked = v; }
   clearSellPreview() { this.sale = null; } showSellPreview(...args) { this.sale = args; }
   isInSellArea(x,y) { return this.shopVisible !== false && containsShopDrop(x,y); }
-  showUnitDetail(title, detail) { this.detail = { title, detail }; }
+  showUnitDetail(data) { this.detail = data; this.unitDetailVisible=true; }
+  closeUnitDetail() { this.unitDetailVisible=false; }
+  updateUnitVitals(...args) { this.vitals=args; }
+  setCombatActive(v) { this.combatActive=v; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
   setShopVisible(v) { this.shopVisible = v; this.clearSellPreview(); }
@@ -147,7 +150,8 @@ function drag(stage, from, to) {
     const saved = freshSaveV2(); saved.owned = [{uid:1,unitId:'mage',star:1,location:'bench',x:-1,y:0}];
     const stage = await makeStage(saved), before = stage.owned.snapshot(), gold = stage.economy.gold;
     const p = stage.benchSlotWorld(0); stage.onTouchStart(touch(p)); stage.onTouchEnd(touch(p));
-    assert.match(stage.ui.detail.title,/法师/); assert.match(stage.ui.detail.detail,/火球/);
+    assert.match(stage.ui.detail.name,/法师/); assert.match(stage.ui.detail.skillName,/火球/);
+    assert.equal(stage.ui.detail.range,stage.cfg.getUnit('mage').range);
     assert.deepEqual(stage.owned.snapshot(),before); assert.equal(stage.economy.gold,gold);
   });
   await test('drag sale refunds discounted upgraded unit and restores original cards once', async () => {
@@ -221,7 +225,7 @@ function drag(stage, from, to) {
     const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
     assert.equal(reloaded.economy.gold, gold - 4); assert.equal(reloaded.levelSys.level, 3);
   });
-  await test('XP purchase rejects insufficient gold, max level, and battle phase without spending', async () => {
+  await test('XP purchase rejects insufficient gold and max level, and remains available during combat', async () => {
     const poor = await makeStage({ ...freshSaveV2(), gold: 3 });
     const before = storage.get(SAVE_KEY); poor.ui.onBuyExp();
     assert.equal(poor.economy.gold, 3); assert.equal(poor.levelSys.exp, 0); assert.equal(poor.levelSys.level, 1);
@@ -230,7 +234,8 @@ function drag(stage, from, to) {
     assert.equal(max.economy.gold, 20); assert.equal(max.levelSys.exp, 0); assert.equal(max.ui.warn, '已达最高等级');
     const fighting = await makeStage();
     fighting.owned.move(fighting.owned.all()[0].uid, { location: 'board', x: 2, y: 3 }); fighting.startFight();
-    fighting.ui.onBuyExp(); assert.equal(fighting.economy.gold, 20); assert.equal(fighting.levelSys.level, 1);
+    const sim=fighting.sim; fighting.ui.onBuyExp(); assert.equal(fighting.economy.gold, 16); assert.equal(fighting.levelSys.level, 3);
+    assert.equal(fighting.sim,sim);
   });
   await test('XP purchase carries remaining XP and stops charging after reaching level ten', async () => {
     const stage = await makeStage({ ...freshSaveV2(), level: 9, exp: 66 });
@@ -390,15 +395,16 @@ function drag(stage, from, to) {
     shop.sell(owned.all()[0].uid); shop.returnUnbought();
     assert.equal(pool.count('warrior'), 30);
   });
-  await test('empty formation cannot start, and combat locks purchases and dragging', async () => {
+  await test('empty formation cannot start, and combat freezes deployed units while allowing shop purchases', async () => {
     const stage = await makeStage(); stage.startFight();
     assert.equal(stage.fighting, false);
     const bv = stage.boardNode.getComponent(BoardView);
     drag(stage, stage.benchSlotWorld(0), bv.cellToWorld(2, 2)); stage.startFight();
-    const gold = stage.economy.gold, snapshot = stage.owned.snapshot();
-    stage.buyFromShop(0); stage.refreshShop();
+    const sim=stage.sim, formation=stage.owned.onBoard().map(u=>({...u})),gold=stage.economy.gold;
+    stage.buyFromShop(0); assert.ok(stage.economy.gold<gold); stage.refreshShop();
     drag(stage, bv.cellToWorld(2, 2), stage.benchSlotWorld(0));
-    assert.equal(stage.economy.gold, gold); assert.deepEqual(stage.owned.snapshot(), snapshot);
+    assert.equal(stage.sim,sim); assert.deepEqual(stage.owned.onBoard(),formation);
+    assert.equal(stage.draggingId,0); assert.equal(stage.ui.shopVisible,true);
   });
   await test('cancelled or invalid drag restores position and does not persist a move', async () => {
     const stage = await makeStage(); const initial = stage.owned.snapshot();
@@ -430,6 +436,73 @@ function drag(stage, from, to) {
     assert.equal(JSON.parse(storage.get(SAVE_KEY)).stageCount,5);
     stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
     stage.ui.onHome(); assert.equal(sceneLoads.length,1);
+  });
+  await test('combat shop, XP, lock, reserve swap/sale and board merging preserve the active battle', async () => {
+    const saved=freshSaveV2(); saved.level=4;saved.gold=100;
+    saved.owned=[{uid:1,unitId:'warrior',star:1,location:'board',x:2,y:2},
+      {uid:2,unitId:'warrior',star:1,location:'board',x:4,y:2},
+      {uid:3,unitId:'archer',star:1,location:'bench',x:-1,y:0},
+      {uid:4,unitId:'mage',star:1,location:'bench',x:-1,y:1}];
+    saved.shop=['warrior','guardian','mage','archer','scout'].map(unitId=>({unitId}));
+    const pool=new CardPool(units);for(const unit of saved.owned)pool.take(unit.unitId);saved.pool=pool.snapshot();
+    const stage=await makeStage(saved);stage.startFight();stage.update(.1);
+    const sim=stage.sim,driver=stage.driver,cursor=stage.replayer.eventCursor;
+    const combatViews=new Map(stage.views),snapshot=sim.units.map(u=>u.snapshot()),events=sim.events.map(e=>({...e}));
+    const battleId=stage.battleIds.get(2);
+    stage.buyFromShop(0);
+    assert.equal(stage.owned.get(1).star,2);assert.equal(stage.owned.get(2),undefined);
+    assert.equal(stage.views.get(stage.battleIds.get(1)).star,1,'upgrade is applied next combat');
+    assert.equal(sim.units.find(u=>u.id===battleId).star,1);
+    stage.showBattleDetail(battleId);assert.equal(stage.ui.detail.star,1);assert.equal(stage.ui.detail.hp,sim.units.find(u=>u.id===battleId).hp);
+    assert.equal(stage.ui.detail.range,stage.cfg.getUnit('warrior').range);
+    const archer=stage.owned.get(3),mage=stage.owned.get(4);
+    drag(stage,stage.benchSlotWorld(0),stage.benchSlotWorld(1));
+    assert.equal(archer.y,1);assert.equal(mage.y,0);
+    const bv=stage.boardNode.getComponent(BoardView);
+    drag(stage,stage.benchSlotWorld(1),bv.cellToWorld(3,2));assert.equal(archer.location,'bench');
+    const money=stage.economy.gold;
+    drag(stage,stage.benchSlotWorld(0),shopDrop());assert.equal(stage.owned.get(4),undefined);assert.equal(stage.economy.gold,money+3);
+    stage.ui.onBuyExp();stage.ui.onLock();assert.equal(stage.shop.locked,true);stage.ui.onRefresh();
+    assert.equal(stage.sim,sim);assert.equal(stage.driver,driver);assert.equal(stage.replayer.sim,sim);
+    assert.equal(stage.replayer.eventCursor,cursor);assert.deepEqual(sim.units.map(u=>u.snapshot()),snapshot);assert.deepEqual(sim.events,events);
+    for(const [id,view]of combatViews)assert.equal(stage.views.get(id),view);
+    for(const u of stage.owned.inBench())assert.equal(stage.ownedViews.get(u.uid).node.events.size,4);
+    const persisted=JSON.parse(storage.get(SAVE_KEY));assert.equal(persisted.round.phase,'battle');
+    assert.equal(persisted.shopLocked,true);assert.deepEqual(persisted.owned,stage.owned.snapshot());
+    sim.run();stage.update(.1);assert.equal(stage.flow.phase,'settlement');
+    const settledMoney=stage.economy.gold;stage.ui.onBuyExp();stage.ui.onRefresh();assert.equal(stage.economy.gold,settledMoney);
+    stage.restart();assert.equal(stage.views.get(stage.battleIds.get(1)).star,2,'next battle uses upgraded formation');
+  });
+  await test('combat ending mid-drag restores the reserve piece and prevents a late sale', async () => {
+    const stage=await makeStage(twoUnitSave());stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
+    const archer=stage.owned.get(2);stage.onTouchStart(touch(stage.benchSlotWorld(archer.y)));stage.onTouchMove(touch(shopDrop()));
+    assert.ok(stage.draggingId);stage.sim.run();stage.update(.1);
+    assert.equal(stage.draggingId,0);assert.deepEqual(stage.ownedViews.get(2).node.position,stage.benchSlotWorld(archer.y));
+    const gold=stage.economy.gold;stage.onTouchEnd(touch(shopDrop()));assert.equal(stage.economy.gold,gold);assert.ok(stage.owned.get(2));
+  });
+  await test('combat merge keeps the deployed position even when the oldest copy was on the bench', async () => {
+    const saved=freshSaveV2();saved.owned=[{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
+      {uid:2,unitId:'warrior',star:1,location:'board',x:3,y:3}];
+    saved.shop=['warrior',null,null,null,null].map(unitId=>({unitId}));
+    const stage=await makeStage(saved);stage.startFight();const sim=stage.sim;stage.buyFromShop(0);
+    assert.equal(stage.owned.get(1),undefined);assert.equal(stage.owned.get(2).star,2);
+    assert.equal(stage.owned.get(2).location,'board');assert.equal(stage.owned.get(2).x,3);
+    assert.equal(stage.sim,sim);assert.equal(sim.units.find(u=>u.side===0).star,1);
+  });
+  await test('combat details follow runtime HP/mana for allies and enemies even after death', async () => {
+    const stage=await makeStage();stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
+    const ally=stage.sim.units.find(u=>u.side===0),enemy=stage.sim.units.find(u=>u.side===1);
+    ally.hp=321;ally.mana=27;stage.showBattleDetail(ally.id);stage.refreshDetailVitals();
+    assert.deepEqual(stage.ui.vitals,[321,ally.cfg.hp,27,ally.cfg.maxMana]);
+    enemy.hp=0;enemy.alive=false;stage.showBattleDetail(enemy.id);stage.refreshDetailVitals();
+    assert.equal(stage.ui.detail.name,'小史莱姆');assert.equal(stage.ui.vitals[0],0);assert.equal(stage.ui.detail.side,1);
+  });
+  await test('displayed cost rates match implemented tiers and refresh stays populated at high level', async () => {
+    const saved=freshSaveV2();saved.level=10;saved.gold=100;
+    const stage=await makeStage(saved);const rates=stage.shop.costRates();
+    assert.equal(rates[3],0);assert.equal(rates[4],0);assert.ok(Math.abs(rates.reduce((a,b)=>a+b,0)-100)<1e-8);
+    assert.deepEqual(stage.ui.rates,rates);
+    for(let i=0;i<10;i++) { stage.refreshShop();assert.equal(stage.shop.slots.filter(s=>s.unitId).length,5); }
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;
