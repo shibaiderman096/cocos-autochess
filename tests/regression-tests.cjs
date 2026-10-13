@@ -90,7 +90,7 @@ const code = ts.transpileModule(fs.readFileSync(stageFile, 'utf8'), { compilerOp
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, experimentalDecorators: true,
 } }).outputText;
 const stageExports = {};
-const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI } };
+const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/UISkin': { setUISkin() {} } };
 new Function('require', 'exports', code)(id => {
   if (id === 'cc') return { Component, Node, Vec3, UITransform, Graphics, Label, Color, JsonAsset: class {},
     _decorator: { ccclass: () => c => c, property: () => () => {} },

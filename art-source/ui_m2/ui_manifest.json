@@ -1,0 +1,586 @@
+{
+  "panel_ink": {
+    "size": [
+      96,
+      96
+    ],
+    "png_size": [
+      192,
+      192
+    ],
+    "slice_border_px_1x": 16,
+    "note": "Sprite Type=Sliced，四边 16"
+  },
+  "panel_side": {
+    "size": [
+      96,
+      96
+    ],
+    "png_size": [
+      192,
+      192
+    ],
+    "slice_border_px_1x": 16,
+    "note": "Sprite Type=Sliced，四边 16"
+  },
+  "panel_dock": {
+    "size": [
+      96,
+      96
+    ],
+    "png_size": [
+      192,
+      192
+    ],
+    "slice_border_px_1x": 16,
+    "note": "Sprite Type=Sliced，四边 16"
+  },
+  "panel_modal": {
+    "size": [
+      96,
+      96
+    ],
+    "png_size": [
+      192,
+      192
+    ],
+    "slice_border_px_1x": 16,
+    "note": "Sprite Type=Sliced，四边 16"
+  },
+  "btn_primary": {
+    "size": [
+      96,
+      48
+    ],
+    "png_size": [
+      192,
+      96
+    ],
+    "slice_border_px_1x": 14,
+    "note": "Sprite Type=Sliced，四边 14；文字用 Label"
+  },
+  "btn_secondary": {
+    "size": [
+      96,
+      48
+    ],
+    "png_size": [
+      192,
+      96
+    ],
+    "slice_border_px_1x": 14,
+    "note": "Sprite Type=Sliced，四边 14；文字用 Label"
+  },
+  "btn_disabled": {
+    "size": [
+      96,
+      48
+    ],
+    "png_size": [
+      192,
+      96
+    ],
+    "slice_border_px_1x": 14,
+    "note": "Sprite Type=Sliced，四边 14；文字用 Label"
+  },
+  "btn_danger": {
+    "size": [
+      96,
+      48
+    ],
+    "png_size": [
+      192,
+      96
+    ],
+    "slice_border_px_1x": 14,
+    "note": "Sprite Type=Sliced，四边 14；文字用 Label"
+  },
+  "icon_lock_closed": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_lock_open": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_refresh": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_exp": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_sell": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_info": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_wave": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_swords": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_speed": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_close": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "icon_life": {
+    "size": [
+      48,
+      48
+    ],
+    "png_size": [
+      96,
+      96
+    ]
+  },
+  "stat_hp": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "stat_atk": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "stat_armor": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "stat_range": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "stat_mana": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "stat_aspd": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "card_cost1": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "费用 1 的商店卡片；价格框中心 (139,80)，肖像中心 (82,37)"
+  },
+  "card_cost2": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "费用 2 的商店卡片；价格框中心 (139,80)，肖像中心 (82,37)"
+  },
+  "card_cost3": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "费用 3 的商店卡片；价格框中心 (139,80)，肖像中心 (82,37)"
+  },
+  "card_cost4": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "费用 4 的商店卡片；价格框中心 (139,80)，肖像中心 (82,37)"
+  },
+  "card_cost5": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "费用 5 的商店卡片；价格框中心 (139,80)，肖像中心 (82,37)"
+  },
+  "card_empty": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "已买走 / 空位"
+  },
+  "card_lock_overlay": {
+    "size": [
+      164,
+      104
+    ],
+    "png_size": [
+      328,
+      208
+    ],
+    "note": "锁店后叠在每张卡上，右上角带锁徽章"
+  },
+  "btn_lock_off": {
+    "size": [
+      40,
+      40
+    ],
+    "png_size": [
+      80,
+      80
+    ],
+    "note": "锁店开关（未锁 / 已锁）"
+  },
+  "btn_lock_on": {
+    "size": [
+      40,
+      40
+    ],
+    "png_size": [
+      80,
+      80
+    ],
+    "note": "锁店开关（未锁 / 已锁）"
+  },
+  "life_full": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "life_empty": {
+    "size": [
+      24,
+      24
+    ],
+    "png_size": [
+      48,
+      48
+    ]
+  },
+  "wave_done": {
+    "size": [
+      28,
+      28
+    ],
+    "png_size": [
+      56,
+      56
+    ]
+  },
+  "wave_current": {
+    "size": [
+      28,
+      28
+    ],
+    "png_size": [
+      56,
+      56
+    ]
+  },
+  "wave_todo": {
+    "size": [
+      28,
+      28
+    ],
+    "png_size": [
+      56,
+      56
+    ]
+  },
+  "wave_boss": {
+    "size": [
+      28,
+      28
+    ],
+    "png_size": [
+      56,
+      56
+    ]
+  },
+  "badge_level": {
+    "size": [
+      36,
+      36
+    ],
+    "png_size": [
+      72,
+      72
+    ],
+    "note": "等级徽章，数字用 Label"
+  },
+  "exp_bar_bg": {
+    "size": [
+      174,
+      10
+    ],
+    "png_size": [
+      348,
+      20
+    ]
+  },
+  "exp_bar_fill": {
+    "size": [
+      170,
+      6
+    ],
+    "png_size": [
+      340,
+      12
+    ],
+    "note": "用 Sprite Filled Horizontal 控制进度"
+  },
+  "star_badge_1": {
+    "size": [
+      60,
+      20
+    ],
+    "png_size": [
+      120,
+      40
+    ]
+  },
+  "star_badge_2": {
+    "size": [
+      60,
+      20
+    ],
+    "png_size": [
+      120,
+      40
+    ]
+  },
+  "star_badge_3": {
+    "size": [
+      60,
+      20
+    ],
+    "png_size": [
+      120,
+      40
+    ]
+  },
+  "divider": {
+    "size": [
+      240,
+      10
+    ],
+    "png_size": [
+      480,
+      20
+    ]
+  },
+  "sell_zone": {
+    "size": [
+      192,
+      64
+    ],
+    "png_size": [
+      384,
+      128
+    ],
+    "note": "拖拽棋子到这里出售；中间放 icon_sell + Label"
+  },
+  "sell_zone_hot": {
+    "size": [
+      192,
+      64
+    ],
+    "png_size": [
+      384,
+      128
+    ],
+    "note": "棋子悬停在出售区上时"
+  },
+  "bench_slot": {
+    "size": [
+      56,
+      56
+    ],
+    "png_size": [
+      112,
+      112
+    ]
+  },
+  "bench_slot_hover": {
+    "size": [
+      56,
+      56
+    ],
+    "png_size": [
+      112,
+      112
+    ]
+  },
+  "tooltip_panel": {
+    "size": [
+      96,
+      96
+    ],
+    "png_size": [
+      192,
+      192
+    ],
+    "slice_border_px_1x": 16,
+    "note": "棋子详情提示框，九宫格"
+  },
+  "tooltip_tail": {
+    "size": [
+      24,
+      12
+    ],
+    "png_size": [
+      48,
+      24
+    ],
+    "note": "挂在提示框底边中间，指向棋子"
+  },
+  "banner_victory": {
+    "size": [
+      520,
+      110
+    ],
+    "png_size": [
+      1040,
+      220
+    ],
+    "note": "胜利横幅，文字用 Label 居中 (260,56)"
+  },
+  "banner_defeat": {
+    "size": [
+      520,
+      110
+    ],
+    "png_size": [
+      1040,
+      220
+    ],
+    "note": "失败横幅"
+  }
+}
