@@ -215,6 +215,7 @@ export class BattleUI extends Component {
       n.setScale(SHOP_CARDS.scale, SHOP_CARDS.scale, 1); n.addComponent(UIOpacity);
       const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
       const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
+      sprite.trim = false;
       portrait.setPosition(0, 15, 0); n.addChild(portrait);
       const base = new Node('factionRing'); portrait.addChild(base);
       drawFactionRing(base.addComponent(Graphics), 62, 0);
@@ -266,6 +267,7 @@ export class BattleUI extends Component {
     const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
     this.unitPanel.addChild(portrait); portrait.setPosition(-70, 140, 0);
     this.unitPortrait = portrait.addComponent(Sprite); this.unitPortrait.sizeMode = Sprite.SizeMode.CUSTOM;
+    this.unitPortrait.trim = false;
     this.unitTitle = label(this.unitPanel, '', 26, 154, 16, GOLD, 124);
     this.unitStars = new Node('detailStars'); this.unitStars.addComponent(UITransform).setContentSize(60, 20);
     this.unitPanel.addChild(this.unitStars); this.unitStars.setPosition(14, 122, 0);

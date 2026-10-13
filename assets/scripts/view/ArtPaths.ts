@@ -1,12 +1,27 @@
 /** Runtime resource paths, relative to assets/resources. */
-export const UNIT_SPRITE: Record<string, string> = {
-  'warrior_ally': 'art/units/warrior_ally/spriteFrame',
-  'archer_ally':  'art/units/archer_ally/spriteFrame',
-  'mage_ally':    'art/units/mage_ally/spriteFrame',
-  'warrior_enemy': 'art/units/warrior_enemy/spriteFrame',
-  'archer_enemy':  'art/units/archer_enemy/spriteFrame',
-  'mage_enemy':    'art/units/mage_enemy/spriteFrame',
+/** Each configured unit has its own asset. Faction rings and bars identify sides. */
+export const UNIT_ART: Record<string, string> = {
+  warrior: 'art/units/placeholders/warrior/spriteFrame',
+  archer: 'art/units/archer_ally/spriteFrame',
+  mage: 'art/units/professions/mage/spriteFrame',
+  scout: 'art/units/placeholders/archer/spriteFrame',
+  guardian: 'art/units/warrior_ally/spriteFrame',
+  duelist: 'art/units/professions/duelist/spriteFrame',
+  ranger: 'art/units/professions/ranger/spriteFrame',
+  shaman: 'art/units/professions/shaman/spriteFrame',
+  sorcerer: 'art/units/mage_ally/spriteFrame',
+  champion: 'art/units/placeholders/mage/spriteFrame',
+  // No creature illustrations supplied yet; these old variants are placeholders.
+  slime: 'art/units/warrior_enemy/spriteFrame',
+  wolf_pup: 'art/units/archer_enemy/spriteFrame',
+  small_golem: 'art/units/mage_enemy/spriteFrame',
 };
+
+export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
+  Object.entries(UNIT_ART).flatMap(([id, path]) => [
+    [`${id}_ally`, path], [`${id}_enemy`, path],
+  ]),
+);
 
 export const TILE_SPRITE = {
   light:      'art/tiles/tile_light/spriteFrame',

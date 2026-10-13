@@ -18,7 +18,8 @@ export interface UnitConfigData {
   startMana: number;
   manaPerHit: number;
   skillId?: string;
-  artId?: 'warrior' | 'archer' | 'mage';
+  /** Presentation resource id; independent of unit role and combat behavior. */
+  artId?: string;
   role?: 'frontline' | 'ranged' | 'caster';
   tint?: string;
 }

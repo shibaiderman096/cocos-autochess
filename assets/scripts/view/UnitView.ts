@@ -35,6 +35,7 @@ export class UnitView extends Component {
     body.addComponent(UITransform).setContentSize(size, size);
     this.bodySprite = body.addComponent(Sprite);
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
+    this.bodySprite.trim = false;
     this.node.addChild(body);
 
     // Faction and rank have independent visual markers.
