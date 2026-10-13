@@ -5,7 +5,7 @@ import { SHOP_DROP_AREA, SHOP_CARDS, containsShopDrop } from './BattleUILayout';
 import { drawFactionRing } from '../view/FactionRing';
 import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
-import { RoundSettlement } from '../core/RoundFlow';
+import { RoundSettlement, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
 
 const { ccclass } = _decorator;
@@ -17,7 +17,7 @@ const TEAL = new Color(89, 203, 176);
 const TIERS = [MUTED, new Color(163, 177, 169), TEAL, new Color(86, 167, 226), new Color(181, 127, 230), GOLD];
 interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
 
-function label(parent: Node, text: string, x: number, y: number, size = 18, color = TEXT, width = 240): Label {
+export function label(parent: Node, text: string, x: number, y: number, size = 18, color = TEXT, width = 240): Label {
   const n = new Node('text'); n.addComponent(UITransform).setContentSize(width, size * 2 + 8);
   const l = n.addComponent(Label); l.string = text; l.fontSize = size; l.lineHeight = size + 5; l.color = color;
   parent.addChild(n); n.setPosition(x, y, 0); return l;
@@ -34,13 +34,13 @@ function paintPanel(g: Graphics, w: number, h: number, fill = INK, edge = GOLD):
   g.strokeColor = new Color(edge.r, edge.g, edge.b, 60);
   g.rect(-x + 4, -y + 4, w - 8, h - 8); g.stroke();
 }
-function panel(parent: Node, name: string, x: number, y: number, w: number, h: number, fill = INK, edge = GOLD, skin: UISkinKey | null = 'panel_ink'): Node {
+export function panel(parent: Node, name: string, x: number, y: number, w: number, h: number, fill = INK, edge = GOLD, skin: UISkinKey | null = 'panel_ink'): Node {
   const n = new Node(name); n.addComponent(UITransform).setContentSize(w, h);
   const g = n.addComponent(Graphics); paintPanel(g, w, h, fill, edge);
   if (skin) setUISkin(n, skin, g);
   parent.addChild(n); n.setPosition(x, y, 0); return n;
 }
-function button(parent: Node, text: string, x: number, y: number, w: number, h: number, action: () => void, primary = false): Node {
+export function button(parent: Node, text: string, x: number, y: number, w: number, h: number, action: () => void, primary = false): Node {
   const n = panel(parent, 'button', x, y, w, h, primary ? new Color(44, 77, 76) : new Color(24, 44, 51), primary ? GOLD : new Color(90, 123, 123), primary ? 'btn_primary' : 'btn_secondary');
   label(n, text, 0, 0, primary ? 22 : 17, primary ? TEXT : MUTED, w - 10);
   n.on(Node.EventType.TOUCH_END, action); return n;
@@ -57,6 +57,7 @@ export class BattleUI extends Component {
   onFight = () => {};
   onSpeed = (s: number) => {};
   onRestart = () => {};
+  onHome = () => {};
   onBuy = (slot: number) => {};
   onRefresh = () => {};
   onBuyExp = () => {};
@@ -73,7 +74,7 @@ export class BattleUI extends Component {
   private unitPanel: Node;
   private unitTitle: Label;
   private unitDetail: Label;
-  private waveTotal = 7;
+  private homeButton: Node;
   private speed = 1;
   private backdrop: Node;
   private fightBtn: Node;
@@ -109,7 +110,7 @@ export class BattleUI extends Component {
     this.node.addComponent(UITransform).setContentSize(1280, 720);
     this.drawArena();
     const header = panel(this.node, 'roundBar', 0, 310, 330, 54, new Color(17, 35, 42), GOLD);
-    this.floorLabel = label(header, '1 / 7', -78, 0, 22, GOLD, 130);
+    this.floorLabel = label(header, '1-1', -78, 0, 22, GOLD, 155);
     this.phaseLabel = label(header, '准备', 76, 0, 17, TEAL, 130);
     this.healthLabel = label(this.node, '20 / 20', 490, 320, 19, TEAL, 190);
     this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 220);
@@ -138,36 +139,36 @@ export class BattleUI extends Component {
 
   private buildEconomy(dock: Node): void {
     this.economyRoot = new Node('economy'); dock.addChild(this.economyRoot);
-    this.economyRoot.setPosition(-398, 0, 0);
+    this.economyRoot.setPosition(-402, 0, 0);
     const goldIcon = new Node('goldIcon'); goldIcon.addComponent(UITransform).setContentSize(22, 22);
     const goldSprite = goldIcon.addComponent(Sprite); goldSprite.sizeMode = Sprite.SizeMode.CUSTOM;
-    this.economyRoot.addChild(goldIcon); goldIcon.setPosition(-57, 36, 0);
+    this.economyRoot.addChild(goldIcon); goldIcon.setPosition(-57, 50, 0);
     resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
       if (!err && goldSprite.isValid) goldSprite.spriteFrame = frame;
     });
-    this.goldLabel = label(this.economyRoot, '20', 8, 36, 22, GOLD, 110);
-    picture(this.economyRoot, 'badge_level', -57, 4, 28);
-    this.levelBadgeLabel = label(this.economyRoot, '1', -57, 4, 14, GOLD, 24);
-    this.expLabel = label(this.economyRoot, '0 / 2', 2, 18, 10, MUTED, 100);
-    const exp = new Node('experience'); this.economyRoot.addChild(exp); exp.setPosition(2, 3, 0);
+    this.goldLabel = label(this.economyRoot, '20', 8, 50, 22, GOLD, 110);
+    picture(this.economyRoot, 'badge_level', -57, 17, 28);
+    this.levelBadgeLabel = label(this.economyRoot, '1', -57, 17, 14, GOLD, 24);
+    this.expLabel = label(this.economyRoot, '0 / 2', 2, 26, 10, MUTED, 100);
+    const exp = new Node('experience'); this.economyRoot.addChild(exp); exp.setPosition(2, 12, 0);
     picture(exp, 'exp_bar_bg', 0, 0, 88, 8);
     this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 84, 4, sprite => {
       sprite.type = Sprite.Type.FILLED; sprite.fillType = Sprite.FillType.HORIZONTAL;
       sprite.fillStart = 0; sprite.fillRange = this.expRatio;
     });
     this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
-    this.buyExpBtn = button(this.economyControls, '', -38, -28, 72, 32,
+    this.buyExpBtn = button(this.economyControls, '', 0, -20, 148, 30,
       () => { if (this.canBuyExp) this.onBuyExp(); });
     this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
-    this.buyExpLabel.fontSize = 12; this.buyExpLabel.lineHeight = 16; this.buyExpLabel.node.setPosition(0, 6, 0);
-    this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(66, 22);
-    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 0, -8, 10, GOLD, 66);
-    const refresh = button(this.economyControls, '', 38, -28, 72, 32, () => this.onRefresh());
-    refresh.name = 'refresh'; label(refresh, '刷新', 0, 6, 12, TEXT, 66);
-    label(refresh, '2金', 0, -8, 10, GOLD, 66);
+    this.buyExpLabel.fontSize = 14; this.buyExpLabel.lineHeight = 18; this.buyExpLabel.node.setPosition(-17, 0, 0);
+    this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(98, 24);
+    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 52, 0, 12, GOLD, 36);
+    const refresh = button(this.economyControls, '', 0, -55, 148, 30, () => this.onRefresh());
+    refresh.name = 'refresh'; label(refresh, '刷新', -17, 0, 14, TEXT, 98);
+    label(refresh, '2金', 52, 0, 12, GOLD, 36);
     const lock = new Node('lock'); lock.addComponent(UITransform).setContentSize(24, 24);
-    this.economyControls.addChild(lock); lock.setPosition(64, 4, 0);
+    this.economyControls.addChild(lock); lock.setPosition(864, 52, 0);
     this.lockIcon = setUISkin(lock, 'btn_lock_off'); lock.on(Node.EventType.TOUCH_END, () => this.onLock());
     this.setLocked(false);
   }
@@ -195,15 +196,17 @@ export class BattleUI extends Component {
   }
 
   private buildCommand(): void {
-    const command = panel(this.node, 'command', 482, -292, 212, 112,
+    const command = panel(this.node, 'command', 482, SHOP_DROP_AREA.y, 212, 150,
       new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
-    this.fightBtn = button(command, '开始战斗', 0, 20, 188, 42, () => this.onFight(), true);
+    this.fightBtn = button(command, '开始战斗', 0, 32, 188, 42, () => this.onFight(), true);
     picture(this.fightBtn, 'icon_swords', -76, 0, 22);
     this.fightBtn.getChildByName('text')!.setPosition(10, 0, 0);
-    const speed = button(command, '', 0, -27, 188, 30,
+    const speed = button(command, '', 0, -13, 188, 30,
       () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
     picture(speed, 'icon_speed', -76, 0, 20);
     this.speedLabel = label(speed, '×1', 0, 0, 15, MUTED, 150);
+    this.homeButton = button(command, '主界面', 0, -50, 188, 28, () => this.onHome());
+    this.homeButton.getChildByName('text')!.getComponent(Label)!.fontSize = 13;
   }
 
   private buildSettlement(): void {
@@ -220,6 +223,7 @@ export class BattleUI extends Component {
     this.detailLabel.node.getComponent(UITransform)!.setContentSize(510, 140);
     const next = button(result, '下一波', 0, -145, 240, 46, () => this.onRestart(), true);
     this.nextLabel = next.getChildByName('text')!.getComponent(Label)!;
+    button(this.resultPanel, '返回主界面', 0, -205, 180, 32, () => this.onHome());
     this.resultPanel.active = false;
   }
 
@@ -270,8 +274,8 @@ export class BattleUI extends Component {
   showFightBtn(): void { if (this.fightBtn) this.fightBtn.active = true; }
   hideFightBtn(): void { if (this.fightBtn) this.fightBtn.active = false; }
 
-  refreshTop(gold: number, floor: number, lv: LevelSystem): void {
-    this.goldLabel.string = `${gold}`; this.floorLabel.string = `${floor} / ${this.waveTotal}`;
+  refreshTop(gold: number, _floor: number, lv: LevelSystem): void {
+    this.goldLabel.string = `${gold}`;
     this.cap = lv.unitCap; this.updateCap();
     this.levelBadgeLabel.string = `${lv.level}`;
     const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
@@ -314,6 +318,7 @@ export class BattleUI extends Component {
   }
   setShopVisible(v: boolean): void {
     this.shopAvailable = v; this.clearSellPreview();
+    this.homeButton.active = v;
     this.phaseLabel.string = v ? '准备' : '战斗'; this.phaseLabel.color = v ? TEAL : GOLD;
   }
   showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number, round?: RoundSettlement): void {
@@ -323,23 +328,24 @@ export class BattleUI extends Component {
     setUISkin(this.resultBanner.node, win ? 'banner_victory' : 'banner_defeat');
     this.phaseLabel.string = ended ? '整局结束' : '战斗结算';
     this.reportLabel.string = ended ? '整 局 结 束' : '远 征 战 报';
-    this.nextLabel.string = ended ? '重开一局  ↻' : '下一波  ›';
+    this.nextLabel.string = ended ? '重开一局  ↻' : '下一小关  ›';
     const gold = settle ? `阶段 +${settle.floorIncome}    胜利 +${settle.winBonus}    利息 +${settle.interest}\n连胜 / 连败 +${settle.streakBonus}    金币合计 +${settle.total}\n` : '';
-    const health = round ? `第 ${round.waveId} 波 · 敌方存活 ${round.enemySurvivors}\n生命 -${round.healthLost}    剩余生命 ${round.healthRemaining}\n` : '';
+    const health = round ? `${round.stage ? `${round.stage}-${round.round}` : `第 ${round.waveId} 波`} · 敌方存活 ${round.enemySurvivors}\n生命 -${round.healthLost}    剩余生命 ${round.healthRemaining}\n` : '';
     this.detailLabel.string = `${health}${gold}经验 +${expGained}${levelUps ? `    升至等级 ${newLevel}` : ''}`;
     this.unitPanel.active = false; this.resultPanel.active = true;
   }
   hideResult(): void { this.resultPanel.active = false; }
-  refreshRun(health: number, max: number, wave: number, total: number, name: string): void {
-    this.waveTotal = total;
+  refreshRun(health: number, max: number, wave: number, total: number, name: string, info?: WaveConfig, stageCount?: number): void {
     this.healthLabel.string = `${health} / ${max}`;
     this.healthLabel.color = health <= max / 3 ? new Color(229, 139, 122) : TEAL;
-    this.floorLabel.string = `${wave} / ${total}`; this.waveLabel.string = name;
+    this.floorLabel.string = info?.stage ? `${info.stage}-${info.round}` : `${wave} / ${total}`;
+    this.waveLabel.string = info?.stage ? `${name} · 阶段 ${info.stage} / ${stageCount}` : name;
+    const current = info?.round ?? wave, count = info?.roundsInStage ?? total;
     for (const child of [...this.waveTrack.children]) if (child.name !== 'skin') child.destroy();
-    const spacing = Math.min(36, 260 / total);
-    for (let i = 0; i < total; i++) {
-      const key = i + 1 < wave ? 'wave_done' : i + 1 === wave ? 'wave_current' : i === total - 1 ? 'wave_boss' : 'wave_todo';
-      picture(this.waveTrack, key, (i - (total - 1) / 2) * spacing, 0, 20);
+    const spacing = Math.min(36, 260 / count);
+    for (let i = 0; i < count; i++) {
+      const key = i + 1 < current ? 'wave_done' : i + 1 === current ? 'wave_current' : i === count - 1 && info?.stage !== 1 ? 'wave_boss' : 'wave_todo';
+      picture(this.waveTrack, key, (i - (count - 1) / 2) * spacing, 0, 20);
     }
   }
   setLocked(locked: boolean): void {

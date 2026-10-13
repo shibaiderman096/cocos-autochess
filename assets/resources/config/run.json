@@ -1,0 +1,15 @@
+{
+  "roundsPerStage": 10,
+  "stageStatGrowth": 0.25,
+  "starterUnitId": "warrior",
+  "monsters": [
+    { "id": "slime", "name": "小史莱姆", "hp": 30, "atk": 1, "armor": 0, "mr": 0, "atkSpeed": 0.5, "range": 1, "moveTicks": 6, "maxMana": 100, "startMana": 0, "manaPerHit": 0, "artId": "warrior", "tint": "91C766" },
+    { "id": "wolf_pup", "name": "幼年野狼", "hp": 40, "atk": 2, "armor": 0, "mr": 0, "atkSpeed": 0.5, "range": 1, "moveTicks": 5, "maxMana": 100, "startMana": 0, "manaPerHit": 0, "artId": "archer", "tint": "A7B9B8" },
+    { "id": "small_golem", "name": "小石灵", "hp": 60, "atk": 3, "armor": 0, "mr": 0, "atkSpeed": 0.4, "range": 1, "moveTicks": 8, "maxMana": 100, "startMana": 0, "manaPerHit": 0, "artId": "warrior", "tint": "B9A486" }
+  ],
+  "introWaves": [
+    { "id": 1, "name": "史莱姆营地", "enemies": [ { "unitId": "slime", "x": 3, "y": 4, "star": 1, "statMultiplier": 1 } ] },
+    { "id": 2, "name": "幼狼营地", "enemies": [ { "unitId": "wolf_pup", "x": 2, "y": 4, "star": 1, "statMultiplier": 1 }, { "unitId": "wolf_pup", "x": 4, "y": 4, "star": 1, "statMultiplier": 1 } ] },
+    { "id": 3, "name": "石灵营地", "enemies": [ { "unitId": "small_golem", "x": 2, "y": 4, "star": 1, "statMultiplier": 1 }, { "unitId": "slime", "x": 3, "y": 5, "star": 1, "statMultiplier": 1 }, { "unitId": "small_golem", "x": 4, "y": 4, "star": 1, "statMultiplier": 1 } ] }
+  ]
+}

@@ -30,8 +30,10 @@ class Color {
   fromHEX() {} static WHITE=new Color(255,255,255);
 }
 class Graphics { isValid=true; clear(){} moveTo(){} lineTo(){} close(){} fill(){} stroke(){} rect(){} ellipse(){} }
-const cc={Node,UITransform,Sprite,Label,Color,Graphics,UIOpacity:class{},SpriteFrame:class{},Component:class{},
-  resources:{load:(name,T,cb)=>pending.push(()=>cb(null,{name}))},_decorator:{ccclass:()=>c=>c}};
+let sceneAccepted=true, sceneError=null; const sceneLoads=[];
+const cc={Node,UITransform,Sprite,Label,Color,Graphics,UIOpacity:class{},SpriteFrame:class{},JsonAsset:class{},Component:class{isValid=true},
+  director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
+  resources:{load:(name,T,cb)=>pending.push(()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name}))},_decorator:{ccclass:()=>c=>c}};
 const cache=new Map();
 function load(file) {
   file=path.resolve(file); if(cache.has(file)) return cache.get(file);
@@ -67,4 +69,42 @@ assert.equal(ui.sellNode.active,false); assert.equal(ui.shopRoot.active,false); 
 assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),false,'combat disables the sale target');
 ui.setShopVisible(true); assert.equal(ui.economyControls.active,true);
 assert.ok(ui.node.getChildByName('command').position.y<-230);
+assert.equal(SHOP_DROP_AREA.height,150);
+for(const card of ui.shopSlots) {
+  const size=card.node.getComponent(UITransform).contentSize;
+  assert.ok(ui.isInSellArea(card.node.position.x-size.width*card.node.scale.x/2,card.node.position.y));
+  assert.ok(ui.isInSellArea(card.node.position.x+size.width*card.node.scale.x/2,card.node.position.y));
+}
+assert.equal(ui.buyExpBtn.position.x,ui.economyControls.getChildByName('refresh').position.x,'TFT controls stack in left column');
+ui.refreshRun(20,20,4,23,'边境哨卫',{stage:2,round:1,roundsInStage:10},3); flush();
+assert.equal(ui.floorLabel.string,'2-1'); assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,10);
+ui.refreshTop(10,2,new LevelSystem()); assert.equal(ui.floorLabel.string,'2-1','economy updates retain stage-round header');
+ui.refreshRun(20,20,1,23,'史莱姆营地',{stage:1,round:1,roundsInStage:3},3); flush();
+assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,3);
 console.log('PASS actual UI: async XP, non-modal sidebar, drag shop sale/population, cancellation, command exclusion, and combat lock');
+
+const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
+const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
+const storage=new Map(); global.localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
+const createMenu=()=>{const menu=new MainMenu();menu.node=new Node('MainMenu');new Node('Canvas').addChild(menu.node);menu.start();return menu;};
+let menu=createMenu(); menu.startNewRun(); assert.equal(sceneLoads.length,0,'configuration must finish before starting'); flush();
+const setup=menu.node.getChildByName('runSetup');
+setup.getChildByName('fewerStages').events.get('end')(); assert.equal(menu.stageCount,3);
+setup.getChildByName('moreStages').events.get('end')(); assert.equal(menu.stageCount,4); assert.match(menu.summary.string,/33/);
+setup.getChildByName('startGame').events.get('end')();
+assert.deepEqual(sceneLoads,['scene']); assert.equal(loadSaveV2().stageCount,4); assert.equal(loadSaveV2().round,null);
+setup.getChildByName('startGame').events.get('end')(); assert.equal(sceneLoads.length,1,'double start is blocked');
+const saved=freshSaveV2(5);saved.gold=77;saved.round={phase:'prepare',waveIndex:3,health:18,result:null,lastSettlement:null};writeSaveV2(saved);
+menu=createMenu();flush(); assert.ok(menu.node.getChildByName('continueGame'));const before=storage.get(SAVE_KEY);
+menu.node.getChildByName('continueGame').events.get('end')();assert.equal(storage.get(SAVE_KEY),before,'continue preserves exact saved run');
+menu=createMenu();flush();sceneAccepted=false;menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before,'scene failure restores previous run');assert.equal(menu.loading,false);
+sceneAccepted=true;sceneError=new Error('launch error');menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before);assert.match(menu.status.string,/加载失败/);
+sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,5);assert.equal(loadSaveV2().gold,20);assert.equal(loadSaveV2().round,null);
+const main=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/main.scene'),'utf8'));
+assert.equal(main[0]._name,'main');assert.ok(main.some(o=>o.__type__==='3d5ecIKFJdMUocoPL3jTL8c'));
+assert.ok(!main.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'menu contains no battle stage');
+const checkRefs=o=>{if(!o||typeof o!=='object')return;if('__id__'in o) assert.ok(main[o.__id__]);for(const v of Object.values(o))checkRefs(v);};main.forEach(checkRefs);
+const builder=JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/builder.json'),'utf8'));
+assert.ok(builder.scenes.some(s=>s.uuid===builder.startScene&&s.url==='db://assets/main.scene'));
+assert.ok(builder.scenes.some(s=>s.url==='db://assets/scene.scene'));
+console.log('PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');

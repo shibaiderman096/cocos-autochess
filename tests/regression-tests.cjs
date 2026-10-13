@@ -13,9 +13,10 @@ const { ShopSystem } = core('ShopSystem');
 const { EconomySystem } = core('EconomySystem');
 const { Rng } = core('Rng');
 const { migrateSaveV2, freshSaveV2, SAVE_KEY } = core('ShopSave');
+const sceneLoads = [];
 const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
 const { SHOP_DROP_AREA, containsShopDrop } = require('../assets/scripts/ui/BattleUILayout.ts');
-const shopDrop = () => new Vec3(SHOP_DROP_AREA.x, SHOP_DROP_AREA.y);
+const shopDrop = () => new Vec3(SHOP_DROP_AREA.x, SHOP_DROP_AREA.y - 60);
 const units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
 const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
 let passed = 0, failed = 0;
@@ -44,7 +45,14 @@ class Node {
   off(type) { this.events.delete(type); }
   destroy() { if (this.parent) this.parent.children = this.parent.children.filter(n => n !== this); }
 }
-class UITransform { setContentSize(w, h) { this.contentSize = { width: w, height: h }; } convertToNodeSpaceAR(p) { return p; } }
+class UITransform {
+  setContentSize(w, h) { this.contentSize = { width: w, height: h }; }
+  convertToNodeSpaceAR(p) {
+    const local=p.clone();
+    for(let node=this.node;node;node=node.parent) { local.x-=node.position.x;local.y-=node.position.y; }
+    return local;
+  }
+}
 class Color { constructor(...rgba) { this.rgba = rgba; } static WHITE = new Color(255, 255, 255); }
 class Graphics { rect() {} roundRect() {} fill() {} stroke() {} }
 class Label {}
@@ -95,6 +103,7 @@ const stageExports = {};
 const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/UISkin': { setUISkin() {} } };
 new Function('require', 'exports', code)(id => {
   if (id === 'cc') return { Component, Node, Vec3, UITransform, Graphics, Label, Color, JsonAsset: class {},
+    director: { loadScene: name => { sceneLoads.push(name); return true; } },
     _decorator: { ccclass: () => c => c, property: () => () => {} },
     resources: { load: (name, T, cb) => cb(null, { json: JSON.parse(fs.readFileSync(path.join(root, 'assets/resources', name + '.json'), 'utf8')) }) } };
   return viewMocks[id] ?? require(path.resolve(path.dirname(stageFile), id) + '.ts');
@@ -109,7 +118,14 @@ async function makeStage(saved) {
   stage.boardNode.addComponent(BoardView);
   await stage.start(); return stage;
 }
-const touch = pos => ({ getUILocation: () => pos });
+// Board inputs become Canvas coordinates, including the board's 60-pixel offset.
+const touch = pos => ({ getUILocation: () => new Vec3(pos.x,pos.y+60) });
+function twoUnitSave() {
+  const saved = freshSaveV2(); saved.shopReserved = true;
+  saved.owned = [{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
+    {uid:2,unitId:'archer',star:1,location:'bench',x:-1,y:1}];
+  return saved;
+}
 function drag(stage, from, to) {
   stage.onTouchStart(touch(from)); stage.onTouchMove(touch(to)); stage.onTouchEnd(touch(to));
 }
@@ -128,8 +144,9 @@ function drag(stage, from, to) {
     assert.equal(reloaded.economy.gold,gold-2,'explicit refresh still rerolls while locked');
   });
   await test('tap opens star-scaled attributes and skill without moving or selling', async () => {
-    const stage = await makeStage(), before = stage.owned.snapshot(), gold = stage.economy.gold;
-    const p = stage.benchSlotWorld(2); stage.onTouchStart(touch(p)); stage.onTouchEnd(touch(p));
+    const saved = freshSaveV2(); saved.owned = [{uid:1,unitId:'mage',star:1,location:'bench',x:-1,y:0}];
+    const stage = await makeStage(saved), before = stage.owned.snapshot(), gold = stage.economy.gold;
+    const p = stage.benchSlotWorld(0); stage.onTouchStart(touch(p)); stage.onTouchEnd(touch(p));
     assert.match(stage.ui.detail.title,/法师/); assert.match(stage.ui.detail.detail,/火球/);
     assert.deepEqual(stage.owned.snapshot(),before); assert.equal(stage.economy.gold,gold);
   });
@@ -145,7 +162,7 @@ function drag(stage, from, to) {
     assert.equal(JSON.parse(storage.get(SAVE_KEY)).owned.length,0);
   });
   await test('shop drag mode previews population, blocks transactions, and cancels without selling', async () => {
-    const stage = await makeStage(), bv = stage.boardNode.getComponent(BoardView);
+    const stage = await makeStage(twoUnitSave()), bv = stage.boardNode.getComponent(BoardView);
     const first = stage.owned.inBench()[0], pos = stage.benchSlotWorld(first.y);
     const owned = stage.owned.snapshot(), gold = stage.economy.gold;
     stage.onTouchStart(touch(pos)); assert.equal(stage.ui.sale,null,'a tap does not show drag UI');
@@ -188,10 +205,10 @@ function drag(stage, from, to) {
     const restored = await makeStage(JSON.parse(storage.get(SAVE_KEY))); restored.restart();
     assert.equal(restored.flow.phase,'prepare'); assert.equal(restored.flow.health,20);
     assert.equal(restored.flow.waveIndex,0); assert.equal(restored.economy.gold,20);
-    assert.equal(restored.levelSys.level,1); assert.equal(restored.owned.all().length,3);
+    assert.equal(restored.levelSys.level,1); assert.equal(restored.owned.all().length,1);
     assert.equal(restored.shop.locked,false); assert.equal(restored.shop.slots.filter(s=>s.unitId).length,5);
     const total = new CardPool(units).total();
-    assert.equal(restored.pool.total()+3+5,total);
+    assert.equal(restored.pool.total()+1+5,total);
   });
   await test('experience button exchanges exactly four gold for four XP and persists upgrades', async () => {
     const stage = await makeStage(), beforeShop = stage.shop.snapshot();
@@ -302,12 +319,14 @@ function drag(stage, from, to) {
   });
   await test('fresh game renders bench and populates shop without charging', async () => {
     const stage = await makeStage();
-    assert.equal(stage.ownedViews?.size, 3);
+    assert.equal(stage.ownedViews?.size, 1);
+    assert.equal(stage.owned.all()[0].star,1); assert.equal(stage.cfg.getUnit(stage.owned.all()[0].unitId).cost,1);
+    assert.equal(stage.waves.length,23); assert.equal(stage.save.stageCount,3);
     assert.equal(stage.ui.slots.filter(s => s.unitId).length, 5);
     assert.equal(stage.economy.gold, freshSaveV2().gold);
   });
   await test('bench drag deploys, enforces cap, undeploys, and binds new nodes', async () => {
-    const stage = await makeStage(); const bv = stage.boardNode.getComponent(BoardView);
+    const stage = await makeStage(twoUnitSave()); const bv = stage.boardNode.getComponent(BoardView);
     const first = stage.owned.all()[0], second = stage.owned.all()[1];
     drag(stage, stage.benchSlotWorld(first.y), bv.cellToWorld(2, 2));
     assert.equal(first.location, 'board');
@@ -337,7 +356,7 @@ function drag(stage, from, to) {
     const gold = stage.economy.gold, floor = stage.save.floor;
     stage.restart();
     assert.equal(stage.ui.shopVisible, true); assert.equal(stage.economy.gold, gold);
-    assert.equal(stage.save.floor, floor + 1);
+    assert.equal(stage.save.floor, floor, 'subrounds retain stage income'); assert.equal(stage.flow.wave.round,2);
     assert.equal(stage.ui.slots.filter(s => s.unitId).length, 5);
     assert.equal(stage.replayer.sim, stage.sim);
   });
@@ -391,6 +410,26 @@ function drag(stage, from, to) {
     drag(stage, original, new Vec3(999, 999));
     assert.deepEqual(stage.owned.snapshot(), initial);
     assert.deepEqual(stage.ownedViews.get(1).node.position, original);
+  });
+  await test('selected stage count survives reload, stage boundaries, and a complete restart', async () => {
+    const stage = await makeStage(freshSaveV2(4)); assert.equal(stage.waves.length,33);
+    for(let i=0;i<3;i++) {
+      stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown=true; stage.fighting=true; stage.restart();
+    }
+    assert.equal(stage.flow.wave.stage,2); assert.equal(stage.flow.wave.round,1); assert.equal(stage.save.floor,2);
+    const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(reloaded.waves.length,33); assert.equal(reloaded.flow.waveIndex,3);
+    assert.equal(reloaded.flow.wave.stage,2); assert.equal(reloaded.flow.wave.round,1);
+    reloaded.flow.startBattle(); reloaded.flow.settle(1,99); reloaded.resultShown=true; reloaded.restart();
+    assert.equal(reloaded.save.stageCount,4); assert.equal(reloaded.waves.length,33);
+    assert.equal(reloaded.owned.all().length,1); assert.equal(reloaded.flow.wave.stage,1);
+  });
+  await test('main menu return preserves run and is blocked during battle', async () => {
+    const stage=await makeStage(freshSaveV2(5)); sceneLoads.length=0;
+    stage.ui.onHome(); assert.deepEqual(sceneLoads,['main']);
+    assert.equal(JSON.parse(storage.get(SAVE_KEY)).stageCount,5);
+    stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
+    stage.ui.onHome(); assert.equal(sceneLoads.length,1);
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;
