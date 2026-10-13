@@ -113,7 +113,7 @@ console.log('[4] 购买/刷新/出售');
     const before = pool.count(uid);
     const r = shop.buy(s);
     if (!r.error) {
-      assert(pool.count(uid) === before - 1, `购买后 ${uid} 存量应 -1`);
+      assert(pool.count(uid) === before, `购买转移预留的 ${uid}，不应再次扣卡池`);
       assert(owned.all().length === 1, '购买后持有 +1');
       assert(economy.gold < gold0, '购买后金币减少');
       bought = true;

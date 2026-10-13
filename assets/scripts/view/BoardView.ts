@@ -27,6 +27,14 @@ export class BoardView extends Component {
   boardPixelH = 0;
 
   start() {
+    this.initialize(this.boardWidth, this.boardHeight, this.hexSize);
+  }
+
+  /** Stage 加载配置后立即初始化，避免等待 start 导致棋子坐标尚未生成。 */
+  initialize(width: number, height: number, hexSize: number): void {
+    this.boardWidth = width;
+    this.boardHeight = height;
+    this.hexSize = hexSize;
     this.grid = new Grid(this.boardWidth, this.boardHeight);
     this.g = this.getComponent(Graphics) ?? this.node.addComponent(Graphics);
     this.buildHexGrid();

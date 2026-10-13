@@ -3,8 +3,8 @@
  * - 5 格商店：每格先按等级抽费用、再从卡池抽棋子。
  * - 费用档空则重新抽费用（最多重试 10 次）；整池空显示空位，不死循环。
  * - refresh：扣 2 金币 + 返还未购买的棋子到卡池。
- * - buy：检查金币 / 卡池 / 备战席（或可直接合并）；成功后格子清空。
- * - sell：棋子移除 + 返还卡池 1 张。
+ * - 抽到商品即预留卡池；buy 只转移预留卡，避免重复扣池。
+ * - sell：棋子移除 + 返还合成所消耗的基础卡数量。
  * - 战斗期间所有操作由调用方（BattleStage.fighting）拦截。
  */
 
@@ -40,11 +40,17 @@ export class ShopSystem {
     private getLevel: () => number,
     private benchSlots: number,
     initialState?: ShopSlot[],
+    initialStateReserved = true,
   ) {
     if (initialState && initialState.length === SHOP_SLOTS) {
-      this.slots = initialState.map(s => ({ ...s }));
+      this.slots = initialState.map(s => {
+        const id = s.unitId;
+        if (!id || !this.unitConfigs.has(id)) return { unitId: null };
+        // 旧版商品未预留库存；只在首次恢复时扣一次。
+        return { unitId: (initialStateReserved || this.pool.take(id)) ? id : null };
+      });
     } else {
-      this.reroll(false); // 初始免费生成
+      this.reroll(); // 初始免费生成
     }
   }
 
@@ -66,14 +72,14 @@ export class ShopSystem {
     for (let attempt = 0; attempt < 10; attempt++) {
       const cost = this.rollCost(this.getLevel());
       const id = this.pool.pickByCost(cost, this.rng);
-      if (id) return { unitId: id };
+      if (id && this.pool.take(id)) return { unitId: id };
       // 该档全空，重掷费用
     }
     return { unitId: null };
   }
 
   /** 刷新 5 格（内部生成，不扣钱） */
-  private reroll(free: boolean): void {
+  private reroll(): void {
     this.slots = [];
     for (let i = 0; i < SHOP_SLOTS; i++) {
       this.slots.push(this.rollOne());
@@ -86,9 +92,14 @@ export class ShopSystem {
    */
   refresh(): ShopError | null {
     if (!this.economy.spend(REFRESH_COST)) return 'not_enough_gold';
-    this.returnUnbought();
-    this.reroll(false);
+    this.nextRound();
     return null;
+  }
+
+  /** 下一轮免费更换商品，也用于返还上一轮未购买的预留卡。 */
+  nextRound(): void {
+    this.returnUnbought();
+    this.reroll();
   }
 
   /** 返还未购买的商店棋子到卡池（关闭/重开时也调用） */
@@ -105,54 +116,33 @@ export class ShopSystem {
    * 购买指定格。
    * 返回 null = 成功（棋子进备战席或直接合并）；否则返回错误码。
    */
-  buy(slotIndex: number, canPlaceOnBoardHint = false): { error?: ShopError; mergedUid?: number; uid?: number } {
+  buy(slotIndex: number): { error?: ShopError; mergedUid?: number; uid?: number } {
     const s = this.slots[slotIndex];
     if (!s || !s.unitId) return { error: 'slot_empty' };
     const unitId = s.unitId;
     const price = COST_PRICE[this.pool.costOfUnit(unitId)];
 
     if (this.economy.gold < price) return { error: 'not_enough_gold' };
-    if (this.pool.count(unitId) <= 0) return { error: 'pool_empty' };
 
     // 备战席满：若该购买能直接完成合并则放行，否则拒绝
     const benchFree = this.owned.inBench().length < this.benchSlots;
     if (!benchFree) {
       const same = this.owned.all().filter(u => u.unitId === unitId && u.star === 1).length;
       if (same + 1 < 3) return { error: 'bench_full' };
-      // 满但能合并：addToBench 会失败（无空位），需临时放行
-      // 简化：先扣钱扣池，直接执行合并逻辑（tryMerge 用临时计数）
+      // 商品已预留；满席时临时添加，随后立刻合并释放位置。
       this.economy.spend(price);
-      this.pool.take(unitId);
-      // 手动构造合并：新增第 3 张 → 立即 tryMerge
-      // 由于 addToBench 需要空位，这里直接创建临时棋子并合并
-      const tempUid = -(Date.now() % 1000000); // 临时 uid
-      const u = {
-        uid: tempUid, unitId, star: 1,
-        location: 'bench' as const, x: -1, y: -1,
-      };
-      // 直接操作 owned 内部：通过 addToBench 不可行，改为 forceAdd + tryMerge
-      // OwnedUnits 需要暴露 forceAdd —— 简化：临时放宽 benchSlots=999
-      const added = (this.owned as unknown as { addToBench(unitId: string, benchSlots: number, slot?: number, star?: number): unknown })
-        .addToBench(unitId, 999, -1, 1);
-      if (!added) {
-        // 理论不可达
-        this.economy.add(price);
-        this.pool.give(unitId);
-        return { error: 'bench_full' };
-      }
+      this.owned.forceAdd(unitId);
       const merged = this.owned.tryMerge(unitId);
       s.unitId = null;
-      return { mergedUid: merged ? merged.uid : (added as { uid: number }).uid };
+      return { mergedUid: merged!.uid };
     }
 
     // 正常购买
     this.economy.spend(price);
-    this.pool.take(unitId);
     const added = this.owned.addToBench(unitId, this.benchSlots, -1, 1);
     if (!added) {
       // 理论不可达（已检查 benchFree）
       this.economy.add(price);
-      this.pool.give(unitId);
       return { error: 'bench_full' };
     }
     s.unitId = null;
@@ -166,7 +156,7 @@ export class ShopSystem {
     const cost = this.pool.costOfUnit(u.unitId);
     const gold = COST_PRICE[cost] * u.star; // 星级倍数出售
     this.owned.remove(uid);
-    this.pool.give(u.unitId);
+    for (let i = 0; i < 3 ** (u.star - 1); i++) this.pool.give(u.unitId);
     this.economy.add(gold);
     return { gold };
   }

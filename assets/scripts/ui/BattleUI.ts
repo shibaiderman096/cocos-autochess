@@ -112,7 +112,7 @@ export class BattleUI extends Component {
 
     // ─── 开战按钮 ───
     const fight = makeSpriteNode(UI_SPRITE.btnPrimary, 200, 64);
-    fight.node.setPosition(0, -240, 0);
+    fight.node.setPosition(0, 220, 0);
     fight.node.addChild(makeLabel('开 战', 28, Color.WHITE));
     fight.node.on(Node.EventType.TOUCH_END, () => this.onFight());
     this.node.addChild(fight.node);
@@ -120,7 +120,7 @@ export class BattleUI extends Component {
 
     // ─── 倍速按钮 ───
     const speedBtn = makeSpriteNode(UI_SPRITE.btnSecondary, 140, 52);
-    speedBtn.node.setPosition(330, -240, 0);
+    speedBtn.node.setPosition(240, 220, 0);
     const sl = makeLabel('倍速 x1', 24, Color.WHITE);
     speedBtn.node.addChild(sl);
     this.speedLabel = sl.getComponent(Label)!;
@@ -153,6 +153,7 @@ export class BattleUI extends Component {
       const costL = makeLabel('', 12, new Color(255, 215, 0, 255));
       costL.setPosition(0, -16, 0);
       slotN.node.addChild(costL);
+      slotN.node.addComponent(UIOpacity);
       this.shopSlots.push({ node: slotN.node, nameLabel: nameL.getComponent(Label)!, costLabel: costL.getComponent(Label)!, unitId: null });
       const idx = i;
       slotN.node.on(Node.EventType.TOUCH_END, () => this.onBuy(idx));
@@ -276,7 +277,7 @@ export class BattleUI extends Component {
   showWarn(msg: string): void {
     if (!this.warnLabel) {
       const n = makeLabel('', 20, new Color(255, 200, 80, 255));
-      n.setPosition(0, 200, 0);
+      n.setPosition(0, -285, 0);
       this.node.addChild(n);
       this.warnLabel = n.getComponent(Label)!;
     }

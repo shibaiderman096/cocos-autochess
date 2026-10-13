@@ -36,7 +36,7 @@ export class UnitView extends Component {
 
     this.hpBarBg = new Node('hpBar');
     this.hpBarBg.addComponent(UITransform).setContentSize(size * 0.9, 6);
-    this.hpBarBg.addComponent(Sprite);
+    this.hpBarBg.addComponent(Sprite).sizeMode = Sprite.SizeMode.CUSTOM;
     this.hpBarBg.setPosition(0, size * 0.62, 0);
     this.node.addChild(this.hpBarBg);
 
@@ -58,6 +58,7 @@ export class UnitView extends Component {
     const path = UNIT_SPRITE[key];
     if (!path) { console.warn(`[UnitView] no sprite for ${key}`); return; }
     resources.load(path, SpriteFrame, (err, sf) => {
+      if (!this.isValid) return;
       if (err) { console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
       this.loaded = true;
@@ -69,7 +70,7 @@ export class UnitView extends Component {
   private refreshBarsColor() {
     if (!this.hpFill || !this.manaFill) return;
     const loadSf = (p: string, cb: (sf: SpriteFrame) => void) =>
-      resources.load(p, SpriteFrame, (e, sf) => { if (!e && sf) cb(sf); });
+      resources.load(p, SpriteFrame, (e, sf) => { if (!e && sf && this.isValid) cb(sf); });
     loadSf(UI_SPRITE.barBg, sf => { if (this.hpBarBg) this.hpBarBg.getComponent(Sprite).spriteFrame = sf; });
     loadSf(this.side === 0 ? UI_SPRITE.hpFillAlly : UI_SPRITE.hpFillEnemy, sf => { if (this.hpFill) this.hpFill.spriteFrame = sf; });
     if (this.side === 0) loadSf(UI_SPRITE.manaFill, sf => { if (this.manaFill) this.manaFill.spriteFrame = sf; });
@@ -91,6 +92,7 @@ export class UnitView extends Component {
         4,
       );
     }
+    if (this.manaFill) this.manaFill.node.active = this.side === 0 && snap.maxMana > 0;
     if (this.manaFill && this.side === 0 && snap.maxMana > 0) {
       this.manaFill.node.getComponent(UITransform).setContentSize(
         Math.max(0, (snap.mana / snap.maxMana)) * this.hpBarBg.getComponent(UITransform).contentSize.width,

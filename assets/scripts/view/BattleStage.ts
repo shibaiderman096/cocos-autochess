@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color } from 'cc';
+import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics, Label } from 'cc';
 import { ConfigManager } from '../core/ConfigManager';
 import { BattleSim, Placement } from '../battle/BattleSim';
 import { TickDriver } from '../core/TickDriver';
@@ -10,10 +10,9 @@ import { EconomySystem } from '../core/EconomySystem';
 import { LevelSystem, EXP_PER_BATTLE } from '../core/LevelSystem';
 import { Rng } from '../core/Rng';
 import { CardPool } from '../core/CardPool';
-import { OwnedUnits, OwnedUnit } from '../core/OwnedUnits';
+import { OwnedUnits } from '../core/OwnedUnits';
 import { ShopSystem } from '../core/ShopSystem';
 import { loadSaveV2, writeSaveV2, freshSaveV2, SaveDataV2 } from '../core/ShopSave';
-import { REFRESH_COST } from '../core/ShopSystem';
 import { COST_PRICE, Cost } from '../core/ShopConfig';
 import { UnitConfigData } from '../core/ConfigManager';
 
@@ -35,6 +34,9 @@ export class BattleStage extends Component {
   private driver: TickDriver;
   private replayer: BattleReplayer;
   private views = new Map<number, UnitView>();
+  /** 战斗回放按 sim id 索引；布阵操作按持有棋子的 uid 索引。 */
+  private ownedViews = new Map<number, UnitView>();
+  private battleIds = new Map<number, number>();
   private cellSize = 52;   // hexSize 的视觉直径参考（棋子贴图尺寸）
   private loaded = false;
   private fighting = false;
@@ -49,17 +51,16 @@ export class BattleStage extends Component {
   private owned: OwnedUnits;
   private shop: ShopSystem;
   private rng: Rng;
-  /** 商店是否已初始化（防止 start 重复） */
-  private shopReady = false;  private resultShown = false;
+  private resultShown = false;
 
   // 拖拽状态
   private draggingId = 0;          // 被拖拽的 unit id（0 = 无）
   private dragging: UnitView | null = null;
-  private dragOrigPos: Vec3 = new Vec3();
   private touchOffset: Vec3 = new Vec3();
 
   async start() {
-    this.save = loadSaveV2() ?? freshSaveV2();
+    const loadedSave = loadSaveV2();
+    this.save = loadedSave ?? freshSaveV2();
     this.economy = new EconomySystem(undefined, {
       gold: this.save.gold,
       winStreak: this.save.winStreak,
@@ -70,29 +71,23 @@ export class BattleStage extends Component {
     this.rng = new Rng(Date.now() % 2147483647);
     this.pool = new CardPool(this.cfgUnits(), this.save.pool);
     this.owned = new OwnedUnits(this.save.owned);
+    // 新局先发初始棋子；抽商品时才预留剩余库存。
+    if (!loadedSave || (!this.save.shopReserved && this.owned.all().length === 0)) {
+      for (const id of ['warrior', 'archer', 'mage']) {
+        if (this.pool.take(id) && !this.owned.addToBench(id, this.save.benchSlots)) this.pool.give(id);
+      }
+    }
+    const restoreShop = loadedSave && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
     this.shop = new ShopSystem(
       this.pool, this.owned, this.economy,
       this.unitMap(), this.rng,
       () => this.levelSys.level,
       this.save.benchSlots,
-      this.save.shop.length === 5 ? this.save.shop : undefined,
+      restoreShop ? this.save.shop : undefined,
+      this.save.shopReserved,
     );
-    this.shopReady = true;
-    // 首次游戏：给 3 个初始棋子进备战席
-    if (this.owned.all().length === 0) {
-      for (const id of ['warrior', 'archer', 'mage']) {
-        this.owned.addToBench(id, this.save.benchSlots, -1, 1);
-        this.pool.take(id); // 初始棋子从卡池扣
-      }
-    }    this.buildBoard();
-    this.createSim(false);
-    this.createViews();
-    const bv = this.boardNode.getComponent(BoardView)!;
+    this.buildBoard();
     this.replayer = this.node.addComponent(BattleReplayer);
-    this.replayer.bind(this.sim, this.views, this.cellSize, bv);
-    const fxRoot = new Node('fx');
-    this.boardNode.addChild(fxRoot);
-    this.replayer.setFxRoot(fxRoot);
     const uiNode = new Node('battleUI');
     this.node.parent?.addChild(uiNode);
     this.ui = uiNode.addComponent(BattleUI);
@@ -102,10 +97,10 @@ export class BattleStage extends Component {
     this.ui.onRestart = () => this.restart();
     this.ui.onBuy = (slot) => this.buyFromShop(slot);
     this.ui.onRefresh = () => this.refreshShop();
-    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
-    this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
-    this.setupTouchEvents();
+    this.resetBattle(false);
+    this.persistShopState();
     this.refreshShopUI();
+    this.ui.setShopVisible(true);
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
     this.loaded = true;
   }
@@ -143,13 +138,12 @@ export class BattleStage extends Component {
 
   private buildBoard() {
     const bv = this.boardNode.getComponent(BoardView) ?? this.boardNode.addComponent(BoardView);
-    bv.hexSize = 36;
-    bv.boardWidth = this.cfg.battle.boardWidth;
-    bv.boardHeight = this.cfg.battle.boardHeight;
+    bv.initialize(this.cfg.battle.boardWidth, this.cfg.battle.boardHeight, 36);
   }
 
   private createSim(battle: boolean) {
     const placements: Placement[] = [];
+    this.battleIds.clear();
     // 敌方固定阵容（按层数增强留 M2-8；当前固定）
     const P = (cfgId: string, side: 0 | 1, x: number, y: number): Placement =>
       ({ cfg: this.cfg.getUnit(cfgId), side, x, y });
@@ -158,18 +152,14 @@ export class BattleStage extends Component {
     placements.push(P('mage', 1, 6, 5));
 
     // 己方：从 owned 数据生成（board 位置）
-    for (const u of this.owned.onBoard()) {
+    for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       const cfg = this.cfg.getUnit(u.unitId);
+      this.battleIds.set(u.uid, placements.length + 1);
       placements.push({ cfg, side: 0, x: u.x, y: u.y, star: u.star });
-    }
-    // 兜底：玩家没有任何棋子时，给 1 个战士防崩
-    if (this.owned.onBoard().length === 0) {
-      const cfg = this.cfg.getUnit('warrior');
-      placements.push({ cfg, side: 0, x: 3, y: 2, star: 1 });
     }
 
     this.sim = new BattleSim(this.cfg, placements, {
-      seed: Math.floor(Math.random() * 100000),
+      seed: this.rng.int(0, 99999),
       w: this.cfg.battle.boardWidth,
       h: this.cfg.battle.boardHeight,
       maxTicks: this.cfg.battle.maxTicks,
@@ -180,55 +170,86 @@ export class BattleStage extends Component {
   private createViews() {
     const bv = this.boardNode.getComponent(BoardView)!;
     const old = this.boardNode.getChildByName('units');
-    if (old) old.destroy();
+    if (old) { old.removeFromParent(); old.destroy(); }
     const root = new Node('units');
     const ut = root.addComponent(UITransform);
-    ut.setContentSize(bv.boardPixelW || 600, bv.boardPixelH || 400);
+    ut.setContentSize(Math.max(bv.boardPixelW, this.save.benchSlots * 64), bv.boardPixelH + 180);
     this.boardNode.addChild(root);
     this.views.clear();
+    this.ownedViews.clear();
 
-    // 棋盘上的己方 + 敌方
+    // 棋盘上的双方视图严格使用 sim id，回放事件不会与 owned uid 混用。
     for (const u of this.sim.units) {
-      if (u.side === 1) {
-        // 敌方视图
-        const node = new Node(`unit_${u.id}`);
-        const utt = node.addComponent(UITransform);
-        utt.setContentSize(this.cellSize, this.cellSize);
-        const uv = node.addComponent(UnitView);
-        uv.setup(u.cfg.id, 1, u.id, this.cellSize);
-        const p = bv.cellToWorld(u.x, u.y);
-        node.setPosition(p.x, p.y, 0);
-        root.addChild(node);
-        this.views.set(u.id, uv);
-      }
+      const uv = this.makeUnitView(root, u.cfg.id, u.side, u.id, bv.cellToWorld(u.x, u.y));
+      this.views.set(u.id, uv);
     }
-    // 己方棋盘单位（owned 数据）
     for (const ou of this.owned.onBoard()) {
-      const node = new Node(`unit_${ou.uid}`);
-      const utt = node.addComponent(UITransform);
-      utt.setContentSize(this.cellSize, this.cellSize);
-      const uv = node.addComponent(UnitView);
-      uv.setup(ou.unitId, 0, ou.uid, this.cellSize);
-      const p = bv.cellToWorld(ou.x, ou.y);
-      node.setPosition(p.x, p.y, 0);
-      root.addChild(node);
-      this.views.set(ou.uid, uv);
+      const uv = this.views.get(this.battleIds.get(ou.uid)!)!;
+      this.ownedViews.set(ou.uid, uv);
     }
+    // 备战席与棋盘共用持有数据，但备战棋子不进入战斗回放索引。
+    for (let slot = 0; slot < this.save.benchSlots; slot++) {
+      const node = new Node(`bench_${slot}`);
+      node.addComponent(UITransform).setContentSize(56, 56);
+      node.setPosition(this.benchSlotWorld(slot));
+      root.addChild(node);
+      const g = node.addComponent(Graphics);
+      g.fillColor = new Color(40, 50, 65, 210);
+      g.rect(-28, -28, 56, 56); g.fill();
+      g.strokeColor = new Color(140, 155, 175, 255);
+      g.lineWidth = 2; g.rect(-28, -28, 56, 56); g.stroke();
+    }
+    for (const ou of this.owned.inBench()) {
+      const uv = this.makeUnitView(root, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y));
+      this.ownedViews.set(ou.uid, uv);
+    }
+    for (const ou of this.owned.all()) {
+      const uv = this.ownedViews.get(ou.uid)!;
+      const stars = new Node('stars');
+      stars.addComponent(UITransform).setContentSize(56, 18);
+      const label = stars.addComponent(Label);
+      label.string = '★'.repeat(ou.star);
+      label.fontSize = 14; label.lineHeight = 18;
+      label.color = new Color(255, 215, 0, 255);
+      stars.setPosition(0, -26, 0);
+      uv.node.addChild(stars);
+    }
+  }
+
+  private makeUnitView(root: Node, cfgId: string, side: 0 | 1, id: number, pos: Vec3): UnitView {
+    const node = new Node(`unit_${side}_${id}`);
+    node.addComponent(UITransform).setContentSize(this.cellSize, this.cellSize);
+    root.addChild(node);
+    const uv = node.addComponent(UnitView);
+    uv.setup(cfgId, side, id, this.cellSize);
+    node.setPosition(pos);
+    return uv;
+  }
+
+  /** 每次改变布阵或切换阶段，模拟器、视图和事件游标一起重建。 */
+  private resetBattle(battle: boolean): void {
+    this.createSim(battle);
+    this.createViews();
+    const bv = this.boardNode.getComponent(BoardView)!;
+    this.replayer.bind(this.sim, this.views, this.cellSize, bv);
+    const oldFx = this.boardNode.getChildByName('fx');
+    if (oldFx) { oldFx.removeFromParent(); oldFx.destroy(); }
+    const fx = new Node('fx');
+    this.boardNode.addChild(fx);
+    this.replayer.setFxRoot(fx);
+    this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
+    this.setupTouchEvents();
   }
 
   // ─── 拖拽布阵 ───
 
   private setupTouchEvents() {
-    const unitsRoot = this.boardNode.getChildByName('units');
-    if (!unitsRoot) return;
-    unitsRoot.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
-    unitsRoot.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-    unitsRoot.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-    unitsRoot.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
-    unitsRoot.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
-    unitsRoot.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-    unitsRoot.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-    unitsRoot.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    for (const uv of this.ownedViews.values()) {
+      uv.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+      uv.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+      uv.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+      uv.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    }
   }
 
   /** 触摸点 → boardNode 本地坐标 */
@@ -242,22 +263,20 @@ export class BattleStage extends Component {
     if (this.fighting || !this.loaded || this.draggingId) return;
     const boardPos = this.touchToBoard(event);
 
-    // 用「像素距离到棋子所在格子中心」判断命中（与渲染完全一致）
+    // 用视图本地坐标检测己方棋盘和备战席棋子。
     let bestId = 0;
     let bestDist = Infinity;
-    for (const u of this.sim.units) {
-      if (!u.alive || u.side !== 0) continue;
-      const c = this.boardNode.getComponent(BoardView)!.cellToWorld(u.x, u.y);
+    for (const [uid, uv] of this.ownedViews) {
+      const c = uv.node.position;
       const d = (boardPos.x - c.x) ** 2 + (boardPos.y - c.y) ** 2;
-      if (d < bestDist) { bestDist = d; bestId = u.id; }
+      if (d < bestDist) { bestDist = d; bestId = uid; }
     }
     if (!bestId || bestDist > (this.cellSize * 0.6) ** 2) return;
 
-    const uv = this.views.get(bestId);
+    const uv = this.ownedViews.get(bestId);
     if (!uv) return;
     this.draggingId = bestId;
     this.dragging = uv;
-    this.dragOrigPos.set(uv.node.position.x, uv.node.position.y, 0);
     this.touchOffset.set(boardPos.x - uv.node.position.x, boardPos.y - uv.node.position.y, 0);
     uv.node.setScale(1.15, 1.15, 1);
   }
@@ -268,7 +287,7 @@ export class BattleStage extends Component {
     this.dragging.node.setPosition(boardPos.x - this.touchOffset.x, boardPos.y - this.touchOffset.y, 0);
   }
 
-  private onTouchEnd(_event: EventTouch) {
+  private onTouchEnd(event: EventTouch) {
     if (!this.draggingId || !this.dragging) return;
     const uv = this.dragging;
     const bv = this.boardNode.getComponent(BoardView)!;
@@ -280,11 +299,20 @@ export class BattleStage extends Component {
     const ou = this.owned.get(this.draggingId);
     if (!ou) { this.resetDrag(); return; }
 
-    if (!cell || !bv.isOwnCell(cell.y)) {
+    const benchSlot = this.benchSlotAt(curPos.x, curPos.y);
+    if (event.type === Node.EventType.TOUCH_CANCEL || (benchSlot === null && (!cell || !bv.isOwnCell(cell.y)))) {
       // 回原位
       const orig = ou.location === 'board' ? bv.cellToWorld(ou.x, ou.y) : this.benchSlotWorld(ou.y);
       uv.node.setPosition(orig.x, orig.y, 0);
       this.resetDrag();
+      return;
+    }
+
+    if (benchSlot !== null) {
+      this.owned.move(ou.uid, { location: 'bench', x: -1, y: benchSlot });
+      this.resetDrag();
+      this.resetBattle(false);
+      this.persistShopState();
       return;
     }
 
@@ -296,7 +324,6 @@ export class BattleStage extends Component {
         // 超员：回原位 + 提示
         const orig = this.benchSlotWorld(ou.y);
         uv.node.setPosition(orig.x, orig.y, 0);
-        console.warn(`[BattleStage] 上阵人数已达上限 ${cap}，无法再上棋子`);
         this.ui.showWarn(`上阵人数已达上限 ${cap}`);
         this.resetDrag();
         return;
@@ -308,21 +335,28 @@ export class BattleStage extends Component {
     const target = bv.cellToWorld(cell.x, cell.y);
     uv.node.setPosition(target.x, target.y, 0);
     // 若发生合并，uv 可能已失效——重建视图
-    this.createViews();
     this.resetDrag();
+    this.resetBattle(false);
+    this.persistShopState();
   }
 
   /** 备战席槽位的世界坐标（棋盘下方一排） */
   private benchSlotWorld(slot: number): Vec3 {
-    // 棋盘本地坐标下，棋盘下边缘往下 80px，槽位横向排列
+    // 棋盘本地坐标下，棋盘下边缘往下 60px，槽位横向排列。
     const bv = this.boardNode.getComponent(BoardView)!;
-    const w = bv.boardPixelW;
     const y = -bv.boardPixelH / 2 - 60;
     const spacing = 64;
     const totalW = (this.save.benchSlots - 1) * spacing;
     const x = -totalW / 2 + slot * spacing;
     return new Vec3(x, y, 0);
-    void bv; void w;
+  }
+
+  private benchSlotAt(x: number, y: number): number | null {
+    for (let slot = 0; slot < this.save.benchSlots; slot++) {
+      const pos = this.benchSlotWorld(slot);
+      if (Math.abs(x - pos.x) <= 28 && Math.abs(y - pos.y) <= 28) return slot;
+    }
+    return null;
   }
 
   private resetDrag() {
@@ -334,41 +368,39 @@ export class BattleStage extends Component {
 
   private startFight() {
     if (this.fighting || !this.loaded) return;
-    // 上阵前把备战席棋子自动留在备战席（玩家手动拖上阵）；战斗时只上 board 单位
-    this.shop.returnUnbought(); // 返还未购买商店棋子（关闭商店效果）
+    if (this.owned.onBoard().length === 0) {
+      this.ui.showWarn('请先将棋子拖到己方棋盘');
+      return;
+    }
+    this.resetDrag();
     this.persistShopState();
     this.fighting = true;
+    this.resultShown = false;
     this.ui.hideFightBtn();
     this.ui.setShopVisible(false);
-    this.createSim(true); // 用最新 owned 数据重建 sim
-    this.sim.start();
+    this.resetBattle(true);
   }
 
   private restart() {
+    if (!this.sim.finished || !this.resultShown) return;
     this.ui.hideResult();
     this.fighting = false;
     this.resultShown = false;
     this.resetDrag();
     this.save.floor++;
-    writeSaveV2(this.save);
-    this.createSim(false);
-    this.createViews();
-    const bv = this.boardNode.getComponent(BoardView)!;
-    this.replayer.bind(this.sim, this.views, this.cellSize, bv);
-    const fxRoot = this.boardNode.getChildByName('fx');
-    if (fxRoot) fxRoot.destroy();
-    const newFx = new Node('fx');
-    this.boardNode.addChild(newFx);
-    this.replayer.setFxRoot(newFx);
-    this.driver = new TickDriver(this.cfg.battle.tickMs, () => this.sim.step());
-    this.setupTouchEvents();
+    this.shop.nextRound();
+    this.resetBattle(false);
+    this.persistShopState();
+    this.refreshShopUI();
+    this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
+    this.ui.setShopVisible(true);
     this.ui.showFightBtn();
   }
 
   // ─── 商店操作（战斗期间锁定） ───
 
   private buyFromShop(slot: number) {
-    if (this.fighting) return;
+    if (this.fighting || !this.loaded) return;
     const r = this.shop.buy(slot);
     if (r.error) {
       const msg = r.error === 'not_enough_gold' ? '金币不足'
@@ -378,13 +410,14 @@ export class BattleStage extends Component {
       this.ui.showWarn(msg);
       return;
     }
+    this.resetBattle(false);
     this.persistShopState();
     this.refreshShopUI();
     this.ui.refreshTop(this.economy.gold, this.save.floor, this.levelSys);
   }
 
   private refreshShop() {
-    if (this.fighting) return;
+    if (this.fighting || !this.loaded) return;
     const err = this.shop.refresh();
     if (err) {
       this.ui.showWarn(err === 'not_enough_gold' ? '金币不足' : '刷新失败');
@@ -397,6 +430,7 @@ export class BattleStage extends Component {
 
   private persistShopState() {
     this.save.shop = this.shop.snapshot();
+    this.save.shopReserved = true;
     this.save.owned = this.owned.snapshot();
     this.save.pool = this.pool.snapshot();
     this.save.gold = this.economy.gold;
@@ -420,7 +454,7 @@ export class BattleStage extends Component {
     this.ui.refreshShop(slots);
   }
 
-  /** 战斗结束结算', @'：连胜/连败 → 金币 → 经验 → 存档 → UI。一场战斗只走一次（由 resultShown 保证）。 */
+  /** 一场战斗只结算一次（由 resultShown 保证）。 */
   private settleBattleEnd() {
     const breakdown = this.economy.settleBattle(this.save.floor, { winner: this.sim.winner });
     const ups = this.levelSys.addExp(EXP_PER_BATTLE);
