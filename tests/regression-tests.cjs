@@ -447,6 +447,20 @@ function drag(stage, from, to) {
     assert.equal(reloaded.save.stageCount,4); assert.equal(reloaded.waves.length,33);
     assert.equal(reloaded.owned.all().length,1); assert.equal(reloaded.flow.wave.stage,1);
   });
+  await test('runtime difficulty retains stage strength and ignores selected run length', async () => {
+    const resumed=(count,index)=>({...freshSaveV2(count),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
+    const previous=await makeStage(resumed(3,12));
+    const next=await makeStage(resumed(3,13));
+    const longer=await makeStage(resumed(6,13));
+    const army=stage=>stage.sim.units.filter(u=>u.side===1).map(u=>({id:u.cfg.id,star:u.star,hp:u.cfg.hp,atk:u.cfg.atk,armor:u.cfg.armor,mr:u.cfg.mr}));
+    const prevArmy=army(previous),nextArmy=army(next);
+    assert.ok(nextArmy.reduce((sum,u)=>sum+u.hp,0)>prevArmy.reduce((sum,u)=>sum+u.hp,0),'new stage starts stronger than the previous finale');
+    assert.ok(nextArmy.reduce((sum,u)=>sum+u.atk,0)>prevArmy.reduce((sum,u)=>sum+u.atk,0));
+    assert.deepEqual(army(longer),nextArmy,'simulation stats stay identical when more stages are selected');
+    const later=await makeStage(resumed(3,14));
+    assert.deepEqual(army(later).map(u=>u.id),nextArmy.map(u=>u.id));
+    assert.ok(army(later).every((u,i)=>u.hp>nextArmy[i].hp&&u.atk>=nextArmy[i].atk),'the next subround applies its slight stat growth to the runtime');
+  });
   await test('main menu return preserves run and is blocked during battle', async () => {
     const stage=await makeStage(freshSaveV2(5)); sceneLoads.length=0;
     stage.ui.onHome(); assert.deepEqual(sceneLoads,['main']);

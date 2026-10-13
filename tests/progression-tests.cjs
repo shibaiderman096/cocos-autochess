@@ -24,6 +24,36 @@ for(const v of [-9,0,2,NaN,Infinity,undefined]) assert.equal(normalizeStageCount
 assert.equal(normalizeStageCount(4.9),4);
 assert.deepEqual(buildRunWaves(3,runConfig,templates),waves,'generation is deterministic');
 assert.ok(waves[13].enemies[0].statMultiplier>waves[3].enemies[0].statMultiplier);
+const unchangedTemplates=JSON.stringify({runConfig,templates});
+for(const count of [4,6,99]) {
+  assert.deepEqual(buildRunWaves(count,runConfig,templates).slice(0,waves.length),waves,'adding stages must keep all existing encounters identical');
+}
+const extendedWaves=buildRunWaves(10,runConfig,templates);
+assert.throws(()=>buildRunWaves(3,{...runConfig,roundStatGrowth:.03},templates),/stage growth/,'reject settings that would reduce stats at the next stage');
+for(const invalid of [NaN,Infinity,-.01,0]) {
+  assert.throws(()=>buildRunWaves(3,{...runConfig,roundStatGrowth:invalid},templates),/Invalid run configuration/);
+}
+const stats=wave=>wave.enemies.map(e=>cfg.scaleUnit(cfg.getUnit(e.unitId),e.star,e.statMultiplier));
+const total=(wave,key)=>stats(wave).reduce((sum,u)=>sum+u[key],0);
+for(let i=1;i<extendedWaves.length;i++) {
+  const previous=extendedWaves[i-1],current=extendedWaves[i];
+  if(previous.stage!==current.stage) {
+    if(previous.stage>1) assert.ok(total(current,'hp')>total(previous,'hp'),'a new stage retains the previous army strength');
+    assert.ok(total(current,'atk')>=total(previous,'atk'),'a new stage cannot reset enemy attack strength');
+  } else {
+    assert.ok(total(current,'hp')>total(previous,'hp'),'each subround increases enemy HP slightly');
+    assert.ok(total(current,'atk')>=total(previous,'atk'));
+    if(current.stage>1) {
+      assert.deepEqual(current.enemies.map(e=>[e.unitId,e.star,e.x,e.y]),previous.enemies.map(e=>[e.unitId,e.star,e.x,e.y]),'subrounds retain the stage army');
+      for(let j=0;j<current.enemies.length;j++) {
+        const gain=current.enemies[j].statMultiplier/previous.enemies[j].statMultiplier;
+        assert.ok(gain>1&&gain<=1.021,'subround stats grow by at most about two percent');
+      }
+    }
+  }
+}
+assert.deepEqual(extendedWaves.find(w=>w.stage===9).enemies.map(e=>[e.unitId,e.star]),extendedWaves.find(w=>w.stage===8).enemies.map(e=>[e.unitId,e.star]),'highest army tier remains after all templates are used');
+assert.equal(JSON.stringify({runConfig,templates}),unchangedTemplates,'wave generation leaves source configs untouched');
 for (const wave of waves) {
   const cells = new Set();
   for (const e of wave.enemies) {
@@ -89,4 +119,4 @@ for (const [id, skill] of Object.entries(skills)) {
 const owned = new OwnedUnits();
 for(let i=0;i<9;i++) owned.addToBench('warrior',9);
 assert.equal(owned.all().length,1); assert.equal(owned.all()[0].star,3);
-console.log('Wave validation, full real-battle run, HP failure, save resume, all skills, and cascading merges passed');
+console.log('Continuous stage difficulty, slight subround growth, run-length independence, wave validation, real battles, save resume, skills, and merges passed');
