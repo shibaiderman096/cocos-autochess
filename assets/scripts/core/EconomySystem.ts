@@ -2,7 +2,7 @@
  * 经济系统（纯逻辑，无 cc）。
  * 结算顺序（固定且可测试）：
  *   1. 用战斗结果更新连胜/连败计数
- *   2. 计算阶段收入（floor × 每层金币）
+ *   2. 每小关结算基础收入（当前阶段 × 每阶段金币系数）
  *   3. 计算胜利奖励（胜 +1 / 负 +0 / 平 +0）
  *   4. 计算存款利息 = min(floor(结算前余额 × 0.1), 5)
  *   5. 计算连胜/连败奖励 = min(floor(计数 / 2), 3)
@@ -15,7 +15,7 @@
  */
 
 export interface EconomyConfig {
-  /** 每层基础阶段收入 */
+  /** 每小关基础收入 = 当前阶段数 × 此系数 */
   incomePerFloor: number;
   /** 利息上限 */
   interestCap: number;
@@ -30,12 +30,12 @@ export interface EconomyConfig {
 }
 
 export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
-  incomePerFloor: 5,
+  incomePerFloor: 2,
   interestCap: 5,
   interestRate: 0.1,
   streakCap: 3,
   winBonus: 1,
-  initialGold: 20,
+  initialGold: 0,
 };
 
 export interface BattleOutcome {
