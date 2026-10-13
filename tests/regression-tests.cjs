@@ -14,6 +14,8 @@ const { EconomySystem } = core('EconomySystem');
 const { Rng } = core('Rng');
 const { migrateSaveV2, freshSaveV2, SAVE_KEY } = core('ShopSave');
 const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
+const { SHOP_DROP_AREA, containsShopDrop } = require('../assets/scripts/ui/BattleUILayout.ts');
+const shopDrop = () => new Vec3(SHOP_DROP_AREA.x, SHOP_DROP_AREA.y);
 const units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
 const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
 let passed = 0, failed = 0;
@@ -78,12 +80,12 @@ class BattleUI {
   refreshTop(gold, floor, lv) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; }
   refreshFormation() {}
   refreshRun(...args) { this.run = args; } setLocked(v) { this.locked = v; }
-  clearSellPreview() {} showSellPreview(...args) { this.sale = args; }
-  isInSellArea(x,y) { return Math.abs(x-488)<=96 && Math.abs(y+75)<=37; }
+  clearSellPreview() { this.sale = null; } showSellPreview(...args) { this.sale = args; }
+  isInSellArea(x,y) { return this.shopVisible !== false && containsShopDrop(x,y); }
   showUnitDetail(title, detail) { this.detail = { title, detail }; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
-  setShopVisible(v) { this.shopVisible = v; }
+  setShopVisible(v) { this.shopVisible = v; this.clearSellPreview(); }
 }
 const stageFile = path.join(root, 'assets/scripts/view/BattleStage.ts');
 const code = ts.transpileModule(fs.readFileSync(stageFile, 'utf8'), { compilerOptions: {
@@ -136,12 +138,40 @@ function drag(stage, from, to) {
     saved.pool = {mage:15};
     saved.owned = [{uid:1,unitId:'mage',star:2,location:'bench',x:-1,y:0}];
     const stage = await makeStage(saved), pool = stage.pool.count('mage'), gold = stage.economy.gold;
-    drag(stage,stage.benchSlotWorld(0),new Vec3(488,-75));
+    drag(stage,stage.benchSlotWorld(0),shopDrop());
     assert.equal(stage.owned.all().length,0); assert.equal(stage.economy.gold,gold+8);
     assert.equal(stage.pool.count('mage'),pool+3);
-    stage.onTouchEnd(touch(new Vec3(488,-75))); assert.equal(stage.economy.gold,gold+8);
+    stage.onTouchEnd(touch(shopDrop())); assert.equal(stage.economy.gold,gold+8);
     assert.equal(JSON.parse(storage.get(SAVE_KEY)).owned.length,0);
   });
+  await test('shop drag mode previews population, blocks transactions, and cancels without selling', async () => {
+    const stage = await makeStage(), bv = stage.boardNode.getComponent(BoardView);
+    const first = stage.owned.inBench()[0], pos = stage.benchSlotWorld(first.y);
+    const owned = stage.owned.snapshot(), gold = stage.economy.gold;
+    stage.onTouchStart(touch(pos)); assert.equal(stage.ui.sale,null,'a tap does not show drag UI');
+    stage.onTouchMove(touch(bv.cellToWorld(2,2)));
+    assert.equal(stage.ui.sale[3],1,'preview first deployment');
+    stage.onTouchMove(touch(shopDrop())); assert.equal(stage.ui.sale[2],true);
+    assert.equal(stage.ui.sale[3],0,'bench sale does not consume population');
+    const shop = stage.shop.snapshot(), locked = stage.shop.locked;
+    stage.ui.onBuy(0); stage.ui.onBuyExp(); stage.ui.onRefresh(); stage.ui.onLock(); stage.ui.onFight();
+    assert.equal(stage.economy.gold,gold); assert.deepEqual(stage.shop.snapshot(),shop);
+    assert.equal(stage.shop.locked,locked); assert.equal(stage.flow.phase,'prepare');
+    stage.onTouchEnd({...touch(shopDrop()),type:Node.EventType.TOUCH_CANCEL});
+    assert.deepEqual(stage.owned.snapshot(),owned); assert.equal(stage.economy.gold,gold); assert.equal(stage.ui.sale,null);
+    drag(stage,pos,bv.cellToWorld(2,2));
+    const second = stage.owned.inBench()[0]; stage.onTouchStart(touch(stage.benchSlotWorld(second.y)));
+    stage.onTouchMove(touch(bv.cellToWorld(3,2))); assert.equal(stage.ui.sale[3],2,'project over-cap deployment');
+    stage.onTouchEnd(touch(bv.cellToWorld(3,2))); assert.equal(stage.owned.onBoard().length,1); assert.equal(stage.ui.sale,null);
+    stage.onTouchStart(touch(bv.cellToWorld(2,2))); stage.onTouchMove(touch(shopDrop()));
+    assert.equal(stage.ui.sale[3],0,'board sale previews the released population');
+    stage.onTouchEnd({...touch(shopDrop()),type:Node.EventType.TOUCH_CANCEL});
+    assert.equal(stage.owned.onBoard().length,1); assert.equal(stage.ui.sale,null);
+    drag(stage,bv.cellToWorld(2,2),new Vec3(488,-75));
+    assert.equal(stage.owned.onBoard().length,1,'the old sidebar sale area no longer sells');
+    assert.equal(stage.economy.gold,gold);
+  });
+
   await test('settlement reload does not grant duplicate income and advances exactly one wave', async () => {
     const stage = await makeStage(); stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
     stage.sim.run(); stage.update(.1);

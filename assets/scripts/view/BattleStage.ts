@@ -109,7 +109,7 @@ export class BattleStage extends Component {
     this.ui.onRefresh = () => this.refreshShop();
     this.ui.onBuyExp = () => this.buyExperience();
     this.ui.onLock = () => {
-      if (!this.loaded || this.flow.phase !== 'prepare') return;
+      if (!this.loaded || this.flow.phase !== 'prepare' || this.draggingId) return;
       this.shop.locked = !this.shop.locked; this.persistShopState(); this.ui.setLocked(this.shop.locked);
     };
     this.resetBattle(false);
@@ -332,7 +332,18 @@ export class BattleStage extends Component {
     if (!this.dragMoved) return;
     this.dragging.node.setPosition(boardPos.x - this.touchOffset.x, boardPos.y - this.touchOffset.y, 0);
     const u = this.owned.get(this.draggingId)!;
-    this.ui.showSellPreview(this.cfg.getUnit(u.unitId).name, sellPrice(this.pool.costOfUnit(u.unitId), u.star), this.overSell(event));
+    const selling = this.overSell(event);
+    const pos = this.dragging.node.position;
+    const bench = this.benchSlotAt(pos.x, pos.y);
+    const bv = this.boardNode.getComponent(BoardView)!;
+    const cell = bv.worldToCell(pos.x, pos.y);
+    let population = this.owned.onBoard().length;
+    if (selling && u.location === 'board') population--;
+    else if (bench !== null && u.location === 'board' && !this.owned.atBench(bench)) population--;
+    else if (!selling && bench === null && cell && bv.isOwnCell(cell.y)
+      && u.location === 'bench' && !this.owned.atBoard(cell.x, cell.y)) population++;
+    this.ui.showSellPreview(this.cfg.getUnit(u.unitId).name,
+      sellPrice(this.pool.costOfUnit(u.unitId), u.star), selling, population);
   }
 
   private onTouchEnd(event: EventTouch) {
@@ -450,7 +461,7 @@ export class BattleStage extends Component {
 
 
   private startFight() {
-    if (this.fighting || !this.loaded || this.flow.phase !== 'prepare') return;
+    if (this.fighting || !this.loaded || this.flow.phase !== 'prepare' || this.draggingId) return;
     if (this.owned.onBoard().length === 0) {
       this.ui.showWarn('请先将棋子拖到己方棋盘');
       return;
@@ -494,7 +505,7 @@ export class BattleStage extends Component {
   // ─── 商店操作（战斗期间锁定） ───
 
   private buyFromShop(slot: number) {
-    if (this.fighting || !this.loaded) return;
+    if (this.fighting || !this.loaded || this.draggingId) return;
     const r = this.shop.buy(slot);
     if (r.error) {
       const msg = r.error === 'not_enough_gold' ? '金币不足'
@@ -511,7 +522,7 @@ export class BattleStage extends Component {
   }
 
   private refreshShop() {
-    if (this.fighting || !this.loaded) return;
+    if (this.fighting || !this.loaded || this.draggingId) return;
     const err = this.shop.refresh();
     if (err) {
       this.ui.showWarn(err === 'not_enough_gold' ? '金币不足' : '刷新失败');
@@ -523,7 +534,7 @@ export class BattleStage extends Component {
   }
 
   private buyExperience(): void {
-    if (this.fighting || !this.loaded) return;
+    if (this.fighting || !this.loaded || this.draggingId) return;
     if (this.levelSys.level >= MAX_LEVEL) { this.ui.showWarn('已达最高等级'); return; }
     if (!this.economy.spend(EXP_PURCHASE.gold)) { this.ui.showWarn('金币不足'); return; }
     this.levelSys.addExp(EXP_PURCHASE.exp);

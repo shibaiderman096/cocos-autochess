@@ -1,7 +1,8 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, Color, Graphics, resources, UIOpacity } from 'cc';
-import { UNIT_SPRITE, UISkinKey } from '../view/ArtPaths';
+import { UNIT_SPRITE, UI_SPRITE, UISkinKey } from '../view/ArtPaths';
 import { setUISkin, setStarBadge } from './UISkin';
-import { drawFactionRing, FACTION_RING_COLORS } from '../view/FactionRing';
+import { SHOP_DROP_AREA, SHOP_CARDS, containsShopDrop } from './BattleUILayout';
+import { drawFactionRing } from '../view/FactionRing';
 import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { RoundSettlement } from '../core/RoundFlow';
@@ -59,9 +60,7 @@ export class BattleUI extends Component {
   onBuy = (slot: number) => {};
   onRefresh = () => {};
   onBuyExp = () => {};
-  onSell = (uid: number) => {};
   onLock = () => {};
-  private lockLabel: Label;
   private lockIcon: Sprite;
   private locked = false;
   private waveTrack: Node;
@@ -85,7 +84,6 @@ export class BattleUI extends Component {
   private detailLabel: Label;
   private goldLabel: Label;
   private floorLabel: Label;
-  private levelLabel: Label;
   private levelBadgeLabel: Label;
   private expFill: Sprite;
   private expRatio = 0;
@@ -95,9 +93,12 @@ export class BattleUI extends Component {
   private canBuyExp = false;
   private capLabel: Label;
   private phaseLabel: Label;
-  private formationLabels: Label[] = [];
   private shopRoot: Node;
-  private battleHint: Node;
+  private economyRoot: Node;
+  private economyControls: Node;
+  private sellBanner: Node;
+  private shopAvailable = true;
+  private dragging = false;
   private shopSlots: ShopCard[] = [];
   private cap = 1;
   private deployed = 0;
@@ -108,82 +109,75 @@ export class BattleUI extends Component {
     this.node.addComponent(UITransform).setContentSize(1280, 720);
     this.drawArena();
     const header = panel(this.node, 'roundBar', 0, 310, 330, 54, new Color(17, 35, 42), GOLD);
-    this.floorLabel = label(header, '第 1 层', -78, 0, 22, GOLD, 130);
-    this.phaseLabel = label(header, '准备阶段', 76, 0, 17, TEAL, 130);
-    label(this.node, '浮 空 棋 境', -490, 313, 24, GOLD, 240);
-    this.healthLabel = label(this.node, '生命 20 / 20', 490, 320, 19, TEAL, 230);
-    this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 260);
-
-    const army = panel(this.node, 'formation', -488, 137, 192, 230, new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
-    label(army, '我的阵容', 0, 83, 19, GOLD, 170);
-    this.capLabel = label(army, '已上阵  0 / 1', 0, 48, 17, TEAL, 180);
-    for (let i = 0; i < 3; i++) this.formationLabels.push(label(army, '', 0, 10 - i * 32, 16, TEXT, 180));
-    label(army, '拖动棋子调整站位', 0, -87, 12, MUTED, 180);
+    this.floorLabel = label(header, '1 / 7', -78, 0, 22, GOLD, 130);
+    this.phaseLabel = label(header, '准备', 76, 0, 17, TEAL, 130);
+    this.healthLabel = label(this.node, '20 / 20', 490, 320, 19, TEAL, 190);
+    this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 220);
     this.waveTrack = panel(this.node, 'waveTrack', 0, 267, 300, 26, INK, GOLD, 'panel_side');
-    picture(this.node, 'icon_life', 394, 320, 24);
-    label(this.node, '己 方 布 阵', -484, -28, 13, TEAL, 190);
-    label(this.node, '7 列 × 4 排', -484, -51, 12, MUTED, 190);
-    const legend = new Node('starLegend'); this.node.addChild(legend); legend.setPosition(-484, -91, 0);
-    for (const side of [0, 1] as const) {
-      const n = new Node('faction'); legend.addChild(n); n.setPosition(side ? 42 : -42, 25, 0);
-      drawFactionRing(n.addComponent(Graphics), 30, side);
-      label(n, side ? '敌方' : '我方', 0, -28, 11, FACTION_RING_COLORS[side], 60);
-    }
-    for (let rank = 1; rank <= 3; rank++) {
-      const n = new Node('starBadge'); n.addComponent(UITransform).setContentSize(44, 44 / 3);
-      legend.addChild(n); n.setPosition((rank - 2) * 54, -25, 0); setStarBadge(n, rank);
-      label(legend, `${rank}星`, (rank - 2) * 54, -42, 10, GOLD, 50);
-    }
+    picture(this.node, 'icon_life', 414, 320, 24);
+    this.capLabel = label(this.node, '0 / 1', 0, -15, 58, new Color(233, 231, 210, 140), 250);
+    this.capLabel.node.name = 'population'; this.capLabel.node.active = false;
 
-    const command = panel(this.node, 'command', 488, 111, 192, 180, new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
-    label(command, '远征指令', 0, 56, 19, GOLD, 170);
-    label(command, '布阵完成后开始战斗', 0, 23, 12, MUTED, 180);
-    this.fightBtn = button(this.node, '开始战斗  ›', 488, 99, 166, 48, () => this.onFight(), true);
-    picture(this.fightBtn, 'icon_swords', -64, 0, 22);
-    this.fightBtn.getChildByName('text')!.setPosition(12, 0, 0);
-    this.fightBtn.getChildByName('text')!.getComponent(UITransform)!.setContentSize(130, 52);
-    const speed = button(this.node, '', 488, 43, 166, 36, () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
-    this.speedLabel = label(speed, '战斗速度  ×1', 0, 0, 15, MUTED, 155);
-    picture(speed, 'icon_speed', -65, 0, 20);
-    this.speedLabel.node.setPosition(9, 0, 0);
-    this.sellNode = panel(this.node, 'sellArea', 488, -75, 192, 74, new Color(35, 31, 35), new Color(142, 119, 72), 'sell_zone');
-    label(this.sellNode, '出 售 棋 子', 0, 18, 15, GOLD, 180);
-    picture(this.sellNode, 'icon_sell', -67, 16, 22);
-    this.sellLabel = label(this.sellNode, '拖到此处 · 返还金币', 0, -12, 12, MUTED, 185);
-    label(this.node, '备 战 席', -426, -173, 15, GOLD, 150);
-    label(this.node, '9 个席位', 425, -173, 12, MUTED, 150);
+    const area = SHOP_DROP_AREA;
+    const dock = panel(this.node, 'shopDock', area.x, area.y, area.width, area.height,
+      new Color(12, 25, 33), new Color(135, 113, 69), 'panel_dock');
+    this.buildEconomy(dock);
+    this.buildShop();
+    this.sellNode = panel(this.node, 'shopSale', area.x, area.y, area.width, area.height,
+      new Color(35, 25, 30), new Color(142, 76, 72), null);
+    this.sellBanner = panel(this.sellNode, 'sellBanner', 0, 0, 452, 88,
+      new Color(35, 25, 30), GOLD, 'sell_zone');
+    picture(this.sellBanner, 'icon_sell', -156, 0, 32);
+    this.sellLabel = label(this.sellBanner, '', 15, 0, 24, GOLD, 360);
+    this.sellNode.active = false;
+    this.buildCommand();
+    this.buildSettlement();
+    this.buildUnitDetails();
+    this.warnLabel = label(this.node, '', 0, -130, 17, GOLD, 640);
+  }
 
-    const dock = panel(this.node, 'shopDock', 0, -281, 1180, 150, new Color(12, 25, 33), new Color(135, 113, 69), 'panel_dock');
-    const gold = panel(dock, 'gold', -481, 56, 178, 28, new Color(30, 45, 45), GOLD);
-    this.goldLabel = label(gold, '20 金币', 0, 0, 20, GOLD, 170);
-    picture(dock, 'badge_level', -546, 26, 24);
-    this.levelBadgeLabel = label(dock, '1', -546, 26, 12, GOLD, 20);
-    this.levelLabel = label(dock, '等级 1', -469, 27, 16, TEXT, 145);
-    this.expLabel = label(dock, '经验 0 / 2', -481, 9, 11, MUTED, 160);
-    const exp = new Node('experience'); dock.addChild(exp); exp.setPosition(-481, -4, 0);
-    picture(exp, 'exp_bar_bg', 0, 0, 146, 8);
-    this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 142, 4, sprite => {
+  private buildEconomy(dock: Node): void {
+    this.economyRoot = new Node('economy'); dock.addChild(this.economyRoot);
+    this.economyRoot.setPosition(-398, 0, 0);
+    const goldIcon = new Node('goldIcon'); goldIcon.addComponent(UITransform).setContentSize(22, 22);
+    const goldSprite = goldIcon.addComponent(Sprite); goldSprite.sizeMode = Sprite.SizeMode.CUSTOM;
+    this.economyRoot.addChild(goldIcon); goldIcon.setPosition(-57, 36, 0);
+    resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
+      if (!err && goldSprite.isValid) goldSprite.spriteFrame = frame;
+    });
+    this.goldLabel = label(this.economyRoot, '20', 8, 36, 22, GOLD, 110);
+    picture(this.economyRoot, 'badge_level', -57, 4, 28);
+    this.levelBadgeLabel = label(this.economyRoot, '1', -57, 4, 14, GOLD, 24);
+    this.expLabel = label(this.economyRoot, '0 / 2', 2, 18, 10, MUTED, 100);
+    const exp = new Node('experience'); this.economyRoot.addChild(exp); exp.setPosition(2, 3, 0);
+    picture(exp, 'exp_bar_bg', 0, 0, 88, 8);
+    this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 84, 4, sprite => {
       sprite.type = Sprite.Type.FILLED; sprite.fillType = Sprite.FillType.HORIZONTAL;
       sprite.fillStart = 0; sprite.fillRange = this.expRatio;
     });
-    label(dock, '招募棋子', -277, 58, 13, GOLD, 166);
-    label(dock, '集齐三个相同星级棋子可升星', 279, 58, 12, MUTED, 350);
-
-    this.shopRoot = new Node('inventory'); this.node.addChild(this.shopRoot);
-    const lock = button(this.shopRoot, '', -80, -223, 106, 24, () => this.onLock());
-    this.lockLabel = lock.getChildByName('text')!.getComponent(Label)!;
-    this.lockIcon = picture(lock, 'icon_lock_open', -40, 0, 16);
-    this.lockLabel.node.setPosition(10, 0, 0);
-    this.lockLabel.node.getComponent(UITransform)!.setContentSize(80, 32);
-    this.lockLabel.fontSize = 12; this.lockLabel.lineHeight = 17; this.setLocked(false);
-    this.buyExpBtn = button(this.shopRoot, '', -481, -306, 174, 28, () => { if (this.canBuyExp) this.onBuyExp(); });
-    this.buyExpBtn.addComponent(UIOpacity);
+    this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
+    this.buyExpBtn = button(this.economyControls, '', -38, -28, 72, 32,
+      () => { if (this.canBuyExp) this.onBuyExp(); });
+    this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
-    this.buyExpLabel.fontSize = 13; this.buyExpLabel.lineHeight = 18;
-    button(this.shopRoot, '刷新   ↻   2 金币', -481, -338, 174, 28, () => this.onRefresh());
+    this.buyExpLabel.fontSize = 12; this.buyExpLabel.lineHeight = 16; this.buyExpLabel.node.setPosition(0, 6, 0);
+    this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(66, 22);
+    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 0, -8, 10, GOLD, 66);
+    const refresh = button(this.economyControls, '', 38, -28, 72, 32, () => this.onRefresh());
+    refresh.name = 'refresh'; label(refresh, '刷新', 0, 6, 12, TEXT, 66);
+    label(refresh, '2金', 0, -8, 10, GOLD, 66);
+    const lock = new Node('lock'); lock.addComponent(UITransform).setContentSize(24, 24);
+    this.economyControls.addChild(lock); lock.setPosition(64, 4, 0);
+    this.lockIcon = setUISkin(lock, 'btn_lock_off'); lock.on(Node.EventType.TOUCH_END, () => this.onLock());
+    this.setLocked(false);
+  }
+
+  private buildShop(): void {
+    this.shopRoot = new Node('inventory'); this.node.addChild(this.shopRoot);
     for (let i = 0; i < 5; i++) {
-      const n = panel(this.shopRoot, `shop_${i}`, -277 + i * 176, -286, 164, 104, new Color(25, 43, 50), TIERS[1], 'card_cost1');
-      n.addComponent(UIOpacity);
+      const n = panel(this.shopRoot, `shop_${i}`, SHOP_CARDS.firstX + i * SHOP_CARDS.spacing,
+        SHOP_CARDS.y, 164, 104, new Color(25, 43, 50), TIERS[1], 'card_cost1');
+      n.setScale(SHOP_CARDS.scale, SHOP_CARDS.scale, 1); n.addComponent(UIOpacity);
       const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
       const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       portrait.setPosition(0, 15, 0); n.addChild(portrait);
@@ -195,36 +189,53 @@ export class BattleUI extends Component {
         price: label(n, '', 57, -28, 16, GOLD, 40), role: label(n, '', -49, 21, 10, MUTED, 65),
         border: n.getComponent(Graphics)!, lockOverlay: picture(n, 'card_lock_overlay', 0, 0, 164, 104).node, unitId: null };
       card.lockOverlay.active = this.locked;
-      this.shopSlots.push(card); n.on(Node.EventType.TOUCH_END, () => { if (card.unitId) this.onBuy(i); });
+      this.shopSlots.push(card);
+      n.on(Node.EventType.TOUCH_END, () => { if (this.shopAvailable && !this.dragging && card.unitId) this.onBuy(i); });
     }
-    const hint = label(this.node, '战斗进行中  ·  招募将在结算后开放', 60, -286, 20, MUTED, 850);
-    this.battleHint = hint.node; this.battleHint.active = false;
+  }
 
+  private buildCommand(): void {
+    const command = panel(this.node, 'command', 482, -292, 212, 112,
+      new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
+    this.fightBtn = button(command, '开始战斗', 0, 20, 188, 42, () => this.onFight(), true);
+    picture(this.fightBtn, 'icon_swords', -76, 0, 22);
+    this.fightBtn.getChildByName('text')!.setPosition(10, 0, 0);
+    const speed = button(command, '', 0, -27, 188, 30,
+      () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
+    picture(speed, 'icon_speed', -76, 0, 20);
+    this.speedLabel = label(speed, '×1', 0, 0, 15, MUTED, 150);
+  }
+
+  private buildSettlement(): void {
     this.resultPanel = new Node('settlement'); this.node.addChild(this.resultPanel);
-    const shade = panel(this.resultPanel, 'modalShield', 0, 0, 1280, 720, new Color(4, 12, 19, 200), new Color(0, 0, 0, 0), null);
+    const shade = panel(this.resultPanel, 'modalShield', 0, 0, 1280, 720,
+      new Color(4, 12, 19, 200), new Color(0, 0, 0, 0), null);
     shade.on(Node.EventType.TOUCH_START, () => {});
     const result = panel(this.resultPanel, 'result', 0, 35, 550, 380, new Color(17, 35, 43), GOLD, 'panel_modal');
-    this.reportLabel = label(result, '远 征 战 报', 0, 165, 13, GOLD, 500);
+    this.reportLabel = label(result, '远征战报', 0, 165, 13, GOLD, 500);
     this.resultBanner = picture(result, 'banner_victory', 0, 98, 520, 110);
     this.resultLabel = label(result, '', 0, 100, 36, TEXT, 500);
     picture(result, 'divider', 0, 33, 420, 10);
     this.detailLabel = label(result, '', 0, -35, 16, MUTED, 510);
     this.detailLabel.node.getComponent(UITransform)!.setContentSize(510, 140);
-    const next = button(result, '继续远征  ›', 0, -145, 240, 46, () => this.onRestart(), true);
+    const next = button(result, '下一波', 0, -145, 240, 46, () => this.onRestart(), true);
     this.nextLabel = next.getChildByName('text')!.getComponent(Label)!;
     this.resultPanel.active = false;
-    this.warnLabel = label(this.node, '', 0, -140, 17, GOLD, 640);
-    this.unitPanel = new Node('unitDetail'); this.node.addChild(this.unitPanel);
-    const shield = panel(this.unitPanel, 'detailShield', 0, 0, 1280, 720, new Color(4, 12, 19, 200), new Color(0, 0, 0, 0), null);
-    shield.on(Node.EventType.TOUCH_END, () => { this.unitPanel.active = false; });
-    const info = panel(this.unitPanel, 'detailCard', 0, 20, 530, 390, INK, GOLD, 'tooltip_panel');
-    info.on(Node.EventType.TOUCH_END, (e) => { e.propagationStopped = true; });
-    this.unitTitle = label(info, '', 0, 142, 25, GOLD, 510);
-    picture(info, 'icon_info', -230, 142, 26);
-    picture(info, 'divider', 0, 115, 440, 10);
-    this.unitDetail = label(info, '', 0, 3, 18, TEXT, 510);
-    this.unitDetail.node.getComponent(UITransform)!.setContentSize(510, 240);
-    button(info, '关闭', 0, -150, 160, 36, () => { this.unitPanel.active = false; });
+  }
+
+  private buildUnitDetails(): void {
+    this.unitPanel = panel(this.node, 'unitDetail', 482, 50, 216, 366, INK, GOLD, 'tooltip_panel');
+    this.unitTitle = label(this.unitPanel, '', 0, 133, 16, GOLD, 190);
+    picture(this.unitPanel, 'divider', 0, 104, 188, 8);
+    const close = button(this.unitPanel, '', 88, 160, 22, 22, () => { this.unitPanel.active = false; });
+    picture(close, 'icon_close', 0, 0, 14);
+    this.unitDetail = label(this.unitPanel, '', 0, -30, 13, TEXT, 188);
+    this.unitDetail.lineHeight = 20;
+    this.unitDetail.horizontalAlign = Label.HorizontalAlign.LEFT;
+    this.unitDetail.verticalAlign = Label.VerticalAlign.TOP;
+    this.unitDetail.overflow = Label.Overflow.CLAMP;
+    this.unitDetail.enableWrapText = true;
+    this.unitDetail.node.getComponent(UITransform)!.setContentSize(188, 254);
     this.unitPanel.active = false;
   }
 
@@ -251,45 +262,43 @@ export class BattleUI extends Component {
     }
     g.strokeColor = new Color(101, 92, 63); g.lineWidth = 1;
     g.moveTo(-586, 281); g.lineTo(586, 281); g.stroke();
-    g.moveTo(-588, -206); g.lineTo(588, -206); g.stroke();
+    g.moveTo(-588, -230); g.lineTo(588, -230); g.stroke();
   }
 
   onDestroy(): void { this.backdrop?.destroy(); }
-  setSpeed(s: number): void { this.speed = s; if (this.speedLabel) this.speedLabel.string = `战斗速度  ×${s}`; }
+  setSpeed(s: number): void { this.speed = s; if (this.speedLabel) this.speedLabel.string = `×${s}`; }
   showFightBtn(): void { if (this.fightBtn) this.fightBtn.active = true; }
   hideFightBtn(): void { if (this.fightBtn) this.fightBtn.active = false; }
 
   refreshTop(gold: number, floor: number, lv: LevelSystem): void {
-    this.goldLabel.string = `${gold} 金币`; this.floorLabel.string = `第 ${floor} / ${this.waveTotal} 波`;
-    this.levelLabel.string = `等级 ${lv.level}`; this.cap = lv.unitCap; this.updateCap();
+    this.goldLabel.string = `${gold}`; this.floorLabel.string = `${floor} / ${this.waveTotal}`;
+    this.cap = lv.unitCap; this.updateCap();
     this.levelBadgeLabel.string = `${lv.level}`;
     const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
     this.canBuyExp = !max && gold >= EXP_PURCHASE.gold;
-    this.buyExpLabel.string = max ? '已达最高等级' : `购买经验  ${EXP_PURCHASE.gold}金币 → ${EXP_PURCHASE.exp}经验`;
+    this.buyExpLabel.string = max ? '满级' : `+${EXP_PURCHASE.exp}经验`;
     this.buyExpLabel.color = this.canBuyExp ? TEAL : MUTED;
     this.buyExpBtn.getComponent(UIOpacity)!.opacity = this.canBuyExp ? 255 : 140;
     setUISkin(this.buyExpBtn, this.canBuyExp ? 'btn_secondary' : 'btn_disabled', this.buyExpBtn.getComponent(Graphics)!);
-    this.expLabel.string = max ? '经验已满' : `经验 ${lv.exp} / ${need}`;
+    this.expLabel.string = max ? 'MAX' : `${lv.exp} / ${need}`;
     const ratio = max ? 1 : Math.max(0, Math.min(1, lv.exp / need));
     this.expRatio = ratio;
     if (this.expFill.spriteFrame) this.expFill.fillRange = ratio;
   }
-  refreshFormation(units: Array<{ unitId: string; location: string }>, configs: UnitConfigData[] = []): void {
-    const board = units.filter(u => u.location === 'board'); this.deployed = board.length; this.updateCap();
-    const roles = ['前排', '远程', '法术'];
-    ['frontline', 'ranged', 'caster'].forEach((role, i) => {
-      const count = board.filter(u => configs.find(c => c.id === u.unitId)?.role === role).length;
-      this.formationLabels[i].string = `${roles[i]}    ${count}`;
-      this.formationLabels[i].color = count ? TEXT : MUTED;
-    });
+  refreshFormation(units: Array<{ unitId: string; location: string }>, _configs: UnitConfigData[] = []): void {
+    this.deployed = units.filter(u => u.location === 'board').length; this.updateCap();
   }
-  private updateCap(): void { if (this.capLabel) this.capLabel.string = `已上阵  ${this.deployed} / ${this.cap}`; }
+  private updateCap(population = this.deployed): void {
+    if (!this.capLabel) return;
+    this.capLabel.string = `${population} / ${this.cap}`;
+    this.capLabel.color = population > this.cap ? new Color(229, 121, 112, 210) : new Color(233, 231, 210, 140);
+  }
 
   refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number; artId?: string; role?: string; tint?: string }>): void {
     this.shopSlots.forEach((card, i) => {
       const data = slots[i], id = data?.unitId ?? null; card.unitId = id;
       card.node.getComponent(UIOpacity)!.opacity = id ? 255 : 95;
-      card.name.string = id ? data.name : '已招募'; card.price.string = id ? `${data.price}` : '';
+      card.name.string = id ? data.name : ''; card.price.string = id ? `${data.price}` : '';
       card.role.string = id ? ({ frontline:'前排', ranged:'远程', caster:'法术' }[data.role ?? ''] ?? '') : '';
       const tint = new Color(255, 255, 255); if (data?.tint) tint.fromHEX(data.tint); card.portrait.color = tint;
       card.portrait.node.active = !!id;
@@ -304,8 +313,8 @@ export class BattleUI extends Component {
     });
   }
   setShopVisible(v: boolean): void {
-    this.shopRoot.active = v; this.battleHint.active = !v;
-    this.phaseLabel.string = v ? '准备阶段' : '战斗阶段'; this.phaseLabel.color = v ? TEAL : GOLD;
+    this.shopAvailable = v; this.clearSellPreview();
+    this.phaseLabel.string = v ? '准备' : '战斗'; this.phaseLabel.color = v ? TEAL : GOLD;
   }
   showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number, round?: RoundSettlement): void {
     const ended = !!round?.runResult, win = ended ? round.runResult === 'victory' : winner === 0;
@@ -318,14 +327,14 @@ export class BattleUI extends Component {
     const gold = settle ? `阶段 +${settle.floorIncome}    胜利 +${settle.winBonus}    利息 +${settle.interest}\n连胜 / 连败 +${settle.streakBonus}    金币合计 +${settle.total}\n` : '';
     const health = round ? `第 ${round.waveId} 波 · 敌方存活 ${round.enemySurvivors}\n生命 -${round.healthLost}    剩余生命 ${round.healthRemaining}\n` : '';
     this.detailLabel.string = `${health}${gold}经验 +${expGained}${levelUps ? `    升至等级 ${newLevel}` : ''}`;
-    this.resultPanel.active = true;
+    this.unitPanel.active = false; this.resultPanel.active = true;
   }
   hideResult(): void { this.resultPanel.active = false; }
   refreshRun(health: number, max: number, wave: number, total: number, name: string): void {
     this.waveTotal = total;
-    this.healthLabel.string = `生命 ${health} / ${max}`;
+    this.healthLabel.string = `${health} / ${max}`;
     this.healthLabel.color = health <= max / 3 ? new Color(229, 139, 122) : TEAL;
-    this.floorLabel.string = `第 ${wave} / ${total} 波`; this.waveLabel.string = name;
+    this.floorLabel.string = `${wave} / ${total}`; this.waveLabel.string = name;
     for (const child of [...this.waveTrack.children]) if (child.name !== 'skin') child.destroy();
     const spacing = Math.min(36, 260 / total);
     for (let i = 0; i < total; i++) {
@@ -335,21 +344,26 @@ export class BattleUI extends Component {
   }
   setLocked(locked: boolean): void {
     this.locked = locked;
-    this.lockLabel.string = locked ? '已锁 · 解锁' : '锁定商店'; this.lockLabel.color = locked ? GOLD : MUTED;
-    setUISkin(this.lockIcon.node, locked ? 'icon_lock_closed' : 'icon_lock_open');
+    setUISkin(this.lockIcon.node, locked ? 'btn_lock_on' : 'btn_lock_off');
     this.shopSlots.forEach(card => { card.lockOverlay.active = locked; });
   }
-  isInSellArea(x: number, y: number): boolean { return Math.abs(x - 488) <= 96 && Math.abs(y + 75) <= 37; }
-  showSellPreview(name: string, gold: number, hover: boolean): void {
-    this.sellLabel.string = `${name} · 返还 ${gold} 金币`;
+  isInSellArea(x: number, y: number): boolean { return this.shopAvailable && containsShopDrop(x, y); }
+  showSellPreview(name: string, gold: number, hover: boolean, population = this.deployed): void {
+    if (!this.shopAvailable) return;
+    this.dragging = true; this.shopRoot.active = false; this.economyRoot.active = false;
+    this.sellNode.active = true; this.capLabel.node.active = true; this.unitPanel.active = false;
+    this.updateCap(population);
+    this.sellLabel.string = `${hover ? '松手出售' : '出售'} · ${name}  +${gold}金`;
     this.sellLabel.color = hover ? GOLD : TEXT;
-    paintPanel(this.sellNode.getComponent(Graphics)!, 192, 74, hover ? new Color(66, 45, 40) : new Color(35, 31, 35), hover ? GOLD : MUTED);
-    setUISkin(this.sellNode, hover ? 'sell_zone_hot' : 'sell_zone', this.sellNode.getComponent(Graphics)!);
+    const area = SHOP_DROP_AREA;
+    paintPanel(this.sellNode.getComponent(Graphics)!, area.width, area.height,
+      hover ? new Color(62, 34, 34) : new Color(35, 25, 30), hover ? GOLD : new Color(142, 76, 72));
+    setUISkin(this.sellBanner, hover ? 'sell_zone_hot' : 'sell_zone', this.sellBanner.getComponent(Graphics)!);
   }
   clearSellPreview(): void {
-    this.sellLabel.string = '拖到此处 · 返还金币'; this.sellLabel.color = MUTED;
-    paintPanel(this.sellNode.getComponent(Graphics)!, 192, 74, new Color(35, 31, 35));
-    setUISkin(this.sellNode, 'sell_zone', this.sellNode.getComponent(Graphics)!);
+    this.dragging = false; this.sellNode.active = false; this.capLabel.node.active = false;
+    this.economyRoot.active = true; this.economyControls.active = this.shopAvailable;
+    this.shopRoot.active = this.shopAvailable; this.updateCap();
   }
   showUnitDetail(title: string, detail: string): void { this.unitTitle.string = title; this.unitDetail.string = detail; this.unitPanel.active = true; }
   showWarn(msg: string): void { this.warnLabel.string = msg; this.warnTimer = 2; }
