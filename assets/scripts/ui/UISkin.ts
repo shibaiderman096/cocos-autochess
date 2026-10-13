@@ -33,3 +33,12 @@ export function setUISkin(node: Node, key: UISkinKey, fallback?: Graphics, ready
   });
   return sprite;
 }
+
+/** The supplied badges are left aligned in a 60x20 image; center the visible stars. */
+export function setStarBadge(node: Node, star: number): void {
+  const rank = Math.max(1, Math.min(3, Math.round(star)));
+  const key: UISkinKey = rank === 3 ? 'star_badge_3' : rank === 2 ? 'star_badge_2' : 'star_badge_1';
+  const sprite = setUISkin(node, key);
+  const width = node.getComponent(UITransform)!.contentSize.width;
+  sprite.node.setPosition((3 - rank) * width / 6, 0, 0);
+}

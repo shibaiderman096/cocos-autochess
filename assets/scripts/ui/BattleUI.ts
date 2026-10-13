@@ -1,7 +1,7 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, Color, Graphics, resources, UIOpacity } from 'cc';
 import { UNIT_SPRITE, UISkinKey } from '../view/ArtPaths';
-import { setUISkin } from './UISkin';
-import { drawStarRing, STAR_RING_COLORS } from '../view/StarRing';
+import { setUISkin, setStarBadge } from './UISkin';
+import { drawFactionRing, FACTION_RING_COLORS } from '../view/FactionRing';
 import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { RoundSettlement } from '../core/RoundFlow';
@@ -124,13 +124,16 @@ export class BattleUI extends Component {
     label(this.node, '己 方 布 阵', -484, -28, 13, TEAL, 190);
     label(this.node, '7 列 × 4 排', -484, -51, 12, MUTED, 190);
     const legend = new Node('starLegend'); this.node.addChild(legend); legend.setPosition(-484, -91, 0);
-    const ring = legend.addComponent(Graphics);
-    STAR_RING_COLORS.forEach((color, i) => {
-      const x = -54 + i * 54;
-      ring.strokeColor = color; ring.lineWidth = i === 0 ? 1.5 : 2.5;
-      ring.ellipse(x, 0, 11, 4); ring.stroke();
-      label(legend, `${i + 1}星`, x, -19, 11, color, 50);
-    });
+    for (const side of [0, 1] as const) {
+      const n = new Node('faction'); legend.addChild(n); n.setPosition(side ? 42 : -42, 25, 0);
+      drawFactionRing(n.addComponent(Graphics), 30, side);
+      label(n, side ? '敌方' : '我方', 0, -28, 11, FACTION_RING_COLORS[side], 60);
+    }
+    for (let rank = 1; rank <= 3; rank++) {
+      const n = new Node('starBadge'); n.addComponent(UITransform).setContentSize(44, 44 / 3);
+      legend.addChild(n); n.setPosition((rank - 2) * 54, -25, 0); setStarBadge(n, rank);
+      label(legend, `${rank}星`, (rank - 2) * 54, -42, 10, GOLD, 50);
+    }
 
     const command = panel(this.node, 'command', 488, 111, 192, 180, new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
     label(command, '远征指令', 0, 56, 19, GOLD, 170);
@@ -184,8 +187,10 @@ export class BattleUI extends Component {
       const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
       const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       portrait.setPosition(0, 15, 0); n.addChild(portrait);
-      const base = new Node('starRing'); portrait.addChild(base);
-      drawStarRing(base.addComponent(Graphics), 62, 1);
+      const base = new Node('factionRing'); portrait.addChild(base);
+      drawFactionRing(base.addComponent(Graphics), 62, 0);
+      const stars = new Node('starBadge'); stars.addComponent(UITransform).setContentSize(48, 16);
+      n.addChild(stars); stars.setPosition(-51, -8, 0); setStarBadge(stars, 1);
       const card: ShopCard = { node: n, portrait: sprite, name: label(n, '', -19, -28, 17, TEXT, 110),
         price: label(n, '', 57, -28, 16, GOLD, 40), role: label(n, '', -49, 21, 10, MUTED, 65),
         border: n.getComponent(Graphics)!, lockOverlay: picture(n, 'card_lock_overlay', 0, 0, 164, 104).node, unitId: null };
@@ -288,6 +293,7 @@ export class BattleUI extends Component {
       card.role.string = id ? ({ frontline:'前排', ranged:'远程', caster:'法术' }[data.role ?? ''] ?? '') : '';
       const tint = new Color(255, 255, 255); if (data?.tint) tint.fromHEX(data.tint); card.portrait.color = tint;
       card.portrait.node.active = !!id;
+      card.node.getChildByName('starBadge')!.active = !!id;
       paintPanel(card.border, 164, 104, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
       const key: UISkinKey = id ? `card_cost${Math.max(1, Math.min(5, data.cost))}` as UISkinKey : 'card_empty';
       setUISkin(card.node, key, card.border);
