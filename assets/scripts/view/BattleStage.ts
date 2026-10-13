@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, Color, Graphics } from 'cc';
-import { ConfigManager } from '../core/ConfigManager';
+import { ConfigManager, BattleConfigData } from '../core/ConfigManager';
 import { BattleSim, Placement } from '../battle/BattleSim';
 import { TickDriver } from '../core/TickDriver';
 import { BoardView } from './BoardView';
@@ -109,7 +109,7 @@ export class BattleStage extends Component {
 
   private loadConfigs(): Promise<void> {
     return new Promise((res, rej) => {
-      let pending = 2;
+      let pending = 3;
       const done = () => { if (--pending === 0) res(); };
       const fail = (e: Error) => { pending = -1; rej(e); };
       resources.load('config/units', JsonAsset, (e, a) => {
@@ -120,6 +120,11 @@ export class BattleStage extends Component {
       resources.load('config/skills', JsonAsset, (e, a) => {
         if (e) { fail(e); return; }
         this.cfg.setSkills(a.json as Record<string, never>);
+        done();
+      });
+      resources.load('config/battle', JsonAsset, (e, a) => {
+        if (e) { fail(e); return; }
+        this.cfg.setBattle(a.json as BattleConfigData);
         done();
       });
     });

@@ -7,6 +7,8 @@ export class Unit {
   atkCd = 0;
   moveCd = 0;
   alive = true;
+  star = 1;
+  skillScale = 1;
 
   constructor(
     public id: number,

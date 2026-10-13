@@ -13,6 +13,8 @@ export interface Placement {
   y: number;
   /** 星级（M2）：影响数值倍率，默认 1 */
   star?: number;
+  /** Wave stat multiplier, independent of star rank. */
+  statMultiplier?: number;
 }
 
 export interface BattleOptions {
@@ -30,6 +32,7 @@ export class BattleSim {
   winner: Side | -1 = -1;
   private rng: Rng;
   private started = false;
+  private pendingDamage: Array<{ dst: Unit; dmg: number; type: 'physical' | 'magic' | 'true' }> = [];
 
   constructor(
     private configs: ConfigManager,
@@ -43,16 +46,12 @@ export class BattleSim {
       if (p.x < 0 || p.y < 0 || p.x >= w || p.y >= h) {
         throw new Error(`placement out of bounds: (${p.x}, ${p.y})`);
       }
-      let effCfg = p.cfg;
-      if (p.star && p.star > 1) {
-        const mult = Math.pow(1.8, p.star - 1);
-        effCfg = {
-          ...p.cfg,
-          hp: Math.round(p.cfg.hp * mult),
-          atk: Math.round(p.cfg.atk * mult),
-        };
-      }
-      this.units.push(new Unit(i + 1, p.side, effCfg, p.x, p.y));
+      const star = Math.max(1, Math.min(3, Math.floor(p.star ?? 1)));
+      const multiplier = p.statMultiplier ?? 1;
+      const unit = new Unit(i + 1, p.side, configs.scaleUnit(p.cfg, star, multiplier), p.x, p.y);
+      unit.star = star;
+      unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
+      this.units.push(unit);
     });
   }
 
@@ -72,11 +71,14 @@ export class BattleSim {
     if (this.finished) return;
     if (!this.started) this.start();
     this.tick++;
+    if (this.checkEnd()) return;
+    this.pendingDamage.length = 0;
     for (const u of this.units) { // 按 id 升序遍历，确定性
       if (!u.alive) continue;
       this.updateUnit(u);
-      if (this.checkEnd()) return;
     }
+    this.resolveDamage();
+    if (this.checkEnd()) return;
     if (this.tick >= this.maxTicks) this.end(-1);
   }
 
@@ -106,13 +108,17 @@ export class BattleSim {
 
     // 1. 蓝满施法（需在射程内）
     if (u.cfg.skillId && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
-      this.cast(u, this.configs.getSkill(u.cfg.skillId), target);
+      const skill = this.configs.getSkill(u.cfg.skillId);
+      const castTarget = skill.targeting === 'lowestHp'
+        ? this.units.filter(e => e.alive && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
+          .sort((a, b) => a.hp / a.cfg.hp - b.hp / b.cfg.hp || a.id - b.id)[0] : target;
+      this.cast(u, skill, castTarget);
       return;
     }
     // 2. 射程内攻击
     if (d <= u.cfg.range) {
       if (u.atkCd === 0) {
-        u.atkCd = Math.max(1, Math.round(1000 / TICK_MS / u.cfg.atkSpeed));
+        u.atkCd = Math.max(1, Math.round(1000 / this.configs.battle.tickMs / u.cfg.atkSpeed));
         this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id });
         this.damage(u, target, u.cfg.atk, 'physical');
         if (u.cfg.maxMana > 0) u.mana = Math.min(u.cfg.maxMana, u.mana + u.cfg.manaPerHit);
@@ -138,12 +144,12 @@ export class BattleSim {
 
   private cast(u: Unit, sk: SkillConfigData, mainTarget: Unit) {
     u.mana = 0;
-    u.atkCd = Math.max(1, Math.round(1000 / TICK_MS / u.cfg.atkSpeed));
+    u.atkCd = Math.max(1, Math.round(1000 / this.configs.battle.tickMs / u.cfg.atkSpeed));
     this.events.push({ t: 'cast', tick: this.tick, id: u.id, skillId: sk.id, target: mainTarget.id });
     for (const e of this.units) {
       if (!e.alive || e.side === u.side) continue;
       if (e === mainTarget || (sk.radius > 0 && dist(e.pos, mainTarget.pos) <= sk.radius)) {
-        this.damage(u, e, sk.power, sk.dmgType);
+        this.damage(u, e, sk.power * u.skillScale, sk.dmgType);
       }
     }
   }
@@ -153,11 +159,20 @@ export class BattleSim {
     void src;
     const res = type === 'physical' ? dst.cfg.armor : type === 'magic' ? dst.cfg.mr : 0;
     const dmg = Math.max(1, Math.round(raw * 100 / (100 + res)));
-    dst.hp = Math.max(0, dst.hp - dmg);
-    this.events.push({ t: 'hit', tick: this.tick, id: dst.id, dmg, hp: dst.hp, dmgType: type });
-    if (dst.hp === 0) {
-      dst.alive = false;
-      this.events.push({ t: 'death', tick: this.tick, id: dst.id });
+    this.pendingDamage.push({ dst, dmg, type });
+  }
+
+  /** Every unit alive at tick start can act; deaths are applied after all damage. */
+  private resolveDamage(): void {
+    for (const { dst, dmg, type } of this.pendingDamage) {
+      dst.hp = Math.max(0, dst.hp - dmg);
+      this.events.push({ t: 'hit', tick: this.tick, id: dst.id, dmg, hp: dst.hp, dmgType: type });
+    }
+    for (const u of this.units) {
+      if (u.alive && u.hp === 0) {
+        u.alive = false;
+        this.events.push({ t: 'death', tick: this.tick, id: u.id });
+      }
     }
   }
 

@@ -18,11 +18,16 @@ export interface UnitConfigData {
   startMana: number;
   manaPerHit: number;
   skillId?: string;
+  artId?: 'warrior' | 'archer' | 'mage';
+  role?: 'frontline' | 'ranged' | 'caster';
+  tint?: string;
 }
 
 export interface SkillConfigData {
   id: string;
   dmgType: 'physical' | 'magic' | 'true';
+  name?: string;
+  description?: string;
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
@@ -34,6 +39,9 @@ export interface BattleConfigData {
   ownRows: number;       // 己方可摆的行数（从下往上）
   maxTicks: number;      // 超时 tick
   tickMs: number;        // 每 tick 毫秒
+  starScaling: Array<{ hp: number; atk: number; skill: number }>;
+  initialHealth: number;
+  lossPerEnemy: number;
 }
 
 export class ConfigManager {
@@ -43,6 +51,9 @@ export class ConfigManager {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
     maxTicks: 1200,
     tickMs: 50,
+    starScaling: [{ hp: 1, atk: 1, skill: 1 }, { hp: 1.8, atk: 1.8, skill: 1.8 }, { hp: 3.24, atk: 3.24, skill: 3.24 }],
+    initialHealth: 20,
+    lossPerEnemy: 2,
   };
 
   setUnits(data: UnitConfigData[]): void {
@@ -62,6 +73,15 @@ export class ConfigManager {
     const u = this.units[id];
     if (!u) throw new Error(`unit config not found: ${id}`);
     return u;
+  }
+
+  allUnits(): UnitConfigData[] { return Object.values(this.units); }
+
+  scaleUnit(cfg: UnitConfigData, star = 1, multiplier = 1): UnitConfigData {
+    const scale = this.battle.starScaling[Math.max(0, Math.min(2, Math.floor(star) - 1))];
+    return { ...cfg, hp: Math.round(cfg.hp * scale.hp * multiplier),
+      atk: Math.round(cfg.atk * scale.atk * multiplier),
+      armor: Math.round(cfg.armor * multiplier), mr: Math.round(cfg.mr * multiplier) };
   }
 
   getSkill(id: string): SkillConfigData {

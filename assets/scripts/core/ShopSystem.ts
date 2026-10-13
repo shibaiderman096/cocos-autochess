@@ -12,7 +12,7 @@ import { Rng } from './Rng';
 import { CardPool } from './CardPool';
 import { OwnedUnits } from './OwnedUnits';
 import { EconomySystem } from './EconomySystem';
-import { SHOP_RATES, SHOP_SLOTS, COST_PRICE, Cost } from './ShopConfig';
+import { SHOP_RATES, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
 
 export const REFRESH_COST = 2;
@@ -154,7 +154,7 @@ export class ShopSystem {
     const u = this.owned.get(uid);
     if (!u) return null;
     const cost = this.pool.costOfUnit(u.unitId);
-    const gold = COST_PRICE[cost] * u.star; // 星级倍数出售
+    const gold = sellPrice(cost, u.star);
     this.owned.remove(uid);
     for (let i = 0; i < 3 ** (u.star - 1); i++) this.pool.give(u.unitId);
     this.economy.add(gold);

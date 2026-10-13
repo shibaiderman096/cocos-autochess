@@ -41,8 +41,10 @@ $smokeCode = $LASTEXITCODE
 Write-Host "`n--- 商店与阶段联动回归测试（无渲染）---" -ForegroundColor Cyan
 node tests/regression-tests.cjs
 $regressionCode = $LASTEXITCODE
+node tests/fairness-tests.cjs
+$fairnessCode = $LASTEXITCODE
 $taskBuildRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $taskBuildPath = [IO.Path]::GetFullPath((Join-Path $taskBuildRoot '.test-build'))
 if ($taskBuildPath -ne (Join-Path $taskBuildRoot '.test-build')) { throw 'Invalid test output path' }
 Remove-Item -LiteralPath $taskBuildPath -Recurse -Force
-if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0) { exit 1 }
+if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0 -or $fairnessCode -ne 0) { exit 1 }

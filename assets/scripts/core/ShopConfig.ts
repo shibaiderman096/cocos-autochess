@@ -32,10 +32,15 @@ export const COST_PRICE: Readonly<Record<Cost, number>> = {
   1: 1, 2: 2, 3: 3, 4: 5, 5: 8,
 };
 
-/** 出售返还（按费用；返还原价，M2 简化：星级不涨价返还） */
+/** One-cost units keep full combined value; upgraded higher costs lose one gold. */
 export const COST_SELL: Readonly<Record<Cost, number>> = {
   1: 1, 2: 2, 3: 3, 4: 5, 5: 8,
 };
+
+export function sellPrice(cost: Cost, star: number): number {
+  const rank = Math.max(1, Math.min(3, Math.floor(star)));
+  return COST_SELL[cost] * 3 ** (rank - 1) - (cost > 1 && rank > 1 ? 1 : 0);
+}
 
 /** 商店格子数 */
 export const SHOP_SLOTS = 5;

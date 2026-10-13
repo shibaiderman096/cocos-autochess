@@ -90,7 +90,7 @@ const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, '.
 new Function('require', 'exports', code)(id => {
   if (id === 'cc') return { Component, Node, Vec3, UITransform, Graphics, Label, Color, JsonAsset: class {},
     _decorator: { ccclass: () => c => c, property: () => () => {} },
-    resources: { load: (name, T, cb) => cb(null, { json: name === 'config/units' ? units : skills }) } };
+    resources: { load: (name, T, cb) => cb(null, { json: JSON.parse(fs.readFileSync(path.join(root, 'assets/resources', name + '.json'), 'utf8')) }) } };
   return viewMocks[id] ?? require(path.resolve(path.dirname(stageFile), id) + '.ts');
 }, stageExports);
 const storage = new Map();
