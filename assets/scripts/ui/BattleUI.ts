@@ -165,7 +165,7 @@ export class BattleUI extends Component {
     resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
       if (!err && goldSprite.isValid) goldSprite.spriteFrame = frame;
     });
-    this.goldLabel = label(this.shopHeader, '20', -13, -225, 22, GOLD, 65);
+    this.goldLabel = label(this.shopHeader, '0', -13, -225, 22, GOLD, 65);
     const rates = new Node('shopRates'); this.shopHeader.addChild(rates); rates.setPosition(-276, -225, 0);
     for (let i = 0; i < 5; i++) {
       const rate = label(rates, '0%', (i - 2) * 44, 0, 12, TIERS[i + 1], 42);

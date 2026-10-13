@@ -152,7 +152,7 @@ menu=createMenu();flush(); assert.ok(menu.node.getChildByName('continueGame'));c
 menu.node.getChildByName('continueGame').events.get('end')();assert.equal(storage.get(SAVE_KEY),before,'continue preserves exact saved run');
 menu=createMenu();flush();sceneAccepted=false;menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before,'scene failure restores previous run');assert.equal(menu.loading,false);
 sceneAccepted=true;sceneError=new Error('launch error');menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before);assert.match(menu.status.string,/加载失败/);
-sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,5);assert.equal(loadSaveV2().gold,20);assert.equal(loadSaveV2().round,null);
+sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,5);assert.equal(loadSaveV2().gold,0);assert.equal(loadSaveV2().round,null);
 const main=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/main.scene'),'utf8'));
 assert.equal(main[0]._name,'main');assert.ok(main.some(o=>o.__type__==='3d5ecIKFJdMUocoPL3jTL8c'));
 assert.ok(!main.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'menu contains no battle stage');

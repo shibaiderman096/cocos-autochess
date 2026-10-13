@@ -17,29 +17,34 @@ console.log('=== 经济 / 等级 / 存档测试 ===\n');
 console.log('[1] 经济结算');
 {
   const e = new EconomySystem();
-  assert(e.gold === DEFAULT_ECONOMY_CONFIG.initialGold, `初始金币应为 ${DEFAULT_ECONOMY_CONFIG.initialGold}，得 ${e.gold}`);
+  assert(e.gold === 0, `初始金币应为 0，得 ${e.gold}`);
 
-  // 第 1 层胜利：阶段 5 + 胜 1 + 利息 min(2,5)=2 + 连胜 min(0,3)=0 → +8
+  // 第 1 阶段胜利：基础 2 + 胜 1 + 利息 0 + 连胜 0 → +3
   const s1 = e.settleBattle(1, { winner: 0 });
-  assert(s1.floorIncome === 5, `floorIncome=5，得 ${s1.floorIncome}`);
+  assert(s1.floorIncome === 2, `floorIncome=2，得 ${s1.floorIncome}`);
   assert(s1.winBonus === 1, `winBonus=1，得 ${s1.winBonus}`);
-  assert(s1.interest === 2, `利息 min(floor(20*0.1),5)=2，得 ${s1.interest}`);
+  assert(s1.interest === 0, `0 金币利息为 0，得 ${s1.interest}`);
   assert(s1.streakBonus === 0, `连胜1 → min(floor(1/2),3)=0，得 ${s1.streakBonus}`);
-  assert(s1.total === 8, `total=8，得 ${s1.total}`);
-  assert(e.gold === 28, `金币 20+8=28，得 ${e.gold}`);
+  assert(s1.total === 3, `total=3，得 ${s1.total}`);
+  assert(e.gold === 3, `金币 0+3=3，得 ${e.gold}`);
 
-  // 第 2 层胜利：连胜2 → bonus=1；利息 min(floor(28*0.1),5)=2；阶段 10 + 胜 1 + 利 2 + 连 1 = 14
+  // 第 2 阶段胜利：基础 4 + 胜 1 + 利息 0 + 连胜 1 → +6
   const s2 = e.settleBattle(2, { winner: 0 });
   assert(s2.winStreak === 2, `连胜=2，得 ${s2.winStreak}`);
   assert(s2.streakBonus === 1, `连胜2 → bonus=1，得 ${s2.streakBonus}`);
-  assert(s2.total === 14, `total=14，得 ${s2.total}`);
-  assert(e.gold === 42, `金币 28+14=42，得 ${e.gold}`);
+  assert(s2.floorIncome === 4, `floorIncome=4，得 ${s2.floorIncome}`);
+  assert(s2.total === 6, `total=6，得 ${s2.total}`);
+  assert(e.gold === 9, `金币 3+6=9，得 ${e.gold}`);
 
-  // 第 3 层失败：连败1 → bonus=0；利息 min(floor(42*0.1),5)=4；阶段 15 + 0 + 4 + 0 = 19
+  // 第 3 阶段失败：基础 6 + 胜 0 + 利息 0 + 连败 0 → +6
   const s3 = e.settleBattle(3, { winner: 1 });
   assert(s3.winStreak === 0 && s3.loseStreak === 1, '失败应清零连胜、连败=1');
-  assert(s3.interest === 4, `利息 min(floor(42*0.1),5)=4，得 ${s3.interest}`);
-  assert(s3.total === 19, `total=19，得 ${s3.total}`);
+  assert(s3.floorIncome === 6, `floorIncome=6，得 ${s3.floorIncome}`);
+  assert(s3.interest === 0, `9 金币利息为 0，得 ${s3.interest}`);
+  assert(s3.total === 6, `total=6，得 ${s3.total}`);
+  const sameStage = new EconomySystem();
+  assert(sameStage.settleBattle(2, { winner: -1 }).floorIncome === 4, '第 2 阶段每小关基础收入为 4');
+  assert(sameStage.settleBattle(2, { winner: -1 }).floorIncome === 4, '同阶段下一小关基础收入仍为 4');
 }
 
 // ─── 2. 利息上限 ───

@@ -135,7 +135,7 @@ function drag(stage, from, to) {
 
 (async () => {
   await test('locked shop retains exact slots and inventory across waves and reload', async () => {
-    const stage = await makeStage(); stage.ui.onLock();
+    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.ui.onLock();
     const slots = stage.shop.snapshot(), pool = stage.pool.snapshot();
     stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown = true; stage.fighting = true;
     stage.restart();
@@ -203,19 +203,36 @@ function drag(stage, from, to) {
     restored.restart(); assert.equal(restored.flow.waveIndex,1); assert.equal(restored.flow.phase,'prepare');
     restored.restart(); assert.equal(restored.flow.waveIndex,1);
   });
+  await test('zero-gold starter earns base income per subround from the current stage', async () => {
+    const stage = await makeStage();
+    assert.equal(stage.economy.gold,0);assert.equal(stage.owned.all().length,1);
+    const cards=stage.shop.snapshot();stage.buyFromShop(0);stage.refreshShop();stage.ui.onBuyExp();
+    assert.equal(stage.economy.gold,0);assert.deepEqual(stage.shop.snapshot(),cards);assert.equal(stage.owned.all().length,1);
+    stage.owned.move(1,{location:'board',x:3,y:3});
+    for(const expectedIncome of [2,2,2,4]) {
+      const before=stage.economy.gold;stage.startFight();stage.sim.run();stage.update(.1);
+      const reward=stage.save.lastReward.breakdown;
+      assert.equal(reward.floorIncome,expectedIncome,'base reward depends on stage, not total wave or subround index');
+      assert.equal(reward.interest,Math.min(Math.floor(before*.1),5));
+      assert.equal(reward.winBonus,1);assert.equal(reward.streakBonus,Math.min(Math.floor(reward.winStreak/2),3));
+      assert.equal(stage.economy.gold,before+reward.total);stage.restart();
+    }
+    const reloaded=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(reloaded.economy.gold,stage.economy.gold,'continuing retains earned gold');
+  });
   await test('run end restarts health, economy, levels, inventory, lock, and wave together', async () => {
     const stage = await makeStage(); stage.flow.startBattle(); stage.flow.settle(1,99);
     stage.shop.locked=true; stage.resultShown=true; stage.fighting=true; stage.persistShopState();
     const restored = await makeStage(JSON.parse(storage.get(SAVE_KEY))); restored.restart();
     assert.equal(restored.flow.phase,'prepare'); assert.equal(restored.flow.health,20);
-    assert.equal(restored.flow.waveIndex,0); assert.equal(restored.economy.gold,20);
+    assert.equal(restored.flow.waveIndex,0); assert.equal(restored.economy.gold,0);
     assert.equal(restored.levelSys.level,1); assert.equal(restored.owned.all().length,1);
     assert.equal(restored.shop.locked,false); assert.equal(restored.shop.slots.filter(s=>s.unitId).length,5);
     const total = new CardPool(units).total();
     assert.equal(restored.pool.total()+1+5,total);
   });
   await test('experience button exchanges exactly four gold for four XP and persists upgrades', async () => {
-    const stage = await makeStage(), beforeShop = stage.shop.snapshot();
+    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }), beforeShop = stage.shop.snapshot();
     const original = stage.owned.snapshot(), gold = stage.economy.gold;
     stage.ui.onBuyExp();
     assert.equal(stage.economy.gold, gold - 4);
@@ -230,19 +247,19 @@ function drag(stage, from, to) {
     const before = storage.get(SAVE_KEY); poor.ui.onBuyExp();
     assert.equal(poor.economy.gold, 3); assert.equal(poor.levelSys.exp, 0); assert.equal(poor.levelSys.level, 1);
     assert.equal(storage.get(SAVE_KEY), before); assert.equal(poor.ui.warn, '金币不足');
-    const max = await makeStage({ ...freshSaveV2(), level: 10 }); max.ui.onBuyExp();
+    const max = await makeStage({ ...freshSaveV2(), gold: 20, level: 10 }); max.ui.onBuyExp();
     assert.equal(max.economy.gold, 20); assert.equal(max.levelSys.exp, 0); assert.equal(max.ui.warn, '已达最高等级');
-    const fighting = await makeStage();
+    const fighting = await makeStage({ ...freshSaveV2(), gold: 20 });
     fighting.owned.move(fighting.owned.all()[0].uid, { location: 'board', x: 2, y: 3 }); fighting.startFight();
     const sim=fighting.sim; fighting.ui.onBuyExp(); assert.equal(fighting.economy.gold, 16); assert.equal(fighting.levelSys.level, 3);
     assert.equal(fighting.sim,sim);
   });
   await test('XP purchase carries remaining XP and stops charging after reaching level ten', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), level: 9, exp: 66 });
+    const stage = await makeStage({ ...freshSaveV2(), gold: 20, level: 9, exp: 66 });
     stage.ui.onBuyExp();
     assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.level, 10); assert.equal(stage.levelSys.exp, 2);
     stage.ui.onBuyExp(); assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.exp, 2);
-    const normal = await makeStage({ ...freshSaveV2(), level: 3, exp: 3 }); normal.ui.onBuyExp();
+    const normal = await makeStage({ ...freshSaveV2(), gold: 20, level: 3, exp: 3 }); normal.ui.onBuyExp();
     assert.equal(normal.levelSys.level, 4); assert.equal(normal.levelSys.exp, 1);
   });
   await test('star rank reaches bench and combat views and updates after merging', async () => {
@@ -312,7 +329,7 @@ function drag(stage, from, to) {
   });
   await test('last reserved card remains purchasable', () => {
     const pool = new CardPool([units[0]], { warrior: 1 });
-    const shop = new ShopSystem(pool, new OwnedUnits(), new EconomySystem(), new Map([['warrior', units[0]]]), new Rng(42), () => 1, 9);
+    const shop = new ShopSystem(pool, new OwnedUnits(), new EconomySystem(undefined,{gold:1,winStreak:0,loseStreak:0}), new Map([['warrior', units[0]]]), new Rng(42), () => 1, 9);
     assert.equal(shop.slots.filter(s => s.unitId).length, 1);
     assert.equal(pool.count('warrior'), 0);
     assert.equal(shop.buy(0).error, undefined);
@@ -328,7 +345,7 @@ function drag(stage, from, to) {
     assert.equal(stage.owned.all()[0].star,1); assert.equal(stage.cfg.getUnit(stage.owned.all()[0].unitId).cost,1);
     assert.equal(stage.waves.length,23); assert.equal(stage.save.stageCount,3);
     assert.equal(stage.ui.slots.filter(s => s.unitId).length, 5);
-    assert.equal(stage.economy.gold, freshSaveV2().gold);
+    assert.equal(stage.economy.gold, 0);
   });
   await test('bench drag deploys, enforces cap, undeploys, and binds new nodes', async () => {
     const stage = await makeStage(twoUnitSave()); const bv = stage.boardNode.getComponent(BoardView);
@@ -366,7 +383,7 @@ function drag(stage, from, to) {
     assert.equal(stage.replayer.sim, stage.sim);
   });
   await test('purchase immediately renders new bench unit and persists initialization', async () => {
-    const stage = await makeStage(); stage.buyFromShop(0);
+    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.buyFromShop(0);
     assert.equal(stage.ownedViews?.size, stage.owned.all().length);
     const saved = JSON.parse(storage.get(SAVE_KEY));
     assert.equal(saved.owned.length, stage.owned.all().length);
@@ -389,14 +406,14 @@ function drag(stage, from, to) {
     const pool = new CardPool([units[0]]); const owned = new OwnedUnits();
     pool.take('warrior'); pool.take('warrior');
     owned.addToBench('warrior', 2); owned.addToBench('warrior', 2);
-    const shop = new ShopSystem(pool, owned, new EconomySystem(), new Map([['warrior', units[0]]]), new Rng(1), () => 1, 2);
+    const shop = new ShopSystem(pool, owned, new EconomySystem(undefined,{gold:1,winStreak:0,loseStreak:0}), new Map([['warrior', units[0]]]), new Rng(1), () => 1, 2);
     assert.equal(shop.buy(0).error, undefined);
     assert.equal(owned.all().length, 1); assert.equal(owned.all()[0].star, 2);
     shop.sell(owned.all()[0].uid); shop.returnUnbought();
     assert.equal(pool.count('warrior'), 30);
   });
   await test('empty formation cannot start, and combat freezes deployed units while allowing shop purchases', async () => {
-    const stage = await makeStage(); stage.startFight();
+    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.startFight();
     assert.equal(stage.fighting, false);
     const bv = stage.boardNode.getComponent(BoardView);
     drag(stage, stage.benchSlotWorld(0), bv.cellToWorld(2, 2)); stage.startFight();
@@ -481,7 +498,7 @@ function drag(stage, from, to) {
     const gold=stage.economy.gold;stage.onTouchEnd(touch(shopDrop()));assert.equal(stage.economy.gold,gold);assert.ok(stage.owned.get(2));
   });
   await test('combat merge keeps the deployed position even when the oldest copy was on the bench', async () => {
-    const saved=freshSaveV2();saved.owned=[{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
+    const saved=freshSaveV2();saved.gold=20;saved.owned=[{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
       {uid:2,unitId:'warrior',star:1,location:'board',x:3,y:3}];
     saved.shop=['warrior',null,null,null,null].map(unitId=>({unitId}));
     const stage=await makeStage(saved);stage.startFight();const sim=stage.sim;stage.buyFromShop(0);

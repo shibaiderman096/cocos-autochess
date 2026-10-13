@@ -36,9 +36,14 @@ for (const u of units) { assert.ok(u.artId); if (u.skillId) assert.ok(skills[u.s
 // Every starter encounter is winnable by the original one-star, one-cost piece alone.
 for(const wave of waves.filter(w=>w.stage===1)) {
   const enemies=wave.enemies.map(e=>({cfg:cfg.getUnit(e.unitId),side:1,...e}));
-  assert.ok(enemies.every(e=>e.cfg.hp<=60&&e.cfg.atk<=3));
+  assert.ok(enemies.every(e=>e.cfg.hp>cfg.getUnit(runConfig.starterUnitId).atk*3&&e.cfg.atk<=3),'monsters survive several starter attacks while keeping low damage');
   const sim=new BattleSim(cfg,[...enemies,{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
   sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
+  for(const enemy of sim.units.filter(u=>u.side===1)) {
+    const hits=sim.events.filter(e=>e.t==='hit'&&e.id===enemy.id);
+    assert.ok(hits.length>=4,`${enemy.cfg.id} must survive at least three starter attacks`);
+    assert.ok(hits[0].dmg<enemy.cfg.hp,'the first hit cannot kill a full-health monster');
+  }
 }
 const flow = new RoundFlow(waves, rules);
 assert.equal(flow.nextWave(), false); assert.equal(flow.settle(1, 3), null);
