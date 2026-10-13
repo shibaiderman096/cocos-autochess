@@ -7,6 +7,7 @@ import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { RoundSettlement, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
+import { shopCostRates } from '../core/ShopConfig';
 
 const { ccclass } = _decorator;
 const INK = new Color(13, 27, 35);
@@ -16,6 +17,13 @@ const MUTED = new Color(133, 161, 164);
 const TEAL = new Color(89, 203, 176);
 const TIERS = [MUTED, new Color(163, 177, 169), TEAL, new Color(86, 167, 226), new Color(181, 127, 230), GOLD];
 interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
+export interface UnitDetailData {
+  name: string; star: number; cost?: number; artId: string; side: 0 | 1; tint?: string;
+  hp: number; maxHp: number; mana: number; maxMana: number;
+  atk: number; armor: number; mr: number; atkSpeed: number; range: number;
+  skillName: string; skillDescription: string;
+}
+interface DetailMeter { fill: Sprite; value: Label; ratio: number }
 
 export function label(parent: Node, text: string, x: number, y: number, size = 18, color = TEXT, width = 240): Label {
   const n = new Node('text'); n.addComponent(UITransform).setContentSize(width, size * 2 + 8);
@@ -74,6 +82,13 @@ export class BattleUI extends Component {
   private unitPanel: Node;
   private unitTitle: Label;
   private unitDetail: Label;
+  private unitPortrait: Sprite;
+  private unitStars: Node;
+  private unitCost: Label;
+  private unitStats: Label[] = [];
+  private hpMeter: DetailMeter;
+  private manaMeter: DetailMeter;
+  private detailArt = '';
   private homeButton: Node;
   private speed = 1;
   private backdrop: Node;
@@ -97,6 +112,9 @@ export class BattleUI extends Component {
   private shopRoot: Node;
   private economyRoot: Node;
   private economyControls: Node;
+  private shopHeader: Node;
+  private rateLabels: Label[] = [];
+  private combatActive = false;
   private sellBanner: Node;
   private shopAvailable = true;
   private dragging = false;
@@ -142,33 +160,39 @@ export class BattleUI extends Component {
     this.economyRoot.setPosition(-402, 0, 0);
     const goldIcon = new Node('goldIcon'); goldIcon.addComponent(UITransform).setContentSize(22, 22);
     const goldSprite = goldIcon.addComponent(Sprite); goldSprite.sizeMode = Sprite.SizeMode.CUSTOM;
-    this.economyRoot.addChild(goldIcon); goldIcon.setPosition(-57, 50, 0);
+    this.shopHeader = new Node('shopHeader'); this.node.addChild(this.shopHeader);
+    this.shopHeader.addChild(goldIcon); goldIcon.setPosition(-55, -225, 0);
     resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
       if (!err && goldSprite.isValid) goldSprite.spriteFrame = frame;
     });
-    this.goldLabel = label(this.economyRoot, '20', 8, 50, 22, GOLD, 110);
-    picture(this.economyRoot, 'badge_level', -57, 17, 28);
-    this.levelBadgeLabel = label(this.economyRoot, '1', -57, 17, 14, GOLD, 24);
-    this.expLabel = label(this.economyRoot, '0 / 2', 2, 26, 10, MUTED, 100);
-    const exp = new Node('experience'); this.economyRoot.addChild(exp); exp.setPosition(2, 12, 0);
-    picture(exp, 'exp_bar_bg', 0, 0, 88, 8);
-    this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 84, 4, sprite => {
+    this.goldLabel = label(this.shopHeader, '20', -13, -225, 22, GOLD, 65);
+    const rates = new Node('shopRates'); this.shopHeader.addChild(rates); rates.setPosition(-276, -225, 0);
+    for (let i = 0; i < 5; i++) {
+      const rate = label(rates, '0%', (i - 2) * 44, 0, 12, TIERS[i + 1], 42);
+      rate.node.name = `cost${i + 1}`; this.rateLabels.push(rate);
+    }
+    this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
+    this.buyExpBtn = button(this.economyControls, '', 0, 15, 148, 82,
+      () => { if (this.canBuyExp && this.shopAvailable && !this.dragging) this.onBuyExp(); });
+    this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
+    picture(this.buyExpBtn, 'badge_level', -52, 18, 28);
+    this.levelBadgeLabel = label(this.buyExpBtn, '1', -52, 18, 14, GOLD, 24);
+    this.expLabel = label(this.buyExpBtn, '0 / 2', 12, 19, 11, MUTED, 96);
+    const exp = new Node('experience'); this.buyExpBtn.addChild(exp); exp.setPosition(0, -3, 0);
+    picture(exp, 'exp_bar_bg', 0, 0, 130, 8);
+    this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 126, 4, sprite => {
       sprite.type = Sprite.Type.FILLED; sprite.fillType = Sprite.FillType.HORIZONTAL;
       sprite.fillStart = 0; sprite.fillRange = this.expRatio;
     });
-    this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
-    this.buyExpBtn = button(this.economyControls, '', 0, -20, 148, 30,
-      () => { if (this.canBuyExp) this.onBuyExp(); });
-    this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
-    this.buyExpLabel.fontSize = 14; this.buyExpLabel.lineHeight = 18; this.buyExpLabel.node.setPosition(-17, 0, 0);
+    this.buyExpLabel.fontSize = 14; this.buyExpLabel.lineHeight = 18; this.buyExpLabel.node.setPosition(-17, -24, 0);
     this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(98, 24);
-    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 52, 0, 12, GOLD, 36);
+    label(this.buyExpBtn, `${EXP_PURCHASE.gold}金`, 52, -24, 12, GOLD, 36);
     const refresh = button(this.economyControls, '', 0, -55, 148, 30, () => this.onRefresh());
     refresh.name = 'refresh'; label(refresh, '刷新', -17, 0, 14, TEXT, 98);
     label(refresh, '2金', 52, 0, 12, GOLD, 36);
     const lock = new Node('lock'); lock.addComponent(UITransform).setContentSize(24, 24);
-    this.economyControls.addChild(lock); lock.setPosition(864, 52, 0);
+    this.shopHeader.addChild(lock); lock.setPosition(354, -225, 0);
     this.lockIcon = setUISkin(lock, 'btn_lock_off'); lock.on(Node.EventType.TOUCH_END, () => this.onLock());
     this.setLocked(false);
   }
@@ -228,19 +252,55 @@ export class BattleUI extends Component {
   }
 
   private buildUnitDetails(): void {
-    this.unitPanel = panel(this.node, 'unitDetail', 482, 50, 216, 366, INK, GOLD, 'tooltip_panel');
-    this.unitTitle = label(this.unitPanel, '', 0, 133, 16, GOLD, 190);
-    picture(this.unitPanel, 'divider', 0, 104, 188, 8);
-    const close = button(this.unitPanel, '', 88, 160, 22, 22, () => { this.unitPanel.active = false; });
+    this.unitPanel = panel(this.node, 'unitDetail', 474, 48, 232, 386, INK, GOLD, 'tooltip_panel');
+    const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
+    this.unitPanel.addChild(portrait); portrait.setPosition(-70, 140, 0);
+    this.unitPortrait = portrait.addComponent(Sprite); this.unitPortrait.sizeMode = Sprite.SizeMode.CUSTOM;
+    this.unitTitle = label(this.unitPanel, '', 26, 154, 16, GOLD, 124);
+    this.unitStars = new Node('detailStars'); this.unitStars.addComponent(UITransform).setContentSize(60, 20);
+    this.unitPanel.addChild(this.unitStars); this.unitStars.setPosition(14, 122, 0);
+    this.unitCost = label(this.unitPanel, '', 80, 122, 12, GOLD, 40);
+    picture(this.unitPanel, 'divider', 0, 96, 208, 8);
+    this.hpMeter = this.makeDetailMeter('health', 73, UI_SPRITE.hpFillAlly, 'stat_hp');
+    this.manaMeter = this.makeDetailMeter('mana', 47, UI_SPRITE.manaFill, 'stat_mana');
+    const keys: UISkinKey[] = ['stat_atk', 'stat_armor', 'stat_mana', 'stat_aspd', 'stat_range'];
+    keys.forEach((key, i) => {
+      const x = i % 2 ? 12 : -98, y = 9 - Math.floor(i / 2) * 31;
+      picture(this.unitPanel, key, x, y, 18);
+      this.unitStats.push(label(this.unitPanel, '', x + 53, y, 12, TEXT, 86));
+    });
+    picture(this.unitPanel, 'divider', 0, -78, 208, 8);
+    const close = button(this.unitPanel, '', 99, 173, 20, 20, () => { this.unitPanel.active = false; });
     picture(close, 'icon_close', 0, 0, 14);
-    this.unitDetail = label(this.unitPanel, '', 0, -30, 13, TEXT, 188);
-    this.unitDetail.lineHeight = 20;
+    this.unitDetail = label(this.unitPanel, '', 0, -129, 12, TEXT, 208);
+    this.unitDetail.lineHeight = 19;
     this.unitDetail.horizontalAlign = Label.HorizontalAlign.LEFT;
     this.unitDetail.verticalAlign = Label.VerticalAlign.TOP;
     this.unitDetail.overflow = Label.Overflow.CLAMP;
     this.unitDetail.enableWrapText = true;
-    this.unitDetail.node.getComponent(UITransform)!.setContentSize(188, 254);
+    this.unitDetail.node.getComponent(UITransform)!.setContentSize(208, 86);
     this.unitPanel.active = false;
+  }
+
+  private makeDetailMeter(name: string, y: number, texture: string, icon: UISkinKey): DetailMeter {
+    picture(this.unitPanel, icon, -94, y, 18);
+    const root = panel(this.unitPanel, name, 12, y, 174, 18, new Color(5, 16, 23), MUTED, null);
+    const node = new Node('fill'); node.addComponent(UITransform).setContentSize(170, 14); root.addChild(node);
+    const fill = node.addComponent(Sprite); fill.sizeMode = Sprite.SizeMode.CUSTOM;
+    const meter: DetailMeter = { fill, value: label(root, '', 0, 0, 11, TEXT, 168), ratio: 0 };
+    resources.load(texture, SpriteFrame, (err, frame) => {
+      if (err || !fill.isValid) return;
+      fill.spriteFrame = frame; fill.type = Sprite.Type.FILLED; fill.fillType = Sprite.FillType.HORIZONTAL;
+      fill.fillStart = 0; fill.fillRange = meter.ratio;
+    });
+    return meter;
+  }
+
+  private updateDetailMeter(meter: DetailMeter, value: number, max: number): void {
+    const clamped = Math.max(0, Math.min(max, value));
+    meter.ratio = max > 0 ? clamped / max : 0;
+    meter.value.string = `${Math.ceil(clamped)} / ${max}`;
+    if (meter.fill.spriteFrame) meter.fill.fillRange = meter.ratio;
   }
 
   private drawArena(): void {
@@ -274,8 +334,9 @@ export class BattleUI extends Component {
   showFightBtn(): void { if (this.fightBtn) this.fightBtn.active = true; }
   hideFightBtn(): void { if (this.fightBtn) this.fightBtn.active = false; }
 
-  refreshTop(gold: number, _floor: number, lv: LevelSystem): void {
+  refreshTop(gold: number, _floor: number, lv: LevelSystem, rates = shopCostRates(lv.level)): void {
     this.goldLabel.string = `${gold}`;
+    this.rateLabels.forEach((label, i) => { label.string = `${Number((rates[i] ?? 0).toFixed(1))}%`; });
     this.cap = lv.unitCap; this.updateCap();
     this.levelBadgeLabel.string = `${lv.level}`;
     const max = lv.level >= MAX_LEVEL, need = max ? 1 : lv.expToNext();
@@ -318,9 +379,10 @@ export class BattleUI extends Component {
   }
   setShopVisible(v: boolean): void {
     this.shopAvailable = v; this.clearSellPreview();
-    this.homeButton.active = v;
-    this.phaseLabel.string = v ? '准备' : '战斗'; this.phaseLabel.color = v ? TEAL : GOLD;
+    this.homeButton.active = v && !this.combatActive;
+    this.phaseLabel.string = this.combatActive ? '战斗' : '准备'; this.phaseLabel.color = this.combatActive ? GOLD : TEAL;
   }
+  setCombatActive(v: boolean): void { this.combatActive = v; this.setShopVisible(this.shopAvailable); }
   showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number, round?: RoundSettlement): void {
     const ended = !!round?.runResult, win = ended ? round.runResult === 'victory' : winner === 0;
     this.resultLabel.string = ended ? (win ? '远征胜利' : '远征失败') : winner === 0 ? '战斗胜利' : winner === 1 ? '战斗失利' : '势均力敌';
@@ -357,6 +419,7 @@ export class BattleUI extends Component {
   showSellPreview(name: string, gold: number, hover: boolean, population = this.deployed): void {
     if (!this.shopAvailable) return;
     this.dragging = true; this.shopRoot.active = false; this.economyRoot.active = false;
+    this.shopHeader.active = false;
     this.sellNode.active = true; this.capLabel.node.active = true; this.unitPanel.active = false;
     this.updateCap(population);
     this.sellLabel.string = `${hover ? '松手出售' : '出售'} · ${name}  +${gold}金`;
@@ -369,9 +432,34 @@ export class BattleUI extends Component {
   clearSellPreview(): void {
     this.dragging = false; this.sellNode.active = false; this.capLabel.node.active = false;
     this.economyRoot.active = true; this.economyControls.active = this.shopAvailable;
+    this.shopHeader.active = this.shopAvailable;
     this.shopRoot.active = this.shopAvailable; this.updateCap();
   }
-  showUnitDetail(title: string, detail: string): void { this.unitTitle.string = title; this.unitDetail.string = detail; this.unitPanel.active = true; }
+  showUnitDetail(data: UnitDetailData): void {
+    this.unitTitle.string = data.name; this.unitTitle.color = TIERS[data.cost ?? 1];
+    this.unitCost.string = data.cost ? `${data.cost}金` : '野怪';
+    setStarBadge(this.unitStars, data.star);
+    this.unitStats.forEach((label, i) => { label.string = [
+      `攻击 ${data.atk}`, `护甲 ${data.armor}`, `魔抗 ${data.mr}`,
+      `攻速 ${data.atkSpeed}`, `距离 ${data.range}格`,
+    ][i]; });
+    this.unitDetail.string = `${data.skillName}\n${data.skillDescription}`;
+    this.updateUnitVitals(data.hp, data.maxHp, data.mana, data.maxMana);
+    const art = `${data.artId}_${data.side === 0 ? 'ally' : 'enemy'}`;
+    if (this.detailArt !== art) {
+      this.detailArt = art; this.unitPortrait.spriteFrame = null;
+      resources.load(UNIT_SPRITE[art], SpriteFrame, (err, frame) => {
+        if (!err && this.unitPortrait.isValid && this.detailArt === art) this.unitPortrait.spriteFrame = frame;
+      });
+    }
+    const tint = new Color(255, 255, 255); if (data.tint) tint.fromHEX(data.tint); this.unitPortrait.color = tint;
+    this.unitPanel.active = true;
+  }
+  updateUnitVitals(hp: number, maxHp: number, mana: number, maxMana: number): void {
+    this.updateDetailMeter(this.hpMeter, hp, maxHp); this.updateDetailMeter(this.manaMeter, mana, maxMana);
+  }
+  closeUnitDetail(): void { this.unitPanel.active = false; }
+  get unitDetailVisible(): boolean { return this.unitPanel.active; }
   showWarn(msg: string): void { this.warnLabel.string = msg; this.warnTimer = 2; }
   update(dt: number): void {
     if (this.warnTimer > 0) { this.warnTimer -= dt; if (this.warnTimer <= 0) this.warnLabel.string = ''; }

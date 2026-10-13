@@ -22,6 +22,14 @@ export const SHOP_RATES: ReadonlyArray<ReadonlyArray<number>> = [
   [5, 10, 20, 40, 25], // 10 级
 ];
 
+/** Normalize against implemented cost tiers; empty stocks still use the normal retry rule. */
+export function shopCostRates(level: number, supportedCosts: readonly number[] = [1, 2, 3, 4, 5]): number[] {
+  const row = SHOP_RATES[Math.max(0, Math.min(SHOP_RATES.length - 1, Math.floor(level) - 1))];
+  const weights = row.map((rate, i) => supportedCosts.includes(i + 1) ? rate : 0);
+  const total = weights.reduce((sum, rate) => sum + rate, 0);
+  return weights.map(rate => total ? rate * 100 / total : 0);
+}
+
 /** 每个不同棋子的初始存量（按费用） */
 export const POOL_STOCK: Readonly<Record<Cost, number>> = {
   1: 30, 2: 25, 3: 18, 4: 10, 5: 9,

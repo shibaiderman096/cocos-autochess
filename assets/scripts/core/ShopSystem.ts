@@ -5,14 +5,14 @@
  * - refresh：扣 2 金币 + 返还未购买的棋子到卡池。
  * - 抽到商品即预留卡池；buy 只转移预留卡，避免重复扣池。
  * - sell：棋子移除 + 返还合成所消耗的基础卡数量。
- * - 战斗期间所有操作由调用方（BattleStage.fighting）拦截。
+ * - 调用方允许准备 / 战斗阶段操作，当前参战单位由独立模拟器保存。
  */
 
 import { Rng } from './Rng';
 import { CardPool } from './CardPool';
 import { OwnedUnits } from './OwnedUnits';
 import { EconomySystem } from './EconomySystem';
-import { SHOP_RATES, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
+import { shopCostRates, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
 
 export const REFRESH_COST = 2;
@@ -56,8 +56,12 @@ export class ShopSystem {
   }
 
   /** 按当前等级抽一个费用档 */
+  costRates(): number[] {
+    return shopCostRates(this.getLevel(), [...this.unitConfigs.values()].map(u => u.cost ?? 1));
+  }
+
   private rollCost(level: number): Cost {
-    const row = SHOP_RATES[Math.min(level, SHOP_RATES.length) - 1];
+    const row = shopCostRates(level, [...this.unitConfigs.values()].map(u => u.cost ?? 1));
     const r = this.rng.next() * 100;
     let acc = 0;
     for (let i = 0; i < row.length; i++) {
@@ -152,7 +156,7 @@ export class ShopSystem {
     return { uid: added.uid };
   }
 
-  /** 出售：移除棋子 + 返还卡池 + 加金币。战斗期间由调用方拦截。 */
+  /** 出售：移除棋子 + 返还卡池 + 加金币。调用方限制战斗期间只出售备战棋子。 */
   sell(uid: number): { gold: number } | null {
     const u = this.owned.get(uid);
     if (!u) return null;
