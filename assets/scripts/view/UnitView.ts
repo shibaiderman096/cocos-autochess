@@ -25,18 +25,22 @@ export class UnitView extends Component {
   private loaded = false;
   private starBadge: Node;
 
-  setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number, artId = cfgId, tint?: string) {
+  setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number, artId = cfgId, tint?: string, portraitScale = 0.82) {
     this.unitId = unitId;
     this.side = side;
     this.cfgId = cfgId;
 
     const size = cellSize * 0.82;
+    const portraitSize = cellSize * portraitScale;
+    const raised = portraitSize - size;
     const body = new Node('body');
-    body.addComponent(UITransform).setContentSize(size, size);
+    body.addComponent(UITransform).setContentSize(portraitSize, portraitSize);
     this.bodySprite = body.addComponent(Sprite);
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.bodySprite.trim = false;
     this.node.addChild(body);
+    // Keep feet on the faction ring when the board portrait grows upward.
+    body.setPosition(0, raised / 2, 0);
 
     // Faction and rank have independent visual markers.
     const base = new Node('factionRing');
@@ -44,14 +48,14 @@ export class UnitView extends Component {
     drawFactionRing(base.addComponent(Graphics), size, side);
     this.starBadge = new Node('starBadge');
     this.starBadge.addComponent(UITransform).setContentSize(size * 1.2, size * 0.4);
-    this.starBadge.setPosition(0, size * 0.95, 0);
+    this.starBadge.setPosition(0, size * 0.95 + raised, 0);
     this.node.addChild(this.starBadge);
     this.setStar(1);
 
     this.hpBarBg = new Node('hpBar');
     this.hpBarBg.addComponent(UITransform).setContentSize(size * 0.9, 6);
     this.hpBarBg.addComponent(Sprite).sizeMode = Sprite.SizeMode.CUSTOM;
-    this.hpBarBg.setPosition(0, size * 0.62, 0);
+    this.hpBarBg.setPosition(0, size * 0.62 + raised, 0);
     this.node.addChild(this.hpBarBg);
 
     const hpFillNode = new Node('hpFill');

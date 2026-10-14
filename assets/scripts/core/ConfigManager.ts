@@ -2,9 +2,19 @@
  * 配置读取（M1：units.json / skills.json / battle 基础配置）。
  * 逻辑层不 import cc：由调用方（view 或 Node 模拟器）把 JSON 喂进来。
  */
-export interface UnitConfigData {
+import { CombatAttributes } from '../battle/types';
+
+export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttributes {
+  const safe = (v: number | undefined, fallback: number, max: number) => Number.isFinite(v) ? Math.max(0, Math.min(max, v!)) : fallback;
+  return { spellPower: safe(cfg.spellPower, 100, 1000000), critChance: safe(cfg.critChance, 0, 1),
+    lifesteal: safe(cfg.lifesteal, 0, 1), damageAmp: safe(cfg.damageAmp, 0, 100), damageReduction: safe(cfg.damageReduction, 0, 1) };
+}
+
+export interface UnitConfigData extends Partial<CombatAttributes> {
   id: string;
   name: string;
+  /** Creature lore and combat behavior shown in the unit detail panel. */
+  description?: string;
   /** 费用档位 1~5，默认 1 */
   cost?: number;
   hp: number;
@@ -40,6 +50,8 @@ export interface BattleConfigData {
   ownRows: number;       // 己方可摆的行数（从下往上）
   maxTicks: number;      // 超时 tick
   tickMs: number;        // 每 tick 毫秒
+  preparationSeconds?: number;
+  criticalMultiplier?: number;
   starScaling: Array<{ hp: number; atk: number; skill: number }>;
   initialHealth: number;
   lossPerEnemy: number;
@@ -53,6 +65,8 @@ export class ConfigManager {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
     maxTicks: 1200,
     tickMs: 50,
+    preparationSeconds: 1,
+    criticalMultiplier: 1.5,
     starScaling: [{ hp: 1, atk: 1, skill: 1 }, { hp: 1.8, atk: 1.8, skill: 1.8 }, { hp: 3.24, atk: 3.24, skill: 3.24 }],
     initialHealth: 20,
     lossPerEnemy: 2,
@@ -87,7 +101,7 @@ export class ConfigManager {
 
   scaleUnit(cfg: UnitConfigData, star = 1, multiplier = 1): UnitConfigData {
     const scale = this.battle.starScaling[Math.max(0, Math.min(2, Math.floor(star) - 1))];
-    return { ...cfg, hp: Math.round(cfg.hp * scale.hp * multiplier),
+    return { ...cfg, ...combatAttributes(cfg), hp: Math.round(cfg.hp * scale.hp * multiplier),
       atk: Math.round(cfg.atk * scale.atk * multiplier),
       armor: Math.round(cfg.armor * multiplier), mr: Math.round(cfg.mr * multiplier) };
   }

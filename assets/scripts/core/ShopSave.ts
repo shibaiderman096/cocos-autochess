@@ -6,7 +6,8 @@
 import { SaveData, migrateSave as migrateV1 } from './SaveData';
 import { ShopSlot } from './ShopSystem';
 import { OwnedUnit } from './OwnedUnits';
-import { DEFAULT_BENCH_SLOTS } from './ShopConfig';
+import { DEFAULT_BENCH_SLOTS, POOL_STOCK, validCost } from './ShopConfig';
+import { UnitConfigData } from './ConfigManager';
 import { RoundSnapshot } from './RoundFlow';
 import { SettlementBreakdown } from './EconomySystem';
 import { DEFAULT_STAGE_COUNT, normalizeStageCount } from './RunSetup';
@@ -14,7 +15,54 @@ import { DEFAULT_STAGE_COUNT, normalizeStageCount } from './RunSetup';
 export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'autochess_save_v2';
 
+const safeInt = (value: unknown, fallback: number, min: number, max: number): number => {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.floor(n))) : fallback;
+};
+
+/** Configuration-aware repair: owned cards take priority over shop reservations. */
+export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], boardWidth: number, ownRows: number): void {
+  const remaining: Record<string, number> = {};
+  for (const cfg of configs) remaining[cfg.id] = POOL_STOCK[validCost(cfg.cost ?? 1)];
+  const occupied = new Set<string>();
+  const valid = (u: OwnedUnit) => u.location === 'board'
+    ? u.x >= 0 && u.x < boardWidth && u.y >= 0 && u.y < ownRows
+    : u.y >= 0 && u.y < save.benchSlots;
+  const key = (u: OwnedUnit) => `${u.location}:${u.location === 'bench' ? -1 : u.x}:${u.y}`;
+  const kept: OwnedUnit[] = [], displaced: OwnedUnit[] = [];
+  for (const u of save.owned) {
+    const cards = 3 ** (u.star - 1);
+    if (!(remaining[u.unitId] >= cards)) continue;
+    remaining[u.unitId] -= cards;
+    if (u.location === 'bench') u.x = -1;
+    kept.push(u);
+    if (valid(u) && !occupied.has(key(u))) occupied.add(key(u));
+    else displaced.push(u);
+  }
+  for (const u of displaced) {
+    const candidates: Array<{ location: 'board' | 'bench'; x: number; y: number }> = [];
+    if (u.location === 'board') {
+      candidates.push({ location: 'board', x: Math.max(0, Math.min(boardWidth - 1, u.x)), y: Math.max(0, Math.min(ownRows - 1, u.y)) });
+      for (let y = 0; y < ownRows; y++) for (let x = 0; x < boardWidth; x++) candidates.push({ location: 'board', x, y });
+    }
+    for (let y = 0; y < save.benchSlots; y++) candidates.push({ location: 'bench', x: -1, y });
+    const target = candidates.find(p => !occupied.has(key({ ...u, ...p })));
+    if (target) { Object.assign(u, target); occupied.add(key(u)); }
+    else { kept.splice(kept.indexOf(u), 1); remaining[u.unitId] += 3 ** (u.star - 1); }
+  }
+  save.owned = kept;
+  for (const slot of save.shop) {
+    if (!slot.unitId) continue;
+    if (!(remaining[slot.unitId] > 0)) slot.unitId = null;
+    else remaining[slot.unitId]--;
+  }
+  save.pool = remaining;
+  save.shopReserved = true;
+}
+
 export interface SaveDataV2 extends SaveData {
+  /** Progression rule version: 1 had ten rounds in every stage after the intro. */
+  runRulesVersion: number;
   stageCount: number;
   /** 商店 5 格内容 */
   shop: ShopSlot[];
@@ -49,10 +97,10 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
     let nextUid = 1;
     for (const u of d.owned) {
       if (!u || typeof u.unitId !== 'string') continue;
-      const star = Math.max(1, Math.min(3, Math.floor(Number(u.star)) || 1));
+      const star = safeInt(u.star, 1, 1, 3);
       const loc = u.location === 'board' ? 'board' : 'bench';
-      const x = Math.max(-1, Math.floor(Number(u.x)) || 0);
-      const y = Math.max(0, Math.floor(Number(u.y)) || 0);
+      const x = safeInt(u.x, 0, -1, Number.MAX_SAFE_INTEGER);
+      const y = safeInt(u.y, 0, 0, Number.MAX_SAFE_INTEGER);
       owned.push({ uid: nextUid++, unitId: u.unitId, star, location: loc, x, y });
     }
   }
@@ -66,22 +114,30 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
     }
   }
 
-  const benchSlots = Math.max(1, Math.min(12, Math.floor(Number(d.benchSlots)) || DEFAULT_BENCH_SLOTS));
+  const benchSlots = safeInt(d.benchSlots, DEFAULT_BENCH_SLOTS, 1, 12);
   const r = d.round;
   const round: RoundSnapshot | null = r && Number.isFinite(r.health) && Number.isInteger(r.waveIndex)
     && ['prepare', 'battle', 'settlement', 'ended'].includes(r.phase) ? {
-      phase:r.phase, waveIndex:Math.max(0, r.waveIndex), health:Math.max(0, r.health),
+      phase:r.phase, waveIndex:safeInt(r.waveIndex, 0, 0, 9999), health:safeInt(r.health, 20, 0, 999999),
       result:r.result === 'victory' || r.result === 'defeat' ? r.result : null,
-      lastSettlement:r.lastSettlement && Number.isFinite(r.lastSettlement.healthRemaining) ? { ...r.lastSettlement } : null,
+      lastSettlement:r.lastSettlement && ['waveId', 'enemySurvivors', 'healthLost', 'healthRemaining'].every(k => Number.isSafeInteger(r.lastSettlement[k]) && r.lastSettlement[k] >= 0)
+        && [-1, 0, 1].includes(r.lastSettlement.winner)
+        && [null, 'victory', 'defeat'].includes(r.lastSettlement.runResult)
+        && ['stage', 'round'].every(k => r.lastSettlement[k] === undefined || (Number.isSafeInteger(r.lastSettlement[k]) && r.lastSettlement[k] > 0))
+        ? { ...r.lastSettlement } : null,
     } : null;
 
   return {
     ...v1,
     version: SAVE_VERSION,
+    runRulesVersion: d.runRulesVersion === 2 ? 2 : 1,
     stageCount: normalizeStageCount(d.stageCount ?? DEFAULT_STAGE_COUNT),
     shop, owned, pool, benchSlots, shopReserved: d.shopReserved === true,
     round, shopLocked: d.shopLocked === true,
-    lastReward: d.lastReward && Number.isFinite(d.lastReward.breakdown?.total) ? d.lastReward : undefined,
+    lastReward: d.lastReward && ['floorIncome', 'winBonus', 'interest', 'streakBonus', 'total', 'goldBefore', 'goldAfter', 'winStreak', 'loseStreak']
+      .every(k => Number.isFinite(d.lastReward.breakdown?.[k]) && d.lastReward.breakdown[k] >= 0 && d.lastReward.breakdown[k] <= Number.MAX_SAFE_INTEGER)
+      && ['expGained', 'levelUps'].every(k => Number.isSafeInteger(d.lastReward[k]) && d.lastReward[k] >= 0)
+      ? { ...d.lastReward, breakdown: { ...d.lastReward.breakdown } } : undefined,
   };
 }
 
@@ -106,5 +162,5 @@ export function writeSaveV2(data: SaveDataV2): void {
 }
 
 export function freshSaveV2(stageCount = DEFAULT_STAGE_COUNT): SaveDataV2 {
-  return migrateSaveV2({ stageCount });
+  return migrateSaveV2({ stageCount, runRulesVersion: 2 });
 }

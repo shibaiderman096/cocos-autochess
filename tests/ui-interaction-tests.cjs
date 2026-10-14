@@ -9,7 +9,10 @@ class Node {
   static EventType = { TOUCH_START:'start', TOUCH_END:'end' };
   addChild(n) { n.parent=this; this.children.push(n); }
   getChildByName(name) { return this.children.find(n=>n.name===name); }
-  addComponent(T) { const c=new T(); c.node=this; this.components.set(T,c); return c; }
+  addComponent(T) {
+    if(T===Graphics&&!this.getComponent(UITransform)) this.addComponent(UITransform).setContentSize(100,100);
+    const c=new T(); c.node=this; if(!this.components.has(T)) this.components.set(T,c); return c;
+  }
   getComponent(T) { return this.components.get(T); }
   setPosition(x,y,z) { this.position={x,y,z}; }
   setScale(x,y,z) { this.scale={x,y,z}; }
@@ -28,16 +31,24 @@ class Sprite {
   set fillRange(v) { if(this.type===2&&!this.spriteFrame) throw Error('filled range before image'); this.range=v; }
   get fillRange() { return this.range; }
 }
-class Label { static HorizontalAlign={LEFT:0}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1}; }
+class Label { static HorizontalAlign={LEFT:0,CENTER:1}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1}; }
 class Color {
   constructor(r=0,g=0,b=0,a=255) { Object.assign(this,{r,g,b,a}); }
   fromHEX() {} static WHITE=new Color(255,255,255);
 }
-class Graphics { isValid=true; clear(){} moveTo(){} lineTo(){} close(){} fill(){} stroke(){} rect(){} ellipse(){} }
+class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} ellipse(){} }
+const inputListeners=[];
+const Input={EventType:{TOUCH_START:'touchStart',TOUCH_MOVE:'touchMove',MOUSE_DOWN:'mouseDown',KEY_DOWN:'keyDown'}};
+const input={on:(type,callback,target)=>inputListeners.push({type,callback,target}),off:(type,callback,target)=>{
+  const index=inputListeners.findIndex(l=>l.type===type&&l.callback===callback&&l.target===target);if(index>=0)inputListeners.splice(index,1);
+}};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
+const screenSetup={};
 const cc={Node,UITransform,Sprite,Label,Color,Graphics,UIOpacity:class{},SpriteFrame:class{},JsonAsset:class{},Component:class{isValid=true},
+  input,Input,
+  ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
-  resources:{load:(name,T,cb)=>pending.push(()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name}))},_decorator:{ccclass:()=>c=>c}};
+  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
 function load(file) {
   file=path.resolve(file); if(cache.has(file)) return cache.get(file);
@@ -50,13 +61,34 @@ const {LevelSystem}=load(path.join(__dirname,'../assets/scripts/core/LevelSystem
 const {SHOP_DROP_AREA}=load(path.join(__dirname,'../assets/scripts/ui/BattleUILayout.ts'));
 const flush=()=>{ while(pending.length) pending.shift()(); };
 const ui=new BattleUI(); ui.node=new Node('UI'); new Node('Canvas').addChild(ui.node); ui.init();
+assert.deepEqual(ui.backdrop.getChildByName('skin').getComponent(UITransform).contentSize,{width:1280,height:720},'battle sky uses the full viewport, not the default Graphics transform');
+assert.deepEqual(screenSetup,{width:1280,height:720,policy:0,resize:true},'battle fills the viewport and follows resize');
+assert.deepEqual(JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/project.json'),'utf8')).general.designResolution,{width:1280,height:720},'project and UI design sizes match');
+ui.setBoardCenter(0,60);assert.equal(ui.capLabel.isBold,true);assert.equal(ui.capLabel.horizontalAlign,1);
+assert.deepEqual(ui.capLabel.node.position,{x:0,y:60,z:0});
+assert.equal(ui.preparationBar.parent,ui.node.getChildByName('roundBar'),'preparation fill lives inside the stage header');
+assert.deepEqual(ui.preparationBar.position,{x:0,y:-18,z:0});assert.equal(ui.node.getChildByName('preparationBar'),undefined,'no preparation modal covers the board');
+ui.setCombatCountdown(1);assert.equal(ui.phaseLabel.string,'准备 1.0s');assert.equal(ui.preparationBar.active,true);assert.equal(ui.preparationFill.lastRect[2],0);
+ui.setCombatCountdown(.5);assert.equal(ui.preparationFill.lastRect[2],140);
+ui.setCombatCountdown(.2);assert.equal(ui.preparationFill.lastRect[2],224);
+ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.preparationBar.active,false);
+ui.update(2.9);assert.equal(ui.waveTrack.active,true);ui.update(.1);assert.equal(ui.waveTrack.active,false);
+inputListeners.find(l=>l.target===ui&&l.type===Input.EventType.TOUCH_START).callback.call(ui);assert.equal(ui.waveTrack.active,true);
+ui.update(3);assert.equal(ui.waveTrack.active,false);ui.refreshRun(20,20,1,14,'测试关');assert.equal(ui.waveTrack.active,true);
+const {BoardView}=load(path.join(__dirname,'../assets/scripts/view/BoardView.ts'));
+const board=new BoardView();board.node=new Node('Board');board.node.getComponent=T=>board.node.components.get(T);board.getComponent=T=>board.node.getComponent(T);
+board.initialize(7,8,48);board.highlightTarget({x:2,y:2});
+assert.equal(board.highlight.points.length,6);assert.equal(board.highlight.fillColor.g,203);assert.equal(board.highlight.lineWidth,3);
+board.highlightTarget({x:2,y:2},false);assert.equal(board.highlight.fillColor.r,229);
+board.highlightTarget(null);assert.equal(board.highlight.points.length,0);
 ui.refreshTop(20,1,new LevelSystem({level:3,exp:2})); ui.refreshFormation([{unitId:'warrior',location:'board'}]);
 ui.refreshShop(Array.from({length:5},()=>({unitId:'warrior',name:'战士',cost:1,price:1,poolLeft:20})));
 flush(); assert.equal(ui.expFill.fillRange,2/6,'progress survives asynchronous image loading');
 assert.equal(ui.capLabel.node.active,false,'population stays hidden outside a drag');
 assert.equal(ui.node.getChildByName('formation'),undefined); assert.equal(ui.node.getChildByName('starLegend'),undefined);
-const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,skillName:'斩击',skillDescription:'造成伤害'};
+const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,spellPower:150,critChance:.25,lifesteal:.1,damageAmp:.2,damageReduction:.3,skillName:'斩击',skillDescription:'造成伤害'};
 ui.showUnitDetail(warriorDetail);
+assert.deepEqual(ui.unitStats.slice(5).map(l=>l.string),['法强 150%','暴击 25%','吸血 10%','增伤 20%','减伤 30%']);
 assert.ok(ui.unitPanel.position.x>350); assert.equal(ui.node.getChildByName('detailShield'),undefined,'details do not block the board');
 flush(); assert.equal(ui.hpMeter.fill.fillRange,.5);assert.equal(ui.manaMeter.fill.fillRange,.2);
 assert.equal(ui.hpMeter.fill.fillStart,0);assert.equal(ui.manaMeter.fill.fillStart,0,'detail bars also begin at the left');
@@ -119,6 +151,12 @@ console.log('PASS actual UI: merged XP, colored odds, gold header, range/live vi
 const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
 const unitView=new UnitView();unitView.node=new Node('unit');unitView.node.setPosition(0,0,0);
 unitView.setup('warrior',0,1,56);
+assert.equal(unitView.bodySprite.node.getComponent(UITransform).contentSize.width,56*.82,'reserve portraits retain their slot size');
+const boardUnit=new UnitView();boardUnit.node=new Node('boardUnit');boardUnit.setup('warrior',0,2,56,'warrior',undefined,1.5);
+const boardBody=boardUnit.bodySprite.node, boardSize=boardBody.getComponent(UITransform).contentSize;
+assert.deepEqual(boardSize,{width:84,height:84},'board portraits occupy 1.5 display cells');
+assert.ok(Math.abs(boardBody.position.y-boardSize.height/2+56*.82/2)<1e-8,'enlarging preserves the original foot position');
+assert.ok(boardUnit.hpBarBg.position.y>boardBody.position.y+boardSize.height/2,'health bar stays above the enlarged portrait');
 const barWidth=unitView.hpBarBg.getComponent(UITransform).contentSize.width;
 const checkBar=(sprite,ratio)=>{
   const transform=sprite.node.getComponent(UITransform);
@@ -140,10 +178,16 @@ const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
 const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
 const storage=new Map(); global.localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
 const createMenu=()=>{const menu=new MainMenu();menu.node=new Node('MainMenu');new Node('Canvas').addChild(menu.node);menu.start();return menu;};
-let menu=createMenu(); menu.startNewRun(); assert.equal(sceneLoads.length,0,'configuration must finish before starting'); flush();
+let menu=createMenu(); menu.startNewRun(); assert.equal(sceneLoads.length,0,'configuration must finish before starting');
+assert.deepEqual(menu.node.getChildByName('menuBackground').getChildByName('skin').getComponent(UITransform).contentSize,{width:1280,height:720},'menu sky uses the full viewport');
+const configIndex=pending.findIndex(f=>f.path==='config/run');pending.splice(configIndex,1)[0]();
+assert.equal(menu.ready,false,'monster images must finish loading before the run is ready');
+menu.startNewRun();assert.equal(sceneLoads.length,0,'do not enter a monster stage while its images are missing');
+assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,4,'load all four monster SpriteFrames');
+flush();assert.equal(menu.ready,true);
 const setup=menu.node.getChildByName('runSetup');
 setup.getChildByName('fewerStages').events.get('end')(); assert.equal(menu.stageCount,3);
-setup.getChildByName('moreStages').events.get('end')(); assert.equal(menu.stageCount,4); assert.match(menu.summary.string,/33/);
+setup.getChildByName('moreStages').events.get('end')(); assert.equal(menu.stageCount,4); assert.match(menu.summary.string,/21/);
 setup.getChildByName('startGame').events.get('end')();
 assert.deepEqual(sceneLoads,['scene']); assert.equal(loadSaveV2().stageCount,4); assert.equal(loadSaveV2().round,null);
 setup.getChildByName('startGame').events.get('end')(); assert.equal(sceneLoads.length,1,'double start is blocked');
@@ -161,3 +205,5 @@ const builder=JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/pac
 assert.ok(builder.scenes.some(s=>s.uuid===builder.startScene&&s.url==='db://assets/main.scene'));
 assert.ok(builder.scenes.some(s=>s.url==='db://assets/scene.scene'));
 console.log('PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');
+ui.onDestroy();assert.equal(inputListeners.filter(l=>l.target===ui).length,0,'scene cleanup removes all idle wake listeners');
+console.log('PASS drag polygon highlight, centered bold population, animated preparation fill and idle wave visibility');

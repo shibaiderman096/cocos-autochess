@@ -13,11 +13,11 @@ import { Rng } from '../core/Rng';
 import { CardPool } from '../core/CardPool';
 import { OwnedUnits } from '../core/OwnedUnits';
 import { ShopSystem } from '../core/ShopSystem';
-import { loadSaveV2, writeSaveV2, freshSaveV2, SaveDataV2 } from '../core/ShopSave';
+import { loadSaveV2, writeSaveV2, freshSaveV2, SaveDataV2, restoreShopState } from '../core/ShopSave';
 import { COST_PRICE, Cost, sellPrice } from '../core/ShopConfig';
 import { RoundFlow, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
-import { RunConfig, buildRunWaves } from '../core/RunSetup';
+import { RunConfig, buildRunWaves, buildMonsterUnits } from '../core/RunSetup';
 
 const { ccclass, property } = _decorator;
 
@@ -45,6 +45,7 @@ export class BattleStage extends Component {
   private cellSize = 56;
   private loaded = false;
   private fighting = false;
+  private preparationRemaining = 0;
   private ui: BattleUI;
   private speed = 1;
 
@@ -78,19 +79,32 @@ export class BattleStage extends Component {
     });
     this.levelSys = new LevelSystem({ level: this.save.level, exp: this.save.exp });
     await this.loadConfigs();
-    this.cfg.setEnemyUnits(this.runConfig.monsters);
-    this.waves = buildRunWaves(this.save.stageCount, this.runConfig, this.waves);
+    this.cfg.setEnemyUnits(buildMonsterUnits(this.runConfig, this.cfgUnits()));
+    this.waves = buildRunWaves(this.save.stageCount, this.runConfig, this.waves, this.cfgUnits());
+    if (this.save.runRulesVersion < 2 && this.save.round) {
+      const oldIndex = this.save.round.waveIndex, intro = this.runConfig.introWaves.length;
+      if (oldIndex >= intro) {
+        const stage = Math.min(this.save.stageCount, 2 + Math.floor((oldIndex - intro) / 10));
+        const stageWaves = this.waves.filter(w => w.stage === stage);
+        const round = Math.min(stageWaves.length, (oldIndex - intro) % 10 + 1);
+        const wave = stageWaves[round - 1];
+        this.save.round.waveIndex = this.waves.indexOf(wave);
+        if (this.save.round.lastSettlement) Object.assign(this.save.round.lastSettlement, { waveId: wave.id, stage, round });
+      }
+    }
+    this.save.runRulesVersion = 2;
     this.flow = new RoundFlow(this.waves, this.cfg.battle, this.save.round ?? undefined);
     this.save.floor = this.flow.wave.stage!;
     this.rng = new Rng(Date.now() % 2147483647);
-    this.pool = new CardPool(this.cfgUnits(), this.save.pool);
+    const restoreShop = loadedSave && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
+    const needsStarter = !loadedSave || (!this.save.shopReserved && this.save.owned.length === 0);
     this.restoreFormation();
+    this.pool = new CardPool(this.cfgUnits(), this.save.pool);
     this.owned = new OwnedUnits(this.save.owned);
     // 新局先发初始棋子；抽商品时才预留剩余库存。
-    if (!loadedSave || (!this.save.shopReserved && this.owned.all().length === 0)) {
+    if (needsStarter) {
       this.grantStarter();
     }
-    const restoreShop = loadedSave && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
     this.shop = new ShopSystem(
       this.pool, this.owned, this.economy,
       this.unitMap(), this.rng,
@@ -106,6 +120,7 @@ export class BattleStage extends Component {
     this.node.parent?.addChild(uiNode);
     this.ui = uiNode.addComponent(BattleUI);
     this.ui.init();
+    this.ui.setBoardCenter(this.boardNode.position.x, this.boardNode.position.y);
     this.ui.onFight = () => this.startFight();
     this.ui.onSpeed = (s) => { this.speed = s; };
     this.ui.onRestart = () => this.restart();
@@ -184,27 +199,16 @@ export class BattleStage extends Component {
     bv.initialize(this.cfg.battle.boardWidth, this.cfg.battle.boardHeight, 48);
   }
 
-  /** Old eight-column saves retain their units when the arena becomes seven columns. */
+  /** Restore valid unique positions and reconcile cards against current configuration. */
   private restoreFormation(): void {
-    const { boardWidth, ownRows } = this.cfg.battle;
-    const board = this.save.owned.filter(u => u.location === 'board');
-    const valid = (u: { x: number; y: number }) => u.x >= 0 && u.x < boardWidth && u.y >= 0 && u.y < ownRows;
-    const occupied = new Set(board.filter(valid).map(u => `${u.x},${u.y}`));
-    for (const u of board.filter(u => !valid(u))) {
-      const row = Math.max(0, Math.min(ownRows - 1, u.y));
-      const preferred = { x: Math.max(0, Math.min(boardWidth - 1, u.x)), y: row };
-      const candidates = [preferred];
-      for (let y = 0; y < ownRows; y++) for (let x = 0; x < boardWidth; x++) candidates.push({ x, y });
-      const target = candidates.find(c => !occupied.has(`${c.x},${c.y}`));
-      if (target) { u.x = target.x; u.y = target.y; occupied.add(`${u.x},${u.y}`); }
-    }
+    restoreShopState(this.save, this.cfgUnits(), this.cfg.battle.boardWidth, this.cfg.battle.ownRows);
   }
 
   private createSim(battle: boolean) {
     const placements: Placement[] = [];
     this.battleIds.clear();
     for (const e of this.flow.wave.enemies) placements.push({ cfg:this.cfg.getUnit(e.unitId), side:1,
-      x:e.x, y:e.y, star:e.star, statMultiplier:e.statMultiplier });
+      x:e.x, y:e.y, star:e.star, statMultiplier:e.statMultiplier, damageAmp:e.damageAmp, damageReduction:e.damageReduction });
 
     // 己方：从 owned 数据生成（board 位置）
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
@@ -274,7 +278,7 @@ export class BattleStage extends Component {
     this.benchViews.clear();
     const bench = new Node('benchUnits'); root.addChild(bench);
     for (const ou of this.owned.inBench()) {
-      const uv = this.makeUnitView(bench, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y));
+      const uv = this.makeUnitView(bench, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y), 0.82);
       uv.setStar(ou.star); this.ownedViews.set(ou.uid, uv); this.benchViews.add(ou.uid);
     }
   }
@@ -291,13 +295,13 @@ export class BattleStage extends Component {
     }
   }
 
-  private makeUnitView(root: Node, cfgId: string, side: 0 | 1, id: number, pos: Vec3): UnitView {
+  private makeUnitView(root: Node, cfgId: string, side: 0 | 1, id: number, pos: Vec3, portraitScale = 1.5): UnitView {
     const node = new Node(`unit_${side}_${id}`);
     node.addComponent(UITransform).setContentSize(this.cellSize, this.cellSize);
     root.addChild(node);
     const uv = node.addComponent(UnitView);
     const cfg = this.cfg.getUnit(cfgId);
-    uv.setup(cfgId, side, id, this.cellSize, cfg.artId ?? cfgId, cfg.tint);
+    uv.setup(cfgId, side, id, this.cellSize, cfg.artId ?? cfgId, cfg.tint, portraitScale);
     node.setPosition(pos);
     return uv;
   }
@@ -391,6 +395,9 @@ export class BattleStage extends Component {
     else if (bench !== null && u.location === 'board' && !this.owned.atBench(bench)) population--;
     else if (this.flow.phase === 'prepare' && !selling && bench === null && cell && bv.isOwnCell(cell.y)
       && u.location === 'bench' && !this.owned.atBoard(cell.x, cell.y)) population++;
+    bv.highlightTarget(!selling && bench === null ? cell : null,
+      this.flow.phase === 'prepare' && !!cell && bv.isOwnCell(cell.y)
+      && (u.location === 'board' || !!this.owned.atBoard(cell.x, cell.y) || population <= this.levelSys.unitCap));
     this.ui.showSellPreview(this.cfg.getUnit(u.unitId).name,
       sellPrice(this.pool.costOfUnit(u.unitId), u.star), selling, population);
   }
@@ -476,6 +483,7 @@ export class BattleStage extends Component {
   }
 
   private resetDrag() {
+    this.boardNode?.getComponent(BoardView)?.highlightTarget(null);
     if (this.dragging) this.dragging.node.setScale(1, 1, 1);
     this.draggingId = 0;
     this.dragging = null;
@@ -503,8 +511,9 @@ export class BattleStage extends Component {
     const skill = cfg.skillId ? this.cfg.getSkill(cfg.skillId) : null;
     this.ui.showUnitDetail({ name:cfg.name, star, cost:cfg.cost, artId:cfg.artId ?? cfg.id, side, tint:cfg.tint,
       hp, maxHp:cfg.hp, mana, maxMana:cfg.maxMana, atk:cfg.atk, armor:cfg.armor, mr:cfg.mr, atkSpeed:cfg.atkSpeed, range:cfg.range,
-      skillName:skill ? `${skill.name ?? cfg.skillId} · ${Math.round(skill.power * skillScale)}伤害` : '普通攻击',
-      skillDescription:skill?.description ?? '无主动技能' });
+      spellPower:cfg.spellPower, critChance:cfg.critChance, lifesteal:cfg.lifesteal, damageAmp:cfg.damageAmp, damageReduction:cfg.damageReduction,
+      skillName:skill ? `${skill.name ?? cfg.skillId} · ${Math.round(skill.power * skillScale * (cfg.spellPower ?? 100) / 100)}伤害` : '普通攻击',
+      skillDescription:skill?.description ?? cfg.description ?? '无主动技能' });
   }
   private refreshDetailVitals(): void {
     const selected = this.selectedDetail; if (!selected) return;
@@ -545,6 +554,9 @@ export class BattleStage extends Component {
     this.ui.hideFightBtn();
     this.ui.setShopVisible(true); this.ui.setCombatActive(true);
     this.resetBattle(true);
+    const seconds = this.cfg.battle.preparationSeconds ?? 1;
+    this.preparationRemaining = Number.isFinite(seconds) ? Math.max(0, seconds) : 1;
+    this.ui.setCombatCountdown(this.preparationRemaining, seconds);
   }
 
   private restart() {
@@ -552,6 +564,7 @@ export class BattleStage extends Component {
     const ended = this.flow.phase === 'ended';
     this.ui.hideResult();
     this.fighting = false;
+    this.preparationRemaining = 0;
     this.resultShown = false;
     this.resetDrag();
     if (ended) {
@@ -682,6 +695,13 @@ export class BattleStage extends Component {
   update(dt: number) {
     if (!this.loaded || !this.sim) return;
     if (this.fighting && !this.sim.finished) {
+      if (this.preparationRemaining > 0) {
+        const elapsed = Math.min(Math.max(0, dt), this.preparationRemaining);
+        this.preparationRemaining = Math.max(0, this.preparationRemaining - elapsed);
+        dt -= elapsed;
+        this.ui.setCombatCountdown(this.preparationRemaining, this.cfg.battle.preparationSeconds ?? 1);
+        if (this.preparationRemaining > 0 || dt <= 0) return;
+      }
       this.driver.advance(dt * this.speed);
       this.replayer.consumeEvents();
       this.replayer.syncViews(dt);

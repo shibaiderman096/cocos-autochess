@@ -8,6 +8,11 @@
 /** 费用档位 1~5 */
 export type Cost = 1 | 2 | 3 | 4 | 5;
 
+export function validCost(value: number = 1): Cost {
+  if (!Number.isInteger(value) || value < 1 || value > 5) throw new Error('Invalid unit cost');
+  return value as Cost;
+}
+
 /** SHOP_RATES[level][costIndex]，costIndex 0=1费 ... 4=5费；单位 % */
 export const SHOP_RATES: ReadonlyArray<ReadonlyArray<number>> = [
   [100, 0, 0, 0, 0],   // 1 级
@@ -24,7 +29,7 @@ export const SHOP_RATES: ReadonlyArray<ReadonlyArray<number>> = [
 
 /** Normalize against implemented cost tiers; empty stocks still use the normal retry rule. */
 export function shopCostRates(level: number, supportedCosts: readonly number[] = [1, 2, 3, 4, 5]): number[] {
-  const row = SHOP_RATES[Math.max(0, Math.min(SHOP_RATES.length - 1, Math.floor(level) - 1))];
+  const row = SHOP_RATES[Math.max(0, Math.min(SHOP_RATES.length - 1, Math.floor(Number.isFinite(level) ? level : 1) - 1))];
   const weights = row.map((rate, i) => supportedCosts.includes(i + 1) ? rate : 0);
   const total = weights.reduce((sum, rate) => sum + rate, 0);
   return weights.map(rate => total ? rate * 100 / total : 0);
@@ -46,8 +51,8 @@ export const COST_SELL: Readonly<Record<Cost, number>> = {
 };
 
 export function sellPrice(cost: Cost, star: number): number {
-  const rank = Math.max(1, Math.min(3, Math.floor(star)));
-  return COST_SELL[cost] * 3 ** (rank - 1) - (cost > 1 && rank > 1 ? 1 : 0);
+  const rank = Math.max(1, Math.min(3, Math.floor(Number.isFinite(star) ? star : 1)));
+  return COST_SELL[validCost(cost)] * 3 ** (rank - 1) - (cost > 1 && rank > 1 ? 1 : 0);
 }
 
 /** 商店格子数 */

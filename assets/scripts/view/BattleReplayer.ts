@@ -63,7 +63,7 @@ export class BattleReplayer extends Component {
             const ft = FloatTextPool.get();
             const color = FloatText.colorForType(e.dmgType);
             const pos = tv.node.position.clone();
-            ft.show(`-${e.dmg}`, color, pos, this.fxRoot);
+            ft.show(`-${e.dmg}${e.critical ? '!' : ''}`, color, pos, this.fxRoot);
           }
         }
         break;
@@ -71,6 +71,11 @@ export class BattleReplayer extends Component {
       case 'cast': {
         const tv = this.unitViews.get(e.target);
         if (tv) tv.playHit();
+        break;
+      }
+      case 'heal': {
+        const uv = this.unitViews.get(e.id);
+        if (uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}`, new Color(89, 203, 176), uv.node.position.clone(), this.fxRoot);
         break;
       }
       case 'death': {

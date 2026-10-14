@@ -2,7 +2,7 @@ import { Rng } from '../core/Rng';
 import { BattleEvent, BattleResult, Side } from './types';
 import { Unit } from './Unit';
 import { dist, nextStep } from './Pathfinding';
-import { ConfigManager, SkillConfigData, UnitConfigData } from '../core/ConfigManager';
+import { ConfigManager, SkillConfigData, UnitConfigData, combatAttributes } from '../core/ConfigManager';
 
 export const TICK_MS = 50;
 
@@ -15,6 +15,8 @@ export interface Placement {
   star?: number;
   /** Wave stat multiplier, independent of star rank. */
   statMultiplier?: number;
+  damageAmp?: number;
+  damageReduction?: number;
 }
 
 export interface BattleOptions {
@@ -32,7 +34,7 @@ export class BattleSim {
   winner: Side | -1 = -1;
   private rng: Rng;
   private started = false;
-  private pendingDamage: Array<{ dst: Unit; dmg: number; type: 'physical' | 'magic' | 'true' }> = [];
+  private pendingDamage: Array<{ src: Unit; dst: Unit; dmg: number; type: 'physical' | 'magic' | 'true'; critical: boolean }> = [];
 
   constructor(
     private configs: ConfigManager,
@@ -48,7 +50,9 @@ export class BattleSim {
       }
       const star = Math.max(1, Math.min(3, Math.floor(p.star ?? 1)));
       const multiplier = p.statMultiplier ?? 1;
-      const unit = new Unit(i + 1, p.side, configs.scaleUnit(p.cfg, star, multiplier), p.x, p.y);
+      const scaled = configs.scaleUnit(p.cfg, star, multiplier);
+      Object.assign(scaled, combatAttributes({ ...scaled, damageAmp: scaled.damageAmp! + (p.damageAmp ?? 0), damageReduction: scaled.damageReduction! + (p.damageReduction ?? 0) }));
+      const unit = new Unit(i + 1, p.side, scaled, p.x, p.y);
       unit.star = star;
       unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
       this.units.push(unit);
@@ -120,7 +124,7 @@ export class BattleSim {
       if (u.atkCd === 0) {
         u.atkCd = Math.max(1, Math.round(1000 / this.configs.battle.tickMs / u.cfg.atkSpeed));
         this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id });
-        this.damage(u, target, u.cfg.atk, 'physical');
+        this.damage(u, target, u.cfg.atk, 'physical', true);
         if (u.cfg.maxMana > 0) u.mana = Math.min(u.cfg.maxMana, u.mana + u.cfg.manaPerHit);
       }
       return;
@@ -149,24 +153,37 @@ export class BattleSim {
     for (const e of this.units) {
       if (!e.alive || e.side === u.side) continue;
       if (e === mainTarget || (sk.radius > 0 && dist(e.pos, mainTarget.pos) <= sk.radius)) {
-        this.damage(u, e, sk.power * u.skillScale, sk.dmgType);
+        this.damage(u, e, sk.power * u.skillScale * u.cfg.spellPower! / 100, sk.dmgType);
       }
     }
   }
 
   /** 伤害公式：物理 dmg = atk * 100 / (100 + armor)，魔法走 mr，真实伤害无视抗性，最低 1 */
-  private damage(src: Unit, dst: Unit, raw: number, type: 'physical' | 'magic' | 'true') {
-    void src;
+  private damage(src: Unit, dst: Unit, raw: number, type: 'physical' | 'magic' | 'true', basicAttack = false) {
+    const critical = basicAttack && src.cfg.critChance! > 0 && this.rng.next() < src.cfg.critChance!;
+    const configuredCrit = this.configs.battle.criticalMultiplier ?? 1.5;
+    const critMultiplier = critical ? (Number.isFinite(configuredCrit) && configuredCrit >= 1 ? configuredCrit : 1.5) : 1;
     const res = type === 'physical' ? dst.cfg.armor : type === 'magic' ? dst.cfg.mr : 0;
-    const dmg = Math.max(1, Math.round(raw * 100 / (100 + res)));
-    this.pendingDamage.push({ dst, dmg, type });
+    const dmg = dst.cfg.damageReduction! >= 1 ? 0 : Math.max(1, Math.round(raw * critMultiplier * (1 + src.cfg.damageAmp!)
+      * (1 - dst.cfg.damageReduction!) * 100 / (100 + res)));
+    this.pendingDamage.push({ src, dst, dmg, type, critical });
   }
 
   /** Every unit alive at tick start can act; deaths are applied after all damage. */
   private resolveDamage(): void {
-    for (const { dst, dmg, type } of this.pendingDamage) {
+    const healing = new Map<Unit, number>();
+    for (const { src, dst, dmg, type, critical } of this.pendingDamage) {
+      const dealt = Math.min(dst.hp, dmg);
+      healing.set(src, (healing.get(src) ?? 0) + dealt * src.cfg.lifesteal!);
       dst.hp = Math.max(0, dst.hp - dmg);
-      this.events.push({ t: 'hit', tick: this.tick, id: dst.id, dmg, hp: dst.hp, dmgType: type });
+      this.events.push({ t: 'hit', tick: this.tick, id: dst.id, dmg, hp: dst.hp, dmgType: type, ...(critical ? { critical: true } : {}) });
+    }
+    for (const [src, value] of healing) {
+      if (src.hp <= 0) continue; // Lifesteal cannot revive a unit killed in this tick.
+      const amount = Math.min(src.cfg.hp - src.hp, Math.round(value));
+      if (amount <= 0) continue;
+      src.hp += amount;
+      this.events.push({ t: 'heal', tick: this.tick, id: src.id, amount, hp: src.hp });
     }
     for (const u of this.units) {
       if (u.alive && u.hp === 0) {

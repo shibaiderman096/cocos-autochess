@@ -14,7 +14,12 @@
     "startMana": 0,
     "manaPerHit": 0,
     "artId": "warrior",
-    "role": "frontline"
+    "role": "frontline",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "archer",
@@ -31,7 +36,12 @@
     "startMana": 0,
     "manaPerHit": 0,
     "artId": "archer",
-    "role": "ranged"
+    "role": "ranged",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "mage",
@@ -49,7 +59,12 @@
     "manaPerHit": 10,
     "skillId": "fireball",
     "artId": "mage",
-    "role": "caster"
+    "role": "caster",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "scout",
@@ -66,7 +81,12 @@
     "moveTicks": 6,
     "maxMana": 0,
     "startMana": 0,
-    "manaPerHit": 0
+    "manaPerHit": 0,
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "guardian",
@@ -83,7 +103,12 @@
     "moveTicks": 6,
     "maxMana": 0,
     "startMana": 0,
-    "manaPerHit": 0
+    "manaPerHit": 0,
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "duelist",
@@ -101,7 +126,12 @@
     "maxMana": 70,
     "startMana": 20,
     "manaPerHit": 10,
-    "skillId": "cleave"
+    "skillId": "cleave",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "ranger",
@@ -119,7 +149,12 @@
     "maxMana": 70,
     "startMana": 20,
     "manaPerHit": 10,
-    "skillId": "piercing_shot"
+    "skillId": "piercing_shot",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "shaman",
@@ -137,7 +172,12 @@
     "maxMana": 70,
     "startMana": 20,
     "manaPerHit": 10,
-    "skillId": "lightning"
+    "skillId": "lightning",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "sorcerer",
@@ -155,7 +195,12 @@
     "maxMana": 70,
     "startMana": 20,
     "manaPerHit": 10,
-    "skillId": "arcane_burst"
+    "skillId": "arcane_burst",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   },
   {
     "id": "champion",
@@ -173,6 +218,11 @@
     "maxMana": 70,
     "startMana": 20,
     "manaPerHit": 10,
-    "skillId": "judgment"
+    "skillId": "judgment",
+    "spellPower": 100,
+    "critChance": 0,
+    "lifesteal": 0,
+    "damageAmp": 0,
+    "damageReduction": 0
   }
 ]

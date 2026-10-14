@@ -9,11 +9,10 @@ html, body {
 .header, .footer { display: none; }
 #GameDiv {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(100vw, 177.777778vh) !important;
-  height: min(100vh, 56.25vw) !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
   border: 0;
 }
 #Cocos3dGameContainer, #GameCanvas { width: 100%; height: 100%; }

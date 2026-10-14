@@ -11,10 +11,10 @@ export const UNIT_ART: Record<string, string> = {
   shaman: 'art/units/professions/shaman/spriteFrame',
   sorcerer: 'art/units/mage_ally/spriteFrame',
   champion: 'art/units/placeholders/mage/spriteFrame',
-  // No creature illustrations supplied yet; these old variants are placeholders.
-  slime: 'art/units/warrior_enemy/spriteFrame',
-  wolf_pup: 'art/units/archer_enemy/spriteFrame',
-  small_golem: 'art/units/mage_enemy/spriteFrame',
+  zombie: 'art/units/monsters/zombie/spriteFrame',
+  skeleton_archer: 'art/units/monsters/skeleton_archer/spriteFrame',
+  silverfish: 'art/units/monsters/silverfish/spriteFrame',
+  red_eye_spider: 'art/units/monsters/red_eye_spider/spriteFrame',
 };
 
 export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
@@ -61,6 +61,8 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
 
 /** M2 interface textures; SVG originals live in art-source/ui_m2. */
 export const M2_UI_SPRITE = {
+  arena_board: 'art/arena/floating_board/spriteFrame',
+  arena_sky: 'art/arena/sky_background/spriteFrame',
   panel_ink: 'art/ui_m2/panel_ink/spriteFrame',
   panel_side: 'art/ui_m2/panel_side/spriteFrame',
   panel_dock: 'art/ui_m2/panel_dock/spriteFrame',
@@ -110,7 +112,7 @@ export const M2_UI_SPRITE = {
   divider: 'art/ui_m2/divider/spriteFrame',
   sell_zone: 'art/ui_m2/sell_zone/spriteFrame',
   sell_zone_hot: 'art/ui_m2/sell_zone_hot/spriteFrame',
-  bench_slot: 'art/ui_m2/bench_slot/spriteFrame',
+  bench_slot: 'art/arena/bench_slot/spriteFrame',
   bench_slot_hover: 'art/ui_m2/bench_slot_hover/spriteFrame',
   tooltip_panel: 'art/ui_m2/tooltip_panel/spriteFrame',
   tooltip_tail: 'art/ui_m2/tooltip_tail/spriteFrame',

@@ -57,6 +57,7 @@ class Color { constructor(...rgba) { this.rgba = rgba; } static WHITE = new Colo
 class Graphics { rect() {} roundRect() {} fill() {} stroke() {} }
 class Label {}
 class BoardView {
+  highlightTarget(cell,allowed=true) { this.highlighted=cell;this.highlightAllowed=allowed; }
   boardPixelW = 530; boardPixelH = 342;
   initialize(w, h, size) {
     this.boardWidth = w; this.boardHeight = h;
@@ -74,7 +75,7 @@ class BoardView {
   isOwnCell(y) { return y >= 0 && y < this.boardHeight / 2; }
 }
 class UnitView {
-  setup(cfgId, side, unitId) { Object.assign(this, { cfgId, side, unitId }); this.star = 1; }
+  setup(cfgId, side, unitId, cellSize, artId, tint, portraitScale=.82) { Object.assign(this, { cfgId, side, unitId, portraitScale }); this.star = 1; }
   setStar(star) { this.star = star; }
 }
 class BattleReplayer {
@@ -84,6 +85,7 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
+  setBoardCenter(x,y) { this.boardCenter={x,y}; }
   init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
   refreshTop(gold, floor, lv, rates) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; this.rates=rates; }
   refreshFormation() {}
@@ -94,6 +96,7 @@ class BattleUI {
   closeUnitDetail() { this.unitDetailVisible=false; }
   updateUnitVitals(...args) { this.vitals=args; }
   setCombatActive(v) { this.combatActive=v; }
+  setCombatCountdown(seconds) { this.countdown=seconds; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
   setShopVisible(v) { this.shopVisible = v; this.clearSellPreview(); }
@@ -134,6 +137,109 @@ function drag(stage, from, to) {
 }
 
 (async () => {
+  await test('board units use 1.5-cell portraits while reserve units retain their slot size',async()=>{
+    const stage=await makeStage();
+    assert.ok([...stage.views.values()].every(view=>view.portraitScale===1.5));
+    assert.equal(stage.ownedViews.get(1).portraitScale,.82);
+    stage.owned.move(1,{location:'board',x:3,y:3});stage.refreshOwnedViews();
+    assert.equal(stage.ownedViews.get(1).portraitScale,1.5);
+    stage.owned.move(1,{location:'bench',x:-1,y:0});stage.refreshOwnedViews();
+    assert.equal(stage.ownedViews.get(1).portraitScale,.82);
+  });
+  await test('drag highlights valid cells, rejects over-cap/enemy cells, and clears on cancel',async()=>{
+    const stage=await makeStage(twoUnitSave()),bv=stage.boardNode.getComponent(BoardView);
+    stage.onTouchStart(touch(stage.benchSlotWorld(0)));stage.onTouchMove(touch(bv.cellToWorld(2,2)));
+    assert.deepEqual(bv.highlighted,{x:2,y:2});assert.equal(bv.highlightAllowed,true);
+    stage.onTouchEnd(touch(bv.cellToWorld(2,2)));assert.equal(bv.highlighted,null);
+    stage.onTouchStart(touch(stage.benchSlotWorld(1)));stage.onTouchMove(touch(bv.cellToWorld(3,2)));
+    assert.equal(bv.highlightAllowed,false);stage.onTouchMove(touch(bv.cellToWorld(3,5)));assert.equal(bv.highlightAllowed,false);
+    stage.onTouchEnd({...touch(bv.cellToWorld(3,5)),type:Node.EventType.TOUCH_CANCEL});assert.equal(bv.highlighted,null);
+    assert.deepEqual(stage.ui.boardCenter,{x:0,y:60});
+  });
+  await test('one second preparation uses real time and never ticks early or charges twice', async () => {
+    const stage=await makeStage({...freshSaveV2(),gold:20});stage.owned.move(1,{location:'board',x:3,y:3});
+    stage.speed=3;stage.startFight();const sim=stage.sim, tick=sim.tick;
+    stage.startFight();assert.equal(stage.sim,sim);assert.equal(stage.ui.countdown,1);
+    stage.update(.5);assert.equal(sim.tick,tick);assert.equal(stage.ui.countdown,.5);
+    const gold=stage.economy.gold;stage.buyExperience();assert.equal(stage.economy.gold,gold-4);assert.equal(stage.sim,sim);
+    stage.update(.5);assert.equal(sim.tick,tick);assert.equal(stage.ui.countdown,0);
+    stage.update(.1);assert.ok(sim.tick>tick);
+    const reloaded=await makeStage(JSON.parse(storage.get(SAVE_KEY)));assert.equal(reloaded.flow.phase,'prepare');assert.equal(reloaded.preparationRemaining,0);
+  });
+  await test('stage base gold caps at ten but interest and victory bonuses remain', () => {
+    for(const stage of [1,4,5,6,99]) {
+      const economy=new EconomySystem(undefined,{gold:50,winStreak:0,loseStreak:0});
+      const reward=economy.settleBattle(stage,{winner:0});assert.equal(reward.floorIncome,Math.min(stage*2,10));
+      assert.equal(reward.interest,5);assert.equal(reward.winBonus,1);assert.equal(reward.total,reward.floorIncome+6);
+    }
+  });
+  await test('preparation crossing frame spends only leftover time on combat', async () => {
+    const stage=await makeStage();stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
+    const tick=stage.sim.tick;stage.update(1.125);assert.equal(stage.preparationRemaining,0);
+    assert.equal(stage.sim.tick-tick,2,'125ms leftover produces two 50ms ticks');
+  });
+  await test('legacy ten-round progress maps to the same stage and clamps its subround', async () => {
+    const saved={...freshSaveV2(4),runRulesVersion:1,round:{phase:'prepare',waveIndex:18,health:20,result:null,lastSettlement:null}};
+    const stage=await makeStage(saved);assert.equal(stage.flow.wave.stage,3);assert.equal(stage.flow.wave.round,6);
+    assert.equal(stage.save.runRulesVersion,2);
+    const restored=await makeStage(JSON.parse(storage.get(SAVE_KEY)));assert.equal(restored.flow.wave.stage,3);assert.equal(restored.flow.wave.round,6);
+  });
+  await test('audit: run numeric configuration cannot produce infinite counts or population', () => {
+    const run=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/run.json'),'utf8'));
+    const templates=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/waves.json'),'utf8'));
+    const {runRoundCount,buildRunWaves}=core('RunSetup');
+    assert.throws(()=>runRoundCount(3,{...run,roundsPerStage:Infinity}));
+    assert.throws(()=>buildRunWaves(5,{...run,enemyProgression:{...run.enemyProgression,populationEveryRounds:Infinity}},templates,units));
+  });
+  await test('audit: duplicate and out-of-range saved positions are repaired', async () => {
+    const saved=twoUnitSave(); saved.owned.push({...saved.owned[0],uid:3,y:99});
+    saved.owned[1].y=0;
+    saved.owned.push({...saved.owned[0],uid:4,location:'board',x:2,y:2},
+      {...saved.owned[0],uid:5,location:'board',x:2,y:2});
+    const stage=await makeStage(saved);
+    const positions=stage.owned.all().map(u=>`${u.location}:${u.x}:${u.y}`);
+    assert.equal(new Set(positions).size,positions.length);
+    for(const u of stage.owned.inBench())assert.ok(u.y>=0&&u.y<stage.save.benchSlots&&u.x===-1);
+  });
+  await test('audit: restore reconciles pool, owned stars and reserved shop per unit', async () => {
+    const saved=twoUnitSave();saved.pool=new CardPool(units).snapshot();
+    saved.owned[0].star=2;saved.shop[0]={unitId:'warrior'};
+    const stage=await makeStage(saved);
+    for(const cfg of units)assert.equal(stage.pool.count(cfg.id)+stage.owned.all().filter(u=>u.unitId===cfg.id).reduce((n,u)=>n+3**(u.star-1),0)+stage.shop.slots.filter(s=>s.unitId===cfg.id).length,new CardPool(units).count(cfg.id));
+  });
+  await test('audit: exhausted weighted tier never creates a false empty slot', () => {
+    const stock=Object.fromEntries(units.map(u=>[u.id,u.cost===2?10:0]));
+    const pool=new CardPool(units,stock),rng=new Rng(1);rng.next=()=>0;
+    const shop=new ShopSystem(pool,new OwnedUnits(),new EconomySystem(),new Map(units.map(u=>[u.id,u])),rng,()=>3,9);
+    assert.equal(shop.slots.filter(s=>s.unitId).length,5);
+  });
+  await test('audit: nonfinite money and level inputs cannot poison state', () => {
+    const economy=new EconomySystem(undefined,{gold:20,winStreak:0,loseStreak:0});
+    assert.equal(economy.spend(NaN),false);economy.add(Infinity);economy.add(-50);assert.equal(economy.gold,20);
+    const {LevelSystem}=core('LevelSystem');const level=new LevelSystem({level:NaN,exp:Infinity});level.addExp(NaN);
+    assert.equal(level.level,1);assert.equal(level.exp,0);
+    assert.ok(core('ShopConfig').shopCostRates(NaN).every(Number.isFinite));
+  });
+  await test('audit: invalid costs and pool counts are rejected or bounded', () => {
+    assert.throws(()=>new CardPool([{...units[0],cost:NaN}]));
+    const pool=new CardPool(units,{warrior:Infinity,archer:-1});
+    assert.ok(Number.isFinite(pool.total()));assert.ok(pool.count('warrior')<=30);assert.equal(pool.count('archer'),0);
+  });
+  await test('audit: saved coordinates and reward fields are finite', () => {
+    const saved=migrateSaveV2({owned:[{unitId:'warrior',star:2,x:Infinity,y:Infinity}],lastReward:{breakdown:{total:1,interest:Infinity},expGained:NaN}});
+    assert.ok(saved.owned.every(u=>Number.isFinite(u.x)&&Number.isFinite(u.y)));assert.equal(saved.lastReward,undefined);
+  });
+  await test('audit: failed full-bench merge rolls back gold, units, UID and reservation', () => {
+    for(const mode of ['null','throw']) {
+      const owned=new OwnedUnits([{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},{uid:2,unitId:'warrior',star:1,location:'bench',x:-1,y:1}]);
+      const economy=new EconomySystem(undefined,{gold:20,winStreak:0,loseStreak:0});
+      const shop=new ShopSystem(new CardPool(units),owned,economy,new Map(units.map(u=>[u.id,u])),new Rng(1),()=>3,2,[{unitId:'warrior'},...Array.from({length:4},()=>({unitId:null}))]);
+      const before=owned.snapshot(),merge=owned.tryMerge;
+      owned.tryMerge=()=>{owned.remove(1);if(mode==='throw')throw Error('injected');return null;};
+      assert.deepEqual(shop.buy(0),{error:'bench_full'});assert.equal(economy.gold,20);assert.deepEqual(owned.snapshot(),before);assert.equal(shop.slots[0].unitId,'warrior');
+      owned.tryMerge=merge;assert.equal(owned.forceAdd('archer').uid,3);
+    }
+  });
   await test('locked shop retains exact slots and inventory across waves and reload', async () => {
     const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.ui.onLock();
     const slots = stage.shop.snapshot(), pool = stage.pool.snapshot();
@@ -214,7 +320,7 @@ function drag(stage, from, to) {
       const reward=stage.save.lastReward.breakdown;
       assert.equal(reward.floorIncome,expectedIncome,'base reward depends on stage, not total wave or subround index');
       assert.equal(reward.interest,Math.min(Math.floor(before*.1),5));
-      assert.equal(reward.winBonus,1);assert.equal(reward.streakBonus,Math.min(Math.floor(reward.winStreak/2),3));
+      assert.equal(reward.winBonus,stage.sim.winner===0?1:0);assert.equal(reward.streakBonus,Math.min(Math.floor(Math.max(reward.winStreak,reward.loseStreak)/2),3));
       assert.equal(stage.economy.gold,before+reward.total);stage.restart();
     }
     const reloaded=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
@@ -343,7 +449,7 @@ function drag(stage, from, to) {
     const stage = await makeStage();
     assert.equal(stage.ownedViews?.size, 1);
     assert.equal(stage.owned.all()[0].star,1); assert.equal(stage.cfg.getUnit(stage.owned.all()[0].unitId).cost,1);
-    assert.equal(stage.waves.length,23); assert.equal(stage.save.stageCount,3);
+    assert.equal(stage.waves.length,14); assert.equal(stage.save.stageCount,3);
     assert.equal(stage.ui.slots.filter(s => s.unitId).length, 5);
     assert.equal(stage.economy.gold, 0);
   });
@@ -373,7 +479,7 @@ function drag(stage, from, to) {
     drag(stage, stage.benchSlotWorld(0), bv.cellToWorld(2, 2));
     const old = stage.sim; stage.startFight();
     assert.notEqual(stage.sim, old); assert.equal(stage.replayer.sim, stage.sim);
-    stage.update(0.1); assert.ok(stage.replayer.seen.length > 0);
+    stage.update(1); stage.update(0.1); assert.ok(stage.replayer.seen.length > 0);
     stage.sim.run(); stage.update(0.1);
     const gold = stage.economy.gold, floor = stage.save.floor;
     stage.restart();
@@ -435,31 +541,44 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.ownedViews.get(1).node.position, original);
   });
   await test('selected stage count survives reload, stage boundaries, and a complete restart', async () => {
-    const stage = await makeStage(freshSaveV2(4)); assert.equal(stage.waves.length,33);
+    const stage = await makeStage(freshSaveV2(4)); assert.equal(stage.waves.length,21);
     for(let i=0;i<3;i++) {
       stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown=true; stage.fighting=true; stage.restart();
     }
     assert.equal(stage.flow.wave.stage,2); assert.equal(stage.flow.wave.round,1); assert.equal(stage.save.floor,2);
     const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
-    assert.equal(reloaded.waves.length,33); assert.equal(reloaded.flow.waveIndex,3);
+    assert.equal(reloaded.waves.length,21); assert.equal(reloaded.flow.waveIndex,3);
     assert.equal(reloaded.flow.wave.stage,2); assert.equal(reloaded.flow.wave.round,1);
     reloaded.flow.startBattle(); reloaded.flow.settle(1,99); reloaded.resultShown=true; reloaded.restart();
-    assert.equal(reloaded.save.stageCount,4); assert.equal(reloaded.waves.length,33);
+    assert.equal(reloaded.save.stageCount,4); assert.equal(reloaded.waves.length,21);
     assert.equal(reloaded.owned.all().length,1); assert.equal(reloaded.flow.wave.stage,1);
   });
-  await test('runtime difficulty retains stage strength and ignores selected run length', async () => {
+  await test('runtime population grows across stages without increasing shared base stats', async () => {
     const resumed=(count,index)=>({...freshSaveV2(count),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
-    const previous=await makeStage(resumed(3,12));
-    const next=await makeStage(resumed(3,13));
-    const longer=await makeStage(resumed(6,13));
+    const previous=await makeStage(resumed(3,7));
+    const next=await makeStage(resumed(3,8));
+    const longer=await makeStage(resumed(6,8));
     const army=stage=>stage.sim.units.filter(u=>u.side===1).map(u=>({id:u.cfg.id,star:u.star,hp:u.cfg.hp,atk:u.cfg.atk,armor:u.cfg.armor,mr:u.cfg.mr}));
     const prevArmy=army(previous),nextArmy=army(next);
-    assert.ok(nextArmy.reduce((sum,u)=>sum+u.hp,0)>prevArmy.reduce((sum,u)=>sum+u.hp,0),'new stage starts stronger than the previous finale');
-    assert.ok(nextArmy.reduce((sum,u)=>sum+u.atk,0)>prevArmy.reduce((sum,u)=>sum+u.atk,0));
+    assert.deepEqual(nextArmy,prevArmy,'same tier and population keep exactly the same stats');
     assert.deepEqual(army(longer),nextArmy,'simulation stats stay identical when more stages are selected');
-    const later=await makeStage(resumed(3,14));
-    assert.deepEqual(army(later).map(u=>u.id),nextArmy.map(u=>u.id));
-    assert.ok(army(later).every((u,i)=>u.hp>nextArmy[i].hp&&u.atk>=nextArmy[i].atk),'the next subround applies its slight stat growth to the runtime');
+    const later=await makeStage(resumed(3,9));
+    assert.equal(army(later).length,nextArmy.length+1,'third completed subround adds one population');
+    assert.deepEqual(army(later).slice(0,nextArmy.length),nextArmy);
+  });
+  await test('late-stage bonuses reach combat and detail without mutating shared unit configs', async () => {
+    const run=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/run.json'),'utf8'));
+    const templates=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/waves.json'),'utf8'));
+    const waves=core('RunSetup').buildRunWaves(10,run,templates,units),index=waves.findIndex(w=>w.stage===10);
+    const stage=await makeStage({...freshSaveV2(10),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
+    assert.equal(stage.sim.units.filter(u=>u.side===1).length,10);
+    const enemy=stage.sim.units.find(u=>u.side===1);stage.showBattleDetail(enemy.id);
+    assert.equal(stage.ui.detail.damageAmp,.05);assert.equal(stage.ui.detail.damageReduction,.05);
+    assert.equal(enemy.cfg.hp,stage.cfg.scaleUnit(stage.cfg.getUnit(enemy.cfg.id),3).hp);
+    assert.equal(stage.cfg.getUnit(enemy.cfg.id).damageAmp,0);assert.equal(stage.cfg.getUnit(enemy.cfg.id).damageReduction,0);
+    stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
+    const ally=stage.sim.units.find(u=>u.side===0);stage.showBattleDetail(ally.id);
+    assert.equal(stage.ui.detail.spellPower,100);assert.equal(stage.ui.detail.critChance,0);
   });
   await test('main menu return preserves run and is blocked during battle', async () => {
     const stage=await makeStage(freshSaveV2(5)); sceneLoads.length=0;
@@ -526,7 +645,8 @@ function drag(stage, from, to) {
     ally.hp=321;ally.mana=27;stage.showBattleDetail(ally.id);stage.refreshDetailVitals();
     assert.deepEqual(stage.ui.vitals,[321,ally.cfg.hp,27,ally.cfg.maxMana]);
     enemy.hp=0;enemy.alive=false;stage.showBattleDetail(enemy.id);stage.refreshDetailVitals();
-    assert.equal(stage.ui.detail.name,'小史莱姆');assert.equal(stage.ui.vitals[0],0);assert.equal(stage.ui.detail.side,1);
+    assert.equal(stage.ui.detail.name,enemy.cfg.name);assert.equal(stage.ui.vitals[0],0);assert.equal(stage.ui.detail.side,1);
+    assert.equal(stage.ui.detail.skillDescription,enemy.cfg.description);
   });
   await test('displayed cost rates match implemented tiers and refresh stays populated at high level', async () => {
     const saved=freshSaveV2();saved.level=10;saved.gold=100;

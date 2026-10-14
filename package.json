@@ -10,6 +10,8 @@
     "typescript": "^5.5.0"
   },
   "scripts": {
+    "build:web": "pwsh -NoProfile -File tools/build-web.ps1",
+    "test:web": "node tests/web-build-tests.cjs",
     "smoke": "pwsh -NoProfile -File tools/run-smoke.ps1",
     "batch": "pwsh -NoProfile -File tools/run-batch.ps1",
     "test": "pwsh -NoProfile -File tools/run-tests.ps1"

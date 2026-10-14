@@ -33,6 +33,17 @@ export class OwnedUnits {
 
   all(): OwnedUnit[] { return this.list; }
 
+  /** Restore both units and UID allocation if a purchase/merge fails. */
+  transaction<T>(action: () => T): T {
+    const original = this.list.slice(), snapshot = this.snapshot(), nextUid = this.nextUid;
+    try { return action(); }
+    catch (error) {
+      original.forEach((unit, i) => Object.assign(unit, snapshot[i]));
+      this.list = original; this.nextUid = nextUid;
+      throw error;
+    }
+  }
+
   get(uid: number): OwnedUnit | undefined {
     return this.list.find(u => u.uid === uid);
   }
@@ -50,6 +61,8 @@ export class OwnedUnits {
 
   /** 添加棋子到备战席指定格（slot=-1 自动找空位）；失败返回 null */
   addToBench(unitId: string, benchSlots: number, slot = -1, star = 1): OwnedUnit | null {
+    if (!Number.isInteger(benchSlots) || benchSlots < 1 || benchSlots > 12 || !Number.isInteger(slot)
+      || slot < -1 || !Number.isInteger(star) || star < 1 || star > 3) return null;
     let s = slot;
     if (s < 0) {
       for (let i = 0; i < benchSlots; i++) {
@@ -80,6 +93,8 @@ export class OwnedUnits {
 
   /** 移动/交换；返回是否成功 */
   move(uid: number, to: { location: UnitLocation; x: number; y: number }): boolean {
+    if (!['board', 'bench'].includes(to.location) || !Number.isInteger(to.x) || !Number.isInteger(to.y)
+      || to.y < 0 || (to.location === 'board' && to.x < 0)) return false;
     const u = this.get(uid);
     if (!u) return false;
     if (to.location === 'board') {

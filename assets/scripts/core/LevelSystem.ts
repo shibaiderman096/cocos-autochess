@@ -38,8 +38,8 @@ export class LevelSystem {
   exp: number;
 
   constructor(initialState?: { level: number; exp: number }) {
-    this.level = initialState?.level ?? 1;
-    this.exp = initialState?.exp ?? 0;
+    this.level = Number.isFinite(initialState?.level) ? Math.floor(initialState.level) : 1;
+    this.exp = Number.isFinite(initialState?.exp) ? Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, Math.floor(initialState.exp))) : 0;
     if (this.level < 1) this.level = 1;
     if (this.level > MAX_LEVEL) this.level = MAX_LEVEL;
   }
@@ -60,8 +60,8 @@ export class LevelSystem {
    * 返回升级路径（如 1→2→3 则 [{from:1,to:2},{from:2,to:3}]）。
    */
   addExp(amount: number): LevelUpEvent[] {
-    if (amount <= 0) return [];
-    this.exp += Math.floor(amount);
+    if (!Number.isFinite(amount) || amount <= 0) return [];
+    this.exp = Math.min(Number.MAX_SAFE_INTEGER, this.exp + Math.floor(amount));
     const ups: LevelUpEvent[] = [];
     while (this.level < MAX_LEVEL && this.exp >= this.expToNext()) {
       const need = this.expToNext();

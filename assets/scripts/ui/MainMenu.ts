@@ -1,7 +1,9 @@
-import { _decorator, Component, Node, UITransform, Graphics, Color, Label, resources, JsonAsset, director } from 'cc';
-import { button, label, panel } from './BattleUI';
+import { _decorator, Component, Node, UITransform, Graphics, Color, Label, resources, JsonAsset, SpriteFrame, director } from 'cc';
+import { button, label, panel, fillScreen } from './BattleUI';
 import { loadSaveV2, writeSaveV2, freshSaveV2, SAVE_KEY } from '../core/ShopSave';
 import { RunConfig, DEFAULT_STAGE_COUNT, normalizeStageCount, runRoundCount } from '../core/RunSetup';
+import { UNIT_ART } from '../view/ArtPaths';
+import { setUISkin } from './UISkin';
 
 const { ccclass } = _decorator;
 const GOLD = new Color(204, 174, 109), TEAL = new Color(89, 203, 176), MUTED = new Color(133, 161, 164);
@@ -17,13 +19,33 @@ export class MainMenu extends Component {
   private ready = false;
 
   start(): void {
+    fillScreen();
     this.stageCount = loadSaveV2()?.stageCount ?? DEFAULT_STAGE_COUNT;
     this.buildUI();
     resources.load('config/run', JsonAsset, (error, asset) => {
       if (!this.isValid) return;
       if (error) { this.status.string = '关卡配置加载失败，请重新打开主界面'; return; }
-      this.runConfig = asset.json as RunConfig; this.ready = true;
-      this.status.string = ''; this.refreshCount();
+      this.runConfig = asset.json as RunConfig;
+      this.refreshCount();
+      this.loadMonsterArt();
+    });
+  }
+
+  /** Finish loading creature portraits before new/continued runs enter their stage. */
+  private loadMonsterArt(): void {
+    const paths = Array.from(new Set(this.runConfig.monsters.map(unit => UNIT_ART[unit.artId ?? unit.id])));
+    if (paths.some(path => !path)) { this.status.string = '野怪素材未配置，请检查资源路径'; return; }
+    if (!paths.length) { this.ready = true; this.status.string = ''; return; }
+    this.status.string = '正在加载野怪素材…';
+    let remaining = paths.length, failed = false;
+    for (const path of paths) resources.load(path, SpriteFrame, error => {
+      if (!this.isValid) return;
+      if (error) {
+        failed = true;
+        this.status.string = '野怪素材加载失败，请重新打开主界面';
+        console.warn(`[MainMenu] monster sprite load failed: ${path}`, error.message);
+      }
+      if (--remaining === 0 && !failed) { this.ready = true; this.status.string = ''; }
     });
   }
 
@@ -36,6 +58,8 @@ export class MainMenu extends Component {
       g.fillColor = new Color(12 + i * 2, 27 + i * 3, 34 + i * 3);
       g.ellipse(0, 60, 610 - i * 55, 320 - i * 35); g.fill();
     }
+    background.getComponent(UITransform)!.setContentSize(1280, 720);
+    setUISkin(background, 'arena_sky', g, sprite => { sprite.color = new Color(105, 130, 150); });
     label(this.node, '浮 空 棋 境', 0, 239, 48, GOLD, 660);
     label(this.node, '远征', 0, 190, 17, TEAL, 360);
     const card = panel(this.node, 'runSetup', 0, -5, 520, 330, undefined, GOLD, 'panel_modal');
@@ -50,7 +74,7 @@ export class MainMenu extends Component {
     if (saved?.round && saved.round.phase !== 'ended') {
       const resume = button(this.node, '继续游戏', 0, -222, 250, 40, () => this.enterGame(false)); resume.name = 'continueGame';
     }
-    label(this.node, '首阶段 3 小关 · 后续每阶段 10 小关 · 至少 3 阶段', 0, -283, 14, MUTED, 700);
+    label(this.node, '首阶段 3 小关 · 第2阶段5关，逐阶段+1，最多10关', 0, -283, 14, MUTED, 700);
     this.status = label(this.node, '正在加载关卡配置…', 0, -319, 14, GOLD, 720);
   }
 

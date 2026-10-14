@@ -1,7 +1,7 @@
 /**
  * 商店系统（纯逻辑，无 cc）。
  * - 5 格商店：每格先按等级抽费用、再从卡池抽棋子。
- * - 费用档空则重新抽费用（最多重试 10 次）；整池空显示空位，不死循环。
+ * - 对当前有库存且等级允许的费用档归一化抽取；可抽库存耗尽才显示空位。
  * - refresh：扣 2 金币 + 返还未购买的棋子到卡池。
  * - 抽到商品即预留卡池；buy 只转移预留卡，避免重复扣池。
  * - sell：棋子移除 + 返还合成所消耗的基础卡数量。
@@ -57,29 +57,30 @@ export class ShopSystem {
 
   /** 按当前等级抽一个费用档 */
   costRates(): number[] {
-    return shopCostRates(this.getLevel(), [...this.unitConfigs.values()].map(u => u.cost ?? 1));
+    return shopCostRates(this.getLevel(), Array.from(this.unitConfigs.values()).map(u => u.cost ?? 1));
   }
 
-  private rollCost(level: number): Cost {
-    const row = shopCostRates(level, [...this.unitConfigs.values()].map(u => u.cost ?? 1));
-    const r = this.rng.next() * 100;
+  private rollCost(level: number): Cost | null {
+    const row = shopCostRates(level, Array.from(this.unitConfigs.values()).map(u => u.cost ?? 1));
+    const weights = row.map((rate, i) => Array.from(this.unitConfigs.keys()).some(id => this.pool.costOfUnit(id) === i + 1 && this.pool.count(id) > 0) ? rate : 0);
+    const total = weights.reduce((sum, rate) => sum + rate, 0);
+    if (!total) return null;
+    const r = this.rng.next() * total;
     let acc = 0;
     for (let i = 0; i < row.length; i++) {
-      acc += row[i];
+      acc += weights[i];
       if (r < acc) return (i + 1) as Cost;
     }
-    return 1; // 浮点兜底
+    return (weights.findIndex(rate => rate > 0) + 1) as Cost;
   }
 
-  /** 生成一格：费用档重试；档空重掷费用；整池空返回 null */
+  /** Conditioning on available tiers is equivalent to retrying without a cutoff. */
   private rollOne(): ShopSlot {
     if (this.pool.isEmpty()) return { unitId: null };
-    for (let attempt = 0; attempt < 10; attempt++) {
-      const cost = this.rollCost(this.getLevel());
-      const id = this.pool.pickByCost(cost, this.rng);
-      if (id && this.pool.take(id)) return { unitId: id };
-      // 该档全空，重掷费用
-    }
+    const cost = this.rollCost(this.getLevel());
+    if (cost === null) return { unitId: null };
+    const id = this.pool.pickByCost(cost, this.rng);
+    if (id && this.pool.take(id)) return { unitId: id };
     return { unitId: null };
   }
 
@@ -129,7 +130,7 @@ export class ShopSystem {
     const unitId = s.unitId;
     const price = COST_PRICE[this.pool.costOfUnit(unitId)];
 
-    if (this.economy.gold < price) return { error: 'not_enough_gold' };
+    if (!Number.isSafeInteger(this.economy.gold) || this.economy.gold < price) return { error: 'not_enough_gold' };
 
     // 备战席满：若该购买能直接完成合并则放行，否则拒绝
     const benchFree = this.owned.inBench().length < this.benchSlots;
@@ -137,16 +138,30 @@ export class ShopSystem {
       const same = this.owned.all().filter(u => u.unitId === unitId && u.star === 1).length;
       if (same + 1 < 3) return { error: 'bench_full' };
       // 商品已预留；满席时临时添加，随后立刻合并释放位置。
-      this.economy.spend(price);
-      this.owned.forceAdd(unitId);
-      const merged = this.owned.tryMerge(unitId);
+      if (!this.economy.spend(price)) return { error: 'not_enough_gold' };
+      let merged;
+      try {
+        merged = this.owned.transaction(() => {
+          this.owned.forceAdd(unitId);
+          const result = this.owned.tryMerge(unitId);
+          if (!result || this.owned.inBench().some(u => u.y < 0)) throw new Error('Merge did not release temporary slot');
+          return result;
+        });
+      } catch { this.economy.add(price); return { error: 'bench_full' }; }
       s.unitId = null;
       return { mergedUid: merged!.uid };
     }
 
     // 正常购买
-    this.economy.spend(price);
-    const added = this.owned.addToBench(unitId, this.benchSlots, -1, 1);
+    if (!this.economy.spend(price)) return { error: 'not_enough_gold' };
+    let added;
+    try {
+      added = this.owned.transaction(() => {
+        const result = this.owned.addToBench(unitId, this.benchSlots, -1, 1);
+        if (!result) throw new Error('Bench full');
+        return result;
+      });
+    } catch { this.economy.add(price); return { error: 'bench_full' }; }
     if (!added) {
       // 理论不可达（已检查 benchFree）
       this.economy.add(price);
