@@ -4,55 +4,53 @@ const { RoundFlow } = require('../assets/scripts/core/RoundFlow.ts');
 const { ConfigManager } = require('../assets/scripts/core/ConfigManager.ts');
 const { BattleSim } = require('../assets/scripts/battle/BattleSim.ts');
 const { OwnedUnits } = require('../assets/scripts/core/OwnedUnits.ts');
-const { buildRunWaves, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
+const { buildRunWaves, buildMonsterUnits, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
 const units = require('../assets/resources/config/units.json');
 const skills = require('../assets/resources/config/skills.json');
 const rules = require('../assets/resources/config/battle.json');
 const templates = require('../assets/resources/config/waves.json');
 const runConfig = require('../assets/resources/config/run.json');
-const waves = buildRunWaves(3,runConfig,templates);
+const build = (count, config = runConfig) => buildRunWaves(count,config,templates,units);
+const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
-cfg.setEnemyUnits(runConfig.monsters);
+cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
 assert.equal(units.length, 10);
 assert.deepEqual([1,2,3].map(cost => units.filter(u => u.cost === cost).length), [4,3,3]);
 assert.equal(cfg.allUnits().length,10,'monsters must stay out of shop inventory');
-assert.equal(waves.length,23); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,10,10]);
-assert.deepEqual([waves[0],waves[2],waves[3],waves[12],waves[13],waves[22]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-10','3-1','3-10']);
-assert.equal(buildRunWaves(4,runConfig,templates).length,33);
-assert.equal(runRoundCount(5,runConfig),43);
+assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
+assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
+assert.equal(build(4).length,21);
+assert.equal(runRoundCount(5,runConfig),29);
+const longWaves=build(99);
+assert.deepEqual([1,2,3,4,5,6,7,8,99].map(s=>longWaves.filter(w=>w.stage===s).length),[3,5,6,7,8,9,10,10,10]);
+assert.equal(runRoundCount(99,runConfig),longWaves.length);
+const expandedRoster=[...units,{...units[0],id:'cost4',cost:4},{...units[0],id:'cost5',cost:5}];
+const expandedWaves=buildRunWaves(10,runConfig,templates,expandedRoster);
+assert.ok(expandedWaves.filter(w=>w.stage===8||w.stage===9).every(w=>w.enemies.every(e=>expandedRoster.find(u=>u.id===e.unitId).cost===5)), 'new implemented higher costs are selected without changing base stats');
 for(const v of [-9,0,2,NaN,Infinity,undefined]) assert.equal(normalizeStageCount(v),3);
 assert.equal(normalizeStageCount(4.9),4);
-assert.deepEqual(buildRunWaves(3,runConfig,templates),waves,'generation is deterministic');
-assert.ok(waves[13].enemies[0].statMultiplier>waves[3].enemies[0].statMultiplier);
+assert.deepEqual(build(3),waves,'generation is deterministic');
 const unchangedTemplates=JSON.stringify({runConfig,templates});
 for(const count of [4,6,99]) {
-  assert.deepEqual(buildRunWaves(count,runConfig,templates).slice(0,waves.length),waves,'adding stages must keep all existing encounters identical');
+  assert.deepEqual(build(count).slice(0,waves.length),waves,'adding stages must keep all existing encounters identical');
 }
-const extendedWaves=buildRunWaves(10,runConfig,templates);
-assert.throws(()=>buildRunWaves(3,{...runConfig,roundStatGrowth:.03},templates),/stage growth/,'reject settings that would reduce stats at the next stage');
-for(const invalid of [NaN,Infinity,-.01,0]) {
-  assert.throws(()=>buildRunWaves(3,{...runConfig,roundStatGrowth:invalid},templates),/Invalid run configuration/);
-}
-const stats=wave=>wave.enemies.map(e=>cfg.scaleUnit(cfg.getUnit(e.unitId),e.star,e.statMultiplier));
-const total=(wave,key)=>stats(wave).reduce((sum,u)=>sum+u[key],0);
-for(let i=1;i<extendedWaves.length;i++) {
-  const previous=extendedWaves[i-1],current=extendedWaves[i];
-  if(previous.stage!==current.stage) {
-    if(previous.stage>1) assert.ok(total(current,'hp')>total(previous,'hp'),'a new stage retains the previous army strength');
-    assert.ok(total(current,'atk')>=total(previous,'atk'),'a new stage cannot reset enemy attack strength');
-  } else {
-    assert.ok(total(current,'hp')>total(previous,'hp'),'each subround increases enemy HP slightly');
-    assert.ok(total(current,'atk')>=total(previous,'atk'));
-    if(current.stage>1) {
-      assert.deepEqual(current.enemies.map(e=>[e.unitId,e.star,e.x,e.y]),previous.enemies.map(e=>[e.unitId,e.star,e.x,e.y]),'subrounds retain the stage army');
-      for(let j=0;j<current.enemies.length;j++) {
-        const gain=current.enemies[j].statMultiplier/previous.enemies[j].statMultiplier;
-        assert.ok(gain>1&&gain<=1.021,'subround stats grow by at most about two percent');
-      }
-    }
+for(const invalid of [NaN,Infinity,-1,0]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationEveryRounds:invalid}}),/Invalid run configuration/);
+let completed=0;
+for(const wave of longWaves.filter(w=>w.stage>=2)) {
+  assert.equal(wave.enemies.length,Math.min(10,1+Math.floor(completed/3)));
+  completed++;
+  const expectedCost=wave.stage<4?1:wave.stage<6?2:3;
+  const expectedStar=wave.stage<6?1:wave.stage<10?2:3;
+  for(const e of wave.enemies) {
+    assert.equal(e.statMultiplier,1);assert.equal(cfg.getUnit(e.unitId).cost,expectedCost);assert.equal(e.star,expectedStar);
+    assert.equal(e.damageAmp,Number((Math.max(0,wave.stage-9)*.05).toFixed(4)));
+    assert.equal(e.damageReduction,Number(Math.min(.8,Math.max(0,wave.stage-9)*.05).toFixed(4)));
+    const sim=new BattleSim(cfg,[{cfg:cfg.getUnit(e.unitId),side:0,star:e.star,x:3,y:3},
+      {cfg:cfg.getUnit(e.unitId),side:1,...e}]);
+    for(const key of ['hp','atk','armor','mr','atkSpeed','spellPower','critChance','lifesteal'])assert.equal(sim.units[0].cfg[key],sim.units[1].cfg[key],`shared ${key}`);
   }
+  assert.equal(new Set(wave.enemies.map(e=>`${e.x},${e.y}`)).size,wave.enemies.length);
 }
-assert.deepEqual(extendedWaves.find(w=>w.stage===9).enemies.map(e=>[e.unitId,e.star]),extendedWaves.find(w=>w.stage===8).enemies.map(e=>[e.unitId,e.star]),'highest army tier remains after all templates are used');
 assert.equal(JSON.stringify({runConfig,templates}),unchangedTemplates,'wave generation leaves source configs untouched');
 for (const wave of waves) {
   const cells = new Set();
@@ -66,7 +64,10 @@ for (const u of units) { assert.ok(u.artId); if (u.skillId) assert.ok(skills[u.s
 // Every starter encounter is winnable by the original one-star, one-cost piece alone.
 for(const wave of waves.filter(w=>w.stage===1)) {
   const enemies=wave.enemies.map(e=>({cfg:cfg.getUnit(e.unitId),side:1,...e}));
-  assert.ok(enemies.every(e=>e.cfg.hp>cfg.getUnit(runConfig.starterUnitId).atk*3&&e.cfg.atk<=3),'monsters survive several starter attacks while keeping low damage');
+  for(const e of enemies) assert.equal(e.cfg.atkSpeed,.75,'monster attack speed stays fixed');
+  for(const e of enemies) for(const key of ['hp','atk','armor','mr','spellPower']) {
+    assert.equal(e.cfg[key],cfg.getUnit(runConfig.starterUnitId)[key]*.25,`monster quarter ${key}`);
+  }
   const sim=new BattleSim(cfg,[...enemies,{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
   sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
   for(const enemy of sim.units.filter(u=>u.side===1)) {
@@ -119,4 +120,4 @@ for (const [id, skill] of Object.entries(skills)) {
 const owned = new OwnedUnits();
 for(let i=0;i<9;i++) owned.addToBench('warrior',9);
 assert.equal(owned.all().length,1); assert.equal(owned.all()[0].star,3);
-console.log('Continuous stage difficulty, slight subround growth, run-length independence, wave validation, real battles, save resume, skills, and merges passed');
+console.log('Shared stats, cost/star progression, capped population and late bonuses, quarter-strength monsters, real battles, save resume and skills passed');

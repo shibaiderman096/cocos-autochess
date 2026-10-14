@@ -17,6 +17,8 @@
 export interface EconomyConfig {
   /** 每小关基础收入 = 当前阶段数 × 此系数 */
   incomePerFloor: number;
+  /** Cap for stage base income, excluding interest and other bonuses. */
+  incomeCap?: number;
   /** 利息上限 */
   interestCap: number;
   /** 利息比率 */
@@ -31,6 +33,7 @@ export interface EconomyConfig {
 
 export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
   incomePerFloor: 2,
+  incomeCap: 10,
   interestCap: 5,
   interestRate: 0.1,
   streakCap: 3,
@@ -70,10 +73,14 @@ export class EconomySystem {
       loseStreak: number;
     },
   ) {
-    this.gold = initialState?.gold ?? config.initialGold;
+    for (const [key, value] of Object.entries(config)) {
+      if (!Number.isFinite(value) || value < 0) throw new Error(`Invalid economy config: ${key}`);
+    }
+    const integer = (n: number) => Number.isFinite(n) ? Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, Math.floor(n))) : 0;
+    this.gold = integer(initialState?.gold ?? config.initialGold);
     if (initialState) {
-      this.winStreak = initialState.winStreak ?? 0;
-      this.loseStreak = initialState.loseStreak ?? 0;
+      this.winStreak = integer(initialState.winStreak ?? 0);
+      this.loseStreak = integer(initialState.loseStreak ?? 0);
     }
   }
 
@@ -82,6 +89,10 @@ export class EconomySystem {
    * 调用方保证一场战斗只调用一次（本方法内部不防重，由状态机保证）。
    */
   settleBattle(floor: number, outcome: BattleOutcome): SettlementBreakdown {
+    if (!Number.isSafeInteger(floor) || floor < 1 || ![-1, 0, 1].includes(outcome.winner)) throw new Error('Invalid settlement input');
+    const floorIncome = Math.min(floor * this.config.incomePerFloor, this.config.incomeCap ?? 10);
+    const projected = floorIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
+    if (!Number.isFinite(projected) || projected > Number.MAX_SAFE_INTEGER - this.gold) throw new Error('Settlement exceeds safe range');
     // 1. 先更新连胜/连败（在计算奖励之前）
     if (outcome.winner === 0) {
       this.winStreak++;
@@ -94,7 +105,6 @@ export class EconomySystem {
 
     // 2~5. 计算各项收入
     const goldBefore = this.gold;
-    const floorIncome = Math.max(0, Math.floor(floor)) * this.config.incomePerFloor;
     const winBonus = outcome.winner === 0 ? this.config.winBonus : 0;
     const interest = Math.min(
       Math.floor(goldBefore * this.config.interestRate),
@@ -118,6 +128,7 @@ export class EconomySystem {
 
   /** 消费金币；余额不足返回 false，成功扣除返回 true。绝不扣成负数。 */
   spend(amount: number): boolean {
+    if (!Number.isFinite(amount) || !Number.isSafeInteger(this.gold) || this.gold < 0) return false;
     const n = Math.floor(amount);
     if (n <= 0) return false;
     if (this.gold < n) return false;
@@ -127,7 +138,8 @@ export class EconomySystem {
 
   /** 直接加金币（奖励/调试用），不做上限限制 */
   add(amount: number): void {
-    this.gold += Math.floor(amount);
+    if (!Number.isFinite(amount) || amount < 0 || !Number.isSafeInteger(this.gold)) return;
+    this.gold = Math.min(Number.MAX_SAFE_INTEGER, this.gold + Math.floor(amount));
   }
 
   /** 存档快照 */

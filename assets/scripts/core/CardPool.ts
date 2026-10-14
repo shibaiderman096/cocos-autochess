@@ -6,7 +6,7 @@
  */
 
 import { Rng } from './Rng';
-import { Cost, POOL_STOCK } from './ShopConfig';
+import { Cost, POOL_STOCK, validCost } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
 
 export class CardPool {
@@ -20,9 +20,10 @@ export class CardPool {
     initialState?: Record<string, number>,
   ) {
     for (const u of unitConfigs) {
-      const cost = (u.cost ?? 1) as Cost;
+      const cost = validCost(u.cost ?? 1);
       this.costOf.set(u.id, cost);
-      this.stock.set(u.id, initialState?.[u.id] ?? POOL_STOCK[cost]);
+      const n = initialState?.[u.id] ?? POOL_STOCK[cost];
+      this.stock.set(u.id, Number.isFinite(n) ? Math.max(0, Math.min(POOL_STOCK[cost], Math.floor(n))) : 0);
     }
   }
 
