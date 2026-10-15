@@ -1,6 +1,11 @@
 /** Runtime resource paths, relative to assets/resources. */
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  itachi: 'art/units/itachi/spriteFrame',
+  young_sasuke: 'art/units/young_sasuke/spriteFrame',
+  sakura: 'art/units/sakura/spriteFrame',
+  sasuke: 'art/units/sasuke-cutout/spriteFrame',
+  enderman: 'art/units/enderman/spriteFrame',
   warrior: 'art/units/placeholders/warrior/spriteFrame',
   archer: 'art/units/archer_ally/spriteFrame',
   mage: 'art/units/professions/mage/spriteFrame',
@@ -46,6 +51,9 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  itachiVortex: 'art/fx/itachi_vortex/spriteFrame',
+  itachiRaven: 'art/fx/itachi_raven/spriteFrame',
+  blackFlameImpact: 'art/fx/sasuke_black_flame/spriteFrame',
   arrow:    'art/fx/fx_arrow/spriteFrame',
   fireball: 'art/fx/fx_fireball/spriteFrame',
   hit:      'art/fx/fx_hit/spriteFrame',
@@ -61,6 +69,17 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
 
 /** M2 interface textures; SVG originals live in art-source/ui_m2. */
 export const M2_UI_SPRITE = {
+  attr_phys_atk: 'art/ui_m2/attr_phys_atk/spriteFrame',
+  attr_armor: 'art/ui_m2/attr_armor/spriteFrame',
+  attr_mr: 'art/ui_m2/attr_mr/spriteFrame',
+  attr_aspd: 'art/ui_m2/attr_aspd/spriteFrame',
+  attr_range: 'art/ui_m2/attr_range/spriteFrame',
+  attr_phys_bonus: 'art/ui_m2/attr_phys_bonus/spriteFrame',
+  attr_spell_bonus: 'art/ui_m2/attr_spell_bonus/spriteFrame',
+  attr_crit: 'art/ui_m2/attr_crit/spriteFrame',
+  attr_lifesteal: 'art/ui_m2/attr_lifesteal/spriteFrame',
+  attr_dmg_amp: 'art/ui_m2/attr_dmg_amp/spriteFrame',
+  attr_dmg_reduce: 'art/ui_m2/attr_dmg_reduce/spriteFrame',
   arena_board: 'art/arena/floating_board/spriteFrame',
   arena_sky: 'art/arena/sky_background/spriteFrame',
   panel_ink: 'art/ui_m2/panel_ink/spriteFrame',

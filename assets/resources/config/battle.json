@@ -5,6 +5,7 @@
   "maxTicks": 1200,
   "tickMs": 50,
   "preparationSeconds": 1,
+  "nextWaveDelaySeconds": 1,
   "initialHealth": 20,
   "lossPerEnemy": 2,
   "starScaling": [
@@ -24,5 +25,7 @@
       "skill": 3.24
     }
   ],
-  "criticalMultiplier": 1.5
+  "criticalMultiplier": 1.5,
+  "attackSpeedCap": 5,
+  "legendaryThreeStarBonusHp": 5000
 }

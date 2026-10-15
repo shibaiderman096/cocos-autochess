@@ -4,6 +4,7 @@
  * - 同名合并：3 个同名同星 → 1 个星+1；升星不返还卡池（合并棋子仍算玩家持有）。
  */
 
+import { MAX_EQUIPMENT } from '../battle/types';
 import { MERGE_COUNT } from './ShopConfig';
 
 export type UnitLocation = 'bench' | 'board';
@@ -14,6 +15,7 @@ export interface OwnedUnit {
   /** 棋子配置 id（如 warrior） */
   unitId: string;
   star: number;
+  equipment?: string[];
   location: UnitLocation;
   /** board: hex (x,y)；bench: 格子索引 0..benchSlots-1 */
   x: number;
@@ -23,23 +25,33 @@ export interface OwnedUnit {
 export class OwnedUnits {
   private list: OwnedUnit[] = [];
   private nextUid = 1;
+  equipmentReserve: string[] = [];
 
   constructor(initial?: OwnedUnit[]) {
     if (initial) {
-      for (const u of initial) this.list.push({ ...u });
+      for (const u of initial) this.list.push({ ...u, equipment: [...(u.equipment ?? [])].slice(0, MAX_EQUIPMENT) });
       this.nextUid = this.list.reduce((m, u) => Math.max(m, u.uid), 0) + 1;
     }
   }
 
+  equip(uid: number, id: string): boolean {
+    const unit = this.get(uid); if (!unit || (unit.equipment?.length ?? 0) >= MAX_EQUIPMENT) return false;
+    (unit.equipment ??= []).push(id); return true;
+  }
+  unequip(uid: number, slot: number): boolean {
+    const unit = this.get(uid);
+    if (!unit || !Number.isInteger(slot) || slot < 0 || slot >= (unit.equipment?.length ?? 0)) return false;
+    this.equipmentReserve.push(unit.equipment!.splice(slot, 1)[0]); return true;
+  }
   all(): OwnedUnit[] { return this.list; }
 
   /** Restore both units and UID allocation if a purchase/merge fails. */
   transaction<T>(action: () => T): T {
-    const original = this.list.slice(), snapshot = this.snapshot(), nextUid = this.nextUid;
+    const original = this.list.slice(), snapshot = this.snapshot(), nextUid = this.nextUid, reserve = this.equipmentReserve.slice();
     try { return action(); }
     catch (error) {
       original.forEach((unit, i) => Object.assign(unit, snapshot[i]));
-      this.list = original; this.nextUid = nextUid;
+      this.list = original; this.nextUid = nextUid; this.equipmentReserve = reserve;
       throw error;
     }
   }
@@ -128,6 +140,7 @@ export class OwnedUnits {
     const i = this.list.findIndex(u => u.uid === uid);
     if (i < 0) return null;
     const [u] = this.list.splice(i, 1);
+    this.equipmentReserve.push(...(u.equipment ?? []));
     return u;
   }
 
@@ -146,6 +159,9 @@ export class OwnedUnits {
       while (same.length >= MERGE_COUNT) {
         // 保留第一个，删除其余
         const keep = same[0];
+        const equipment = same.slice(0, MERGE_COUNT).flatMap(unit => unit.equipment ?? []);
+        keep.equipment = equipment.slice(0, MAX_EQUIPMENT);
+        this.equipmentReserve.push(...equipment.slice(MAX_EQUIPMENT));
         for (let i = 1; i < MERGE_COUNT; i++) {
           const idx = this.list.findIndex(u => u.uid === same[i].uid);
           if (idx >= 0) this.list.splice(idx, 1);
@@ -160,6 +176,6 @@ export class OwnedUnits {
 
   /** 存档快照 */
   snapshot(): OwnedUnit[] {
-    return this.list.map(u => ({ ...u }));
+    return this.list.map(u => ({ ...u, equipment: [...(u.equipment ?? [])] }));
   }
 }

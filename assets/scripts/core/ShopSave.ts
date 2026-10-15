@@ -5,6 +5,7 @@
 
 import { SaveData, migrateSave as migrateV1 } from './SaveData';
 import { ShopSlot } from './ShopSystem';
+import { MAX_EQUIPMENT, BackpackItem } from '../battle/types';
 import { OwnedUnit } from './OwnedUnits';
 import { DEFAULT_BENCH_SLOTS, POOL_STOCK, validCost } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
@@ -70,6 +71,8 @@ export interface SaveDataV2 extends SaveData {
   shopReserved: boolean;
   /** 玩家持有棋子（备战席 + 棋盘） */
   owned: OwnedUnit[];
+  equipmentReserve?: string[];
+  backpackItems?: BackpackItem[];
   /** 卡池剩余 unitId → 数量 */
   pool: Record<string, number>;
   /** 备战席格子数 */
@@ -101,7 +104,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       const loc = u.location === 'board' ? 'board' : 'bench';
       const x = safeInt(u.x, 0, -1, Number.MAX_SAFE_INTEGER);
       const y = safeInt(u.y, 0, 0, Number.MAX_SAFE_INTEGER);
-      owned.push({ uid: nextUid++, unitId: u.unitId, star, location: loc, x, y });
+      owned.push({ uid: nextUid++, unitId: u.unitId, star, location: loc, x, y, equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
     }
   }
 
@@ -132,6 +135,8 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
     version: SAVE_VERSION,
     runRulesVersion: d.runRulesVersion === 2 ? 2 : 1,
     stageCount: normalizeStageCount(d.stageCount ?? DEFAULT_STAGE_COUNT),
+    backpackItems: Array.isArray(d.backpackItems) ? d.backpackItems.filter(item => item && item.kind === 'consumable' && typeof item.id === 'string' && typeof item.name === 'string' && typeof item.icon === 'string').map(item => ({ ...item })) : [],
+    equipmentReserve: Array.isArray(d.equipmentReserve) ? d.equipmentReserve.filter(id => typeof id === 'string') : [],
     shop, owned, pool, benchSlots, shopReserved: d.shopReserved === true,
     round, shopLocked: d.shopLocked === true,
     lastReward: d.lastReward && ['floorIncome', 'winBonus', 'interest', 'streakBonus', 'total', 'goldBefore', 'goldAfter', 'winStreak', 'loseStreak']

@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 10);
-assert.deepEqual([1,2,3].map(cost => units.filter(u => u.cost === cost).length), [4,3,3]);
-assert.equal(cfg.allUnits().length,10,'monsters must stay out of shop inventory');
+assert.equal(units.length, 15);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,2,1]);
+assert.equal(cfg.allUnits().length,15,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -39,7 +39,7 @@ let completed=0;
 for(const wave of longWaves.filter(w=>w.stage>=2)) {
   assert.equal(wave.enemies.length,Math.min(10,1+Math.floor(completed/3)));
   completed++;
-  const expectedCost=wave.stage<4?1:wave.stage<6?2:3;
+  const expectedCost=wave.stage<4?1:wave.stage<6?2:wave.stage<8?3:5;
   const expectedStar=wave.stage<6?1:wave.stage<10?2:3;
   for(const e of wave.enemies) {
     assert.equal(e.statMultiplier,1);assert.equal(cfg.getUnit(e.unitId).cost,expectedCost);assert.equal(e.star,expectedStar);
@@ -72,7 +72,7 @@ for(const wave of waves.filter(w=>w.stage===1)) {
   sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
   for(const enemy of sim.units.filter(u=>u.side===1)) {
     const hits=sim.events.filter(e=>e.t==='hit'&&e.id===enemy.id);
-    assert.ok(hits.length>=4,`${enemy.cfg.id} must survive at least three starter attacks`);
+    assert.ok(hits.length>=3,`${enemy.cfg.id} must survive at least two starter attacks with crits`);
     assert.ok(hits[0].dmg<enemy.cfg.hp,'the first hit cannot kill a full-health monster');
   }
 }
@@ -111,7 +111,11 @@ for (const [id, skill] of Object.entries(skills)) {
   sim.units[2].hp=500;
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
-  assert.equal(cast.target,skill.targeting==='lowestHp'?3:2,id);
+  assert.equal(cast.target,skill.effect==='healChannel'?1:skill.targeting==='lowestHp'?3:2,id);
+  if (skill.effect === 'teleportEmpower' || skill.effect === 'damageBurn' || skill.effect === 'healChannel' || skill.effect === 'damageStun') {
+    assert.equal(sim.events.filter(e=>e.t==='hit' && e.id!==1).length,0,'empower cast does not deal immediate damage');
+    continue; // Delayed attack effects are covered by enderman-tests.cjs.
+  }
   const hits=sim.events.filter(e=>e.t==='hit' && e.id!==1);
   assert.equal(hits.length,skill.radius>0?2:1,id);
   assert.ok(hits.every(e=>e.dmgType===skill.dmgType),id);

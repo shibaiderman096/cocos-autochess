@@ -51,7 +51,7 @@ export function buildMonsterUnits(config: RunConfig, roster: UnitConfigData[]): 
     hp: Math.round(base.hp * multiplier), atk: base.atk * multiplier, armor: base.armor * multiplier,
     mr: base.mr * multiplier, atkSpeed: config.monsterAttackSpeed,
     maxMana: base.maxMana * multiplier, startMana: base.startMana * multiplier, manaPerHit: base.manaPerHit * multiplier,
-    spellPower: attributes.spellPower * multiplier, critChance: attributes.critChance * multiplier,
+    physicalPower: attributes.physicalPower * multiplier, spellPower: attributes.spellPower * multiplier, critChance: attributes.critChance * multiplier,
     lifesteal: attributes.lifesteal * multiplier, damageAmp: attributes.damageAmp * multiplier,
     damageReduction: attributes.damageReduction * multiplier }));
 }
