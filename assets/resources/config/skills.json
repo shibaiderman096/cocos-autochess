@@ -52,5 +52,114 @@
     "radius": 0,
     "targeting": "lowestHp",
     "id": "judgment"
+  },
+  "ender_ambush": {
+    "id": "ender_ambush",
+    "name": "末影突袭",
+    "description": "传送至三格内生命值最低的敌人旁，下3次普攻造成强化物理伤害，期间获得攻速加成。三星首次施法后，本场战斗永久保持强化普攻、攻速加成和回蓝锁定。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "effect": "teleportEmpower",
+    "castSeconds": 0.3,
+    "targetRange": 3,
+    "empoweredAttacks": 3,
+    "attackMultipliers": [
+      1.25,
+      1.5,
+      50
+    ],
+    "attackSpeedBonuses": [
+      0.5,
+      1,
+      5
+    ],
+    "manaLockDuringEmpower": true,
+    "permanentEmpowerStar": 3
+  },
+  "black_flame": {
+    "id": "black_flame",
+    "name": "黑炎",
+    "description": "施法0.5秒后，对当前目标造成150%/200%/500%攻击力的物理伤害（1~3星），并施加5秒灼烧，每秒造成目标最大生命值2%的真实伤害。同一施法者再次命中刷新灼烧。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "damageBurn",
+    "castSeconds": 0.5,
+    "attackMultipliers": [
+      1.5,
+      2,
+      5
+    ],
+    "burn": {
+      "durationSeconds": 5,
+      "intervalSeconds": 1,
+      "maxHpFraction": 0.02,
+      "dmgType": "true"
+    }
+  },
+  "healing_channel": {
+    "id": "healing_channel",
+    "name": "掌仙术",
+    "description": "持续施法1.5秒，期间每0.5秒回复自身2%/2.5%/4%最大生命值（1~3星），共3次。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "healChannel",
+    "castSeconds": 1.5,
+    "heal": {
+      "intervalSeconds": 0.5,
+      "maxHpFractions": [
+        0.02,
+        0.025,
+        0.04
+      ]
+    }
+  },
+  "hybrid_bolt": {
+    "id": "hybrid_bolt",
+    "name": "忍术飞弹",
+    "description": "对当前目标造成魔法伤害：25%攻击力＋100%/125%/175%基础法术伤害（1~3星），两部分分别受物理与法术增伤影响。",
+    "dmgType": "magic",
+    "power": 100,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "hybridSpell",
+    "hybrid": {
+      "attackRatios": [
+        0.25,
+        0.25,
+        0.25
+      ],
+      "spellRatios": [
+        1,
+        1.25,
+        1.75
+      ]
+    }
+  },
+  "tsukuyomi": {
+    "id": "tsukuyomi",
+    "name": "月读",
+    "description": "施法0.45秒后，对当前目标造成120%/180%/500%基础法术伤害的魔法伤害，眩晕0.3/0.5/5秒（1~3星）。",
+    "dmgType": "magic",
+    "power": 100,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "damageStun",
+    "castSeconds": 0.45,
+    "spellMultipliers": [
+      1.2,
+      1.8,
+      5
+    ],
+    "stunSeconds": [
+      0.3,
+      0.5,
+      5
+    ]
   }
 }

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "guinsoo",
+    "name": "鬼索的狂暴之刃",
+    "spellPower": 10,
+    "attackSpeedBonus": 0.1,
+    "attackSpeedPerAttack": 0.05,
+    "description": "+10%法术加成，+0.1次/秒攻速。\n每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
+    "icon": "art/equipment/guinsoo/spriteFrame"
+  },
+  {
+    "id": "totem_of_undying",
+    "name": "不死图腾",
+    "hp": 200,
+    "armor": 10,
+    "mr": 10,
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "+200生命，+10护甲，+10魔抗。\n每场战斗一次：生命低于5%时触发，致命伤害保留1点生命。\n不可选中0.3秒，获得最大生命值10%的护盾，并在5秒内回复最大生命值的10%。\n多件仅叠加属性，仍只触发一次。",
+    "lowHealthProtection": {
+      "threshold": 0.05,
+      "untargetableSeconds": 0.3,
+      "shieldMaxHpFraction": 0.1,
+      "healMaxHpFraction": 0.1,
+      "healSeconds": 5
+    },
+    "icon": "art/equipment/totem_of_undying/spriteFrame"
+  },
+  {
+    "id": "jeweled_gauntlet",
+    "name": "珠光护手",
+    "spellPower": 20,
+    "critChance": 0.35,
+    "skillCanCrit": true,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "+20%法术加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+    "icon": "art/equipment/jeweled_gauntlet/spriteFrame"
+  },
+  {
+    "id": "infinity_edge",
+    "name": "无尽之刃",
+    "physicalPower": 20,
+    "spellPower": 0,
+    "critChance": 0.35,
+    "skillCanCrit": true,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "+20%物理加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+    "icon": "art/equipment/infinity_edge/spriteFrame"
+  }
+]

@@ -24,7 +24,7 @@ $taskScripts = Get-ChildItem -LiteralPath $taskOutput -Recurse -Filter '*.js' | 
 $taskHasAttributes = $false
 foreach ($taskScript in $taskScripts) {
   $taskCode = [IO.File]::ReadAllText($taskScript.FullName)
-  if ($taskCode.Contains('spellPower') -and $taskCode.Contains('unitStats') -and ($taskCode.Contains('法强') -or $taskCode -match '\\u6cd5\\u5f3a')) { $taskHasAttributes = $true; break }
+  if ($taskCode.Contains('spellPower') -and $taskCode.Contains('unitStats') -and $taskCode.Contains('physicalPower') -and $taskCode.Contains('detailStat')) { $taskHasAttributes = $true; break }
 }
 if (!$taskHasAttributes) { throw 'Web output does not contain the new unit detail attributes' }
 & node (Join-Path $taskProjectRoot 'tests\web-build-tests.cjs')

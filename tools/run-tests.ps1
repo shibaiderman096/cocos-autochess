@@ -1,5 +1,11 @@
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot\..
+# Include Cocos-facing scripts when the editor has generated its declarations.
+# The pure-logic compilation below remains available in a clean Node checkout.
+if (Test-Path -LiteralPath 'temp/tsconfig.cocos.json') {
+  npx tsc --noEmit -p tsconfig.json
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
 $srcs = @(
   'tests/unit-tests.ts', 'tests/smoke.ts', 'tests/economy-tests.ts', 'tests/shop-tests.ts',
   'assets/scripts/battle/HexMath.ts',
@@ -49,8 +55,26 @@ node tests/progression-tests.cjs
 $progressionCode = $LASTEXITCODE
 node tests/combat-attributes-tests.cjs
 $attributesCode = $LASTEXITCODE
+node tests/combat-statistics-tests.cjs
+$statisticsCode = $LASTEXITCODE
+node tests/enderman-tests.cjs
+$endermanCode = $LASTEXITCODE
+node tests/black-flame-tests.cjs
+$blackFlameCode = $LASTEXITCODE
+node tests/heal-channel-tests.cjs
+$healChannelCode = $LASTEXITCODE
+node tests/hybrid-spell-tests.cjs
+$hybridSpellCode = $LASTEXITCODE
+node tests/stun-tests.cjs
+$stunCode = $LASTEXITCODE
+node tests/equipment-tests.cjs
+$equipmentCode = $LASTEXITCODE
+node tests/totem-tests.cjs
+$totemCode = $LASTEXITCODE
+node tests/skill-crit-equipment-tests.cjs
+$skillCritEquipmentCode = $LASTEXITCODE
 $taskBuildRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $taskBuildPath = [IO.Path]::GetFullPath((Join-Path $taskBuildRoot '.test-build'))
 if ($taskBuildPath -ne (Join-Path $taskBuildRoot '.test-build')) { throw 'Invalid test output path' }
 Remove-Item -LiteralPath $taskBuildPath -Recurse -Force
-if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0 -or $uiCode -ne 0 -or $fairnessCode -ne 0 -or $progressionCode -ne 0 -or $attributesCode -ne 0) { exit 1 }
+if ($unitCode -ne 0 -or $ecoCode -ne 0 -or $shopCode -ne 0 -or $smokeCode -ne 0 -or $regressionCode -ne 0 -or $uiCode -ne 0 -or $fairnessCode -ne 0 -or $progressionCode -ne 0 -or $attributesCode -ne 0 -or $statisticsCode -ne 0 -or $endermanCode -ne 0 -or $blackFlameCode -ne 0 -or $healChannelCode -ne 0 -or $hybridSpellCode -ne 0 -or $stunCode -ne 0 -or $equipmentCode -ne 0 -or $totemCode -ne 0 -or $skillCritEquipmentCode -ne 0) { exit 1 }

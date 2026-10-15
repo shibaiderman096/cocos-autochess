@@ -31,8 +31,9 @@ export class BoardView extends Component {
     let art = this.node.getChildByName('arenaArt');
     if (!art) {
       art = new Node('arenaArt'); this.node.addChild(art);
-      art.addComponent(UITransform).setContentSize(1024, 683);
-      art.setPosition(0, -28, 0);
+      // Calibrate the image's play floor and joined front platform to the existing grid.
+      art.addComponent(UITransform).setContentSize(1024, 862);
+      art.setPosition(0, -80, 0);
       setUISkin(art, 'arena_board', undefined, () => { this.artReady = true; this.redraw(); });
     }
     let grid = this.node.getChildByName('boardGrid');

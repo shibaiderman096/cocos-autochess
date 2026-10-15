@@ -63,9 +63,13 @@ assert(Math.abs(t1 - 5) < 0.5, `1x ~5s, got ${t1.toFixed(2)}`);
 assert(Math.abs(t2 - 2.5) < 0.4, `2x ~2.5s, got ${t2.toFixed(2)}`);
 
 const winners = new Set<number>();
-for (let seed = 1; seed <= 20; seed++) winners.add(runOnce(seed).winner);
-console.log(`20 种子胜者集合=${Array.from(winners).join(',')}（M1 无随机性，应恒定）`);
-assert(winners.size === 1, 'deterministic logic => one winner');
+for (let seed = 1; seed <= 20; seed++) {
+  const result = runOnce(seed);
+  assert(JSON.stringify(result) === JSON.stringify(runOnce(seed)), `seed ${seed} => reproducible battle`);
+  winners.add(result.winner);
+}
+console.log(`20 种子胜者集合=${Array.from(winners).join(',')}（暴击随种子变化，同种子可复现）`);
+assert(winners.size > 1, 'crit seeds can change battle outcomes');
 
 console.log('\nOK smoke test passed');
 process.exit(0);

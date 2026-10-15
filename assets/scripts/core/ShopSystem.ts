@@ -56,18 +56,19 @@ export class ShopSystem {
   }
 
   /** 按当前等级抽一个费用档 */
-  costRates(): number[] {
-    return shopCostRates(this.getLevel(), Array.from(this.unitConfigs.values()).map(u => u.cost ?? 1));
+  costRates(level = this.getLevel()): number[] {
+    const costs = Array.from(this.unitConfigs.keys()).filter(id => this.pool.count(id) > 0)
+      .map(id => this.pool.costOfUnit(id));
+    return shopCostRates(level, costs);
   }
 
   private rollCost(level: number): Cost | null {
-    const row = shopCostRates(level, Array.from(this.unitConfigs.values()).map(u => u.cost ?? 1));
-    const weights = row.map((rate, i) => Array.from(this.unitConfigs.keys()).some(id => this.pool.costOfUnit(id) === i + 1 && this.pool.count(id) > 0) ? rate : 0);
+    const weights = this.costRates(level);
     const total = weights.reduce((sum, rate) => sum + rate, 0);
     if (!total) return null;
     const r = this.rng.next() * total;
     let acc = 0;
-    for (let i = 0; i < row.length; i++) {
+    for (let i = 0; i < weights.length; i++) {
       acc += weights[i];
       if (r < acc) return (i + 1) as Cost;
     }

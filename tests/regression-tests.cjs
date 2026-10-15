@@ -76,6 +76,7 @@ class BoardView {
 }
 class UnitView {
   setup(cfgId, side, unitId, cellSize, artId, tint, portraitScale=.82) { Object.assign(this, { cfgId, side, unitId, portraitScale }); this.star = 1; }
+  setEquipment(items) { this.equipment = items; }
   setStar(star) { this.star = star; }
 }
 class BattleReplayer {
@@ -85,6 +86,8 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
+  configureDebug(data) { this.debugData=data; }
+  refreshDebugState(...args) { this.debugState=args; }
   setBoardCenter(x,y) { this.boardCenter={x,y}; }
   init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
   refreshTop(gold, floor, lv, rates) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; this.rates=rates; }
@@ -92,9 +95,12 @@ class BattleUI {
   refreshRun(...args) { this.run = args; } setLocked(v) { this.locked = v; }
   clearSellPreview() { this.sale = null; } showSellPreview(...args) { this.sale = args; }
   isInSellArea(x,y) { return this.shopVisible !== false && containsShopDrop(x,y); }
-  showUnitDetail(data) { this.detail = data; this.unitDetailVisible=true; }
+  refreshBackpack(items, editable) { this.backpack = { items, editable }; }
+  showEquipment(items, editable, stacks) { this.equipment = { items, editable, stacks }; }
+  showUnitDetail(data) { this.detail = data; this.unitDetailVisible=true; this.updateUnitVitals(data.hp,data.maxHp,data.mana,data.maxMana); }
   closeUnitDetail() { this.unitDetailVisible=false; }
   updateUnitVitals(...args) { this.vitals=args; }
+  refreshCombatStats(rows) { this.combatStats=rows; }
   setCombatActive(v) { this.combatActive=v; }
   setCombatCountdown(seconds) { this.countdown=seconds; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
@@ -137,12 +143,52 @@ function drag(stage, from, to) {
 }
 
 (async () => {
-  await test('board units use 1.5-cell portraits while reserve units retain their slot size',async()=>{
+  await test('attack speed bonuses are flat additions in preparation and combat',async()=>{
+    const saved=twoUnitSave();saved.owned[0].equipment=['guinsoo'];
+    const stage=await makeStage(saved),unit=stage.owned.all()[0],base=stage.cfg.getUnit(unit.unitId);
+    stage.showOwnedDetail(unit.uid);assert.ok(Math.abs(stage.ui.detail.atkSpeed-(base.atkSpeed+.1))<1e-9);
+    stage.owned.move(unit.uid,{location:'board',x:0,y:0});stage.resetBattle(false);stage.startFight();
+    const combat=stage.sim.units.find(u=>u.side===0);combat.attackSpeedBonus=.05;
+    assert.ok(Math.abs(combat.attackSpeed-(base.atkSpeed+.15))<1e-9);
+  });
+  await test('audit: unknown saved equipment is repaired and visible backpack indices stay aligned', async () => {
+    const saved=twoUnitSave();
+    saved.owned[0].equipment=['removed-equipment','guinsoo'];
+    saved.equipmentReserve=['removed-equipment','guinsoo'];
+    const stage=await makeStage(saved),unit=stage.owned.all()[0];
+    assert.deepEqual(unit.equipment,['guinsoo']);
+    assert.deepEqual(stage.owned.equipmentReserve,['guinsoo']);
+    // A removed item can also enter the reserve after loading; UI indices must
+    // still refer to the original reserve, not the filtered display array.
+    stage.owned.equipmentReserve.unshift('removed-equipment');
+    stage.refreshBackpack();stage.showOwnedDetail(unit.uid);
+    assert.equal(stage.ui.backpack.items[0].id,'guinsoo');
+    stage.ui.onBackpack(0);
+    assert.deepEqual(unit.equipment,['guinsoo','guinsoo']);
+    assert.deepEqual(stage.owned.equipmentReserve,['removed-equipment']);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.deepEqual(resumed.owned.all()[0].equipment,['guinsoo','guinsoo']);
+    assert.deepEqual(resumed.owned.equipmentReserve,[]);
+  });
+  await test('audit: exhausted cost tiers show the same probabilities as actual draws', async () => {
+    const stage=await makeStage();stage.shop.returnUnbought();stage.levelSys.addExp(1000);
+    for(const cfg of stage.cfgUnits().filter(u=>u.cost!==2)) while(stage.pool.take(cfg.id)) {}
+    stage.refreshEconomyUI();
+    assert.deepEqual(stage.ui.rates,[0,100,0,0,0]);
+    for(let i=0;i<100;i++) assert.equal(stage.shop.rollCost(stage.levelSys.level),2);
+    for(const cfg of stage.cfgUnits()) while(stage.pool.take(cfg.id)) {}
+    assert.deepEqual(stage.shop.costRates(),[0,0,0,0,0]);
+    assert.equal(stage.shop.rollCost(stage.levelSys.level),null);
+  });
+  await test('board units use 1.3-cell portraits while reserve units retain their slot size',async()=>{
     const stage=await makeStage();
-    assert.ok([...stage.views.values()].every(view=>view.portraitScale===1.5));
+    assert.ok([...stage.views.values()].every(view=>view.portraitScale===1.3));
+    const slots=stage.boardNode.getChildByName('units').children.filter(node=>node.name.startsWith('bench_'));
+    assert.equal(slots.length,9,'the connected platform retains nine usable slots');
+    assert.ok(slots.every(node=>!node.getComponent(Graphics)),'do not paint separate floating slot frames over the connected platform');
     assert.equal(stage.ownedViews.get(1).portraitScale,.82);
     stage.owned.move(1,{location:'board',x:3,y:3});stage.refreshOwnedViews();
-    assert.equal(stage.ownedViews.get(1).portraitScale,1.5);
+    assert.equal(stage.ownedViews.get(1).portraitScale,1.3);
     stage.owned.move(1,{location:'bench',x:-1,y:0});stage.refreshOwnedViews();
     assert.equal(stage.ownedViews.get(1).portraitScale,.82);
   });
@@ -260,6 +306,26 @@ function drag(stage, from, to) {
     assert.equal(stage.ui.detail.range,stage.cfg.getUnit('mage').range);
     assert.deepEqual(stage.owned.snapshot(),before); assert.equal(stage.economy.gold,gold);
   });
+  await test('skill detail resolves current-star damage instead of multiplier lists', async () => {
+    const stage = await makeStage(freshSaveV2());
+    for (const star of [1,2,3]) {
+      for (const id of ['mage','enderman','sasuke']) {
+        const base = stage.cfg.getUnit(id), unit = stage.cfg.scaleUnit(base,star);
+        const skill = stage.cfg.getSkill(unit.skillId);
+        const scale = stage.cfg.battle.starScaling[star-1].skill;
+        stage.showDetail(star,unit,scale,0,unit.hp,unit.startMana);
+        const expected = Math.round(skill.attackMultipliers ? unit.atk*skill.attackMultipliers[star-1] : skill.power*scale);
+        if (id === 'enderman') {
+          assert.equal(stage.ui.detail.skillName,'末影突袭');
+          assert.ok(stage.ui.detail.skillDescription.includes(`${expected}点物理伤害`),`${id} star ${star}`);
+          assert.doesNotMatch(stage.ui.detail.skillDescription,/施法|攻速上限/);
+          if (star < 3) assert.doesNotMatch(stage.ui.detail.skillDescription,/回蓝/);
+          assert.ok(stage.ui.detail.skillDescription.includes(`${skill.attackSpeedBonuses[star-1]*100}%攻速加成`));
+        } else assert.ok(stage.ui.detail.skillName.includes(`${expected}`),`${id} star ${star}`);
+        assert.doesNotMatch(stage.ui.detail.skillDescription,/125%\/|150%\/|1~3星/);
+      }
+    }
+  });
   await test('drag sale refunds discounted upgraded unit and restores original cards once', async () => {
     const saved = freshSaveV2(); saved.shopReserved = true;
     saved.pool = {mage:15};
@@ -303,11 +369,30 @@ function drag(stage, from, to) {
     const stage = await makeStage(); stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
     stage.sim.run(); stage.update(.1);
     const saved = JSON.parse(storage.get(SAVE_KEY)), gold = stage.economy.gold, health = stage.flow.health;
-    const restored = await makeStage(saved); restored.update(10);
+    const restored = await makeStage(saved); restored.update(.5);
     assert.equal(restored.economy.gold,gold); assert.equal(restored.flow.health,health);
     assert.equal(restored.resultShown,true); assert.equal(restored.ui.shopVisible,false);
-    restored.restart(); assert.equal(restored.flow.waveIndex,1); assert.equal(restored.flow.phase,'prepare');
+    restored.update(.5); assert.equal(restored.flow.waveIndex,1); assert.equal(restored.flow.phase,'prepare');
     restored.restart(); assert.equal(restored.flow.waveIndex,1);
+  });
+  await test('auto next wave waits one real second, advances once and preserves rewards', async () => {
+    const stage=await makeStage();stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
+    stage.speed=3;stage.sim.run();stage.update(.2);
+    assert.equal(stage.flow.phase,'settlement');assert.equal(stage.nextWaveRemaining,1);
+    const gold=stage.economy.gold,exp=stage.levelSys.exp;
+    const stats=stage.ui.combatStats.map(row=>({...row}));assert.ok(stats.some(row=>row.damage>0));
+    stage.update(.75);assert.equal(stage.flow.waveIndex,0);assert.equal(stage.flow.phase,'settlement');
+    stage.update(.25);assert.equal(stage.flow.waveIndex,1);assert.equal(stage.flow.phase,'prepare');
+    assert.equal(stage.ui.shopVisible,true);assert.equal(stage.resultShown,false);
+    stage.update(2);assert.equal(stage.flow.waveIndex,1);assert.equal(stage.economy.gold,gold);assert.equal(stage.levelSys.exp,exp);
+    assert.deepEqual(stage.ui.combatStats,stats,'next-wave preparation preserves completed combat statistics');
+    stage.startFight();assert.ok(stage.ui.combatStats.every(row=>row.damage===0&&row.taken===0&&row.healing===0),'only starting the next battle clears statistics');
+  });
+  await test('manual next wave cancels automatic transition and run end retains final result', async () => {
+    const stage=await makeStage();stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();stage.sim.run();stage.update(.1);
+    stage.restart();stage.update(2);assert.equal(stage.flow.waveIndex,1);assert.equal(stage.nextWaveRemaining,null);
+    stage.flow.startBattle();stage.flow.settle(1,99);stage.resultShown=true;stage.fighting=true;stage.scheduleNextWave();
+    stage.update(2);assert.equal(stage.flow.phase,'ended');assert.equal(stage.resultShown,true);assert.equal(stage.nextWaveRemaining,null);
   });
   await test('zero-gold starter earns base income per subround from the current stage', async () => {
     const stage = await makeStage();
@@ -578,7 +663,7 @@ function drag(stage, from, to) {
     assert.equal(stage.cfg.getUnit(enemy.cfg.id).damageAmp,0);assert.equal(stage.cfg.getUnit(enemy.cfg.id).damageReduction,0);
     stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
     const ally=stage.sim.units.find(u=>u.side===0);stage.showBattleDetail(ally.id);
-    assert.equal(stage.ui.detail.spellPower,100);assert.equal(stage.ui.detail.critChance,0);
+    assert.equal(stage.ui.detail.spellPower,0);assert.equal(stage.ui.detail.critChance,.25);
   });
   await test('main menu return preserves run and is blocked during battle', async () => {
     const stage=await makeStage(freshSaveV2(5)); sceneLoads.length=0;
@@ -644,6 +729,15 @@ function drag(stage, from, to) {
     const ally=stage.sim.units.find(u=>u.side===0),enemy=stage.sim.units.find(u=>u.side===1);
     ally.hp=321;ally.mana=27;stage.showBattleDetail(ally.id);stage.refreshDetailVitals();
     assert.deepEqual(stage.ui.vitals,[321,ally.cfg.hp,27,ally.cfg.maxMana]);
+    ally.attackSpeedBonus=1.5;ally.cfg.atk+=10;ally.cfg.armor+=5;
+    ally.cfg.physicalPower=35;ally.cfg.spellPower=80;ally.cfg.damageAmp=.2;
+    stage.refreshDetailVitals();
+    assert.equal(stage.ui.detail.atkSpeed,ally.attackSpeed);
+    assert.equal(stage.ui.detail.atk,ally.cfg.atk);assert.equal(stage.ui.detail.armor,ally.cfg.armor);
+    assert.equal(stage.ui.detail.physicalPower,35);assert.equal(stage.ui.detail.spellPower,80);
+    assert.equal(stage.ui.detail.damageAmp,.2);
+    ally.attackSpeedBonus=0;stage.refreshDetailVitals();assert.equal(stage.ui.detail.atkSpeed,ally.attackSpeed);
+    stage.ui.closeUnitDetail();stage.refreshDetailVitals();assert.equal(stage.ui.unitDetailVisible,false,'refresh never reopens a closed panel');
     enemy.hp=0;enemy.alive=false;stage.showBattleDetail(enemy.id);stage.refreshDetailVitals();
     assert.equal(stage.ui.detail.name,enemy.cfg.name);assert.equal(stage.ui.vitals[0],0);assert.equal(stage.ui.detail.side,1);
     assert.equal(stage.ui.detail.skillDescription,enemy.cfg.description);
@@ -651,9 +745,158 @@ function drag(stage, from, to) {
   await test('displayed cost rates match implemented tiers and refresh stays populated at high level', async () => {
     const saved=freshSaveV2();saved.level=10;saved.gold=100;
     const stage=await makeStage(saved);const rates=stage.shop.costRates();
-    assert.equal(rates[3],0);assert.equal(rates[4],0);assert.ok(Math.abs(rates.reduce((a,b)=>a+b,0)-100)<1e-8);
+    assert.ok(rates[3]>0);assert.ok(rates[4]>0);assert.ok(Math.abs(rates.reduce((a,b)=>a+b,0)-100)<1e-8);
     assert.deepEqual(stage.ui.rates,rates);
     for(let i=0;i<10;i++) { stage.refreshShop();assert.equal(stage.shop.slots.filter(s=>s.unitId).length,5); }
+  });
+  await test('equipment detail edits persist, cap at three and lock during combat', async () => {
+    const stage=await makeStage(); const unit=stage.owned.all()[0];
+    stage.showOwnedDetail(unit.uid);
+    for(let i=0;i<4;i++) stage.ui.onGrantEquipment();
+    for(let i=0;i<4;i++) stage.ui.onBackpack(0);
+    assert.equal(stage.owned.equipmentReserve.length,1);
+    assert.equal(stage.ownedViews.get(unit.uid).equipment.length,3);
+    assert.equal(unit.equipment.length,3); assert.equal(stage.ui.equipment.items.length,3);
+    assert.ok(stage.ui.detail.spellPower>=30);
+    const saved=JSON.parse(storage.get(SAVE_KEY)); assert.equal(saved.owned.find(u=>u.uid===unit.uid).equipment.length,3);
+    stage.ui.onEquipment(1);assert.equal(unit.equipment.length,2);assert.equal(stage.owned.equipmentReserve.length,2);
+    stage.owned.move(unit.uid,{location:'board',x:0,y:0}); stage.resetBattle(false);stage.startFight();
+    stage.showOwnedDetail(unit.uid);stage.ui.onEquipment(0);assert.equal(unit.equipment.length,2);
+    assert.equal(stage.ui.equipment.editable,false);
+    const combat=stage.sim.units.find(u=>u.side===0);assert.equal(combat.equipment.length,2);
+  });
+  await test('totem grant, equip, detail stats, save reload, combat stats and equipment lock', async () => {
+    const stage=await makeStage(); const unit=stage.owned.all()[0];
+    stage.showOwnedDetail(unit.uid); const before={...stage.ui.detail};
+    stage.ui.onGrantEquipment('totem_of_undying');
+    assert.equal(stage.ui.backpack.items[0].id,'totem_of_undying');
+    stage.ui.onBackpack(0);
+    assert.deepEqual(unit.equipment,['totem_of_undying']);
+    assert.equal(stage.ui.detail.maxHp,before.maxHp+200);
+    assert.equal(stage.ui.detail.armor,before.armor+10);assert.equal(stage.ui.detail.mr,before.mr+10);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.deepEqual(resumed.owned.all()[0].equipment,['totem_of_undying']);
+    const current=resumed.owned.all()[0];
+    resumed.owned.move(current.uid,{location:'board',x:0,y:0});resumed.resetBattle(false);resumed.startFight();
+    const combat=resumed.sim.units.find(u=>u.side===0);
+    assert.equal(combat.equipment[0].id,'totem_of_undying');assert.equal(combat.cfg.hp,before.maxHp+200);
+    resumed.ui.onGrantEquipment('totem_of_undying');assert.equal(resumed.owned.equipmentReserve.length,0);
+  });
+  await test('skill-crit items grant, stack matching attributes, reload, unlock combat and unequip', async () => {
+    const stage=await makeStage();const unit=stage.owned.all()[0];stage.showOwnedDetail(unit.uid);
+    const before={...stage.ui.detail};
+    for(const id of ['jeweled_gauntlet','infinity_edge']) {stage.ui.onGrantEquipment(id);stage.ui.onBackpack(0);}
+    assert.deepEqual(unit.equipment,['jeweled_gauntlet','infinity_edge']);
+    assert.equal(stage.ui.detail.physicalPower,(before.physicalPower??0)+20);
+    assert.equal(stage.ui.detail.spellPower,(before.spellPower??0)+20);
+    assert.ok(Math.abs(stage.ui.detail.critChance-.95)<1e-9);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY))), current=resumed.owned.all()[0];
+    assert.deepEqual(current.equipment,['jeweled_gauntlet','infinity_edge']);
+    resumed.owned.move(current.uid,{location:'board',x:0,y:0});resumed.resetBattle(false);resumed.startFight();
+    const combat=resumed.sim.units.find(u=>u.side===0);assert.equal(combat.cfg.skillCanCrit,true);
+    assert.ok(Math.abs(combat.cfg.critChance-.95)<1e-9);
+    stage.showOwnedDetail(unit.uid);stage.ui.onEquipment(0);stage.ui.onEquipment(0);
+    stage.owned.move(unit.uid,{location:'board',x:0,y:0});stage.resetBattle(false);
+    assert.equal(stage.sim.units.find(u=>u.side===0).cfg.skillCanCrit,false,'trait removed with last item');
+    assert.equal(stage.owned.equipmentReserve.length,2);
+  });
+  await test('backpack drag equips reserve unit and generic consumables survive reload', async () => {
+    const saved=twoUnitSave();saved.equipmentReserve=['guinsoo'];
+    saved.backpackItems=[{id:'future_potion',name:'后续道具',kind:'consumable',icon:'art/equipment/guinsoo/spriteFrame'}];
+    const stage=await makeStage(saved), unit=stage.owned.all()[0];
+    assert.equal(stage.ui.backpack.items.length,2);
+    stage.ui.onBackpack(0,touch(stage.benchSlotWorld(unit.y)));
+    assert.equal(unit.equipment.length,1);assert.equal(stage.owned.equipmentReserve.length,0);
+    assert.equal(stage.ui.backpack.items[0].kind,'consumable');
+    stage.ui.onBackpack(0);assert.equal(unit.equipment.length,1);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(resumed.ui.backpack.items[0].id,'future_potion');
+    assert.equal(resumed.ownedViews.get(resumed.owned.all()[0].uid).equipment.length,1);
+  });
+  await test('debug catalogue follows configs and gold grants preserve combat and survive reload at the save cap', async () => {
+    const stage=await makeStage();
+    assert.equal(stage.ui.debugData.equipment.length,require('../assets/resources/config/equipment.json').length);
+    assert.deepEqual(stage.ui.debugData.units.map(u=>u.id),units.map(u=>u.id));
+    assert.equal(stage.ui.debugData.roundsPerStage.length,99);assert.equal(stage.ui.debugData.roundsPerStage[0],3);
+    stage.ui.onDebugGold(100);assert.equal(stage.economy.gold,100);assert.equal(stage.ui.top.gold,100);
+    for(const amount of [NaN,Infinity,-10,0,1.5,1000001])stage.ui.onDebugGold(amount);
+    assert.equal(stage.economy.gold,100);
+    const unit=stage.owned.all()[0];stage.owned.move(unit.uid,{location:'board',x:0,y:0});stage.resetBattle(false);stage.startFight();
+    const sim=stage.sim,views=stage.views,driver=stage.driver;stage.ui.onDebugGold(1000);
+    assert.equal(stage.economy.gold,1100);assert.equal(stage.sim,sim);assert.equal(stage.views,views);assert.equal(stage.driver,driver);
+    stage.economy.gold=999995;stage.ui.onDebugGold(100);assert.equal(stage.economy.gold,999999);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY)));assert.equal(resumed.economy.gold,999999);
+    resumed.ui.onDebugGold(10);assert.equal(resumed.economy.gold,999999);
+  });
+  await test('debug unit grants conserve star copies and equipment through reload and sale', async () => {
+    const stage=await makeStage(),id=units.find(unit=>unit.cost===5).id,stock=stage.pool.count(id),gold=stage.economy.gold;
+    stage.ui.onDebugUnit(id,3);
+    assert.equal(stage.economy.gold,gold);assert.equal(stage.pool.count(id),stock-9);
+    const unit=stage.owned.all().find(unit=>unit.unitId===id);assert.equal(unit.star,3);assert.equal(unit.location,'bench');
+    assert.ok(stage.ownedViews.has(unit.uid));
+    stage.ui.onDebugUnit(id,3);assert.equal(stage.pool.count(id),stock-9,'insufficient stock does not grant more copies');
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY))),restored=resumed.owned.all().find(unit=>unit.unitId===id);
+    assert.equal(restored.star,3);assert.equal(resumed.pool.count(id),stock-9);
+    resumed.shop.sell(restored.uid);assert.equal(resumed.pool.count(id),stock);
+  });
+  await test('debug unit rejects invalid/full bench, allows full-bench merge and rolls back failures', async () => {
+    const saved=twoUnitSave();saved.benchSlots=2;for(const unit of saved.owned)unit.unitId='warrior';
+    saved.owned[0].equipment=['totem_of_undying'];
+    const stage=await makeStage(saved),stock=stage.pool.count('warrior');
+    stage.ui.onDebugUnit('archer',1);assert.equal(stage.owned.all().length,2);assert.match(stage.ui.warn,/已满/);
+    stage.ui.onDebugUnit('warrior',1);assert.equal(stage.owned.all().length,1);assert.equal(stage.owned.all()[0].star,2);
+    assert.deepEqual(stage.owned.all()[0].equipment,['totem_of_undying']);assert.equal(stage.pool.count('warrior'),stock-1);
+    const before=stage.owned.snapshot(),pool=stage.pool.snapshot();
+    for(const [id,star] of [['missing',1],['warrior',0],['warrior',4],['warrior',1.5]])stage.ui.onDebugUnit(id,star);
+    assert.deepEqual(stage.owned.snapshot(),before);assert.deepEqual(stage.pool.snapshot(),pool);
+    const original=stage.owned.addToBench;stage.owned.addToBench=()=>{throw Error('injected');};stage.ui.onDebugUnit('warrior',1);stage.owned.addToBench=original;
+    assert.deepEqual(stage.owned.snapshot(),before);assert.deepEqual(stage.pool.snapshot(),pool);
+  });
+  await test('debug stage jump extends the run without changing existing waves, resources or shop and resumes exactly', async () => {
+    const stage=await makeStage();stage.ui.onDebugGold(100);stage.ui.onGrantEquipment('totem_of_undying');
+    const oldWaves=JSON.parse(JSON.stringify(stage.waves)),gold=stage.economy.gold,exp=stage.levelSys.exp,
+      owned=stage.owned.snapshot(),shop=stage.shop.snapshot(),pool=stage.pool.snapshot();
+    stage.ui.onDebugStage(5,2);
+    assert.equal(stage.save.stageCount,5);assert.equal(stage.flow.wave.stage,5);assert.equal(stage.flow.wave.round,2);
+    assert.deepEqual(stage.waves.slice(0,oldWaves.length),oldWaves,'old stage enemies and names stay unchanged');
+    assert.equal(stage.flow.phase,'prepare');assert.equal(stage.save.lastReward,undefined);assert.equal(stage.save.floor,5);
+    assert.equal(stage.economy.gold,gold);assert.equal(stage.levelSys.exp,exp);assert.deepEqual(stage.owned.snapshot(),owned);
+    assert.deepEqual(stage.shop.snapshot(),shop);assert.deepEqual(stage.pool.snapshot(),pool);
+    assert.deepEqual(stage.owned.equipmentReserve,['totem_of_undying']);assert.deepEqual(stage.ui.debugState,[5,2,5]);
+    assert.equal(stage.replayer.sim,stage.sim);assert.equal(stage.replayer.eventCursor,0);assert.equal(stage.sim.tick,0);
+    const resumed=await makeStage(JSON.parse(storage.get(SAVE_KEY)));
+    assert.equal(resumed.save.stageCount,5);assert.equal(resumed.flow.wave.stage,5);assert.equal(resumed.flow.wave.round,2);
+    assert.equal(resumed.economy.gold,gold);assert.deepEqual(resumed.owned.snapshot(),owned);
+    const sim=resumed.sim;
+    for(const [s,r] of [[0,1],[100,1],[NaN,1],[2,0],[2,999],[2.5,1],[2,1.5]])resumed.ui.onDebugStage(s,r);
+    assert.equal(resumed.sim,sim);resumed.ui.onDebugStage(1,1);assert.equal(resumed.save.stageCount,5);
+  });
+  await test('debug jump cancels countdown, active battle and pending settlement without stale rewards or timers', async () => {
+    for(const phase of ['countdown','battle','settlement','ended']) {
+      const stage=await makeStage(),unit=stage.owned.all()[0];
+      stage.owned.move(unit.uid,{location:'board',x:0,y:0});stage.resetBattle(false);stage.startFight();
+      if(phase==='battle')stage.update(1.05);
+      if(phase==='settlement'||phase==='ended') {
+        if(phase==='ended')stage.flow.state.health=0;
+        stage.sim.finished=true;stage.sim.winner=1;stage.update(0);
+      }
+      const oldSim=stage.sim,tick=oldSim.tick,gold=stage.economy.gold,exp=stage.levelSys.exp,health=stage.flow.health;
+      const reserve=stage.owned.equipmentReserve.length;stage.ui.onGrantEquipment('guinsoo');
+      assert.equal(stage.owned.equipmentReserve.length,reserve);
+      const before=stage.owned.snapshot();stage.ui.onDebugUnit('warrior',1);assert.deepEqual(stage.owned.snapshot(),before);
+      stage.ui.onDebugStage(2,1);
+      assert.equal(stage.flow.phase,'prepare',phase);assert.equal(stage.flow.health,health||stage.cfg.battle.initialHealth);
+      assert.equal(stage.fighting,false);assert.equal(stage.preparationRemaining,0);assert.equal(stage.nextWaveRemaining,null);
+      assert.equal(stage.resultShown,false);assert.equal(stage.ui.combatActive,false);assert.equal(stage.ui.shopVisible,true);
+      assert.ok(stage.ui.combatStats.every(row=>row.damage===0&&row.taken===0&&row.healing===0));
+      stage.update(30);assert.equal(stage.flow.wave.stage,2);assert.equal(stage.flow.wave.round,1);
+      assert.equal(stage.economy.gold,gold);assert.equal(stage.levelSys.exp,exp);assert.equal(oldSim.tick,tick);
+    }
+  });
+  await test('debug mutations reject an in-progress drag', async () => {
+    const stage=await makeStage(),before=stage.owned.snapshot(),sim=stage.sim,gold=stage.economy.gold;
+    stage.draggingId=before[0].uid;stage.ui.onDebugGold(100);stage.ui.onDebugUnit('warrior',1);stage.ui.onDebugStage(2,1);
+    assert.equal(stage.economy.gold,gold);assert.equal(stage.sim,sim);assert.deepEqual(stage.owned.snapshot(),before);
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;
