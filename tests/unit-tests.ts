@@ -4,7 +4,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { ConfigManager, UnitConfigData } from '../assets/scripts/core/ConfigManager';
+import { ConfigManager, UnitConfigData, configuredSkillDamage } from '../assets/scripts/core/ConfigManager';
 import { BattleSim, Placement } from '../assets/scripts/battle/BattleSim';
 import { hexDist, hexNeighbors, offsetToAxial, axialToOffset, offsetToWorld, worldToOffset } from '../assets/scripts/battle/HexMath';
 import { nextStep } from '../assets/scripts/battle/Pathfinding';
@@ -35,11 +35,11 @@ console.log('[1] 伤害公式');
   const a = cfg.getUnit('archer');
   const m = cfg.getUnit('mage');
   const expectedArchMage = Math.max(1, Math.round(a.atk * 100 / (100 + m.armor)));
-  assert(expectedArchMage === 55, `archer vs mage 物理伤害应为 55，得 ${expectedArchMage}`);
+  assert(expectedArchMage === 36, `archer vs mage 物理伤害应为 36，得 ${expectedArchMage}`);
 
   const sk = cfg.getSkill('fireball');
-  const expectedMagic = Math.max(1, Math.round(sk.power * 100 / (100 + m.mr)));
-  assert(expectedMagic === 169, `fireball vs mage 魔法伤害应为 169，得 ${expectedMagic}`);
+  const expectedMagic = Math.max(1, Math.round(configuredSkillDamage(sk, 1) * 100 / (100 + m.mr)));
+  assert(expectedMagic === 150, `fireball vs mage 一星设定伤害应为 150，得 ${expectedMagic}`);
 
   const trueDmg = Math.max(1, Math.round(100 * 100 / (100 + 0)));
   assert(trueDmg === 100, `真实伤害 100 应为 100，得 ${trueDmg}`);

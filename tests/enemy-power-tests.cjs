@@ -64,24 +64,9 @@ test('star and equipment diagnostics expose non-monotonic evidence instead of fo
  assert.ok(analysis.negativeEquipment.some(r=>r.unitId==='warrior'&&r.star===1&&r.equipment==='guinsoo'));
  const m=new EnemyPowerModel(fixture);assert.ok(m.estimateUnitPower({unitId:'warrior',star:1,equipment:['guinsoo']}).power<m.estimateUnitPower({unitId:'warrior',star:1}).power);
 });
-test('P1-B preserves all 968 generated P0 waves and all previous evidence/source bytes',()=>{
- const {buildRunWaves}=require('../assets/scripts/core/RunSetup.ts'),inputs=loadRunInputs();
- assert.deepEqual(buildRunWaves(99,inputs.run,inputs.waves,inputs.units),JSON.parse(fs.readFileSync(path.join(root,'docs/p0-enemy-difficulty/baseline/waves-before.json'),'utf8')));
- const {createHash}=require('node:crypto'),guard=JSON.parse(fs.readFileSync(path.join(root,'docs/p1-enemy-difficulty/power-calibration/protected-before.json'),'utf8'));
- // P1-C intentionally integrates generation, sessions, saves and reporting. All other prior bytes stay guarded.
- const p1cIntegration=new Set(['assets/scripts/core/RunSetup.ts','assets/scripts/core/RoundFlow.ts','assets/scripts/core/RunSession.ts',
-  'assets/scripts/core/RunSessionTypes.ts','assets/scripts/core/ShopSave.ts','assets/scripts/view/BattleStage.ts',
-  'tools/run-sim.ts','tools/run-simulation.ts','tests/run-session-tests.cjs','tests/run-sim-cli-tests.cjs','tests/regression-tests.cjs']);
- const {featureChanges}=require('./advanced-equipment-compatibility.cjs');
- const {laterChanges}=require('./p3-equipment-compatibility.cjs');
- for(const [file,hash]of Object.entries(guard)){
-  // Editor-owned service metadata had already changed before P4-R1. Protect its
-  // captured entry bytes separately; it is not an enemy/model/game input.
-  if(file==='settings/v2/packages/information.json'){
-   const entry=require('../docs/p4r1-bot-qualification/freeze/preflight-settings.json');
-   assert.equal(entry.historical,hash);assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex'),entry.current,file);continue;
-  }
-  if(!p1cIntegration.has(file)&&!featureChanges.has(file)&&!laterChanges.has(file))assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex'),hash,file);
- }
+test('P0 archived waves remain reproducible and retained P1-B evidence remains byte-identical',()=>{
+ const {buildRunWaves}=require('../assets/scripts/core/RunSetup.ts'),inputs=require('./historical-inputs.cjs').archivedInputs;
+ assert.deepEqual(buildRunWaves(99,inputs.run,inputs.waves,inputs.units),require('../docs/p0-enemy-difficulty/baseline/waves-before.json'));
+ require('./archive-evidence.cjs').assertArchivedEvidence(require('../docs/p1-enemy-difficulty/power-calibration/protected-before.json'));
 });
 console.log(`EnemyPowerModel: ${passed} passed, 0 failed`);

@@ -7,7 +7,8 @@ const root=path.resolve(__dirname,'..');
 const archived=require(path.join(root,'docs/p0-enemy-difficulty/baseline/input-configs.json'));
 const current=require(path.join(root,'assets/resources/config/equipment.json'));
 const legacyEquipment=current.filter(item=>archived.equipment.some(old=>old.id===item.id));
-assert.deepEqual(legacyEquipment,archived.equipment,'all four previously audited items remain unchanged');
+const mechanics=items=>items.map(({effectDescription,...item})=>item);
+assert.deepEqual(mechanics(legacyEquipment),mechanics(archived.equipment),'all four audited item mechanics remain unchanged; effectDescription is presentation only');
 const added=current.filter(item=>!archived.equipment.some(old=>old.id===item.id));
 assert.deepEqual(added.map(item=>item.id).sort(),['abyssal_plate','arcane_sovereignty','arcane_veil','crimson_bloodclaw','divine_judgment','forest_sanctuary']);
 module.exports={legacyEquipment,archivedInputs:archived,featureChanges:new Set([

@@ -1,0 +1,7 @@
+# Preserve archived evidence bytes, including logs whose recorded hashes include CRLF.
+docs/p0-enemy-difficulty/** -text
+docs/p1-enemy-difficulty/** -text
+docs/p2-enemy-formation/** -text
+docs/p3-equipment/** -text
+docs/p4-balance/** -text
+docs/p4r1-bot-qualification/** -text

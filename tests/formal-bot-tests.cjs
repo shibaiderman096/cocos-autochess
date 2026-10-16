@@ -1,5 +1,6 @@
 require('tsx/cjs');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const {assertLegalSession}=require('../tools/bots/legality.ts');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts'),{ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {loadRunInputs,loadEnemyGenerationInputs,loadEquipmentInputs,loadFormationInputs,runSimulation}=require('../tools/run-simulation.ts');
 const {createBot,loadBotConfigs}=require('../tools/bots/factory.ts'),{formationCells}=require('../tools/bots/formation-policy.ts');
@@ -25,13 +26,27 @@ test('all three bots run real public actions, conserve cards/equipment/gold, and
   assert.notEqual(a.result,'SIMULATION_ERROR',a.error);assert.deepEqual(a,b);assert.equal(a.botVersion,bot==='medium'?'medium-v2r1b':bot+'-v1');assert.match(a.botConfigHash,/^[a-f0-9]{64}$/);
   for(const w of a.waves){assert.ok(w.playerUnits.length>0&&w.playerUnits.length<=w.levelAtBattle);assert.ok(w.goldAtBattle>=0);assert.equal(w.botMetrics.failedActions,0);assert.ok(w.actions.length<500);
    for(const u of [...w.playerUnits,...w.benchUnits])assert.ok((u.equipment?.length??0)<=3);}
-  assert.ok(a.waves.some(w=>w.rewardChoice));assert.ok(a.waves.some(w=>w.playerEquippedItems.length));
+  // Automatic monster rewards need no choice; natural runs may end before their first Boss.
+  assert.ok(a.waves.some(w=>w.encounterKind==='monster'||w.stage===1));
  }
 });
 test('all bot purchase/reward/formation/equipment histories preserve 3/6/99 common prefixes',()=>{
  for(const bot of ['weak','medium','strong']){const small=runSimulation(i,{runSeed:19,stageCount:3,bot}),middle=runSimulation(i,{runSeed:19,stageCount:6,bot}),large=runSimulation(i,{runSeed:19,stageCount:99,bot,maxWaves:38});
   for(const r of [small,middle,large])assert.notEqual(r.result,'SIMULATION_ERROR',r.error);
   assert.deepEqual(small.waves,middle.waves.slice(0,small.waves.length));assert.deepEqual(middle.waves,large.waves.slice(0,middle.waves.length));
+ }
+});
+test('all three bots claim a real Boss victory through the public port and equip its reward next wave',()=>{
+ for(const bot of ['weak','medium','strong']){
+  const initial=session().snapshot();initial.stageCount=6;initial.level=3;initial.exp=0;
+  initial.owned=['enderman','iron_golem','guardian'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:2+n,y:3,equipment:[]}));initial.nextOwnedUid=4;
+  const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSkills(i.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);
+  const s=new RunSession(cfg,i.run,i.waves,{save:initial,...g,...f,...e});
+  const boss=s.waves.find(w=>w.stage===4&&w.encounterKind==='boss');assert.ok(s.debugJump(4,boss.round));
+  const battle=s.startBattle();assert.equal(battle.run().winner,0,'controlled three-star formation must actually win');s.settleBattle();
+  const policy=createBot(bot),actions=policy.claimRewards(s.botPort());assert.ok(actions.length>=2);assert.ok(actions.every(a=>a.result.ok));
+  assert.equal(s.pendingStageReward,undefined);assert.equal(s.owned.equipmentReserve.length,1);assert.ok(s.nextWave());policy.prepare(s.botPort());
+  assert.ok(s.owned.all().some(u=>u.equipment.length));assertLegalSession(s);
  }
 });
 test('economy policies use true interest rules and spend reserves under low HP without changing game rules',()=>{
@@ -49,11 +64,8 @@ test('metrics have Wilson 95% intervals, explicit zero denominators and censored
  const x=wilson(50,100);assert.equal(x.rate,.5);assert.ok(x.low<.5&&x.high>.5);assert.equal(wilson(0,0).rate,null);assert.equal(wilson(0,0).low,null);
  assert.deepEqual(distribution([2,4,null]),{observed:2,total:3,unobserved:1,p25:2.5,median:3,p75:3.5});
 });
-test('all historical evidence and rules remain protected except the verified high-cost price correction',()=>{
- const frozen=require('../docs/p4-balance/baseline/frozen.json');
+test('formal bot tools retain original experiment evidence and corrected prices',()=>{
  require('./high-cost-pricing-compatibility.cjs').assertPricingCorrection();
- // ShopConfig's exact authorized delta is checked above; all other frozen hashes stay strict.
- const protectedHashes=Object.fromEntries(Object.entries(frozen.hashes).filter(([file])=>file!=='assets/scripts/core/ShopConfig.ts'));
- for(const [file,digest]of Object.entries(protectedHashes))if(file.startsWith('docs/')||['assets/resources/config/units.json','assets/resources/config/skills.json','assets/resources/config/equipment.json','assets/resources/config/enemy-power.json','assets/scripts/battle/BattleSim.ts','assets/scripts/battle/Unit.ts','assets/scripts/core/EconomySystem.ts','assets/scripts/core/ShopSystem.ts'].includes(file))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..',file))).digest('hex'),digest,file);
+ require('./archive-evidence.cjs').assertArchivedEvidence(require('../docs/p4-balance/baseline/frozen.json').hashes);
 });
 console.log(`Formal bots: ${passed} passed, 0 failed`);

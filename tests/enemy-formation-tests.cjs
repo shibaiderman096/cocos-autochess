@@ -6,10 +6,11 @@ const {EnemyPowerModel}=require('../assets/scripts/core/EnemyPowerModel.ts'),{Ru
 const {RunSession}=require('../assets/scripts/core/RunSession.ts'),{ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {loadEnemyGenerationInputs,loadFormationInputs,runSimulation:simulate}=require('../tools/run-simulation.ts');
 const loadRunInputs=()=>require('./historical-inputs.cjs').archivedInputs;
-const runSimulation=(inputs,options)=>simulate(inputs,{...options,equipmentPolicy:false});
+// Wave/solver equality uses archived inputs; real combat uses current fixed-damage skills.
+const runSimulation=(_,options)=>simulate(require('../tools/run-simulation.ts').loadRunInputs(),{...options,equipmentPolicy:false});
 const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts'),{buildRunWaves}=require('../assets/scripts/core/RunSetup.ts');
 const {hexDist,hexNeighbors}=require('../assets/scripts/battle/HexMath.ts');
-const i=loadRunInputs(),g=loadEnemyGenerationInputs(),f=loadFormationInputs(),c=f.formationConfig,r=f.enemyRoles,model=new EnemyPowerModel(g.enemyPower);
+const i=loadRunInputs(),g=loadEnemyGenerationInputs(),f={...loadFormationInputs(),enemyRoles:require('../docs/p4-balance/baseline/frozen.json').configs['enemy-roles']},c=f.formationConfig,r=f.enemyRoles,model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const member=placements=>placements.map(({x,y,...m})=>m);let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
@@ -154,10 +155,6 @@ test('invalid config/snapshot/insufficient cells fail clearly; invalid template 
 });
 test('P2 does not import BattleSim/EnemyGenerator into formation or alter generator/config/battle evidence',()=>{
  const text=fs.readFileSync(path.resolve(__dirname,'../assets/scripts/core/EnemyFormation.ts'),'utf8');assert.ok(!/from ['"].*(BattleSim|EnemyGenerator)['"]/.test(text));
- const before=require('../docs/p2-enemy-formation/before-hashes.json'),allowed=new Set(['assets/scripts/core/RunSession.ts','assets/scripts/core/RunSessionTypes.ts','assets/scripts/core/ShopSave.ts',
-  'assets/scripts/view/BattleStage.ts','tools/run-simulation.ts','tools/run-sim.ts','tools/run-tests.ps1','tests/enemy-budget-tests.cjs','tests/regression-tests.cjs','tests/run-sim-cli-tests.cjs']);
- const {featureChanges}=require('./advanced-equipment-compatibility.cjs');
- const {laterChanges}=require('./p3-equipment-compatibility.cjs');
- for(const [file,digest]of Object.entries(before))if(!allowed.has(file)&&!featureChanges.has(file)&&!laterChanges.has(file))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'..',file))).digest('hex'),digest,file);
+ require('./archive-evidence.cjs').assertArchivedEvidence(require('../docs/p2-enemy-formation/before-hashes.json'));
 });
 console.log(`Enemy formation: ${passed} passed, 0 failed`);

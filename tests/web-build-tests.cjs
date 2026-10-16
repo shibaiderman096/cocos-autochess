@@ -31,7 +31,8 @@ const menu={isValid:true,status:{string:''},ready:false,runConfig:{monsters:[...
 method('loadMonsterArt',{UNIT_ART:art,resources:{load:(name,type,cb)=>{
   assert.equal(typeof name,'string','Creator output must enumerate individual SpriteFrame paths');calls.push(name);cb(null);
 }},SpriteFrame:class{}}).call(menu);
-assert.equal(menu.ready,true);assert.equal(calls.length,4);assert.equal(new Set(calls).size,4);
+const expectedMonsterArt=new Set(run.monsters.map(m=>art[m.artId]));
+assert.equal(menu.ready,true);assert.equal(calls.length,expectedMonsterArt.size);assert.deepEqual(new Set(calls),expectedMonsterArt,'compiled loader must load every configured monster once');
 const {shopCostRates}=require('../assets/scripts/core/ShopConfig.ts');
 const unitConfigs=new Map([['one',{cost:1}],['two',{cost:2}]]);
 const shop={unitConfigs,getLevel:()=>3,rng:{next:()=>.9},pool:{count:()=>10,costOfUnit:id=>unitConfigs.get(id)?.cost}};
@@ -52,12 +53,17 @@ let bagNodeName='button';
 const bagNode={};Object.defineProperty(bagNode,'name',{get:()=>bagNodeName,set:value=>{if(!value.includes('/'))bagNodeName=value;}});
 const bag={backpackPage:0,backpackCaption:{},backpackSlots:[{node:bagNode,icon:{isValid:true,node:{active:false}},text:{},index:-1,iconPath:''}]};
 const bagIcon='art/equipment/guinsoo/spriteFrame';
-method('refreshBackpack',{SpriteFrame:class{},resources:{load:(name,type,callback)=>callback(null,{name})}}).call(bag,[{id:'guinsoo',kind:'equipment',icon:bagIcon}],true);
+method('refreshBackpack',{loadArtSprite:(name,callback)=>callback(null,{name})}).call(bag,[{id:'guinsoo',kind:'equipment',icon:bagIcon}],true);
 assert.equal(bag.backpackSlots[0].icon.spriteFrame.name,bagIcon,'compiled backpack works when node names reject resource paths');
 assert.equal(bag.backpackSlots[0].icon.node.active,true);
 assert.equal(bagNodeName,'button');
-const popup={currentDetail:{skillName:'火球',skillDescription:'造成100点魔法伤害',atkSpeed:.75,attackSpeedCap:5},detailPopupMode:'attackSpeed',detailPopupTitle:{},unitDetail:{},detailPopup:{}};
-popup.renderDetailPopup=method('renderDetailPopup',{colorDamageText:text=>text});
+const {skillParagraphs,skillBodyHeight}=require('../assets/scripts/ui/SkillPresentation.ts');
+const mockNode=()=>({setPosition(){},getComponent:()=>({setContentSize(){},setAnchorPoint(){}})});
+const popup={currentDetail:{skillName:'火球',skillDescription:'造成100点魔法伤害',atkSpeed:.75,attackSpeedCap:5},detailPopupMode:'attackSpeed',
+ detailPopupTitle:{node:mockNode()},unitDetail:{node:mockNode()},detailPopup:mockNode(),detailPopupIcon:{node:{parent:mockNode()}},
+ detailPopupClose:mockNode(),detailPopupRules:{clear(){},moveTo(){},lineTo(){},stroke(){}},detailPopupRows:mockNode(),detailPopupStatLabels:[]};
+popup.renderDetailPopup=method('renderDetailPopup',{colorDamageText:text=>text,skillParagraphs,skillBodyHeight,
+ UITransform:class{},Graphics:class{},Color:class{},GOLD:{},paintPanel(){},setUISkin(){}});
 popup.renderDetailPopup();assert.match(popup.unitDetail.string,/\+5%.*\+0\.05/);assert.equal(popup.detailPopup.active,true);
 popup.detailPopupMode=null;
 const togglePopup=method('toggleDetailPopup',{});

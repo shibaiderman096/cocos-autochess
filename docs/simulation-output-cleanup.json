@@ -1,0 +1,1347 @@
+{
+  "utc": "2026-10-16T15:06:41.5271119Z",
+  "deletedFiles": 335,
+  "deletedBytes": 18746970935.0,
+  "files": [
+    {
+      "path": "docs/p4-balance/baseline/endless-20/medium/per-run.jsonl",
+      "bytes": 21553088
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/medium/per-wave.csv",
+      "bytes": 8908431
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/parts/part-0.jsonl",
+      "bytes": 28386502
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/parts/part-1.jsonl",
+      "bytes": 26386293
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/strong/per-run.jsonl",
+      "bytes": 21528696
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/strong/per-wave.csv",
+      "bytes": 8884040
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/weak/per-run.jsonl",
+      "bytes": 11691011
+    },
+    {
+      "path": "docs/p4-balance/baseline/endless-20/weak/per-wave.csv",
+      "bytes": 4787701
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/medium/per-run.jsonl",
+      "bytes": 53884379
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/medium/per-wave.csv",
+      "bytes": 21676376
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/parts/part-0.jsonl",
+      "bytes": 39677844
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/parts/part-1.jsonl",
+      "bytes": 39638370
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/parts/part-2.jsonl",
+      "bytes": 39558653
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/parts/part-3.jsonl",
+      "bytes": 39717674
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/strong/per-run.jsonl",
+      "bytes": 53873102
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/strong/per-wave.csv",
+      "bytes": 21665106
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/weak/per-run.jsonl",
+      "bytes": 50835060
+    },
+    {
+      "path": "docs/p4-balance/baseline/runs-500/weak/per-wave.csv",
+      "bytes": 20111873
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/medium/per-run.jsonl",
+      "bytes": 9360116
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/medium/per-wave.csv",
+      "bytes": 7881437
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/parts/part-0.jsonl",
+      "bytes": 12642673
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/parts/part-1.jsonl",
+      "bytes": 14055982
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/strong/per-run.jsonl",
+      "bytes": 13845067
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/strong/per-wave.csv",
+      "bytes": 11983163
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/weak/per-run.jsonl",
+      "bytes": 3493472
+    },
+    {
+      "path": "docs/p4-balance/determinism/parallel-50/weak/per-wave.csv",
+      "bytes": 2592957
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/medium/per-run.jsonl",
+      "bytes": 9360116
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/medium/per-wave.csv",
+      "bytes": 7881437
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/parts/part-0.jsonl",
+      "bytes": 26698655
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/strong/per-run.jsonl",
+      "bytes": 13845067
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/strong/per-wave.csv",
+      "bytes": 11983163
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/weak/per-run.jsonl",
+      "bytes": 3493472
+    },
+    {
+      "path": "docs/p4-balance/determinism/single-50/weak/per-wave.csv",
+      "bytes": 2592957
+    },
+    {
+      "path": "docs/p4-balance/development-200/medium/per-run.jsonl",
+      "bytes": 21547921
+    },
+    {
+      "path": "docs/p4-balance/development-200/medium/per-wave.csv",
+      "bytes": 8665352
+    },
+    {
+      "path": "docs/p4-balance/development-200/parts/part-0.jsonl",
+      "bytes": 15836631
+    },
+    {
+      "path": "docs/p4-balance/development-200/parts/part-1.jsonl",
+      "bytes": 15867256
+    },
+    {
+      "path": "docs/p4-balance/development-200/parts/part-2.jsonl",
+      "bytes": 15783340
+    },
+    {
+      "path": "docs/p4-balance/development-200/parts/part-3.jsonl",
+      "bytes": 15941315
+    },
+    {
+      "path": "docs/p4-balance/development-200/strong/per-run.jsonl",
+      "bytes": 21542856
+    },
+    {
+      "path": "docs/p4-balance/development-200/strong/per-wave.csv",
+      "bytes": 8660288
+    },
+    {
+      "path": "docs/p4-balance/development-200/weak/per-run.jsonl",
+      "bytes": 20337765
+    },
+    {
+      "path": "docs/p4-balance/development-200/weak/per-wave.csv",
+      "bytes": 8042255
+    },
+    {
+      "path": "docs/p4-balance/formation/L0/medium/per-run.jsonl",
+      "bytes": 17855763
+    },
+    {
+      "path": "docs/p4-balance/formation/L0/medium/per-wave.csv",
+      "bytes": 7119726
+    },
+    {
+      "path": "docs/p4-balance/formation/L0/parts/part-0.jsonl",
+      "bytes": 8584057
+    },
+    {
+      "path": "docs/p4-balance/formation/L0/parts/part-1.jsonl",
+      "bytes": 9271706
+    },
+    {
+      "path": "docs/p4-balance/formation/L1/medium/per-run.jsonl",
+      "bytes": 3575435
+    },
+    {
+      "path": "docs/p4-balance/formation/L1/medium/per-wave.csv",
+      "bytes": 1404117
+    },
+    {
+      "path": "docs/p4-balance/formation/L1/parts/part-0.jsonl",
+      "bytes": 1655606
+    },
+    {
+      "path": "docs/p4-balance/formation/L1/parts/part-1.jsonl",
+      "bytes": 1919829
+    },
+    {
+      "path": "docs/p4-balance/formation/L2/medium/per-run.jsonl",
+      "bytes": 3592470
+    },
+    {
+      "path": "docs/p4-balance/formation/L2/medium/per-wave.csv",
+      "bytes": 1411022
+    },
+    {
+      "path": "docs/p4-balance/formation/L2/parts/part-0.jsonl",
+      "bytes": 1674724
+    },
+    {
+      "path": "docs/p4-balance/formation/L2/parts/part-1.jsonl",
+      "bytes": 1917746
+    },
+    {
+      "path": "docs/p4-balance/formation/L3/medium/per-run.jsonl",
+      "bytes": 3688426
+    },
+    {
+      "path": "docs/p4-balance/formation/L3/medium/per-wave.csv",
+      "bytes": 1450956
+    },
+    {
+      "path": "docs/p4-balance/formation/L3/parts/part-0.jsonl",
+      "bytes": 1739247
+    },
+    {
+      "path": "docs/p4-balance/formation/L3/parts/part-1.jsonl",
+      "bytes": 1949179
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/medium/per-run.jsonl",
+      "bytes": 413776423
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/medium/per-wave.csv",
+      "bytes": 378561919
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-0.jsonl",
+      "bytes": 105983870
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-1.jsonl",
+      "bytes": 109620195
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-10.jsonl",
+      "bytes": 109571801
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-11.jsonl",
+      "bytes": 112746328
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-2.jsonl",
+      "bytes": 106113992
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-3.jsonl",
+      "bytes": 109506388
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-4.jsonl",
+      "bytes": 102749591
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-5.jsonl",
+      "bytes": 102809105
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-6.jsonl",
+      "bytes": 105928729
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-7.jsonl",
+      "bytes": 102660005
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-8.jsonl",
+      "bytes": 116299128
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/parts/part-9.jsonl",
+      "bytes": 106050712
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/strong/per-run.jsonl",
+      "bytes": 850891909
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/strong/per-wave.csv",
+      "bytes": 782220433
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/weak/per-run.jsonl",
+      "bytes": 25371512
+    },
+    {
+      "path": "docs/p4-balance/holdout/runs-250/weak/per-wave.csv",
+      "bytes": 20297201
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/medium/per-run.jsonl",
+      "bytes": 5385692
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/medium/per-wave.csv",
+      "bytes": 2165711
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/parts/part-0.jsonl",
+      "bytes": 4012748
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/parts/part-1.jsonl",
+      "bytes": 3976653
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/parts/part-2.jsonl",
+      "bytes": 3957690
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/parts/part-3.jsonl",
+      "bytes": 3938104
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/strong/per-run.jsonl",
+      "bytes": 5383558
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/strong/per-wave.csv",
+      "bytes": 2163578
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/weak/per-run.jsonl",
+      "bytes": 5115945
+    },
+    {
+      "path": "docs/p4-balance/smoke-50/weak/per-wave.csv",
+      "bytes": 2026545
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/medium/per-run.jsonl",
+      "bytes": 35953407
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/medium/per-wave.csv",
+      "bytes": 14124423
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/parts/part-0.jsonl",
+      "bytes": 26195573
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/parts/part-1.jsonl",
+      "bytes": 26458618
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/parts/part-2.jsonl",
+      "bytes": 25391489
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/parts/part-3.jsonl",
+      "bytes": 26914384
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/strong/per-run.jsonl",
+      "bytes": 52493564
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/strong/per-wave.csv",
+      "bytes": 21125282
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/weak/per-run.jsonl",
+      "bytes": 16513093
+    },
+    {
+      "path": "docs/p4-balance/training/confirmation-500/weak/per-wave.csv",
+      "bytes": 6030247
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/medium/per-run.jsonl",
+      "bytes": 12221385
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/medium/per-wave.csv",
+      "bytes": 5034612
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/parts/part-0.jsonl",
+      "bytes": 16711151
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/parts/part-1.jsonl",
+      "bytes": 16666651
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/strong/per-run.jsonl",
+      "bytes": 20512458
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/strong/per-wave.csv",
+      "bytes": 8467362
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/weak/per-run.jsonl",
+      "bytes": 643959
+    },
+    {
+      "path": "docs/p4-balance/training/endless-20/weak/per-wave.csv",
+      "bytes": 234567
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/medium/per-run.jsonl",
+      "bytes": 4153888
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/medium/per-wave.csv",
+      "bytes": 1628133
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/parts/part-0.jsonl",
+      "bytes": 1038618
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/parts/part-1.jsonl",
+      "bytes": 1037546
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/parts/part-2.jsonl",
+      "bytes": 1039069
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-01/parts/part-3.jsonl",
+      "bytes": 1038655
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/medium/per-run.jsonl",
+      "bytes": 4157580
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/medium/per-wave.csv",
+      "bytes": 1631825
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/parts/part-0.jsonl",
+      "bytes": 1039544
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/parts/part-1.jsonl",
+      "bytes": 1038479
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/parts/part-2.jsonl",
+      "bytes": 1040007
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-02/parts/part-3.jsonl",
+      "bytes": 1039550
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/medium/per-run.jsonl",
+      "bytes": 4179826
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/medium/per-wave.csv",
+      "bytes": 1617606
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/parts/part-0.jsonl",
+      "bytes": 1048702
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/parts/part-1.jsonl",
+      "bytes": 1041738
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/parts/part-2.jsonl",
+      "bytes": 1044777
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-03/parts/part-3.jsonl",
+      "bytes": 1044609
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/medium/per-run.jsonl",
+      "bytes": 3725477
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/medium/per-wave.csv",
+      "bytes": 1399774
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/parts/part-0.jsonl",
+      "bytes": 935042
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/parts/part-1.jsonl",
+      "bytes": 933331
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/parts/part-2.jsonl",
+      "bytes": 904009
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-04/parts/part-3.jsonl",
+      "bytes": 953095
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/medium/per-run.jsonl",
+      "bytes": 4156439
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/medium/per-wave.csv",
+      "bytes": 1630684
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/parts/part-0.jsonl",
+      "bytes": 1039248
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/parts/part-1.jsonl",
+      "bytes": 1038190
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/parts/part-2.jsonl",
+      "bytes": 1039734
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-05/parts/part-3.jsonl",
+      "bytes": 1039267
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/medium/per-run.jsonl",
+      "bytes": 4158291
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/medium/per-wave.csv",
+      "bytes": 1632536
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/parts/part-0.jsonl",
+      "bytes": 1039729
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/parts/part-1.jsonl",
+      "bytes": 1038649
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/parts/part-2.jsonl",
+      "bytes": 1040147
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-06/parts/part-3.jsonl",
+      "bytes": 1039766
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/medium/per-run.jsonl",
+      "bytes": 4157838
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/medium/per-wave.csv",
+      "bytes": 1632075
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/parts/part-0.jsonl",
+      "bytes": 1039675
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/parts/part-1.jsonl",
+      "bytes": 1038591
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/parts/part-2.jsonl",
+      "bytes": 1039981
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-07/parts/part-3.jsonl",
+      "bytes": 1039591
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/medium/per-run.jsonl",
+      "bytes": 4161958
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/medium/per-wave.csv",
+      "bytes": 1631298
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/parts/part-0.jsonl",
+      "bytes": 1039711
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/parts/part-1.jsonl",
+      "bytes": 1039510
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/parts/part-2.jsonl",
+      "bytes": 1042062
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-08/parts/part-3.jsonl",
+      "bytes": 1040675
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/medium/per-run.jsonl",
+      "bytes": 4162724
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/medium/per-wave.csv",
+      "bytes": 1584239
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/parts/part-0.jsonl",
+      "bytes": 1030948
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/parts/part-1.jsonl",
+      "bytes": 1047873
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/parts/part-2.jsonl",
+      "bytes": 1032444
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-09/parts/part-3.jsonl",
+      "bytes": 1051459
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/medium/per-run.jsonl",
+      "bytes": 4028394
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/medium/per-wave.csv",
+      "bytes": 1518342
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/parts/part-0.jsonl",
+      "bytes": 1008845
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/parts/part-1.jsonl",
+      "bytes": 984384
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/parts/part-2.jsonl",
+      "bytes": 1008464
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-10/parts/part-3.jsonl",
+      "bytes": 1026701
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/medium/per-run.jsonl",
+      "bytes": 3457703
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/medium/per-wave.csv",
+      "bytes": 1278953
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/parts/part-0.jsonl",
+      "bytes": 851603
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/parts/part-1.jsonl",
+      "bytes": 889030
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/parts/part-2.jsonl",
+      "bytes": 830859
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-11/parts/part-3.jsonl",
+      "bytes": 886211
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/medium/per-run.jsonl",
+      "bytes": 3302681
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/medium/per-wave.csv",
+      "bytes": 1229952
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/parts/part-0.jsonl",
+      "bytes": 846608
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/parts/part-1.jsonl",
+      "bytes": 859987
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/parts/part-2.jsonl",
+      "bytes": 765309
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-12/parts/part-3.jsonl",
+      "bytes": 830777
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/medium/per-run.jsonl",
+      "bytes": 4195758
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/medium/per-wave.csv",
+      "bytes": 1605730
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/parts/part-0.jsonl",
+      "bytes": 1049011
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/parts/part-1.jsonl",
+      "bytes": 1044851
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/parts/part-2.jsonl",
+      "bytes": 1046427
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-13/parts/part-3.jsonl",
+      "bytes": 1055469
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/medium/per-run.jsonl",
+      "bytes": 4165266
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/medium/per-wave.csv",
+      "bytes": 1583874
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/parts/part-0.jsonl",
+      "bytes": 1041930
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/parts/part-1.jsonl",
+      "bytes": 1039491
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/parts/part-2.jsonl",
+      "bytes": 1038835
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-14/parts/part-3.jsonl",
+      "bytes": 1045010
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/medium/per-run.jsonl",
+      "bytes": 4126805
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/medium/per-wave.csv",
+      "bytes": 1563026
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/parts/part-0.jsonl",
+      "bytes": 1022346
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/parts/part-1.jsonl",
+      "bytes": 1040834
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/parts/part-2.jsonl",
+      "bytes": 1017966
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-15/parts/part-3.jsonl",
+      "bytes": 1045659
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/medium/per-run.jsonl",
+      "bytes": 3995925
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/medium/per-wave.csv",
+      "bytes": 1506488
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/parts/part-0.jsonl",
+      "bytes": 980252
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/parts/part-1.jsonl",
+      "bytes": 1000004
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/parts/part-2.jsonl",
+      "bytes": 990985
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-16/parts/part-3.jsonl",
+      "bytes": 1024684
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/medium/per-run.jsonl",
+      "bytes": 4163724
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/medium/per-wave.csv",
+      "bytes": 1631733
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/parts/part-0.jsonl",
+      "bytes": 1049306
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/parts/part-1.jsonl",
+      "bytes": 1030765
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/parts/part-2.jsonl",
+      "bytes": 1031437
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-17/parts/part-3.jsonl",
+      "bytes": 1052216
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/medium/per-run.jsonl",
+      "bytes": 4176010
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/medium/per-wave.csv",
+      "bytes": 1634670
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/parts/part-0.jsonl",
+      "bytes": 1048494
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/parts/part-1.jsonl",
+      "bytes": 1034468
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/parts/part-2.jsonl",
+      "bytes": 1040399
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-18/parts/part-3.jsonl",
+      "bytes": 1052649
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/medium/per-run.jsonl",
+      "bytes": 4123935
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/medium/per-wave.csv",
+      "bytes": 1614162
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/parts/part-0.jsonl",
+      "bytes": 1046981
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/parts/part-1.jsonl",
+      "bytes": 1036714
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/parts/part-2.jsonl",
+      "bytes": 990282
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-19/parts/part-3.jsonl",
+      "bytes": 1049958
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/medium/per-run.jsonl",
+      "bytes": 3807005
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/medium/per-wave.csv",
+      "bytes": 1450246
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/parts/part-0.jsonl",
+      "bytes": 932000
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/parts/part-1.jsonl",
+      "bytes": 982154
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/parts/part-2.jsonl",
+      "bytes": 915737
+    },
+    {
+      "path": "docs/p4-balance/training/search-v1/iteration-20/parts/part-3.jsonl",
+      "bytes": 977114
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/medium/per-run.jsonl",
+      "bytes": 820624692
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/medium/per-wave.csv",
+      "bytes": 750712775
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/parts/part-0.jsonl",
+      "bytes": 643265179
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/parts/part-1.jsonl",
+      "bytes": 613283224
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/parts/part-2.jsonl",
+      "bytes": 673775123
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/parts/part-3.jsonl",
+      "bytes": 616178623
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/strong/per-run.jsonl",
+      "bytes": 1694869094
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/strong/per-wave.csv",
+      "bytes": 1558027237
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/weak/per-run.jsonl",
+      "bytes": 31008363
+    },
+    {
+      "path": "docs/p4-balance/validation/runs-500/weak/per-wave.csv",
+      "bytes": 22391354
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/medium/per-run.jsonl",
+      "bytes": 964884
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/medium/per-wave.csv",
+      "bytes": 935241
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/parts/part-0.jsonl",
+      "bytes": 745547
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/parts/part-1.jsonl",
+      "bytes": 757896
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/parts/part-2.jsonl",
+      "bytes": 480521
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/parts/part-3.jsonl",
+      "bytes": 484363
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/strong/per-run.jsonl",
+      "bytes": 762217
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/strong/per-wave.csv",
+      "bytes": 704468
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/weak/per-run.jsonl",
+      "bytes": 741226
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/four/weak/per-wave.csv",
+      "bytes": 678935
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/medium/per-run.jsonl",
+      "bytes": 964884
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/medium/per-wave.csv",
+      "bytes": 935241
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/parts/part-0.jsonl",
+      "bytes": 2468327
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/strong/per-run.jsonl",
+      "bytes": 762217
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/strong/per-wave.csv",
+      "bytes": 704468
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/weak/per-run.jsonl",
+      "bytes": 741226
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/determinism/one/weak/per-wave.csv",
+      "bytes": 678935
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/medium/per-run.jsonl",
+      "bytes": 96396345
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/medium/per-wave.csv",
+      "bytes": 93338176
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/parts/part-0.jsonl",
+      "bytes": 24089720
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/parts/part-1.jsonl",
+      "bytes": 24096229
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/parts/part-2.jsonl",
+      "bytes": 24114208
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/development-200/parts/part-3.jsonl",
+      "bytes": 24096188
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/long-tail-50/medium/per-run.jsonl",
+      "bytes": 267903384
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/long-tail-50/medium/per-wave.csv",
+      "bytes": 264977571
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/long-tail-50/parts/part-0.jsonl",
+      "bytes": 133791933
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/long-tail-50/parts/part-1.jsonl",
+      "bytes": 134111451
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/medium/per-run.jsonl",
+      "bytes": 240954157
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/medium/per-wave.csv",
+      "bytes": 233315525
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/parts/part-0.jsonl",
+      "bytes": 151285824
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/parts/part-1.jsonl",
+      "bytes": 150541348
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/parts/part-2.jsonl",
+      "bytes": 151158345
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/parts/part-3.jsonl",
+      "bytes": 150915600
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/strong/per-run.jsonl",
+      "bytes": 190619962
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/strong/per-wave.csv",
+      "bytes": 175979225
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/weak/per-run.jsonl",
+      "bytes": 172326998
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/qualification-500/weak/per-wave.csv",
+      "bytes": 156547535
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/medium/per-run.jsonl",
+      "bytes": 986342
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/medium/per-wave.csv",
+      "bytes": 958561
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/parts/part-0.jsonl",
+      "bytes": 702727
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/parts/part-1.jsonl",
+      "bytes": 747266
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/parts/part-2.jsonl",
+      "bytes": 490787
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/parts/part-3.jsonl",
+      "bytes": 495555
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/strong/per-run.jsonl",
+      "bytes": 764013
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/strong/per-wave.csv",
+      "bytes": 706342
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/weak/per-run.jsonl",
+      "bytes": 685980
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/four/weak/per-wave.csv",
+      "bytes": 622240
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/medium/per-run.jsonl",
+      "bytes": 986342
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/medium/per-wave.csv",
+      "bytes": 958561
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/parts/part-0.jsonl",
+      "bytes": 2436335
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/strong/per-run.jsonl",
+      "bytes": 764013
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/strong/per-wave.csv",
+      "bytes": 706342
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/weak/per-run.jsonl",
+      "bytes": 685980
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/determinism/one/weak/per-wave.csv",
+      "bytes": 622240
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/medium/per-run.jsonl",
+      "bytes": 98605474
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/medium/per-wave.csv",
+      "bytes": 95777405
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/parts/part-0.jsonl",
+      "bytes": 24629369
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/parts/part-1.jsonl",
+      "bytes": 24652227
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/parts/part-2.jsonl",
+      "bytes": 24658120
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/development-200/parts/part-3.jsonl",
+      "bytes": 24665758
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/long-tail-50/medium/per-run.jsonl",
+      "bytes": 274511894
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/long-tail-50/medium/per-wave.csv",
+      "bytes": 272078039
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/long-tail-50/parts/part-0.jsonl",
+      "bytes": 137136181
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/long-tail-50/parts/part-1.jsonl",
+      "bytes": 137375713
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/medium/per-run.jsonl",
+      "bytes": 246492714
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/medium/per-wave.csv",
+      "bytes": 239422711
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/parts/part-0.jsonl",
+      "bytes": 151514406
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/parts/part-1.jsonl",
+      "bytes": 152388912
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/parts/part-2.jsonl",
+      "bytes": 152079569
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/parts/part-3.jsonl",
+      "bytes": 151362541
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/strong/per-run.jsonl",
+      "bytes": 190585515
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/strong/per-wave.csv",
+      "bytes": 175936745
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/weak/per-run.jsonl",
+      "bytes": 170267199
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/qualification-500/weak/per-wave.csv",
+      "bytes": 154525429
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/medium/per-run.jsonl",
+      "bytes": 24684966
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/medium/per-wave.csv",
+      "bytes": 23983955
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/parts/part-0.jsonl",
+      "bytes": 6413734
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/parts/part-1.jsonl",
+      "bytes": 6428058
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/parts/part-2.jsonl",
+      "bytes": 5923001
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/smoke-50/parts/part-3.jsonl",
+      "bytes": 5920173
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/v1-control-50/medium/per-run.jsonl",
+      "bytes": 18929468
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/v1-control-50/medium/per-wave.csv",
+      "bytes": 17436919
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/v1-control-50/parts/part-0.jsonl",
+      "bytes": 9461314
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/revision-b/v1-control-50/parts/part-1.jsonl",
+      "bytes": 9468154
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/medium/per-run.jsonl",
+      "bytes": 24089634
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/medium/per-wave.csv",
+      "bytes": 23325756
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/parts/part-0.jsonl",
+      "bytes": 6265641
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/parts/part-1.jsonl",
+      "bytes": 6257414
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/parts/part-2.jsonl",
+      "bytes": 5788610
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50-r2/parts/part-3.jsonl",
+      "bytes": 5777969
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/medium/per-run.jsonl",
+      "bytes": 23882426
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/medium/per-wave.csv",
+      "bytes": 23062968
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/parts/part-0.jsonl",
+      "bytes": 6221186
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/parts/part-1.jsonl",
+      "bytes": 6195179
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/parts/part-2.jsonl",
+      "bytes": 5743473
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/smoke-50/parts/part-3.jsonl",
+      "bytes": 5722588
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/v1-control-50/medium/per-run.jsonl",
+      "bytes": 18895932
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/v1-control-50/medium/per-wave.csv",
+      "bytes": 17398543
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/v1-control-50/parts/part-0.jsonl",
+      "bytes": 9447604
+    },
+    {
+      "path": "docs/p4r1-bot-qualification/v1-control-50/parts/part-1.jsonl",
+      "bytes": 9448328
+    }
+  ]
+}

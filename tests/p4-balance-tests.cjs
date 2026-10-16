@@ -9,9 +9,8 @@ function session(difficulty,save){const cfg=new ConfigManager();cfg.setUnits(c.u
  return new RunSession(cfg,c.run,c.waves,{runSeed:17,stageCount:3,enemyPower:c['enemy-power'],enemyDifficulty:difficulty,formationConfig:c['enemy-formation'],enemyRoles:c['enemy-roles'],equipmentPolicy:c['equipment-policy'],...(save?{save}:{})});}
 function build(d,stages=13){return buildRunWaves(stages,c.run,c.waves,c.units,{mode:'budget-v1',runSeed:17,power:c['enemy-power'],difficulty:d,equipmentPolicy:c['equipment-policy'],equipmentRoles:c['enemy-roles']});}
 
-test('P4 leaves every production configuration and P0-P3 evidence byte-identical to the frozen baseline',()=>{
- for(const [file,digest]of Object.entries(baseline.hashes))if(file.startsWith('docs/')||file.startsWith('assets/resources/config/'))
-  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'..',file))).digest('hex'),digest,file);
+test('P4 retained historical evidence stays byte-identical while live content evolves',()=>{
+ require('./archive-evidence.cjs').assertArchivedEvidence(baseline.hashes);
 });
 test('optional budget controls default to the exact original anchors, requested/effective budgets and recovery',()=>{
  const waves=build(c['enemy-difficulty']),rows=waves.filter(w=>w.budget).map(w=>({globalWaveId:w.id,budgetWaveIndex:w.budget.budgetWaveIndex,stage:w.stage,round:w.round,rounds:waves.filter(q=>q.stage===w.stage).length,population:w.enemies.length,min:w.budget.minFeasibleBudget,max:w.budget.maxFeasibleBudget,kind:w.waveKind}));
@@ -47,8 +46,8 @@ test('finite search stays at 20 training trials and never changes content/model/
   for(const key of Object.keys(c).filter(k=>k!=='enemy-difficulty'))assert.deepEqual(candidate.configs[key],c[key],key);
   assert.deepEqual(candidate.bots,require('../docs/p4-balance/baseline/bot-freeze.json').configs);
  }
- const trace=require('../docs/p4-balance/replay/medium-seed17-full.json'),sample=fs.readFileSync(path.resolve(__dirname,'../docs/p4-balance/determinism/single-50/medium/per-run.jsonl'),'utf8').trim().split('\n').map(JSON.parse).find(r=>r.seed===17);
+ const trace=require('../docs/p4-balance/replay/medium-seed17-full.json'),sample=require('./fixtures/balance-seed17-summary.json');
  assert.equal(trace.configHash,sample.configHash);assert.equal(trace.botConfigHash,sample.botConfigHash);assert.equal(trace.botVersion,sample.botVersion);
- assert.deepEqual(trace.waves.map(w=>crypto.createHash('sha256').update(JSON.stringify(w.actions)).digest('hex')),sample.waves.map(w=>w.decisionsSha256));
+ assert.deepEqual(trace.waves.map(w=>crypto.createHash('sha256').update(JSON.stringify(w.actions)).digest('hex')),sample.decisionsSha256);
 });
 console.log(`P4 balance: ${passed} passed, 0 failed`);

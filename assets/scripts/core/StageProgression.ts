@@ -39,6 +39,39 @@ export class StageProgression {
       || ![rules.monsterReward.initialValue, rules.monsterReward.valuePerStage, rules.monsterReward.maxValue, ...Object.values(rules.shop.equipmentPrices)].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid stage encounter rules');
     if (!state || ![state.lastRewardWave, state.unitCredit, state.creditRoll].every(n => Number.isSafeInteger(n) && n >= 0)
       || !Array.isArray(state.unitReserve) || state.unitReserve.some(id => !cfg.allUnits().some(u => u.id === id))) throw new Error('Invalid stage reward save');
+    this.validateSavedRewards();
+  }
+  /** Save data crosses a runtime boundary: reject malformed entries before a UI or purchase consumes them. */
+  private validateSavedRewards(): void {
+    const positive = (n: number) => Number.isSafeInteger(n) && n > 0;
+    const value = (n: number) => positive(n) && n <= this.rules.monsterReward.maxValue;
+    const roster = new Map(this.cfg.allUnits().map(u => [u.id, u]));
+    const equipment = new Set(this.cfg.allEquipment().map(e => e.id));
+    const bundle = (b: { value: number; units: string[]; deferredValue: number }) =>
+      value(b.value) && Array.isArray(b.units) && b.units.every(id => roster.has(id))
+      && Number.isSafeInteger(b.deferredValue) && b.deferredValue >= 0
+      && b.units.reduce((n, id) => n + COST_PRICE[validCost(roster.get(id)!.cost)], b.deferredValue) === b.value;
+    const bad = () => { throw new Error('Invalid stage reward save'); };
+    const drop = this.state.lastUnitDrop;
+    if (drop !== undefined && (!drop || !positive(drop.waveId) || !bundle(drop))) bad();
+    const p = this.state.pending;
+    if (p === undefined) return;
+    if (!p || typeof p.id !== 'string' || !p.id.trim() || !positive(p.waveId)) bad();
+    switch (p.kind) {
+      case 'bossChoice': if (!value(p.value)) bad(); break;
+      case 'unitBundle': if (!bundle(p)) bad(); break;
+      case 'equipmentChoice':
+        if (!Array.isArray(p.candidates) || p.candidates.length !== 4 || new Set(p.candidates).size !== 4
+          || p.candidates.some(id => !this.rules.basicEquipmentIds.includes(id))) bad();
+        break;
+      case 'specialShop':
+        if (!Array.isArray(p.offers) || p.offers.length !== this.rules.shop.slots || p.offers.some(o => !o
+          || !positive(o.price) || typeof o.bought !== 'boolean'
+          || (o.kind === 'unit' ? !roster.has(o.id) : o.kind === 'equipment' ? !equipment.has(o.id) : true))
+          || new Set(p.offers.map(o => o.id)).size !== p.offers.length) bad();
+        break;
+      default: bad();
+    }
   }
   value(stage: number): number { const r = this.rules.monsterReward; return Math.min(r.maxValue, r.initialValue + (stage - 1) * r.valuePerStage); }
   private id(wave: WaveConfig, kind: string): string { return `${this.rules.version}:${this.random.runSeed}:${wave.id}:${kind}`; }
