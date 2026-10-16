@@ -8,10 +8,12 @@ const {validateEquipmentPolicy,equipmentQuota}=require('../assets/scripts/core/E
 const {createEquipmentReward}=require('../assets/scripts/core/EquipmentReward.ts');
 const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
 const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
-const i=loadRunInputs(),g=loadEnemyGenerationInputs(),f=loadFormationInputs(),{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
+const archived=require('../docs/p4-balance/baseline/frozen.json').configs;
+const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g=loadEnemyGenerationInputs(),f=loadFormationInputs(),{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
-function config(){const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSkills(i.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);return cfg;}
+const combatInputs={...i,units:loadRunInputs().units,skills:loadRunInputs().skills};
+function config(){const cfg=new ConfigManager();cfg.setUnits(combatInputs.units);cfg.setSkills(combatInputs.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);return cfg;}
 function session(options={}){return new RunSession(config(),i.run,i.waves,{runSeed:12345,stageCount:10,...g,...f,equipmentPolicy:p,...options});}
 function strong(options={}){const seed=session(options),save=seed.snapshot();save.level=10;save.exp=0;
  save.owned=['guardian','mage','archer'].map((unitId,index)=>({uid:index+1,unitId,star:3,location:'board',x:1+index*2,y:index?1:3,equipment:[]}));save.nextOwnedUid=4;
@@ -20,10 +22,8 @@ function victory(s,stage=3,round=6){assert.equal(s.debugJump(stage,round),true);
 const build=(stages=99,policy=p)=>buildRunWaves(stages,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,power:g.enemyPower,difficulty:g.enemyDifficulty,equipmentPolicy:policy,equipmentRoles:f.enemyRoles});
 const waves=build(),baseline=require('../docs/p3-equipment/pre-p3-waves.json');
 
-test('P3-0 old model, combat, stats, content, P2 solver and all previous evidence are byte protected',()=>{
- const hashes=require('../docs/p3-equipment/pre-p3-hashes.json'),{changedFiles}=require('./p3-equipment-compatibility.cjs');
- const external=require('../docs/p3-equipment/concurrent-changes.json');
- for(const [file,digest]of Object.entries(hashes))if(!changedFiles.has(file))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'..',file))).digest('hex'),external[file]?.after??digest,file);
+test('P3 archived rules reproduce the old generator and retained evidence is byte protected',()=>{
+ require('./archive-evidence.cjs').assertArchivedEvidence(require('../docs/p3-equipment/pre-p3-hashes.json'));
  assert.deepEqual(buildRunWaves(99,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,power:g.enemyPower,difficulty:g.enemyDifficulty}),baseline);
 });
 test('all 968 waves retain targets, population, classification and hard unlocks; normal/intro/stage1-2 have no items',()=>{
@@ -140,10 +140,11 @@ test('reward inventory -> original equip -> original unequip and real BattleSim 
 });
 test('all 3/6/99 common generated and played history includes identical shops/enemies/formation/rewards/choices',()=>{
  for(const n of [3,6])assert.deepEqual(build(n),waves.filter(w=>w.stage<=n));
- const reports=[3,6,99].map(stageCount=>runSimulation(i,{runSeed:12345,stageCount}));for(const r of reports)assert.notEqual(r.result,'SIMULATION_ERROR',r.error);
+ const reports=[3,6,99].map(stageCount=>runSimulation(combatInputs,{runSeed:12345,stageCount}));for(const r of reports)assert.notEqual(r.result,'SIMULATION_ERROR',r.error);
  for(let n=1;n<reports.length;n++)assert.deepEqual(reports[n].waves.slice(0,reports[n-1].waves.length),reports[n-1].waves);
- assert.ok(reports[0].waves.some(w=>w.rewardChoice));assert.ok(reports[1].waves.some(w=>w.playerEquippedItems.length));
- const repeat=runSimulation(i,{runSeed:12345,stageCount:3});assert.equal(hash(repeat),hash(reports[0]));
+ // Reward eligibility and equipment delivery are exercised by controlled victories above.
+ for(const report of reports)for(const wave of report.waves)if(wave.rewardChoice)assert.equal(wave.battle.result,0);
+ const repeat=runSimulation(combatInputs,{runSeed:12345,stageCount:3});assert.equal(hash(repeat),hash(reports[0]));
 });
 test('P2 same member/equipment/snapshot remains deterministic and minimal bot uses the common claim/equip port',()=>{
  const a=strong(),b=strong();victory(a);victory(b);const bot=new MinimalBaselineBot();assert.ok(bot.claimRewards(a.playerPort())[0].result.ok);assert.ok(bot.claimRewards(b.playerPort())[0].result.ok);

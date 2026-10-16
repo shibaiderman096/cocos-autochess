@@ -143,16 +143,13 @@ test('budget save/load and debug extension retain all enemies, IDs, shops and is
  a.moveUnit(1,{location:'board',x:3,y:3});b.moveUnit(1,{location:'board',x:3,y:3});assert.deepEqual(a.startBattle().run(),b.startBattle().run());assert.deepEqual(a.settleBattle(),b.settleBattle());
 });
 test('run-sim exports the generator diagnostics and explicit modes without granting bot resources',()=>{
- const report=runSimulation(inputs,{runSeed:12345,stageCount:3});assert.notEqual(report.result,'SIMULATION_ERROR',report.error);assert.equal(report.enemyGenerationMode,'budget-v1');
- const row=report.waves.find(w=>w.stage===2);assert.ok(row);assert.equal(row.actualBudget,row.enemyBudget.actualBudget);assert.equal(row.budgetWaveIndex,1);assert.equal(report.waves[0].enemyBudget,null);assert.equal(row.statMultiplier,1);
+ const report=runSimulation(require('../tools/run-simulation.ts').loadRunInputs(),{runSeed:12345,stageCount:3});assert.notEqual(report.result,'SIMULATION_ERROR',report.error);assert.equal(report.enemyGenerationMode,'budget-v1');
+ const row=report.waves.find(w=>w.stage===2&&w.enemyBudget);assert.ok(row);assert.equal(row.actualBudget,row.enemyBudget.actualBudget);assert.equal(row.budgetWaveIndex,row.waveId-3);assert.equal(report.waves[0].enemyBudget,null);assert.equal(row.statMultiplier,1);
+ assert.ok(report.waves.filter(w=>w.encounterKind==='monster').every(w=>w.enemyBudget===null),'monster encounters use their independent template, not a generated player-unit budget');
 });
-test('P0/P1-A/P1-B evidence, old battle rules and all existing configuration data remain byte-identical',()=>{
+test('P0/P1-A/P1-B evidence, archived experiment configurations remain byte-identical',()=>{
  const before=require('../docs/p1-enemy-difficulty/budget-generator/before-hashes.json');
- const allowed=new Set(['assets/scripts/core/RunSetup.ts','assets/scripts/core/RoundFlow.ts','assets/scripts/core/RunSession.ts','assets/scripts/core/RunSessionTypes.ts',
- 'assets/scripts/core/ShopSave.ts','assets/scripts/view/BattleStage.ts','tests/run-session-tests.cjs','tests/run-sim-cli-tests.cjs','tests/regression-tests.cjs','tests/enemy-power-tests.cjs']);
- const {featureChanges}=require('./advanced-equipment-compatibility.cjs');
- const {laterChanges}=require('./p3-equipment-compatibility.cjs');
- for(const [file,hash]of Object.entries(before))if(!allowed.has(file)&&!featureChanges.has(file)&&!laterChanges.has(file))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex'),hash,file);
+ require('./archive-evidence.cjs').assertArchivedEvidence(before);
  assert.deepEqual(loadRunInputs(),inputs);assert.deepEqual(loadEnemyGenerationInputs().enemyPower,power);
 });
 console.log(`Enemy budget: ${passed} passed, 0 failed`);

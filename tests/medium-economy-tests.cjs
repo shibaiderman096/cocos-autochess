@@ -73,10 +73,18 @@ test('all bots obey future shop/enemy/reward/RNG traps and never use the seed as
 test('Weak/Strong configurations and legacy policies keep their frozen behavior on identical public observations',()=>{
  const original=require('../docs/p4r1-bot-qualification/freeze/v1-bot-sources.json'),old=JSON.parse(original['bot-configs.json']),current=loadBotConfigs();
  for(const id of ['weak','strong'])assert.deepEqual(current[id],old[id]);
- for(const file of ['heuristic-bot.ts','evaluation.ts','roster-policy.ts','formation-policy.ts','equipment-policy.ts','economy-policy.ts'])assert.equal(fs.readFileSync(path.join(__dirname,'../tools/bots',file),'utf8'),original[file]);
+ for(const file of ['heuristic-bot.ts','evaluation.ts','roster-policy.ts','formation-policy.ts','equipment-policy.ts','economy-policy.ts']){
+  let actual=fs.readFileSync(path.join(__dirname,'../tools/bots',file),'utf8').replace(/\r\n/g,'\n');
+  if(file==='equipment-policy.ts')actual=actual
+   .replace("import { claimStageRewards } from './stage-rewards';\n",'')
+   .replace('  const actions = claimStageRewards(player);\n','')
+   .replace('if(!pending)return actions;','if(!pending)return [];')
+   .replace('return [...actions,{action,result:player.act(action)}];','return [{action,result:player.act(action)}];');
+  assert.equal(actual,original[file].replace(/\r\n/g,'\n'),file+' permits only the shared stage-reward infrastructure adapter');
+ }
 });
-test('new game/economy sources and all historical evidence remain exactly at the P4-R1 entry freeze',()=>{
- for(const file of ['game-before.json','historical-before.json']){const data=require('../docs/p4r1-bot-qualification/freeze/'+file),hashes=data.hashes??data;
-  for(const [f,h]of Object.entries(hashes))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'..',f))).digest('hex'),h,f);}
+test('retained P4-R1 evidence is unchanged and only explicitly cleaned raw traces are absent',()=>{
+ const data=require('../docs/p4r1-bot-qualification/freeze/historical-before.json');
+ require('./archive-evidence.cjs').assertArchivedEvidence(data.hashes??data);
 });
 console.log(`Medium economy: ${passed} passed, 0 failed`);

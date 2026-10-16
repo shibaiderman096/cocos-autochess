@@ -37,10 +37,12 @@ for(const count of [4,6,99]) {
 for(const invalid of [NaN,Infinity,-1,0]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationEveryRounds:invalid}}),/Invalid run configuration/);
 let completed=0;
 for(const wave of longWaves.filter(w=>w.stage>=2)) {
-  assert.equal(wave.enemies.length,wave.encounterKind==='specialShop'?0:Math.min(10,1+Math.floor(completed/3)));
+  const strong=wave.encounterKind==='monster'&&wave.enemies.some(e=>cfg.getUnit(e.unitId).monsterTier==='strong');
+  assert.equal(wave.enemies.length,wave.encounterKind==='specialShop'?0:strong?1:Math.min(10,1+Math.floor(completed/3)));
   completed++;
   if(wave.encounterKind==='monster'){
-    assert.ok(wave.enemies.every(e=>e.star===1&&e.statMultiplier===1+(wave.stage-1)*runConfig.stageEncounters.monsterStatGrowth));continue;
+    const rules=runConfig.stageEncounters;
+    assert.ok(wave.enemies.every(e=>e.star===1&&e.statMultiplier===(strong?1+(wave.stage-rules.strongMonster.startStage)*rules.strongMonster.statGrowth:1+(wave.stage-1)*rules.monsterStatGrowth)));continue;
   }
   const expectedCost=wave.stage<4?1:wave.stage<6?2:wave.stage<8?3:5;
   const expectedStar=wave.stage<6?1:wave.stage<10?2:3;
