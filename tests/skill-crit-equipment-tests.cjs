@@ -73,7 +73,7 @@ for(const id of ids) {
   const card=cfg.getUnit('sasuke'),skill=cfg.getSkill(card.skillId);
   const sim=make([id],{...card,critChance:1,startMana:card.maxMana});sim.step();
   for(let i=0;i<10;i++)sim.step();sim.units[0].atkCd=10000;
-  assert.equal(sourceHits(sim)[0].dmg,Math.round(card.atk*skill.attackMultipliers[0]*(id==='infinity_edge'?1.2:1)*1.5));
+  assert.equal(sourceHits(sim)[0].dmg,Math.round(skill.starDamage[0]*(id==='infinity_edge'?1.2:1)*1.5));
   while(sim.tick<111)sim.step();
   const burns=sourceHits(sim).filter(hit=>hit.dmgType==='true');
   assert.equal(burns.length,5);assert.ok(burns.every(hit=>hit.critical&&hit.dmg===3000),

@@ -1,0 +1,26 @@
+{
+  "version": "formation-v1",
+  "roles": {
+    "tank": { "priority": 0, "preferredDepth": [4], "allowedDepth": [4,5], "flank": false },
+    "melee_dps": { "priority": 1, "preferredDepth": [4,5], "allowedDepth": [4,5,6], "flank": false },
+    "assassin": { "priority": 2, "preferredDepth": [4,5], "allowedDepth": [4,5,6,7], "flank": true },
+    "mage": { "priority": 3, "preferredDepth": [6], "allowedDepth": [5,6,7], "flank": false },
+    "ranged_dps": { "priority": 4, "preferredDepth": [6,7], "allowedDepth": [5,6,7], "flank": false },
+    "support": { "priority": 5, "preferredDepth": [7], "allowedDepth": [6,7], "flank": false }
+  },
+  "weights": { "role": 1, "cover": 0.4, "spacing": 0.65, "flank": 0.2, "counter": 0.6, "template": 1 },
+  "keyRoles": ["mage", "ranged_dps", "support"], "highPowerFraction": 0.8,
+  "spacingDistance": 2, "coverDistance": 2,
+  "maxIterations": 40, "tieTopK": 3, "tieTolerance": 0.000000001,
+  "progression": [
+    { "stage": 2, "role": 0, "spacing": 0, "counter": 0 },
+    { "stage": 4, "role": 0.6, "spacing": 0, "counter": 0 },
+    { "stage": 6, "role": 1, "spacing": 0.6, "counter": 0 },
+    { "stage": 8, "role": 1, "spacing": 1, "counter": 0.35 },
+    { "stage": 10, "role": 1, "spacing": 1, "counter": 0.6 },
+    { "stage": 14, "role": 1, "spacing": 1, "counter": 1 }
+  ],
+  "kindBonus": { "elite": 0.05, "boss": 0.1 },
+  "counterKinds": ["boss"],
+  "templates": { "enabled": true, "kinds": ["boss"] }
+}

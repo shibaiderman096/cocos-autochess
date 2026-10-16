@@ -1,0 +1,258 @@
+[
+  {
+    "waveId": 7,
+    "stage": 2,
+    "round": 4,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": false,
+    "id": null,
+    "candidates": [],
+    "choice": null,
+    "guaranteeSatisfied": false,
+    "diagnostics": []
+  },
+  {
+    "waveId": 8,
+    "stage": 2,
+    "round": 5,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:8",
+    "candidates": [
+      "jeweled_gauntlet",
+      "guinsoo"
+    ],
+    "choice": "jeweled_gauntlet",
+    "guaranteeSatisfied": true,
+    "diagnostics": [
+      "EMPTY_BASIC_POOL_CONFIGURED_ADVANCED_FALLBACK",
+      "INSUFFICIENT_POOL_FEWER_CHOICES:2"
+    ]
+  },
+  {
+    "waveId": 13,
+    "stage": 3,
+    "round": 5,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": false,
+    "id": null,
+    "candidates": [],
+    "choice": null,
+    "guaranteeSatisfied": false,
+    "diagnostics": []
+  },
+  {
+    "waveId": 14,
+    "stage": 3,
+    "round": 6,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:14",
+    "candidates": [
+      "guinsoo",
+      "jeweled_gauntlet"
+    ],
+    "choice": "guinsoo",
+    "guaranteeSatisfied": true,
+    "diagnostics": [
+      "EMPTY_BASIC_POOL_CONFIGURED_ADVANCED_FALLBACK",
+      "INSUFFICIENT_POOL_FEWER_CHOICES:2"
+    ]
+  },
+  {
+    "waveId": 20,
+    "stage": 4,
+    "round": 6,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:20",
+    "candidates": [
+      "infinity_edge",
+      "abyssal_plate",
+      "arcane_veil"
+    ],
+    "choice": "infinity_edge",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 21,
+    "stage": 4,
+    "round": 7,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:21",
+    "candidates": [
+      "guinsoo",
+      "jeweled_gauntlet",
+      "infinity_edge"
+    ],
+    "choice": "guinsoo",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 28,
+    "stage": 5,
+    "round": 7,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": false,
+    "id": null,
+    "candidates": [],
+    "choice": null,
+    "guaranteeSatisfied": false,
+    "diagnostics": []
+  },
+  {
+    "waveId": 29,
+    "stage": 5,
+    "round": 8,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:29",
+    "candidates": [
+      "arcane_veil",
+      "abyssal_plate",
+      "guinsoo"
+    ],
+    "choice": "arcane_veil",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 37,
+    "stage": 6,
+    "round": 8,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:37",
+    "candidates": [
+      "infinity_edge",
+      "jeweled_gauntlet",
+      "guinsoo"
+    ],
+    "choice": "infinity_edge",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 38,
+    "stage": 6,
+    "round": 9,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:38",
+    "candidates": [
+      "abyssal_plate",
+      "arcane_veil",
+      "infinity_edge"
+    ],
+    "choice": "abyssal_plate",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 47,
+    "stage": 7,
+    "round": 9,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": false,
+    "id": null,
+    "candidates": [],
+    "choice": null,
+    "guaranteeSatisfied": false,
+    "diagnostics": []
+  },
+  {
+    "waveId": 48,
+    "stage": 7,
+    "round": 10,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:48",
+    "candidates": [
+      "guinsoo",
+      "arcane_sovereignty",
+      "abyssal_plate"
+    ],
+    "choice": "guinsoo",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 57,
+    "stage": 8,
+    "round": 9,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:57",
+    "candidates": [
+      "jeweled_gauntlet",
+      "arcane_veil",
+      "guinsoo"
+    ],
+    "choice": "jeweled_gauntlet",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 58,
+    "stage": 8,
+    "round": 10,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:58",
+    "candidates": [
+      "abyssal_plate",
+      "jeweled_gauntlet",
+      "forest_sanctuary"
+    ],
+    "choice": "abyssal_plate",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  },
+  {
+    "waveId": 67,
+    "stage": 9,
+    "round": 9,
+    "waveKind": "elite",
+    "winner": 0,
+    "triggered": false,
+    "id": null,
+    "candidates": [],
+    "choice": null,
+    "guaranteeSatisfied": false,
+    "diagnostics": []
+  },
+  {
+    "waveId": 68,
+    "stage": 9,
+    "round": 10,
+    "waveKind": "boss",
+    "winner": 0,
+    "triggered": true,
+    "id": "equipment-reward-v1:12345:68",
+    "candidates": [
+      "arcane_veil",
+      "arcane_sovereignty",
+      "totem_of_undying"
+    ],
+    "choice": "arcane_veil",
+    "guaranteeSatisfied": true,
+    "diagnostics": []
+  }
+]

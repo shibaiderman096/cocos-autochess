@@ -1,0 +1,4 @@
+export const mean=(values:number[])=>values.length?values.reduce((n,v)=>n+v,0)/values.length:null;
+export function quantile(values:number[],q:number):number|null {if(!values.length)return null;const v=values.slice().sort((a,b)=>a-b),i=(v.length-1)*q,lo=Math.floor(i);return v[lo]+(v[Math.min(v.length-1,lo+1)]-v[lo])*(i-lo);}
+export function wilson(wins:number,total:number){if(!total)return {wins,total,rate:null,low:null,high:null};const z=1.959963984540054,p=wins/total,d=1+z*z/total,mid=(p+z*z/(2*total))/d,r=z*Math.sqrt(p*(1-p)/total+z*z/(4*total*total))/d;return {wins,total,rate:p,low:mid-r,high:mid+r};}
+export function distribution(values:Array<number|null>){const actual=values.filter((v):v is number=>v!==null);return {observed:actual.length,total:values.length,unobserved:values.length-actual.length,p25:quantile(actual,.25),median:quantile(actual,.5),p75:quantile(actual,.75)};}

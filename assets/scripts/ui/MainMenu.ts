@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, UITransform, Graphics, Color, Label, resources, JsonAsset, SpriteFrame, director } from 'cc';
 import { button, label, panel, fillScreen } from './BattleUI';
 import { loadSaveV2, writeSaveV2, freshSaveV2, SAVE_KEY } from '../core/ShopSave';
+import { freshRunSeed } from '../core/RunRandomContext';
 import { RunConfig, DEFAULT_STAGE_COUNT, normalizeStageCount, runRoundCount } from '../core/RunSetup';
 import { UNIT_ART } from '../view/ArtPaths';
 import { setUISkin } from './UISkin';
@@ -84,7 +85,7 @@ export class MainMenu extends Component {
   }
   private refreshCount(): void {
     this.countLabel.string = `${this.stageCount}`;
-    if (this.runConfig) this.summary.string = `共 ${runRoundCount(this.stageCount, this.runConfig)} 小关\n首阶段为极弱野怪 · 开局 1 个一星一费棋子`;
+    if (this.runConfig) this.summary.string = `共 ${runRoundCount(this.stageCount, this.runConfig)} 小关\n开局随机获得 1 个一星一费棋子`;
   }
   private startNewRun(): void { this.enterGame(true); }
 
@@ -92,7 +93,7 @@ export class MainMenu extends Component {
     if (!this.ready || this.loading) return;
     this.loading = true; this.status.string = '正在进入棋境…';
     const previous = loadSaveV2();
-    if (fresh) writeSaveV2(freshSaveV2(this.stageCount));
+    if (fresh) writeSaveV2(freshSaveV2(this.stageCount,freshRunSeed(previous?.runSeed),'budget-v1',true));
     const fail = () => {
       // Keep an existing run if the target scene cannot be launched.
       if (fresh) {

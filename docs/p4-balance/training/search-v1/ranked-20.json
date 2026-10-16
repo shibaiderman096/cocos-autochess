@@ -1,0 +1,513 @@
+{
+  "trainingOnly": true,
+  "seedRange": [
+    1,
+    100
+  ],
+  "history": [
+    {
+      "iteration": 1,
+      "parameters": {
+        "budgetScale": 3,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-01"
+    },
+    {
+      "iteration": 2,
+      "parameters": {
+        "budgetScale": 5,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-02"
+    },
+    {
+      "iteration": 3,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.08600000000000001,
+      "stage3": 1,
+      "stage6": 0.75,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-03"
+    },
+    {
+      "iteration": 4,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.1034323507422822,
+      "stage3": 1,
+      "stage6": 0.22,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-04"
+    },
+    {
+      "iteration": 5,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.02,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-05"
+    },
+    {
+      "iteration": 6,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.025,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-06"
+    },
+    {
+      "iteration": 7,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-07"
+    },
+    {
+      "iteration": 8,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.035,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2434,
+      "stage3": 1,
+      "stage6": 0.97,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-08"
+    },
+    {
+      "iteration": 9,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.059828531855955686,
+      "stage3": 1,
+      "stage6": 0.36,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-09"
+    },
+    {
+      "iteration": 10,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.05,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.10982585017835911,
+      "stage3": 1,
+      "stage6": 0.24,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-10"
+    },
+    {
+      "iteration": 11,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.055,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.15828694147179284,
+      "stage3": 1,
+      "stage6": 0.14,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-11"
+    },
+    {
+      "iteration": 12,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.06,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.14095115732613825,
+      "stage3": 1,
+      "stage6": 0.16,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-12"
+    },
+    {
+      "iteration": 13,
+      "parameters": {
+        "budgetScale": 6.5,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.03268094684215897,
+      "stage3": 1,
+      "stage6": 0.53,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-13"
+    },
+    {
+      "iteration": 14,
+      "parameters": {
+        "budgetScale": 6.75,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.04501448979591837,
+      "stage3": 1,
+      "stage6": 0.42,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-14"
+    },
+    {
+      "iteration": 15,
+      "parameters": {
+        "budgetScale": 7.25,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.09511896333182435,
+      "stage3": 1,
+      "stage6": 0.28,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-15"
+    },
+    {
+      "iteration": 16,
+      "parameters": {
+        "budgetScale": 7.5,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.09012501522191957,
+      "stage3": 1,
+      "stage6": 0.26,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-16"
+    },
+    {
+      "iteration": 17,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.3
+      },
+      "score": 0.09559612244897961,
+      "stage3": 1,
+      "stage6": 0.77,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-17"
+    },
+    {
+      "iteration": 18,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.4
+      },
+      "score": 0.08131000000000001,
+      "stage3": 1,
+      "stage6": 0.74,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-18"
+    },
+    {
+      "iteration": 19,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.25
+      },
+      "score": 0.0904168650081101,
+      "stage3": 1,
+      "stage6": 0.76,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-19"
+    },
+    {
+      "iteration": 20,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.035,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.4
+      },
+      "score": 0.06661071570294784,
+      "stage3": 1,
+      "stage6": 0.33,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-20"
+    }
+  ],
+  "ranked": [
+    {
+      "iteration": 13,
+      "parameters": {
+        "budgetScale": 6.5,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.03268094684215897,
+      "stage3": 1,
+      "stage6": 0.53,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-13"
+    },
+    {
+      "iteration": 14,
+      "parameters": {
+        "budgetScale": 6.75,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.04501448979591837,
+      "stage3": 1,
+      "stage6": 0.42,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-14"
+    },
+    {
+      "iteration": 9,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.059828531855955686,
+      "stage3": 1,
+      "stage6": 0.36,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-09"
+    },
+    {
+      "iteration": 20,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.035,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.4
+      },
+      "score": 0.06661071570294784,
+      "stage3": 1,
+      "stage6": 0.33,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-20"
+    },
+    {
+      "iteration": 18,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.4
+      },
+      "score": 0.08131000000000001,
+      "stage3": 1,
+      "stage6": 0.74,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-18"
+    },
+    {
+      "iteration": 3,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.08600000000000001,
+      "stage3": 1,
+      "stage6": 0.75,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-03"
+    },
+    {
+      "iteration": 16,
+      "parameters": {
+        "budgetScale": 7.5,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.09012501522191957,
+      "stage3": 1,
+      "stage6": 0.26,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-16"
+    },
+    {
+      "iteration": 19,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.25
+      },
+      "score": 0.0904168650081101,
+      "stage3": 1,
+      "stage6": 0.76,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-19"
+    },
+    {
+      "iteration": 15,
+      "parameters": {
+        "budgetScale": 7.25,
+        "growthRate": 1.045,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.09511896333182435,
+      "stage3": 1,
+      "stage6": 0.28,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-15"
+    },
+    {
+      "iteration": 17,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3,
+        "stageRampExponent": 0.3
+      },
+      "score": 0.09559612244897961,
+      "stage3": 1,
+      "stage6": 0.77,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-17"
+    },
+    {
+      "iteration": 4,
+      "parameters": {
+        "budgetScale": 9,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.1034323507422822,
+      "stage3": 1,
+      "stage6": 0.22,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-04"
+    },
+    {
+      "iteration": 10,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.05,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.10982585017835911,
+      "stage3": 1,
+      "stage6": 0.24,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-10"
+    },
+    {
+      "iteration": 12,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.06,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.14095115732613825,
+      "stage3": 1,
+      "stage6": 0.16,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-12"
+    },
+    {
+      "iteration": 11,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.055,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.15828694147179284,
+      "stage3": 1,
+      "stage6": 0.14,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-11"
+    },
+    {
+      "iteration": 8,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.035,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2434,
+      "stage3": 1,
+      "stage6": 0.97,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-08"
+    },
+    {
+      "iteration": 1,
+      "parameters": {
+        "budgetScale": 3,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-01"
+    },
+    {
+      "iteration": 2,
+      "parameters": {
+        "budgetScale": 5,
+        "growthRate": 1.04,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-02"
+    },
+    {
+      "iteration": 5,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.02,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-05"
+    },
+    {
+      "iteration": 6,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.025,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-06"
+    },
+    {
+      "iteration": 7,
+      "parameters": {
+        "budgetScale": 7,
+        "growthRate": 1.03,
+        "earlyChallengeStage": 3
+      },
+      "score": 0.2725,
+      "stage3": 1,
+      "stage6": 1,
+      "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-07"
+    }
+  ],
+  "best": {
+    "iteration": 13,
+    "parameters": {
+      "budgetScale": 6.5,
+      "growthRate": 1.045,
+      "earlyChallengeStage": 3
+    },
+    "score": 0.03268094684215897,
+    "stage3": 1,
+    "stage6": 0.53,
+    "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-13"
+  },
+  "validationUsed": false,
+  "holdoutUsed": false
+}

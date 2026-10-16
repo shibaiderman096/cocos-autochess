@@ -1,0 +1,38 @@
+Balance training: 100 runs, 6 campaign stages, 4 worker processes; no difficulty values are changed
+progress 10/100
+progress 20/100
+progress 30/100
+progress 40/100
+progress 50/100
+progress 60/100
+progress 70/100
+progress 80/100
+progress 85/100
+progress 90/100
+progress 95/100
+progress 100/100
+{
+  "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-18",
+  "runs": 100,
+  "battles": 3737,
+  "seconds": 5.991875200000001,
+  "results": {
+    "medium": {
+      "stage3": {
+        "wins": 100,
+        "total": 100,
+        "rate": 1,
+        "low": 0.9630065017930143,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 74,
+        "total": 100,
+        "rate": 0.74,
+        "low": 0.6462901055081282,
+        "high": 0.8159530153525186
+      },
+      "failedActions": 0
+    }
+  }
+}

@@ -1,0 +1,53 @@
+
+> calibrate-power
+> node --require tsx/cjs tools/calibrate-enemy-power.ts --mode full --seed-start 1 --seed-count 500 --output docs/p1-enemy-difficulty/power-calibration/final-500 --model-output assets/resources/config/enemy-power.json
+
+{"plan":{"version":"enemy-power-v1","mode":"full","seedStart":1,"seedCount":500,"trainSeeds":[1,400],"validationSeeds":[401,500],"caseCount":971,"counts":{"mirror":165,"unit":210,"star":45,"single":180,"combo":300,"team":71},"orientationsPerSeed":4,"distanceAssignment":"offset modulo 3; all four side/ID orientations share the assigned distance","logicalBattles":1942000,"trainingBattles":1553600,"validationBattles":388400}}
+mirror 25/165: new=50000 cached=0
+mirror 50/165: new=100000 cached=0
+mirror 75/165: new=150000 cached=0
+mirror 100/165: new=200000 cached=0
+mirror 125/165: new=250000 cached=0
+mirror 150/165: new=300000 cached=0
+mirror 165/165: new=330000 cached=0
+unit 25/210: new=50000 cached=0
+unit 50/210: new=100000 cached=0
+unit 75/210: new=150000 cached=0
+unit 100/210: new=200000 cached=0
+unit 125/210: new=250000 cached=0
+unit 150/210: new=300000 cached=0
+unit 175/210: new=350000 cached=0
+unit 200/210: new=400000 cached=0
+unit 210/210: new=420000 cached=0
+star 25/45: new=50000 cached=0
+star 45/45: new=90000 cached=0
+single 25/180: new=50000 cached=0
+single 50/180: new=100000 cached=0
+single 75/180: new=150000 cached=0
+single 100/180: new=200000 cached=0
+single 125/180: new=250000 cached=0
+single 150/180: new=300000 cached=0
+single 175/180: new=350000 cached=0
+single 180/180: new=360000 cached=0
+combo 25/300: new=50000 cached=0
+combo 50/300: new=100000 cached=0
+combo 75/300: new=150000 cached=0
+combo 100/300: new=200000 cached=0
+combo 125/300: new=250000 cached=0
+combo 150/300: new=300000 cached=0
+combo 175/300: new=350000 cached=0
+combo 200/300: new=400000 cached=0
+combo 225/300: new=450000 cached=0
+combo 250/300: new=500000 cached=0
+combo 275/300: new=550000 cached=0
+combo 300/300: new=600000 cached=0
+team 25/71: new=50000 cached=0
+team 50/71: new=100000 cached=0
+team 71/71: new=142000 cached=0
+{"modelHash":"fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d","variants":525,"unitValidation":{"cases":735,"samples":294000,"mae":0.03708664033879604,"brier":0.013075718171996141,"decisiveAccuracy":0.9878980978818253,"expectedCalibrationError":0.03305456201639742,"bins":[{"lower":0,"upper":0.1,"samples":226800,"predicted":0.012145700454527654,"actual":0.0013668430335097002},{"lower":0.1,"upper":0.2,"samples":20000,"predicted":0.15405742876077871,"actual":0.01915},{"lower":0.2,"upper":0.3,"samples":11200,"predicted":0.23089186767537034,"actual":0.05044642857142857},{"lower":0.3,"upper":0.4,"samples":3200,"predicted":0.33498943205964066,"actual":0.153125},{"lower":0.4,"upper":0.5,"samples":800,"predicted":0.483822870186239,"actual":0.33875},{"lower":0.5,"upper":0.6,"samples":2000,"predicted":0.5623002861462206,"actual":0.3455},{"lower":0.6,"upper":0.7,"samples":1600,"predicted":0.6510058432033214,"actual":0.71375},{"lower":0.7,"upper":0.8,"samples":4000,"predicted":0.7648921208584581,"actual":0.89525},{"lower":0.8,"upper":0.9,"samples":4000,"predicted":0.8544474423319566,"actual":0.98225},{"lower":0.9,"upper":1,"samples":20400,"predicted":0.9855097339505422,"actual":0.9997058823529412}]},"teamValidation":{"cases":71,"samples":28400,"mae":0.13602208330724963,"brier":0.1310912953157414,"decisiveAccuracy":0.8441507967353284,"expectedCalibrationError":0.11387594328721777,"bins":[{"lower":0,"upper":0.1,"samples":10800,"predicted":0.01789117436708863,"actual":0.09685185185185186},{"lower":0.1,"upper":0.2,"samples":1600,"predicted":0.13494176694296248,"actual":0.36875},{"lower":0.2,"upper":0.3,"samples":2000,"predicted":0.2557662751539746,"actual":0.1245},{"lower":0.3,"upper":0.4,"samples":2000,"predicted":0.34702289842875633,"actual":0.1795},{"lower":0.4,"upper":0.5,"samples":1200,"predicted":0.43090124497590543,"actual":0.1525},{"lower":0.5,"upper":0.6,"samples":400,"predicted":0.5175697599713184,"actual":0.5425},{"lower":0.6,"upper":0.7,"samples":1600,"predicted":0.6846127080057353,"actual":0.534375},{"lower":0.7,"upper":0.8,"samples":0,"predicted":null,"actual":null},{"lower":0.8,"upper":0.9,"samples":800,"predicted":0.8170025597669687,"actual":0.28625},{"lower":0.9,"upper":1,"samples":8000,"predicted":0.9833867477324387,"actual":0.9333125}]},"mirrorMaxBias":0}
+{"output":"D:\\cocos\\NewProject\\docs\\p1-enemy-difficulty\\power-calibration\\final-500","modelHash":"fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d","performance":{"actualBattleSimCalls":1942000,"cacheHits":0,"cacheCorruptions":0,"elapsedSeconds":273.3010441,"byMode":[{"category":"mirror","cases":165,"logicalBattles":330000,"actual":330000,"cached":0},{"category":"unit","cases":210,"logicalBattles":420000,"actual":420000,"cached":0},{"category":"star","cases":45,"logicalBattles":90000,"actual":90000,"cached":0},{"category":"single","cases":180,"logicalBattles":360000,"actual":360000,"cached":0},{"category":"combo","cases":300,"logicalBattles":600000,"actual":600000,"cached":0},{"category":"team","cases":71,"logicalBattles":142000,"actual":142000,"cached":0}]},"outputHashes":{"provenance.json":"c836aceec3539cab78eadac258a27fc5b4cdf69cce73fe5797612914a5df6639","observations.json":"d5007979e2b7ae7cfc74da737eca6ef830b3fd980fe24c82a0c7bccc40ba3877","enemy-power.json":"38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0","validation.json":"0f8f0aaa266ec02ed9583785ea5f06f7e5d0ece76320d6c5324cc42085904b72","analysis.json":"1b167e43369fcd628e49fa75feb482a43164bfce6c7a8f3da52c9d10c6f69784","fit.json":"a384d7431d87db735a03422cfd8d0825fd331b7fae402291ce69142619b39c65","REPORT.md":"61c174da4ef5395bd4d47322c214db09fbebb6cbdec9b427e90c7669c4236a45"}}
+npm notice
+npm notice New major version of npm available! 11.12.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

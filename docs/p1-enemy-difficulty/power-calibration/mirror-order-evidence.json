@@ -1,0 +1,893 @@
+{
+  "note": "Six separate diagnosis battles; not added to fitting or validation data. Movement is processed in ID order; approach can give the other unit the first in-range action. No battle rule was changed.",
+  "battles": [
+    {
+      "environment": 0,
+      "reverse": false,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 3,
+          "y": 3,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 3,
+          "y": 4,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": -1,
+      "ticks": 420,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 1,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 1,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 26,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 26,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 51,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 51,
+          "id": 2,
+          "target": 1
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 126,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 126,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 411,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 411,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 135,
+          "id": 2,
+          "source": 1,
+          "duration": 5
+        },
+        {
+          "t": "stun",
+          "tick": 135,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "environment": 0,
+      "reverse": true,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 3,
+          "y": 4,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 3,
+          "y": 3,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": -1,
+      "ticks": 420,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 1,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 1,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 26,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 26,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 51,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 51,
+          "id": 2,
+          "target": 1
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 126,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 126,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 411,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 411,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 135,
+          "id": 2,
+          "source": 1,
+          "duration": 5
+        },
+        {
+          "t": "stun",
+          "tick": 135,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "environment": 1,
+      "reverse": false,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 1,
+          "y": 2,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 5,
+          "y": 5,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": 1,
+      "ticks": 350,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 7,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 8,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 32,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 33,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 57,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 58,
+          "id": 1,
+          "target": 2
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 132,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 133,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 341,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 1,
+          "from": {
+            "x": 1,
+            "y": 2
+          },
+          "to": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 2,
+          "from": {
+            "x": 5,
+            "y": 5
+          },
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 1,
+          "from": {
+            "x": 2,
+            "y": 2
+          },
+          "to": {
+            "x": 3,
+            "y": 2
+          }
+        }
+      ],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 141,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "environment": 1,
+      "reverse": true,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 5,
+          "y": 5,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 1,
+          "y": 2,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": 0,
+      "ticks": 350,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 7,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 8,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 32,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 33,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 57,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 58,
+          "id": 1,
+          "target": 2
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 132,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 133,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 341,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 1,
+          "from": {
+            "x": 5,
+            "y": 5
+          },
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 2,
+          "from": {
+            "x": 1,
+            "y": 2
+          },
+          "to": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 1,
+          "from": {
+            "x": 5,
+            "y": 4
+          },
+          "to": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 141,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "environment": 2,
+      "reverse": false,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 0,
+          "y": 0,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 6,
+          "y": 7,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": 1,
+      "ticks": 362,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 19,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 20,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 44,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 45,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 69,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 70,
+          "id": 1,
+          "target": 2
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 144,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 145,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 353,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 1,
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 2,
+          "from": {
+            "x": 6,
+            "y": 7
+          },
+          "to": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 1,
+          "from": {
+            "x": 1,
+            "y": 0
+          },
+          "to": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 2,
+          "from": {
+            "x": 6,
+            "y": 6
+          },
+          "to": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "t": "move",
+          "tick": 13,
+          "id": 1,
+          "from": {
+            "x": 2,
+            "y": 0
+          },
+          "to": {
+            "x": 3,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 13,
+          "id": 2,
+          "from": {
+            "x": 5,
+            "y": 5
+          },
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "t": "move",
+          "tick": 19,
+          "id": 1,
+          "from": {
+            "x": 3,
+            "y": 0
+          },
+          "to": {
+            "x": 3,
+            "y": 1
+          }
+        }
+      ],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 153,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "environment": 2,
+      "reverse": true,
+      "seed": 401,
+      "placements": [
+        {
+          "unitId": "itachi",
+          "side": 1,
+          "x": 6,
+          "y": 7,
+          "star": 3,
+          "equipment": []
+        },
+        {
+          "unitId": "itachi",
+          "side": 0,
+          "x": 0,
+          "y": 0,
+          "star": 3,
+          "equipment": []
+        }
+      ],
+      "winner": 0,
+      "ticks": 362,
+      "firstAttacks": [
+        {
+          "t": "attack",
+          "tick": 19,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 20,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 44,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 45,
+          "id": 1,
+          "target": 2
+        },
+        {
+          "t": "attack",
+          "tick": 69,
+          "id": 2,
+          "target": 1
+        },
+        {
+          "t": "attack",
+          "tick": 70,
+          "id": 1,
+          "target": 2
+        }
+      ],
+      "firstCasts": [
+        {
+          "t": "cast",
+          "tick": 144,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 145,
+          "id": 1,
+          "skillId": "tsukuyomi",
+          "target": 2,
+          "duration": 0.45
+        },
+        {
+          "t": "cast",
+          "tick": 353,
+          "id": 2,
+          "skillId": "tsukuyomi",
+          "target": 1,
+          "duration": 0.45
+        }
+      ],
+      "firstMoves": [
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 1,
+          "from": {
+            "x": 6,
+            "y": 7
+          },
+          "to": {
+            "x": 6,
+            "y": 6
+          }
+        },
+        {
+          "t": "move",
+          "tick": 1,
+          "id": 2,
+          "from": {
+            "x": 0,
+            "y": 0
+          },
+          "to": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 1,
+          "from": {
+            "x": 6,
+            "y": 6
+          },
+          "to": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "t": "move",
+          "tick": 7,
+          "id": 2,
+          "from": {
+            "x": 1,
+            "y": 0
+          },
+          "to": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 13,
+          "id": 1,
+          "from": {
+            "x": 5,
+            "y": 5
+          },
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "t": "move",
+          "tick": 13,
+          "id": 2,
+          "from": {
+            "x": 2,
+            "y": 0
+          },
+          "to": {
+            "x": 3,
+            "y": 0
+          }
+        },
+        {
+          "t": "move",
+          "tick": 19,
+          "id": 1,
+          "from": {
+            "x": 5,
+            "y": 4
+          },
+          "to": {
+            "x": 4,
+            "y": 3
+          }
+        }
+      ],
+      "firstStuns": [
+        {
+          "t": "stun",
+          "tick": 153,
+          "id": 1,
+          "source": 2,
+          "duration": 5
+        }
+      ]
+    }
+  ]
+}

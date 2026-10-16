@@ -1,0 +1,22 @@
+{
+  "status": "rejected",
+  "reasons": [
+    "Medium基准策略资格不足：Stage6死亡220局，其中220局入战仍有100+金币，固定等级目标造成过度囤积",
+    "Validation Medium Stage3不在80%..90%区间",
+    "Validation Medium Stage6不在45%..55%区间",
+    "Validation Strong仍有至少90%通关99阶段，无尽上限未解决",
+    "Holdout Medium Stage3不在80%..90%区间",
+    "Holdout Medium Stage6不在45%..55%区间",
+    "Holdout Strong仍有至少90%通关99阶段，无尽上限未解决"
+  ],
+  "total": {
+    "runs": 8770,
+    "battles": 1593883,
+    "sumBatchWallSeconds": 4489.574868899999,
+    "standaloneReplayRuns": 1,
+    "standaloneReplayBattles": 38,
+    "recordedRuns": 8771,
+    "recordedBattles": 1593921
+  },
+  "report": "D:\\cocos\\NewProject\\docs\\p4-balance\\README.md"
+}

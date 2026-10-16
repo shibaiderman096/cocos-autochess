@@ -1,0 +1,9 @@
+PASS runtime model returns measured unit/star/equipment points and explicit tactical environments
+PASS derived values and legacy environment metadata never claim unsupported confidence
+PASS model does not mutate inputs or expose a mutable model through queries
+PASS missing unit/star/equipment and unmeasured combinations are explicit positive low-confidence fallbacks
+PASS model rejects malformed requests, source mismatches and invalid model points
+PASS team estimates sum real calibrated points, propagate fallback confidence, and predict complementary scores
+PASS star and equipment diagnostics expose non-monotonic evidence instead of forcing positive gains
+PASS P1-B preserves all 968 generated P0 waves and all previous evidence/source bytes
+EnemyPowerModel: 8 passed, 0 failed

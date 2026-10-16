@@ -1,0 +1,50 @@
+{
+  "actualBattleSimCalls": 77680,
+  "cacheHits": 0,
+  "cacheCorruptions": 0,
+  "elapsedSeconds": 10.323685099999999,
+  "byMode": [
+    {
+      "category": "mirror",
+      "cases": 165,
+      "logicalBattles": 13200,
+      "actual": 13200,
+      "cached": 0
+    },
+    {
+      "category": "unit",
+      "cases": 210,
+      "logicalBattles": 16800,
+      "actual": 16800,
+      "cached": 0
+    },
+    {
+      "category": "star",
+      "cases": 45,
+      "logicalBattles": 3600,
+      "actual": 3600,
+      "cached": 0
+    },
+    {
+      "category": "single",
+      "cases": 180,
+      "logicalBattles": 14400,
+      "actual": 14400,
+      "cached": 0
+    },
+    {
+      "category": "combo",
+      "cases": 300,
+      "logicalBattles": 24000,
+      "actual": 24000,
+      "cached": 0
+    },
+    {
+      "category": "team",
+      "cases": 71,
+      "logicalBattles": 5680,
+      "actual": 5680,
+      "cached": 0
+    }
+  ]
+}

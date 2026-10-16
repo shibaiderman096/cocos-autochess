@@ -1,0 +1,53 @@
+{
+  "version": "enemy-power-v1",
+  "configHash": "ebee0b52f8891023b3f9d7e02430e7ddd6d6e5ca414d3eb9a668eafe31dd0d4b",
+  "sourceHash": "a4e3337edb1b4574c8c49dace1939f890bbdeda12744a1ed0b42690e3906477d",
+  "sourceHashes": {
+    "assets/scripts/battle/BattleSim.ts": "de1e6b82f0ef89937834072395d1a9efdc4680f4db2309a7df80f7d78ae03632",
+    "assets/scripts/battle/CombatStatistics.ts": "73625b6bbf7bf496b88a4af60fbae0decc63053f0a18e34b9b4f0f1736860b9d",
+    "assets/scripts/battle/Grid.ts": "5e65deefd748702f9cf142bd31fdfd694c79187c236f200c6aa8fa56cc73094d",
+    "assets/scripts/battle/HexMath.ts": "98ca33a564481233037ec07f996f6e0ffbc8e02ceb9d9ba997792d394d7559fb",
+    "assets/scripts/battle/Pathfinding.ts": "d0d20cef240107f0fe2823cf19f8d08786013b041b64fc75897cc9a3b942bdc4",
+    "assets/scripts/battle/Unit.ts": "ce82c5f537230630262b035b9660982fd1a55139c8f93a8c961bcd52ba6186d5",
+    "assets/scripts/battle/index.ts": "a45351839a030cdb43838bad1dec13b3404f48a6687afbf69626ff87a840b795",
+    "assets/scripts/battle/types.ts": "0d01b5bfaf6387522ecb88e4c533a5589a7225df833216d2e0853c13d9799b3c",
+    "assets/scripts/core/ConfigManager.ts": "8ac557d96b17edd802d6f3036b83c02046cd86f9f9727961455e3a0f63605bf0",
+    "assets/scripts/core/EnemyPowerModel.ts": "c4c6e24e389e99f749e969b2644b097c20831ad8493f4fd5271b47a306e8b51d",
+    "assets/scripts/core/EnemyPowerTypes.ts": "76d4fff213547a69c5a6e5da391a9e75831561072fbd0c5d15c8ea3de3d56f25",
+    "assets/scripts/core/Rng.ts": "6a61accbe657da08fd31838a7f10ed56338e2c4290f9cd097ac76d3297fff785",
+    "tools/calibrate-enemy-power.ts": "ca319c53078ce202077db14d0b79c4a8116d84f926ead2e2b55e462fbf85b8ea",
+    "tools/power-calibration/fitting.ts": "5948e943c17642184b304187e9aa3867d73e8607c894d831eae806fcad4ed9fe",
+    "tools/power-calibration/fixtures.ts": "29281faef9ca6e621fad9fc4d03409e5f6fd08e1344fed0fb61cd7df08eba255",
+    "tools/power-calibration/report.ts": "4b89026da592ae658f00decfed3ee7e8cf987f68ec62ef75cb5cebdd2bfb656c",
+    "tools/power-calibration/sampling.ts": "016489d38e3cc9ee3ee969f05773378944c5f3cb2d7a5a0337c11bb57f25cf70"
+  },
+  "experiment": {
+    "version": "enemy-power-v1",
+    "mode": "full",
+    "seedStart": 1,
+    "seedCount": 20,
+    "trainSeeds": [
+      1,
+      16
+    ],
+    "validationSeeds": [
+      17,
+      20
+    ],
+    "caseCount": 967,
+    "counts": {
+      "mirror": 165,
+      "unit": 210,
+      "star": 45,
+      "single": 180,
+      "combo": 300,
+      "team": 67
+    },
+    "orientationsPerSeed": 4,
+    "distanceAssignment": "offset modulo 3; all four side/ID orientations share the assigned distance",
+    "logicalBattles": 77360,
+    "trainingBattles": 61888,
+    "validationBattles": 15472
+  },
+  "seedPartition": "All orientations of one matchup+seed belong to the same partition; fitting never sees held-out seeds."
+}

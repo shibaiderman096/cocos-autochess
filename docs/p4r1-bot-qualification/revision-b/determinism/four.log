@@ -1,0 +1,65 @@
+Balance development: 6 runs, 12 campaign stages, 4 worker processes; no difficulty values are changed
+progress 1/6
+progress 2/6
+progress 4/6
+progress 6/6
+{
+  "output": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\revision-b\\determinism\\four",
+  "runs": 6,
+  "battles": 578,
+  "seconds": 4.3302231,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 2,
+        "total": 2,
+        "rate": 1,
+        "low": 0.34238022750665303,
+        "high": 1
+      },
+      "failedActions": 0
+    }
+  }
+}
+

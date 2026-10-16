@@ -15,6 +15,15 @@ extensions/
 # NPM
 #//////////////////////////
 node_modules/
+.test-build/
+
+# Large local simulation traces; keep summaries, frozen inputs and small audit logs.
+docs/p4-balance/**/per-run.jsonl
+docs/p4-balance/**/per-wave.csv
+docs/p4-balance/**/parts/*.jsonl
+docs/p4r1-bot-qualification/**/per-run.jsonl
+docs/p4r1-bot-qualification/**/per-wave.csv
+docs/p4r1-bot-qualification/**/parts/*.jsonl
 
 #//////////////////////////
 # VSCode

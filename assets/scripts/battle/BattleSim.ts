@@ -3,7 +3,7 @@ import { BattleEvent, BattleResult, Side } from './types';
 import { Unit } from './Unit';
 import { dist, nextStep } from './Pathfinding';
 import { hexNeighbors } from './HexMath';
-import { ConfigManager, SkillConfigData, UnitConfigData, combatAttributes, hybridSpellDamage } from '../core/ConfigManager';
+import { ConfigManager, SkillConfigData, UnitConfigData, combatAttributes, hybridSpellDamage, configuredSkillDamage, channelHealAmount } from '../core/ConfigManager';
 
 export const TICK_MS = 50;
 
@@ -36,8 +36,9 @@ export class BattleSim {
   winner: Side | -1 = -1;
   private rng: Rng;
   private started = false;
-  private pendingStuns: Array<{ src: Unit; dst: Unit; seconds: number }> = [];
-  private pendingDamage: Array<{ src: Unit; dst: Unit; dmg: number; type: 'physical' | 'magic' | 'true'; critical: boolean; targeted: boolean }> = [];
+  private pendingStuns: Array<{ src: Unit; dst: Unit; seconds: number; knockup?: boolean }> = [];
+  private pendingDamage: Array<{ src: Unit; dst: Unit; raw: number; damageAmp: number; resistance: number; reduction: number;
+    type: 'physical' | 'magic' | 'true'; critical: boolean; targeted: boolean }> = [];
 
   constructor(
     private configs: ConfigManager,
@@ -59,6 +60,7 @@ export class BattleSim {
       unit.equipment = configs.getEquipment(p.equipment);
       unit.star = star;
       unit.attackSpeedCap = configs.battle.attackSpeedCap ?? 5;
+      unit.manaPerSecond = unit.cfg.role === 'caster' ? configs.battle.roleMana?.casterPerSecond ?? 0 : 0;
       unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
       this.units.push(unit);
     });
@@ -87,6 +89,7 @@ export class BattleSim {
     this.updateBurns();
     for (const u of this.units) { // 按 id 升序遍历，确定性
       if (!u.alive) continue;
+      u.gainMana(u.manaPerSecond * this.configs.battle.tickMs / 1000);
       this.updateUnit(u);
     }
     this.resolveDamage();
@@ -119,7 +122,7 @@ export class BattleSim {
       const activeSkill = this.configs.getSkill(u.pendingCast.skillId);
       if (activeSkill.effect === 'healChannel' && this.tick >= u.pendingCast.nextHealTick!) {
         const heal = activeSkill.heal!;
-        const amount = Math.min(u.cfg.hp - u.hp, Math.round(u.cfg.hp * heal.maxHpFractions[u.star - 1]));
+        const amount = Math.min(u.cfg.hp - u.hp, channelHealAmount(u.cfg, activeSkill, u.star));
         if (amount > 0) {
           u.hp += amount;
           this.events.push({ t: 'heal', tick: this.tick, id: u.id, source: u.id, amount, hp: u.hp });
@@ -130,12 +133,78 @@ export class BattleSim {
         const skill = this.configs.getSkill(u.pendingCast.skillId);
         const targetId = u.pendingCast.targetId;
         u.pendingCast = null;
+        if (skill.effect === 'healAlly') {
+          const ally = this.units.find(e => e.id === targetId && e.alive && e.side === u.side);
+          if (ally) {
+            const amount = Math.min(ally.cfg.hp - ally.hp, Math.round(skill.healAmounts![u.star - 1] * (1 + (u.cfg.spellPower ?? 0) / 100)));
+            if (amount > 0) {
+              ally.hp += amount;
+              this.events.push({ t: 'heal', tick: this.tick, id: ally.id, source: u.id, amount, hp: ally.hp });
+              this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: ally.id, skillId: skill.id });
+            }
+          }
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
+        if (skill.effect === 'delayedArea') {
+          const victim = this.units.find(e => e.id === targetId && e.alive && e.side !== u.side);
+          if (victim) {
+            this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: victim.id, skillId: skill.id });
+            for (const enemy of this.units) {
+              if (enemy.alive && enemy.side !== u.side && dist(enemy.pos, victim.pos) <= skill.radius)
+                this.damage(u, enemy, skill.starDamage![u.star - 1], skill.dmgType, false, false, false);
+            }
+          }
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
+        if (skill.effect === 'delayedDamage') {
+          const victim = this.units.find(e => e.id === targetId && this.targetable(e) && e.side !== u.side);
+          if (victim) {
+            this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: victim.id, skillId: skill.id });
+            this.damage(u, victim, skill.starDamage![u.star - 1], skill.dmgType);
+          }
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
+        if (skill.effect === 'splitPhysical') {
+          const victim = this.units.find(e => e.id === targetId && e.alive && e.side !== u.side);
+          if (victim) {
+            const targets = this.units.filter(e => e.alive && e.side !== u.side && dist(e.pos, victim.pos) <= skill.radius);
+            const share = skill.splitDamage![u.star - 1] / targets.length;
+            this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: victim.id, skillId: skill.id });
+            for (const enemy of targets) this.damage(u, enemy, share, skill.dmgType, false, false, false);
+          }
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
+        if (skill.effect === 'selfShield') {
+          const amount = Math.round(skill.shieldAmounts![u.star - 1] * (1 + (u.cfg.spellPower ?? 0) / 100));
+          u.shield += amount;
+          this.events.push({ t: 'shield', tick: this.tick, id: u.id, amount, shield: u.shield });
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
         if (skill.effect === 'healChannel') { u.atkCd = this.attackCooldown(u); return; }
+        if (skill.effect === 'knockupGuard') {
+          const rank = u.star - 1;
+          const guard = skill.guard!;
+          u.guardReduction = guard.reductions[rank];
+          u.guardUntilTick = this.tick + Math.max(1, Math.round(guard.durations[rank] * 1000 / this.configs.battle.tickMs));
+          this.events.push({ t: 'guard', tick: this.tick, id: u.id, duration: guard.durations[rank], reduction: u.guardReduction });
+          const victim = this.units.find(e => e.id === targetId && this.targetable(e) && e.side !== u.side);
+          if (victim) {
+            this.damage(u, victim, configuredSkillDamage(skill, u.star, u.skillScale), skill.dmgType);
+            this.pendingStuns.push({ src: u, dst: victim, seconds: skill.knockupSeconds!, knockup: true });
+          }
+          u.atkCd = this.attackCooldown(u);
+          return;
+        }
         if (skill.effect === 'damageStun') {
           const victim = this.units.find(e => e.id === targetId && this.targetable(e) && e.side !== u.side);
           if (victim) {
             this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: victim.id, skillId: skill.id });
-            this.damage(u, victim, skill.power * skill.spellMultipliers![u.star - 1], skill.dmgType);
+            this.damage(u, victim, configuredSkillDamage(skill, u.star, u.skillScale), skill.dmgType);
             this.pendingStuns.push({ src: u, dst: victim, seconds: skill.stunSeconds![u.star - 1] });
           }
           u.atkCd = this.attackCooldown(u);
@@ -159,19 +228,24 @@ export class BattleSim {
         u.permanentEmpower = skill.permanentEmpowerStar !== undefined && u.star >= skill.permanentEmpowerStar;
         u.attackSpeedBonus = skill.attackSpeedBonuses?.[u.star - 1] ?? 0;
         u.manaLocked = skill.manaLockDuringEmpower ?? false;
-        u.attackMultiplier = skill.attackMultipliers![u.star - 1];
+        u.empoweredAttackDamage = configuredSkillDamage(skill, u.star, u.skillScale);
         u.atkCd = 0;
       }
       return;
     }
 
     const teleportSkill = u.cfg.skillId ? this.configs.getSkill(u.cfg.skillId) : null;
-    if (teleportSkill?.effect === 'healChannel' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
+    if (teleportSkill?.effect === 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
+      const ally = this.units.filter(e => e.alive && e.side === u.side && e.hp < e.cfg.hp && dist(u.pos, e.pos) <= (teleportSkill.targetRange ?? u.cfg.range))
+        .sort((a, b) => a.hp / a.cfg.hp - b.hp / b.cfg.hp || a.id - b.id)[0];
+      if (ally) { this.cast(u, teleportSkill, ally); return; }
+    }
+    if ((teleportSkill?.effect === 'healChannel' || teleportSkill?.effect === 'selfShield') && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
       const duration = teleportSkill.castSeconds!;
       u.mana = 0;
       u.pendingCast = { skillId: teleportSkill.id,
         remainingTicks: Math.max(1, Math.round(duration * 1000 / this.configs.battle.tickMs)),
-        nextHealTick: this.tick + Math.max(1, Math.round(teleportSkill.heal!.intervalSeconds * 1000 / this.configs.battle.tickMs)) };
+        nextHealTick: teleportSkill.heal ? this.tick + Math.max(1, Math.round(teleportSkill.heal.intervalSeconds * 1000 / this.configs.battle.tickMs)) : undefined };
       this.events.push({ t: 'cast', tick: this.tick, id: u.id, skillId: teleportSkill.id, target: u.id, duration });
       return;
     }
@@ -194,7 +268,7 @@ export class BattleSim {
     const d = dist(u.pos, target.pos);
 
     // 1. 蓝满施法（需在射程内）
-    if (u.cfg.skillId && teleportSkill?.effect !== 'teleportEmpower' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
+    if (u.cfg.skillId && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
       const skill = this.configs.getSkill(u.cfg.skillId);
       const castTarget = skill.targeting === 'lowestHp'
         ? this.units.filter(e => this.targetable(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
@@ -208,9 +282,9 @@ export class BattleSim {
         const empowered = u.permanentEmpower || u.empoweredAttacks > 0;
         this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id });
         if (u.equipment.some(item => item.attackSpeedPerAttack > 0)) u.equipmentAttackStacks++;
-        const multiplier = empowered ? u.attackMultiplier : 1;
-        this.damage(u, target, u.cfg.atk * multiplier, 'physical', true);
-        if (u.cfg.maxMana > 0 && !u.manaLocked) u.mana = Math.min(u.cfg.maxMana, u.mana + u.cfg.manaPerHit);
+        const damage = empowered ? u.empoweredAttackDamage : u.cfg.atk;
+        this.damage(u, target, damage, 'physical', true);
+        u.gainMana(u.cfg.manaPerHit);
         if (empowered && !u.permanentEmpower && --u.empoweredAttacks === 0) {
           u.priorityTarget = null;
           u.attackSpeedBonus = 0;
@@ -239,7 +313,7 @@ export class BattleSim {
 
   private cast(u: Unit, sk: SkillConfigData, mainTarget: Unit) {
     u.mana = 0;
-    if (sk.effect === 'damageBurn' || sk.effect === 'damageStun') {
+    if (sk.effect === 'damageBurn' || sk.effect === 'damageStun' || sk.effect === 'knockupGuard' || sk.effect === 'splitPhysical' || sk.effect === 'delayedDamage' || sk.effect === 'delayedArea' || sk.effect === 'healAlly') {
       const duration = sk.castSeconds ?? 0.5;
       u.pendingCast = { skillId: sk.id, targetId: mainTarget.id,
         remainingTicks: Math.max(1, Math.round(duration * 1000 / this.configs.battle.tickMs)) };
@@ -255,13 +329,14 @@ export class BattleSim {
     for (const e of this.units) {
       if (!e.alive || e.side === u.side) continue;
       if (e === mainTarget || (sk.radius > 0 && dist(e.pos, mainTarget.pos) <= sk.radius)) {
-        this.damage(u, e, sk.power * u.skillScale, sk.dmgType, false, false, e === mainTarget);
+        this.damage(u, e, configuredSkillDamage(sk, u.star, u.skillScale), sk.dmgType, false, false, e === mainTarget);
       }
     }
   }
 
   private applyBlackFlame(src: Unit, skill: SkillConfigData, dst: Unit): void {
-    this.damage(src, dst, src.cfg.atk * skill.attackMultipliers![src.star - 1], skill.dmgType);
+    this.damage(src, dst, configuredSkillDamage(skill, src.star, src.skillScale), skill.dmgType);
+    this.events.push({ t: 'skill_impact', tick: this.tick, id: src.id, target: dst.id, skillId: skill.id });
     const burn = skill.burn!;
     const intervalTicks = Math.max(1, Math.round(burn.intervalSeconds * 1000 / this.configs.battle.tickMs));
     // Reapplication by the same caster refreshes the burn; separate casters are independent.
@@ -273,7 +348,7 @@ export class BattleSim {
   }
 
   private resolveStuns(): void {
-    for (const { src, dst, seconds } of this.pendingStuns) {
+    for (const { src, dst, seconds, knockup } of this.pendingStuns) {
       if (!this.targetable(dst)) continue;
       const ticks = Math.max(1, Math.round(seconds * 1000 / this.configs.battle.tickMs));
       dst.stunnedUntilTick = Math.max(dst.stunnedUntilTick, this.tick + ticks + 1);
@@ -282,7 +357,7 @@ export class BattleSim {
         dst.attackSpeedBonus = 0;
         dst.manaLocked = false;
       }
-      this.events.push({ t: 'stun', tick: this.tick, id: dst.id, source: src.id, duration: seconds });
+      this.events.push({ t: knockup ? 'knockup' : 'stun', tick: this.tick, id: dst.id, source: src.id, duration: seconds });
     }
   }
 
@@ -326,16 +401,25 @@ export class BattleSim {
     const critMultiplier = critical ? (Number.isFinite(configuredCrit) && configuredCrit >= 1 ? configuredCrit : 1.5) : 1;
     const res = type === 'physical' ? dst.cfg.armor : type === 'magic' ? dst.cfg.mr : 0;
     const typeMultiplier = typeBonusApplied ? 1 : 1 + (type === 'physical' ? src.cfg.physicalPower! : type === 'magic' ? src.cfg.spellPower! : 0) / 100;
-    const dmg = dst.cfg.damageReduction! >= 1 ? 0 : Math.max(1, Math.round(raw * typeMultiplier * critMultiplier * (1 + src.cfg.damageAmp!)
-      * (1 - dst.cfg.damageReduction!) * 100 / (100 + res)));
-    this.pendingDamage.push({ src, dst, dmg, type, critical, targeted });
+    const reduction = Math.min(1, dst.cfg.damageReduction! + (type === 'magic'
+      ? dst.equipment.reduce((sum, item) => sum + (item.magicDamageReduction ?? 0), 0) : 0));
+    this.pendingDamage.push({ src, dst, raw: raw * typeMultiplier * critMultiplier,
+      damageAmp: src.cfg.damageAmp!, resistance: res, reduction, type, critical, targeted });
   }
 
   /** Every unit alive at tick start can act; deaths are applied after all damage. */
   private resolveDamage(): void {
     const healing = new Map<Unit, number>();
-    for (const { src, dst, dmg, type, critical, targeted } of this.pendingDamage) {
+    for (const { src, dst, raw, damageAmp, resistance, reduction, type, critical, targeted } of this.pendingDamage) {
       if (targeted && !this.targetable(dst)) continue;
+      // Evaluate execute bonuses against HP immediately before each hit, including queued hits.
+      const extraAmp = src.equipment.reduce((sum, item) => {
+        const effect = item.lowTargetDamageAmp;
+        return sum + (effect && dst.hp < dst.cfg.hp * effect.threshold ? effect.bonus : 0);
+      }, 0);
+      const effectiveReduction = Math.min(1, reduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0));
+      const dmg = effectiveReduction >= 1 ? 0 : Math.max(1, Math.round(raw * (1 + damageAmp + extraAmp)
+        * (1 - effectiveReduction) * 100 / (100 + resistance)));
       const absorbed = Math.min(dst.shield, dmg);
       dst.shield -= absorbed;
       const previousHp = dst.hp;
@@ -343,9 +427,11 @@ export class BattleSim {
       // Trigger between hits so the lethal hit leaves 1 HP and later targeted hits miss.
       const triggered = this.triggerLowHealthProtection(dst);
       const dealt = Math.max(0, previousHp - dst.hp);
-      healing.set(src, (healing.get(src) ?? 0) + dealt * src.cfg.lifesteal!);
+      if (dst.cfg.role === 'tank' || dst.cfg.role === 'warrior') dst.gainMana(dealt * (this.configs.battle.roleMana?.damageTakenFraction ?? 0));
+      healing.set(src, (healing.get(src) ?? 0) + dealt * src.lifesteal);
       this.events.push({ t: 'hit', tick: this.tick, id: dst.id, source: src.id, actualDamage: dealt, dmg, hp: dst.hp, dmgType: type, ...(critical ? { critical: true } : {}) });
       if (triggered) this.events.push({ t: 'equipment_trigger', tick: this.tick, id: dst.id, equipmentId: triggered, shield: dst.shield });
+      this.startEquipmentSustain(dst);
     }
     for (const [src, value] of healing) {
       if (src.hp <= 0) continue; // Lifesteal cannot revive a unit killed in this tick.
@@ -359,6 +445,7 @@ export class BattleSim {
         u.alive = false;
         u.shield = 0;
         u.equipmentRegen = null;
+        u.equipmentSustain.clear();
         this.events.push({ t: 'death', tick: this.tick, id: u.id });
       }
     }
@@ -392,7 +479,9 @@ export class BattleSim {
     u.lowHealthProtectionUsed = true;
     u.hp = Math.max(1, u.hp);
     u.untargetableUntilTick = this.tick + Math.max(1, Math.round(effect.untargetableSeconds * 1000 / this.configs.battle.tickMs));
-    u.shield += Math.round(u.cfg.hp * effect.shieldMaxHpFraction);
+    const shieldAmount = Math.round(u.cfg.hp * effect.shieldMaxHpFraction);
+    u.shield += shieldAmount;
+    this.events.push({ t: 'shield', tick: this.tick, id: u.id, source: u.id, equipmentId: item.id, amount: shieldAmount, shield: u.shield });
     u.equipmentRegen = { startTick: this.tick,
       durationTicks: Math.max(1, Math.round(effect.healSeconds * 1000 / this.configs.battle.tickMs)),
       total: Math.round(u.cfg.hp * effect.healMaxHpFraction), delivered: 0 };
@@ -404,6 +493,8 @@ export class BattleSim {
       if (!u.alive) continue;
       const triggered = this.triggerLowHealthProtection(u);
       if (triggered) this.events.push({ t: 'equipment_trigger', tick: this.tick, id: u.id, equipmentId: triggered, shield: u.shield });
+      this.startEquipmentSustain(u);
+      this.updateEquipmentSustain(u);
       const regen = u.equipmentRegen;
       if (!regen) continue;
       const elapsed = Math.min(regen.durationTicks, this.tick - regen.startTick);
@@ -417,6 +508,34 @@ export class BattleSim {
       }
       if (elapsed >= regen.durationTicks) u.equipmentRegen = null;
     }
+  }
+
+  private startEquipmentSustain(u: Unit): void {
+    if (!u.alive || u.hp <= 0) return;
+    u.equipment.forEach((item, slot) => {
+      const effect = item.lowHealthRegen;
+      if (!effect || u.equipmentSustain.has(slot) || u.hp >= u.cfg.hp * effect.threshold) return;
+      const interval = Math.max(1, Math.round(effect.intervalSeconds * 1000 / this.configs.battle.tickMs));
+      u.equipmentSustain.set(slot, { nextTick: this.tick + interval, pulses: 0, delivered: 0 });
+      this.events.push({ t: 'equipment_trigger', tick: this.tick, id: u.id, equipmentId: item.id, shield: u.shield });
+    });
+  }
+
+  private updateEquipmentSustain(u: Unit): void {
+    // Iterate slots rather than Map order; each copy keeps healing even after HP recovers above 50%.
+    u.equipment.forEach((item, slot) => {
+      const state = u.equipmentSustain.get(slot), effect = item.lowHealthRegen;
+      if (!state || !effect || this.tick < state.nextTick) return;
+      state.pulses++;
+      const delivered = Math.floor(u.cfg.hp * effect.maxHpFraction * state.pulses + 1e-9);
+      const amount = Math.min(u.cfg.hp - u.hp, delivered - state.delivered);
+      state.delivered = delivered;
+      state.nextTick += Math.max(1, Math.round(effect.intervalSeconds * 1000 / this.configs.battle.tickMs));
+      if (amount > 0) {
+        u.hp += amount;
+        this.events.push({ t: 'heal', tick: this.tick, id: u.id, source: u.id, amount, hp: u.hp });
+      }
+    });
   }
 
   private checkEnd(): boolean {

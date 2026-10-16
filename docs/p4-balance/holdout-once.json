@@ -1,0 +1,14 @@
+{
+  "inputHash": "8499f2fb2eb41befdb833c80d7707409bcafb7194b158a2043adb9c7fd0b6e35",
+  "config": "docs/p4-balance/freeze/candidate.json",
+  "seeds": [
+    1001,
+    1250
+  ],
+  "output": "docs/p4-balance/holdout/runs-250",
+  "bots": [
+    "weak",
+    "medium",
+    "strong"
+  ]
+}

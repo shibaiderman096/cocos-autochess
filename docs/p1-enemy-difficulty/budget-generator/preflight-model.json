@@ -1,0 +1,31 @@
+{
+  "version": "enemy-power-v1",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "sha256": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0",
+  "unit": {
+    "power": 106.17578444811335,
+    "confidence": "high",
+    "sampleCount": 48000,
+    "diagnostics": [],
+    "method": "measured"
+  },
+  "team": {
+    "power": 106.17578444811335,
+    "confidence": "high",
+    "sampleCount": 48000,
+    "diagnostics": [],
+    "method": "measured"
+  },
+  "knownLimit": {
+    "teamValidationMae": 0.13602208330724963,
+    "unitValidationMae": 0.03708664033879604,
+    "notes": [
+      "Empirical relative-resource proxy; budget units are not a physical invariant or a guarantee of victory.",
+      "Exact measured equipment combinations override additive estimates; unmeasured combinations must return diagnostics.",
+      "Validation uses held-out seeds, never fitted ratings or slopes.",
+      "Cast counts, damage types and applied stun seconds are available; exact per-skill damage and effective disabled time are unavailable in current event schema.",
+      "5 held-out near-equal-power teams have extreme scores; individual sums miss composition effects.",
+      "The training win-probability slope reached its configured bound; probability calibration is uncertain outside the tested matchup distribution."
+    ]
+  }
+}

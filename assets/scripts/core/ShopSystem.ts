@@ -62,6 +62,9 @@ export class ShopSystem {
     return shopCostRates(level, costs);
   }
 
+  /** RunSession assigns a fresh, independently derived stream for each complete roll. */
+  setRollRng(rng: Rng): void { this.rng = rng; }
+
   private rollCost(level: number): Cost | null {
     const weights = this.costRates(level);
     const total = weights.reduce((sum, rate) => sum + rate, 0);

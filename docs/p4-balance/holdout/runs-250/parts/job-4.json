@@ -1,0 +1,269 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/holdout/runs-250",
+    "bot": "all",
+    "seedStart": 1001,
+    "seedCount": 250,
+    "stages": 99,
+    "workers": 12,
+    "partition": "holdout",
+    "audit": true,
+    "config": "docs/p4-balance/freeze/candidate.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1005
+    },
+    {
+      "bot": "weak",
+      "seed": 1017
+    },
+    {
+      "bot": "weak",
+      "seed": 1029
+    },
+    {
+      "bot": "weak",
+      "seed": 1041
+    },
+    {
+      "bot": "weak",
+      "seed": 1053
+    },
+    {
+      "bot": "weak",
+      "seed": 1065
+    },
+    {
+      "bot": "weak",
+      "seed": 1077
+    },
+    {
+      "bot": "weak",
+      "seed": 1089
+    },
+    {
+      "bot": "weak",
+      "seed": 1101
+    },
+    {
+      "bot": "weak",
+      "seed": 1113
+    },
+    {
+      "bot": "weak",
+      "seed": 1125
+    },
+    {
+      "bot": "weak",
+      "seed": 1137
+    },
+    {
+      "bot": "weak",
+      "seed": 1149
+    },
+    {
+      "bot": "weak",
+      "seed": 1161
+    },
+    {
+      "bot": "weak",
+      "seed": 1173
+    },
+    {
+      "bot": "weak",
+      "seed": 1185
+    },
+    {
+      "bot": "weak",
+      "seed": 1197
+    },
+    {
+      "bot": "weak",
+      "seed": 1209
+    },
+    {
+      "bot": "weak",
+      "seed": 1221
+    },
+    {
+      "bot": "weak",
+      "seed": 1233
+    },
+    {
+      "bot": "weak",
+      "seed": 1245
+    },
+    {
+      "bot": "medium",
+      "seed": 1007
+    },
+    {
+      "bot": "medium",
+      "seed": 1019
+    },
+    {
+      "bot": "medium",
+      "seed": 1031
+    },
+    {
+      "bot": "medium",
+      "seed": 1043
+    },
+    {
+      "bot": "medium",
+      "seed": 1055
+    },
+    {
+      "bot": "medium",
+      "seed": 1067
+    },
+    {
+      "bot": "medium",
+      "seed": 1079
+    },
+    {
+      "bot": "medium",
+      "seed": 1091
+    },
+    {
+      "bot": "medium",
+      "seed": 1103
+    },
+    {
+      "bot": "medium",
+      "seed": 1115
+    },
+    {
+      "bot": "medium",
+      "seed": 1127
+    },
+    {
+      "bot": "medium",
+      "seed": 1139
+    },
+    {
+      "bot": "medium",
+      "seed": 1151
+    },
+    {
+      "bot": "medium",
+      "seed": 1163
+    },
+    {
+      "bot": "medium",
+      "seed": 1175
+    },
+    {
+      "bot": "medium",
+      "seed": 1187
+    },
+    {
+      "bot": "medium",
+      "seed": 1199
+    },
+    {
+      "bot": "medium",
+      "seed": 1211
+    },
+    {
+      "bot": "medium",
+      "seed": 1223
+    },
+    {
+      "bot": "medium",
+      "seed": 1235
+    },
+    {
+      "bot": "medium",
+      "seed": 1247
+    },
+    {
+      "bot": "strong",
+      "seed": 1009
+    },
+    {
+      "bot": "strong",
+      "seed": 1021
+    },
+    {
+      "bot": "strong",
+      "seed": 1033
+    },
+    {
+      "bot": "strong",
+      "seed": 1045
+    },
+    {
+      "bot": "strong",
+      "seed": 1057
+    },
+    {
+      "bot": "strong",
+      "seed": 1069
+    },
+    {
+      "bot": "strong",
+      "seed": 1081
+    },
+    {
+      "bot": "strong",
+      "seed": 1093
+    },
+    {
+      "bot": "strong",
+      "seed": 1105
+    },
+    {
+      "bot": "strong",
+      "seed": 1117
+    },
+    {
+      "bot": "strong",
+      "seed": 1129
+    },
+    {
+      "bot": "strong",
+      "seed": 1141
+    },
+    {
+      "bot": "strong",
+      "seed": 1153
+    },
+    {
+      "bot": "strong",
+      "seed": 1165
+    },
+    {
+      "bot": "strong",
+      "seed": 1177
+    },
+    {
+      "bot": "strong",
+      "seed": 1189
+    },
+    {
+      "bot": "strong",
+      "seed": 1201
+    },
+    {
+      "bot": "strong",
+      "seed": 1213
+    },
+    {
+      "bot": "strong",
+      "seed": 1225
+    },
+    {
+      "bot": "strong",
+      "seed": 1237
+    },
+    {
+      "bot": "strong",
+      "seed": 1249
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\holdout\\runs-250\\parts\\part-4.jsonl"
+}

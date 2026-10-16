@@ -1,0 +1,121 @@
+{
+  "scope": "Functional smoke only; not balance qualification",
+  "bot": "medium",
+  "stages": 6,
+  "rows": [
+    {
+      "mode": "legacy",
+      "seed": 1,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 27,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "30a2dfc03610eb68d072fda488aaae54465eeb4e3995b758eed68d503c9ccf3a"
+    },
+    {
+      "mode": "legacy",
+      "seed": 12,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 27,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "6c7a70321ad69d1c612d27c5a2d4f125d7322db83733e56100147a7c654532c5"
+    },
+    {
+      "mode": "legacy",
+      "seed": 40,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 27,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "e395f86ddd4c357803dbcf086d50ae2cb0f2fcd3b7bb2f2292c0d2df53f4d4c7"
+    },
+    {
+      "mode": "budget-v1",
+      "seed": 1,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 26,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "93f3ef9db9adf38c1990921595aecc64eef6ed6e50be1f1973039cfab021566c"
+    },
+    {
+      "mode": "budget-v1",
+      "seed": 12,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 28,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "3652d9c0936d0c9292cfcef40a16747b0b461d1c01bd427c8e1c5fed0c1244a2"
+    },
+    {
+      "mode": "budget-v1",
+      "seed": 40,
+      "result": "RUN_COMPLETED",
+      "waves": 38,
+      "lastStage": 6,
+      "lastHp": 20,
+      "lastGold": 27,
+      "encounters": {
+        "monster": 8,
+        "elite": 3,
+        "specialShop": 4,
+        "boss": 3
+      },
+      "starter": "scout",
+      "automaticDrops": 8,
+      "rewardClaims": 3,
+      "reportSha256": "0f7c06186229ecf249642a7d2fa043b5638bd4555a24df325a89135f7eadb114"
+    }
+  ]
+}

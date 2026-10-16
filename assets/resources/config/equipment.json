@@ -6,6 +6,7 @@
     "attackSpeedBonus": 0.1,
     "attackSpeedPerAttack": 0.05,
     "description": "+10%法术加成，+0.1次/秒攻速。\n每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
+    "effectDescription": "每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
     "icon": "art/equipment/guinsoo/spriteFrame"
   },
   {
@@ -18,6 +19,7 @@
     "attackSpeedBonus": 0,
     "attackSpeedPerAttack": 0,
     "description": "+200生命，+10护甲，+10魔抗。\n每场战斗一次：生命低于5%时触发，致命伤害保留1点生命。\n不可选中0.3秒，获得最大生命值10%的护盾，并在5秒内回复最大生命值的10%。\n多件仅叠加属性，仍只触发一次。",
+    "effectDescription": "每场战斗一次：生命低于5%时触发，致命伤害保留1点生命。\n不可选中0.3秒，获得最大生命值10%的护盾，并在5秒内回复最大生命值的10%。\n多件仅叠加属性，仍只触发一次。",
     "lowHealthProtection": {
       "threshold": 0.05,
       "untargetableSeconds": 0.3,
@@ -36,6 +38,7 @@
     "attackSpeedBonus": 0,
     "attackSpeedPerAttack": 0,
     "description": "+20%法术加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+    "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
     "icon": "art/equipment/jeweled_gauntlet/spriteFrame"
   },
   {
@@ -48,6 +51,101 @@
     "attackSpeedBonus": 0,
     "attackSpeedPerAttack": 0,
     "description": "+20%物理加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+    "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
     "icon": "art/equipment/infinity_edge/spriteFrame"
+  },
+  {
+    "id": "arcane_sovereignty",
+    "name": "奥术君权",
+    "spellPower": 50,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "spellPowerDamageAmp": {
+      "step": 20,
+      "bonus": 0.01,
+      "cap": 0.1
+    },
+    "description": "+50%法术加成。\n携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
+    "effectDescription": "携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
+    "icon": "art/equipment/arcane_sovereignty/spriteFrame"
+  },
+  {
+    "id": "crimson_bloodclaw",
+    "name": "猩红噬血爪",
+    "spellPower": 10,
+    "physicalPower": 10,
+    "armor": 10,
+    "mr": 10,
+    "lifesteal": 0.2,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "missingHpLifesteal": {
+      "step": 0.1,
+      "bonus": 0.01
+    },
+    "description": "+20%全能吸血，+10护甲，+10魔抗，+10%物理加成，+10%法术加成。\n每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
+    "effectDescription": "每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
+    "icon": "art/equipment/crimson_bloodclaw/spriteFrame"
+  },
+  {
+    "id": "abyssal_plate",
+    "name": "深渊重铠",
+    "spellPower": 0,
+    "armor": 60,
+    "hp": 100,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "armorDamageReduction": {
+      "threshold": 100,
+      "bonus": 0.05
+    },
+    "description": "+60护甲，+100生命。\n携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
+    "effectDescription": "携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
+    "icon": "art/equipment/abyssal_plate/spriteFrame"
+  },
+  {
+    "id": "divine_judgment",
+    "name": "神圣裁决",
+    "spellPower": 0,
+    "physicalPower": 50,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "lowTargetDamageAmp": {
+      "threshold": 0.5,
+      "bonus": 0.1
+    },
+    "description": "+50%物理加成。\n每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
+    "effectDescription": "每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
+    "icon": "art/equipment/divine_judgment/spriteFrame"
+  },
+  {
+    "id": "arcane_veil",
+    "name": "秘法帷幕",
+    "spellPower": 0,
+    "mr": 60,
+    "hp": 100,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "magicDamageReduction": 0.15,
+    "description": "+60魔抗，+100生命。\n受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
+    "effectDescription": "受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
+    "icon": "art/equipment/arcane_veil/spriteFrame"
+  },
+  {
+    "id": "forest_sanctuary",
+    "name": "森灵庇护",
+    "spellPower": 0,
+    "hp": 500,
+    "maxHpBonus": 0.2,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "lowHealthRegen": {
+      "threshold": 0.5,
+      "intervalSeconds": 1,
+      "maxHpFraction": 0.015
+    },
+    "description": "+500生命，额外获得20%最大生命。\n每场战斗生命首次严格低于50%时，直到本场战斗结束，每秒回复1.5%最大生命。\n回血后高于50%仍持续回复；死亡停止，下一场重新触发。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
+    "effectDescription": "每场战斗生命首次严格低于50%时，直到本场战斗结束，每秒回复1.5%最大生命。\n回血后高于50%仍持续回复；死亡停止，下一场重新触发。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
+    "icon": "art/equipment/forest_sanctuary/spriteFrame"
   }
 ]

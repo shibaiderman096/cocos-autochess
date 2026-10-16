@@ -1,0 +1,348 @@
+{
+  "version": "p2-verification-v1",
+  "seed": 12345,
+  "formationVersion": "formation-v1",
+  "powerModelVersion": "enemy-power-v1",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "determinism": {
+    "directories": [
+      "docs/p2-enemy-formation/final-v2-seed12345",
+      "docs/p2-enemy-formation/final-v2-seed12345-repeat"
+    ],
+    "byteIdenticalFiles": 10,
+    "hashes": {
+      "formations.json": "75a222df9f972d41f41b9ff6f4f39268eab1648ba0f50556cf07afc6de6b2ed0",
+      "summary.json": "8ba2081521ee68ce7ed5b61c5ea2f9fd0e49f2ed6a6fa4e76fc60b1a85522dd0",
+      "stage-examples.json": "c85f4b002d8730baa6450c431d6b770ce79a0006f6ba192e0500653ba0650c62",
+      "l3-examples.json": "396dfe0ba86d3b13db8996b95a52b5a03735d73269290de128586aea78b46041",
+      "template-report.json": "e5183dbd95a7fbce92e696549c99aa1c25ff77a954c20d5a7920bced96443dc0",
+      "battle-diagnostics.json": "a0e5c5be39e5d46a5b675c543dcee8808679fadf127f7db1174b025e37ac33eb",
+      "provenance.json": "a6ae751cea6a2fdeb0b3b65f10a434827b2bcc9f6d7e00a604b3daa9be62e76c",
+      "role-table.csv": "f2b1db490a41b7fc02727ebaa72c5b81a4fdbefe04f0520988b05dafb243bfb4",
+      "formation-table.csv": "49cc58dab4f9b8d9249d0a069773ac0158bcf9a3db6911da3bd66daad04410c0",
+      "REPORT.md": "3a6b67f819a3fb660e7227ffba0d71d823c841dfaf94a11861cd3cc01ed4fbe2"
+    },
+    "wallClockExcluded": true
+  },
+  "baseline": {
+    "seed": 12345,
+    "waves": 968,
+    "members": "073b9c8228aa7f5556a3bb058360eab229d9af470460fb4ea1ff4ba33d2bfbbf",
+    "positions": "1a6db48def9f398b069e9bbb46f8d4805c22375c7f18412b854b449e150dcfc2",
+    "budgets": "5203644a323dc6f83c61d048bb08836fd3d00b68fc1af593a0431365f857718f",
+    "allGeneratedWavesExactlyUnchanged": true,
+    "allRecordedFormationMembersExactlyUnchanged": true,
+    "allBudgetDiagnosticsUnchanged": true,
+    "L0CompleteP1CRunFieldsEqual": true,
+    "L0BattleWavesCompared": 75,
+    "legacy968ExactlyP0": true
+  },
+  "protection": {
+    "filesBefore": 360,
+    "unchangedFiles": 350,
+    "explicitIntegrationAllowlist": [
+      "assets/scripts/core/RunSession.ts",
+      "assets/scripts/core/RunSessionTypes.ts",
+      "assets/scripts/core/ShopSave.ts",
+      "assets/scripts/view/BattleStage.ts",
+      "tools/run-simulation.ts",
+      "tools/run-sim.ts",
+      "tools/run-tests.ps1",
+      "tests/enemy-budget-tests.cjs",
+      "tests/regression-tests.cjs",
+      "tests/run-sim-cli-tests.cjs"
+    ],
+    "allOtherBytesUnchanged": true
+  },
+  "prefixes": [
+    {
+      "stages": 3,
+      "level": "L0",
+      "waves": 14,
+      "exactPrefixOf99": true,
+      "sha256": "da5b48cb6b3b7973ae7776244fe8e36702f7c08fffa5b70fa9ca1b96f9481d15"
+    },
+    {
+      "stages": 3,
+      "level": "L1",
+      "waves": 14,
+      "exactPrefixOf99": true,
+      "sha256": "58e5719e3ad9ea2b0d70b618bd6a176ca797d837fc95ff5cc87c7ff08f2486b9"
+    },
+    {
+      "stages": 3,
+      "level": "L2",
+      "waves": 14,
+      "exactPrefixOf99": true,
+      "sha256": "17c3ad261e49795bfe3958c549dda314f3947ce5dbee621186eff52d38a5e820"
+    },
+    {
+      "stages": 6,
+      "level": "L0",
+      "waves": 38,
+      "exactPrefixOf99": true,
+      "sha256": "75db97add3a499ca40ee1f863a94992dd1b57e43688f6cded6c041217afa1d08"
+    },
+    {
+      "stages": 6,
+      "level": "L1",
+      "waves": 38,
+      "exactPrefixOf99": true,
+      "sha256": "3e1a96ddda64e3eb2cdf33d2a4b8c65fabfc6dc85ac360a90645a4be07e8d2b9"
+    },
+    {
+      "stages": 6,
+      "level": "L2",
+      "waves": 38,
+      "exactPrefixOf99": true,
+      "sha256": "93af479dc8494faf396f0feac8678d60a1d85e179dbfeef29026a0dea519901b"
+    }
+  ],
+  "l3Prefixes": [
+    {
+      "stageCount": 3,
+      "battleWaves": 14,
+      "sha256": "dfdf768d5d377cf8a7a255a92e72ed6f36879353da93202d0b71f9a94b54d927",
+      "matchesLargerCampaign": true
+    },
+    {
+      "stageCount": 6,
+      "battleWaves": 38,
+      "sha256": "87a5e4ca025461abd728600a73fc5913313dfb9b3edd70f7cd3e9dadf86030b0",
+      "matchesLargerCampaign": true
+    },
+    {
+      "stageCount": 99,
+      "battleWaves": 74,
+      "sha256": "4216940effdd5d317cd1f7623a43e44bc5c6c5cf860518764c5f69e1c3d82062",
+      "matchesLargerCampaign": true
+    }
+  ],
+  "formationSummary": [
+    {
+      "level": "L0",
+      "waves": 965,
+      "diagnosticsComputed": false,
+      "spacingViolations": null,
+      "wavesWithSpacingViolations": null,
+      "roleDepthViolationWaves": null,
+      "fallbackWaves": 0,
+      "templateUsedWaves": 0,
+      "coverEligibleWaves": 0,
+      "meanCoverScoreEligible": null
+    },
+    {
+      "level": "L1",
+      "waves": 965,
+      "diagnosticsComputed": true,
+      "spacingViolations": 730,
+      "wavesWithSpacingViolations": 76,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 111,
+      "templateUsedWaves": 98,
+      "coverEligibleWaves": 49,
+      "meanCoverScoreEligible": 0.8971088435374152
+    },
+    {
+      "level": "L2",
+      "waves": 965,
+      "diagnosticsComputed": true,
+      "spacingViolations": 329,
+      "wavesWithSpacingViolations": 56,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 157,
+      "templateUsedWaves": 98,
+      "coverEligibleWaves": 49,
+      "meanCoverScoreEligible": 0.749230644638808
+    }
+  ],
+  "templates": {
+    "extractedPurePositionTemplates": 7,
+    "allOldHeroStarStatFieldsIgnored": true,
+    "invalidTemplateFallbackTestsPassed": true
+  },
+  "battleDiagnostics": {
+    "actualBattleSimCallsFirst": 3150,
+    "actualBattleSimCallsRepeat": 3150,
+    "formalTotal": 6300,
+    "developmentEarlierRuns": 6300,
+    "aggregate": [
+      {
+        "level": "L0",
+        "compositions": 20,
+        "samples": 1000,
+        "enemyWinRate": 0.2,
+        "averageRemaining": 1.6039999999999999,
+        "averageSeconds": 10.2133
+      },
+      {
+        "level": "L1",
+        "compositions": 20,
+        "samples": 1000,
+        "enemyWinRate": 0.202,
+        "averageRemaining": 1.703,
+        "averageSeconds": 10.39545
+      },
+      {
+        "level": "L2",
+        "compositions": 20,
+        "samples": 1000,
+        "enemyWinRate": 0.212,
+        "averageRemaining": 1.746,
+        "averageSeconds": 10.21605
+      }
+    ],
+    "l3": [
+      {
+        "waveId": 10001,
+        "stage": 10,
+        "round": 1,
+        "label": "L3:backline-mage-left",
+        "samples": 50,
+        "enemyWins": 50,
+        "enemyLosses": 0,
+        "draws": 0,
+        "enemyWinRate": 1,
+        "averageEnemyRemaining": 2.68,
+        "averageSeconds": 15.572,
+        "outcomesSha256": "9801ea788d9ec4f29aaf606e3557ff9e07c825786150e01cc6a3b9fa87374025"
+      },
+      {
+        "waveId": 10001,
+        "stage": 10,
+        "round": 1,
+        "label": "L3:ranged-cluster-right",
+        "samples": 50,
+        "enemyWins": 49,
+        "enemyLosses": 1,
+        "draws": 0,
+        "enemyWinRate": 0.98,
+        "averageEnemyRemaining": 3.84,
+        "averageSeconds": 15.185,
+        "outcomesSha256": "b7e189818f20f54635cbd01a9ff1a0724df861566eeb120b76f26e8d238944f2"
+      },
+      {
+        "waveId": 10001,
+        "stage": 10,
+        "round": 1,
+        "label": "L3:spread",
+        "samples": 50,
+        "enemyWins": 50,
+        "enemyLosses": 0,
+        "draws": 0,
+        "enemyWinRate": 1,
+        "averageEnemyRemaining": 3.2,
+        "averageSeconds": 15.05,
+        "outcomesSha256": "86d694d8a9ac9418407e08282561a3bdce29173de083209859645fe60c59bf6a"
+      }
+    ],
+    "interpretation": "Fixed compositions and fixed legal player probes only, not real-player completion rates."
+  },
+  "performance": {
+    "first": [
+      {
+        "level": "L0",
+        "samples": 974,
+        "meanMilliseconds": 0.054198562628336173,
+        "p95Milliseconds": 0.07590000000004693,
+        "maxMilliseconds": 0.9610000000000127,
+        "maxIterations": 0
+      },
+      {
+        "level": "L1",
+        "samples": 965,
+        "meanMilliseconds": 0.16513056994818548,
+        "p95Milliseconds": 0.2765999999999167,
+        "maxMilliseconds": 1.036200000000008,
+        "maxIterations": 3
+      },
+      {
+        "level": "L2",
+        "samples": 965,
+        "meanMilliseconds": 0.18164155440414492,
+        "p95Milliseconds": 0.4371999999999616,
+        "maxMilliseconds": 1.1626000000001113,
+        "maxIterations": 5
+      },
+      {
+        "level": "L3",
+        "samples": 18,
+        "meanMilliseconds": 1.8762111111110724,
+        "p95Milliseconds": 5.241399999999885,
+        "maxMilliseconds": 5.241399999999885,
+        "maxIterations": 6
+      }
+    ],
+    "repeat": [
+      {
+        "level": "L0",
+        "samples": 974,
+        "meanMilliseconds": 0.060980390143739155,
+        "p95Milliseconds": 0.10259999999993852,
+        "maxMilliseconds": 0.9807999999999311,
+        "maxIterations": 0
+      },
+      {
+        "level": "L1",
+        "samples": 965,
+        "meanMilliseconds": 0.18876901554404016,
+        "p95Milliseconds": 0.38019999999994525,
+        "maxMilliseconds": 1.3299000000001797,
+        "maxIterations": 3
+      },
+      {
+        "level": "L2",
+        "samples": 965,
+        "meanMilliseconds": 0.1807279792746138,
+        "p95Milliseconds": 0.3527000000000271,
+        "maxMilliseconds": 1.3522999999999001,
+        "maxIterations": 5
+      },
+      {
+        "level": "L3",
+        "samples": 18,
+        "meanMilliseconds": 1.6800555555555547,
+        "p95Milliseconds": 4.436099999999897,
+        "maxMilliseconds": 4.436099999999897,
+        "maxIterations": 6
+      }
+    ]
+  },
+  "autoRun": {
+    "result": "PLAYER_DEAD",
+    "waves": 74,
+    "endState": {
+      "runSeed": 12345,
+      "rulesVersion": 1,
+      "stage": 10,
+      "round": 6,
+      "waveId": 74,
+      "playerHp": 0,
+      "gold": 1181,
+      "level": 8,
+      "xp": 16,
+      "phase": "ended",
+      "result": "defeat"
+    },
+    "sha256": "235c21e3c4ff0d33415b14bd1ddaad72395fa107e70ce573f152279d737f7e24"
+  },
+  "tests": {
+    "preflightExitCode": 0,
+    "finalNpmExitCode": 0,
+    "log": "npm-test-acceptance.log",
+    "formationTests": 25,
+    "regressionTests": 70,
+    "cliTests": 6,
+    "budgetTests": 26,
+    "powerModelTests": 8,
+    "calibrationTests": 6,
+    "runSessionTests": 12,
+    "scope": "Node, real pure BattleSim and Cocos adapter boundary stubs; no editor visual/device validation claimed"
+  },
+  "caveats": [
+    "L0 scoring is disabled; null metrics mean not measured, not perfect spacing.",
+    "L2 reduces spacing violations but trades away some cover under normalized soft weights; residual conflicts are recorded, not claimed mathematically unavoidable.",
+    "P1-B individual-power sum limitations remain; formation never changes actualBudget.",
+    "Stage7/8 star policy budget conflicts, long-term saturation, P3/P4 and final completion targets remain unresolved by design."
+  ]
+}

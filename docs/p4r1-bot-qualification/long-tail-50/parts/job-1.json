@@ -1,0 +1,118 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4r1-bot-qualification/long-tail-50",
+    "bot": "medium",
+    "seedStart": 2701,
+    "seedCount": 50,
+    "stages": 99,
+    "workers": 2,
+    "partition": "long-tail",
+    "audit": true,
+    "experiment": "bot-qualification-v2",
+    "config": "docs/p4r1-bot-qualification/freeze/bots-v2.json"
+  },
+  "jobs": [
+    {
+      "bot": "medium",
+      "seed": 2702
+    },
+    {
+      "bot": "medium",
+      "seed": 2704
+    },
+    {
+      "bot": "medium",
+      "seed": 2706
+    },
+    {
+      "bot": "medium",
+      "seed": 2708
+    },
+    {
+      "bot": "medium",
+      "seed": 2710
+    },
+    {
+      "bot": "medium",
+      "seed": 2712
+    },
+    {
+      "bot": "medium",
+      "seed": 2714
+    },
+    {
+      "bot": "medium",
+      "seed": 2716
+    },
+    {
+      "bot": "medium",
+      "seed": 2718
+    },
+    {
+      "bot": "medium",
+      "seed": 2720
+    },
+    {
+      "bot": "medium",
+      "seed": 2722
+    },
+    {
+      "bot": "medium",
+      "seed": 2724
+    },
+    {
+      "bot": "medium",
+      "seed": 2726
+    },
+    {
+      "bot": "medium",
+      "seed": 2728
+    },
+    {
+      "bot": "medium",
+      "seed": 2730
+    },
+    {
+      "bot": "medium",
+      "seed": 2732
+    },
+    {
+      "bot": "medium",
+      "seed": 2734
+    },
+    {
+      "bot": "medium",
+      "seed": 2736
+    },
+    {
+      "bot": "medium",
+      "seed": 2738
+    },
+    {
+      "bot": "medium",
+      "seed": 2740
+    },
+    {
+      "bot": "medium",
+      "seed": 2742
+    },
+    {
+      "bot": "medium",
+      "seed": 2744
+    },
+    {
+      "bot": "medium",
+      "seed": 2746
+    },
+    {
+      "bot": "medium",
+      "seed": 2748
+    },
+    {
+      "bot": "medium",
+      "seed": 2750
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\long-tail-50\\parts\\part-1.jsonl"
+}

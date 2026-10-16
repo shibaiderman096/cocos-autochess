@@ -1,0 +1,2175 @@
+[
+  {
+    "waveId": 4,
+    "stage": 2,
+    "round": 1,
+    "requestedLevel": "L0",
+    "result": {
+      "placements": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L0",
+      "strength": 0,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {},
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0,
+          "cover": 0,
+          "spacing": 0,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": []
+      }
+    }
+  },
+  {
+    "waveId": 4,
+    "stage": 2,
+    "round": 1,
+    "requestedLevel": "L1",
+    "result": {
+      "placements": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L1",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "melee_dps": 1
+        },
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 1,
+          "cover": 0,
+          "spacing": 1,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.625
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "warrior",
+            "role": "melee_dps",
+            "power": 106.17578444811335,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 4,
+    "stage": 2,
+    "round": 1,
+    "requestedLevel": "L2",
+    "result": {
+      "placements": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L2",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "melee_dps": 1
+        },
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 1,
+          "cover": 0,
+          "spacing": 1,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.7333333333333333
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "warrior",
+            "role": "melee_dps",
+            "power": 106.17578444811335,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 15,
+    "stage": 4,
+    "round": 1,
+    "requestedLevel": "L0",
+    "result": {
+      "placements": [
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L0",
+      "strength": 0,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {},
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0,
+          "cover": 0,
+          "spacing": 0,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": []
+      }
+    }
+  },
+  {
+    "waveId": 15,
+    "stage": 4,
+    "round": 1,
+    "requestedLevel": "L1",
+    "result": {
+      "placements": [
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L1",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "tank": 1,
+          "ranged_dps": 2,
+          "mage": 1
+        },
+        "spacingViolations": 2,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.9375,
+          "cover": 1,
+          "spacing": 0.33333333333333337,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.8359374999999999
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 99.88126132493909,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "archer",
+            "role": "ranged_dps",
+            "power": 100.11873867506092,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 94.21007912035388,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 15,
+    "stage": 4,
+    "round": 1,
+    "requestedLevel": "L2",
+    "result": {
+      "placements": [
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 5,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L2",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "tank": 1,
+          "ranged_dps": 2,
+          "mage": 1
+        },
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.875,
+          "cover": 1,
+          "spacing": 1,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.8555555555555555
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 99.88126132493909,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "archer",
+            "role": "ranged_dps",
+            "power": 100.11873867506092,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 94.21007912035388,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 30,
+    "stage": 6,
+    "round": 1,
+    "requestedLevel": "L0",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L0",
+      "strength": 0,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {},
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0,
+          "cover": 0,
+          "spacing": 0,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": []
+      }
+    }
+  },
+  {
+    "waveId": 30,
+    "stage": 6,
+    "round": 1,
+    "requestedLevel": "L1",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L1",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 7,
+          "tank": 1,
+          "ranged_dps": 1
+        },
+        "spacingViolations": 13,
+        "fallbackSteps": [
+          "PARTIAL_COVER_KEEP_ROLE_DIRECTION"
+        ],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.8888888888888888,
+          "cover": 0.875,
+          "spacing": 0.5357142857142857,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.7743055555555556
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 99.88126132493909,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 94.21007912035388,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 30,
+    "stage": 6,
+    "round": 1,
+    "requestedLevel": "L2",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 7,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L2",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 7,
+          "tank": 1,
+          "ranged_dps": 1
+        },
+        "spacingViolations": 6,
+        "fallbackSteps": [
+          "PARTIAL_COVER_KEEP_ROLE_DIRECTION",
+          "SPACING_SOFT_CONSTRAINT_RETAIN_LEGAL_ROLE_CELLS"
+        ],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.9444444444444444,
+          "cover": 0.625,
+          "spacing": 0.7857142857142857,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.7578483245149912
+        },
+        "iterations": 2,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 99.88126132493909,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 94.21007912035388,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 49,
+    "stage": 8,
+    "round": 1,
+    "requestedLevel": "L0",
+    "result": {
+      "placements": [
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L0",
+      "strength": 0,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {},
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0,
+          "cover": 0,
+          "spacing": 0,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": []
+      }
+    }
+  },
+  {
+    "waveId": 49,
+    "stage": 8,
+    "round": 1,
+    "requestedLevel": "L1",
+    "result": {
+      "placements": [
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 6,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L1",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 10
+        },
+        "spacingViolations": 13,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.925,
+          "cover": 0,
+          "spacing": 0.7111111111111111,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.578125
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 9,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 49,
+    "stage": 8,
+    "round": 1,
+    "requestedLevel": "L2",
+    "result": {
+      "placements": [
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 7,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 6,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 5,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 1,
+          "y": 7,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L2",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 10
+        },
+        "spacingViolations": 8,
+        "fallbackSteps": [
+          "SPACING_SOFT_CONSTRAINT_RETAIN_LEGAL_ROLE_CELLS"
+        ],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.9,
+          "cover": 0,
+          "spacing": 0.8222222222222222,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.6375308641975308
+        },
+        "iterations": 1,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 93.25501004712301,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 61.59941158899277,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 9,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 69,
+    "stage": 10,
+    "round": 1,
+    "requestedLevel": "L0",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "itachi",
+          "star": 2,
+          "y": 4,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 2,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 2,
+          "y": 5,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 2,
+          "y": 5,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L0",
+      "strength": 0,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {},
+        "spacingViolations": 0,
+        "fallbackSteps": [],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0,
+          "cover": 0,
+          "spacing": 0,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": []
+      }
+    }
+  },
+  {
+    "waveId": 69,
+    "stage": 10,
+    "round": 1,
+    "requestedLevel": "L1",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "itachi",
+          "star": 2,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 2,
+          "y": 6,
+          "x": 5,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 2,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 2,
+          "y": 6,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 3,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 2,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L1",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 7,
+          "ranged_dps": 2,
+          "tank": 1
+        },
+        "spacingViolations": 12,
+        "fallbackSteps": [
+          "PARTIAL_COVER_KEEP_ROLE_DIRECTION"
+        ],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.925,
+          "cover": 0.6666666666666666,
+          "spacing": 0.6666666666666667,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.7447916666666666
+        },
+        "iterations": 0,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "itachi",
+            "role": "mage",
+            "power": 166.53930209909225,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "archer",
+            "role": "ranged_dps",
+            "power": 169.51237600279825,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 173.80190792347588,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 166.01431758454754,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 9,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 160.30764395258007,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "waveId": 69,
+    "stage": 10,
+    "round": 1,
+    "requestedLevel": "L2",
+    "result": {
+      "placements": [
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "itachi",
+          "star": 2,
+          "y": 6,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 2,
+          "y": 7,
+          "x": 6,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 2,
+          "y": 4,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 2,
+          "y": 7,
+          "x": 4,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 6,
+          "x": 1,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 2,
+          "y": 5,
+          "x": 0,
+          "equipment": [],
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "level": "L2",
+      "strength": 1,
+      "version": "formation-v1",
+      "diagnostics": {
+        "roleCounts": {
+          "mage": 7,
+          "ranged_dps": 2,
+          "tank": 1
+        },
+        "spacingViolations": 7,
+        "fallbackSteps": [
+          "PARTIAL_COVER_KEEP_ROLE_DIRECTION",
+          "SPACING_SOFT_CONSTRAINT_RETAIN_LEGAL_ROLE_CELLS"
+        ],
+        "templateId": null,
+        "templateUsed": false,
+        "templateSlotsMatched": 0,
+        "templateSlotsAvailable": 0,
+        "playerSnapshotUsed": false,
+        "playerSnapshotHash": null,
+        "counterReasons": [],
+        "score": {
+          "role": 0.95,
+          "cover": 0.5555555555555556,
+          "spacing": 0.8055555555555556,
+          "flank": 0,
+          "counter": 0,
+          "template": 0,
+          "total": 0.7537037037037037
+        },
+        "iterations": 3,
+        "roleDepthViolations": 0,
+        "roles": [
+          {
+            "index": 0,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 1,
+            "unitId": "itachi",
+            "role": "mage",
+            "power": 166.53930209909225,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 2,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 3,
+            "unitId": "archer",
+            "role": "ranged_dps",
+            "power": 169.51237600279825,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 4,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 5,
+            "unitId": "guardian",
+            "role": "tank",
+            "power": 173.80190792347588,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 6,
+            "unitId": "scout",
+            "role": "ranged_dps",
+            "power": 166.01431758454754,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 7,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 8,
+            "unitId": "mage",
+            "role": "mage",
+            "power": 106.56673936457872,
+            "source": "explicit",
+            "confidence": "high"
+          },
+          {
+            "index": 9,
+            "unitId": "shaman",
+            "role": "mage",
+            "power": 160.30764395258007,
+            "source": "explicit",
+            "confidence": "high"
+          }
+        ]
+      }
+    }
+  }
+]

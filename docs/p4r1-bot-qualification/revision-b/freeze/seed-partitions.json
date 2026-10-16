@@ -1,0 +1,8 @@
+{
+  "schema": "p4r1-revised-qualification-seeds",
+  "reason": "The first medium-v2 qualification was rejected by qualitative replay review; no old qualification seeds may be reused for revised acceptance.",
+  "version": "medium-v2r1b",
+  "alreadyUsedR1": [[1951, 2200], [2201, 2700], [2701, 2750]],
+  "partitions": {"smoke":[5501,5550],"development":[5601,5800],"qualification":[6001,6500],"longTail":[6501,6550]},
+  "reservedR2Unchanged": {"training":[3001,3500],"validation":[4001,4500],"holdout":[5001,5250]}
+}

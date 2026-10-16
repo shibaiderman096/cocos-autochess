@@ -1,0 +1,530 @@
+
+> run-sim
+> node --require tsx/cjs tools/run-sim.ts --seed 12345 --stages 10 --formation L0 --json docs/p2-enemy-formation/run-l0-final.json
+
+Run Seed: 12345 | Rules version: 1 | Bot: MinimalBaselineBot
+Campaign stages: 10 | Max stage: 10
+Enemy mode: budget-v1 | Power model: enemy-power-v1
+Wave 1 | Stage 1 | Round 1
+  Player level 2, XP 0, Gold 3, HP 20 (was 20)
+  Board: warrior*1@3,3 | Bench: (empty)
+  Enemy count: 1 | Battle seed: 3833654595 | Battle result: 0 | Duration: 2.95s | Damage taken: 0
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 2, victory 1, interest 0, streak 0 | Total 3
+Wave 2 | Stage 1 | Round 2
+  Player level 3, XP 0, Gold 4, HP 20 (was 20)
+  Board: warrior*1@3,3 guardian*1@2,3 | Bench: scout*1 archer*1
+  Enemy count: 2 | Battle seed: 2764043685 | Battle result: 0 | Duration: 4.4s | Damage taken: 0
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 2, victory 1, interest 0, streak 1 | Total 4
+Wave 3 | Stage 1 | Round 3
+  Player level 3, XP 2, Gold 4, HP 20 (was 20)
+  Board: warrior*1@2,3 guardian*1@4,3 ranger*1@3,3 | Bench: scout*1 archer*1 scout*1 archer*1
+  Enemy count: 3 | Battle seed: 3624210737 | Battle result: 0 | Duration: 4.4s | Damage taken: 0
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 2, victory 1, interest 0, streak 1 | Total 4
+Wave 4 | Stage 2 | Round 1
+  Player level 3, XP 4, Gold 7, HP 20 (was 20)
+  Board: guardian*2@3,3 archer*2@2,3 ranger*1@4,3 | Bench: warrior*1 scout*1 scout*1 archer*1
+  Enemy count: 1 | Battle seed: 314111486 | Battle result: 0 | Duration: 3.35s | Damage taken: 0
+  normal: requested 106.17578444811335, effective 106.17578444811335, actual 106.17578444811335, deviation 0% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 4, victory 1, interest 0, streak 2 | Total 7
+Wave 5 | Stage 2 | Round 2
+  Player level 4, XP 0, Gold 8, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 archer*2@4,3 | Bench: scout*1 scout*1 ranger*1 archer*1 archer*1 guardian*1 ranger*1
+  Enemy count: 1 | Battle seed: 1723894318 | Battle result: 0 | Duration: 3.35s | Damage taken: 0
+  normal: requested 113.24921205865529, effective 106.17578444811335, actual 106.17578444811335, deviation 0% | ABOVE_MAX_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 4, victory 1, interest 0, streak 2 | Total 7
+Wave 6 | Stage 2 | Round 3
+  Player level 4, XP 2, Gold 9, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 archer*2@4,3 archer*2@1,3 | Bench: scout*1 scout*1 ranger*1 guardian*1 ranger*1 young_sasuke*1 sakura*1 guardian*1 warrior*1
+  Enemy count: 1 | Battle seed: 746024572 | Battle result: 0 | Duration: 2.25s | Damage taken: 0
+  normal: requested 120.79387120679917, effective 106.17578444811335, actual 106.17578444811335, deviation 0% | ABOVE_MAX_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 4, victory 1, interest 0, streak 3 | Total 8
+Wave 7 | Stage 2 | Round 4
+  Player level 4, XP 4, Gold 16, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 archer*2@4,3 archer*2@1,3 | Bench: scout*1 scout*1 ranger*1 guardian*2 ranger*1 young_sasuke*1 sakura*1 warrior*1
+  Enemy count: 2 | Battle seed: 1979539111 | Battle result: 0 | Duration: 4.45s | Damage taken: 0
+  elite: requested 128.84115532360235, effective 188.42015824070776, actual 194.09134044529299, deviation 3.0098595912122397% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 4, victory 1, interest 0, streak 3 | Total 8
+Wave 8 | Stage 2 | Round 5
+  Player level 4, XP 6, Gold 22, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 scout*2@4,3 archer*2@1,3 | Bench: ranger*1 archer*2 guardian*2 ranger*1 young_sasuke*1 sakura*1 warrior*1 warrior*1 guardian*1
+  Enemy count: 2 | Battle seed: 239579714 | Battle result: 0 | Duration: 4.45s | Damage taken: 0
+  boss: requested 137.424549269568, effective 200.44697685181677, actual 200, deviation 0.22299006891343892% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 4, victory 1, interest 1, streak 3 | Total 9
+Wave 9 | Stage 3 | Round 1
+  Player level 4, XP 8, Gold 30, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 ranger*2@3,3 | Bench: archer*2 archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*1 warrior*1 guardian*1 scout*1
+  Enemy count: 2 | Battle seed: 574613853 | Battle result: 0 | Duration: 4.55s | Damage taken: 0
+  normal: requested 129.1790763133939, effective 188.42015824070776, actual 194.09134044529299, deviation 3.0098595912122397% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 1, streak 3 | Total 11
+Wave 10 | Stage 3 | Round 2
+  Player level 5, XP 0, Gold 40, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 ranger*2@3,3 | Bench: archer*2 archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1
+  Enemy count: 3 | Battle seed: 539903935 | Battle result: 0 | Duration: 5s | Damage taken: 0
+  normal: requested 137.09026352486467, effective 282.63023736106163, actual 294.2100791203539, deviation 4.097170163891189% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 2, streak 3 | Total 12
+Wave 11 | Stage 3 | Round 3
+  Player level 5, XP 2, Gold 50, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 3 | Battle seed: 1971267187 | Battle result: 0 | Duration: 4.05s | Damage taken: 0
+  normal: requested 145.48594779949056, effective 282.63023736106163, actual 294.2100791203539, deviation 4.097170163891189% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 3, streak 3 | Total 13
+Wave 12 | Stage 3 | Round 4
+  Player level 5, XP 4, Gold 65, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 3 | Battle seed: 895236132 | Battle result: 0 | Duration: 4.45s | Damage taken: 0
+  normal: requested 154.39580071473927, effective 294.58696916707635, actual 294.2100791203539, deviation 0.12793846509507223% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 5, streak 3 | Total 15
+Wave 13 | Stage 3 | Round 5
+  Player level 5, XP 6, Gold 80, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 4 | Battle seed: 150176021 | Battle result: 0 | Duration: 5.05s | Damage taken: 0
+  elite: requested 163.85131099533558, effective 376.8403164814155, actual 388.4201582407078, deviation 3.0728776229183916% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 5, streak 3 | Total 15
+Wave 14 | Stage 3 | Round 6
+  Player level 5, XP 8, Gold 95, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 4 | Battle seed: 2717145401 | Battle result: 0 | Duration: 6.05s | Damage taken: 0
+  boss: requested 173.885895799025, effective 396.8298299877575, actual 400.38586356846724, deviation 0.8961104513789885% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 6, victory 1, interest 5, streak 3 | Total 15
+Wave 15 | Stage 4 | Round 1
+  Player level 5, XP 10, Gold 112, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 4 | Battle seed: 3430908460 | Battle result: 0 | Duration: 5.05s | Damage taken: 0
+  normal: requested 163.4527420510835, effective 373.02004018849203, actual 387.4650891674769, deviation 3.872459230792421% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 16 | Stage 4 | Round 2
+  Player level 5, XP 12, Gold 129, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 5 | Battle seed: 2923943878 | Battle result: 0 | Duration: 7.25s | Damage taken: 0
+  normal: requested 172.87935392807253, effective 466.275050235615, actual 480.7200992145999, deviation 3.0979673846339364% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 17 | Stage 4 | Round 3
+  Player level 5, XP 14, Gold 146, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 5 | Battle seed: 3284866699 | Battle result: 0 | Duration: 7.3s | Damage taken: 0
+  normal: requested 182.84961536617828, effective 466.275050235615, actual 480.7200992145999, deviation 3.0979673846339364% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 18 | Stage 4 | Round 4
+  Player level 5, XP 16, Gold 163, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 5 | Battle seed: 278913386 | Battle result: 0 | Duration: 9.05s | Damage taken: 0
+  normal: requested 193.39487960760042, effective 508.96423103941703, actual 508.7793531213606, deviation 0.03632434398756625% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 19 | Stage 4 | Round 5
+  Player level 5, XP 18, Gold 180, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 6 | Battle seed: 1995464648 | Battle result: 0 | Duration: 8.75s | Damage taken: 0
+  normal: requested 204.54830809207405, effective 564.510851352366, actual 573.9751092617229, deviation 1.6765413608407904% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 20 | Stage 4 | Round 6
+  Player level 6, XP 0, Gold 197, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 | Bench: archer*2 guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1
+  Enemy count: 6 | Battle seed: 2282937091 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  elite: requested 216.34497473885406, effective 626.1196403601363, actual 619.0829808207156, deviation 1.1238522298027918% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 21 | Stage 4 | Round 7
+  Player level 6, XP 2, Gold 212, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 archer*2@0,3 | Bench: guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 6 | Battle seed: 2386717019 | Battle result: 0 | Duration: 8.85s | Damage taken: 0
+  boss: requested 228.8219762428289, effective 694.4522024785756, actual 696.5842437314377, deviation 0.30701051062299484% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 22 | Stage 5 | Round 1
+  Player level 6, XP 4, Gold 231, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*2@4,3 scout*2@1,3 archer*2@5,3 ranger*2@3,3 archer*2@0,3 | Bench: guardian*2 young_sasuke*1 sakura*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 7 | Battle seed: 2729285232 | Battle result: 0 | Duration: 8.85s | Damage taken: 0
+  normal: requested 215.09265766825916, effective 652.785070329861, actual 667.2301193088459, deviation 2.2128338461671064% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 23 | Stage 5 | Round 2
+  Player level 6, XP 6, Gold 246, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 7 | Battle seed: 2748660152 | Battle result: 0 | Duration: 9.8s | Damage taken: 0
+  normal: requested 226.95049653274086, effective 676.6471863891591, actual 680.1508937098363, deviation 0.5178041660638991% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 24 | Stage 5 | Round 3
+  Player level 6, XP 8, Gold 265, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 7 | Battle seed: 2901694223 | Battle result: 0 | Duration: 11.4s | Damage taken: 0
+  normal: requested 239.46204596112693, effective 701.3815659371726, actual 702.8706935666537, deviation 0.21231348267492234% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 25 | Stage 5 | Round 4
+  Player level 6, XP 10, Gold 284, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 8 | Battle seed: 2276691539 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 252.66334435014755, effective 746.0400803769841, actual 760.485129355969, deviation 1.9362296153962182% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 26 | Stage 5 | Round 5
+  Player level 6, XP 12, Gold 303, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 8 | Battle seed: 895797802 | Battle result: 0 | Duration: 10.85s | Damage taken: 0
+  normal: requested 266.59241685659237, effective 753.5958210378471, actual 760.4851293559691, deviation 0.9141914174409883% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 27 | Stage 5 | Round 6
+  Player level 6, XP 14, Gold 322, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 8 | Battle seed: 791441283 | Battle result: 0 | Duration: 11.75s | Damage taken: 0
+  normal: requested 281.28938492536673, effective 781.1430058016167, actual 789.4994523359605, deviation 1.0697716643789652% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 28 | Stage 5 | Round 7
+  Player level 6, XP 16, Gold 341, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 9 | Battle seed: 1251742574 | Battle result: 0 | Duration: 12.65s | Damage taken: 0
+  elite: requested 296.7965818557173, effective 839.2950904241071, actual 853.740139403092, deviation 1.7210929914633049% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 29 | Stage 5 | Round 8
+  Player level 6, XP 18, Gold 360, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 9 | Battle seed: 1577854175 | Battle result: 0 | Duration: 11.7s | Damage taken: 0
+  boss: requested 313.1586747385065, effective 839.2950904241071, actual 853.740139403092, deviation 1.7210929914633049% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 30 | Stage 6 | Round 1
+  Player level 6, XP 20, Gold 379, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 9 | Battle seed: 74709357 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 294.3691542541961, effective 788.9373849986606, actual 791.8448033531306, deviation 0.36852333401274073% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 31 | Stage 6 | Round 2
+  Player level 6, XP 22, Gold 398, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 2733862436 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 310.0372136094235, effective 795.0630209998864, actual 795.4724720758063, deviation 0.05149919756109561% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 32 | Stage 6 | Round 3
+  Player level 6, XP 24, Gold 417, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 2517958186 | Battle result: 0 | Duration: 10.85s | Damage taken: 0
+  normal: requested 326.53921932217895, effective 801.2362189713432, actual 815.1623652061769, deviation 1.73808246620611% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 33 | Stage 6 | Round 4
+  Player level 6, XP 26, Gold 436, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 3658073011 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 343.9195589270938, effective 807.4573482038301, actual 815.1623652061769, deviation 0.9542320742372913% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 34 | Stage 6 | Round 5
+  Player level 6, XP 28, Gold 455, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 3292860053 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 362.22498252470405, effective 813.726780855472, actual 815.1623652061769, deviation 0.17642092954045654% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 35 | Stage 6 | Round 6
+  Player level 6, XP 30, Gold 474, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 2944413644 | Battle result: 0 | Duration: 12.15s | Damage taken: 0
+  normal: requested 381.5047285311162, effective 820.0448919739841, actual 820.8335474107621, deviation 0.09617222721545568% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 36 | Stage 6 | Round 7
+  Player level 6, XP 32, Gold 493, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 1357859319 | Battle result: 0 | Duration: 12.15s | Damage taken: 0
+  normal: requested 401.8106561208111, effective 826.4120595191064, actual 827.1280705339364, deviation 0.08664092042008975% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 37 | Stage 6 | Round 8
+  Player level 6, XP 34, Gold 512, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 18608928 | Battle result: 0 | Duration: 12.65s | Damage taken: 0
+  elite: requested 423.19738471883295, effective 832.8286643852149, actual 833.7543218117526, deviation 0.11114620162851609% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 38 | Stage 6 | Round 9
+  Player level 7, XP 0, Gold 531, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 sakura*2@2,3 | Bench: archer*2 guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1
+  Enemy count: 10 | Battle seed: 1917872002 | Battle result: 0 | Duration: 11.6s | Damage taken: 0
+  boss: requested 445.722440917574, effective 839.2950904241072, actual 853.4442149421234, deviation 1.6858343006470353% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 39 | Stage 7 | Round 1
+  Player level 7, XP 2, Gold 545, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 882421887 | Battle result: 0 | Duration: 9.05s | Damage taken: 0
+  normal: requested 418.9790944625196, effective 788.9373849986606, actual 827.5190254504018, deviation 4.890329851944681% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 40 | Stage 7 | Round 2
+  Player level 7, XP 4, Gold 564, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 4191072500 | Battle result: 0 | Duration: 8.85s | Damage taken: 0
+  normal: requested 440.6604568699282, effective 794.3800527650019, actual 827.5190254504018, deviation 4.171677343867459% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 41 | Stage 7 | Round 3
+  Player level 7, XP 6, Gold 583, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1413025311 | Battle result: 0 | Duration: 8.75s | Damage taken: 0
+  normal: requested 463.463788086889, effective 799.8602680388868, actual 827.5190254504018, deviation 3.4579486588737924% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 42 | Stage 7 | Round 4
+  Player level 7, XP 8, Gold 602, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3434205321 | Battle result: 0 | Duration: 9.05s | Damage taken: 0
+  normal: requested 487.4471478416589, effective 805.378289850516, actual 827.5190254504018, deviation 2.7491100615581914% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 43 | Stage 7 | Round 5
+  Player level 7, XP 10, Gold 621, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1692520800 | Battle result: 0 | Duration: 9.8s | Damage taken: 0
+  normal: requested 512.6716003417778, effective 810.93437901707, actual 827.5190254504018, deviation 2.045128047652144% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 44 | Stage 7 | Round 6
+  Player level 7, XP 12, Gold 640, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1080627565 | Battle result: 0 | Duration: 9.8s | Damage taken: 0
+  normal: requested 539.2013697500952, effective 816.5287981550371, actual 827.5190254504018, deviation 1.3459693424405128% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 45 | Stage 7 | Round 7
+  Player level 7, XP 14, Gold 659, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3682933928 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  normal: requested 567.104003706379, effective 822.1618116926264, actual 827.5190254504018, deviation 0.6516008991887184% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 46 | Stage 7 | Round 8
+  Player level 7, XP 16, Gold 678, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2759308629 | Battle result: 0 | Duration: 9.8s | Damage taken: 0
+  normal: requested 596.4505453108561, effective 827.8336858822668, actual 827.5190254504018, deviation 0.03801010241925248% | BELOW_MIN_FEASIBLE
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 47 | Stage 7 | Round 9
+  Player level 7, XP 18, Gold 697, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2008589733 | Battle result: 0 | Duration: 9.05s | Damage taken: 0
+  elite: requested 627.3157140075676, effective 833.5446888131908, actual 872.4863532259878, deviation 4.671814833136614% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 48 | Stage 7 | Round 10
+  Player level 7, XP 20, Gold 716, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2943287083 | Battle result: 0 | Duration: 9.05s | Damage taken: 0
+  boss: requested 659.7780958280933, effective 839.2950904241072, actual 872.4863532259878, deviation 3.9546594732382636% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 49 | Stage 8 | Round 1
+  Player level 7, XP 22, Gold 735, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 364710650 | Battle result: 0 | Duration: 8.85s | Damage taken: 0
+  normal: requested 620.1914100784078, effective 788.9373849986606, actual 827.5190254504018, deviation 4.890329851944681% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 50 | Stage 8 | Round 2
+  Player level 7, XP 24, Gold 754, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2748019940 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  normal: requested 652.2851228712178, effective 807.8696376393208, actual 827.5190254504018, deviation 2.432247344818975% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 51 | Stage 8 | Round 3
+  Player level 7, XP 26, Gold 773, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2918926606 | Battle result: 0 | Duration: 9.8s | Damage taken: 0
+  normal: requested 686.0396235822242, effective 827.2562104793595, actual 827.5190254504018, deviation 0.03176947694233847% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 52 | Stage 8 | Round 4
+  Player level 7, XP 28, Gold 792, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2547387373 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  normal: requested 721.5408547923629, effective 847.1080059109793, actual 872.4863532259878, deviation 2.9958809429166844% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 53 | Stage 8 | Round 5
+  Player level 7, XP 30, Gold 811, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 257823816 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  normal: requested 758.8792064458581, effective 867.4361879527769, actual 872.4863532259878, deviation 0.5821944418908519% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 54 | Stage 8 | Round 6
+  Player level 7, XP 32, Gold 830, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3001508704 | Battle result: 0 | Duration: 10.05s | Damage taken: 0
+  normal: requested 798.1497459927215, effective 888.2521885280329, actual 917.4536810015738, deviation 3.287522716035432% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 55 | Stage 8 | Round 7
+  Player level 7, XP 34, Gold 849, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3193636952 | Battle result: 0 | Duration: 10.05s | Damage taken: 0
+  normal: requested 839.4524604406793, effective 909.567713893662, actual 917.4536810015738, deviation 0.8670016522633275% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 56 | Stage 8 | Round 8
+  Player level 7, XP 36, Gold 868, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1052691380 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 882.8925109328247, effective 931.3947512234391, actual 962.4210087771598, deviation 3.3311608759836777% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 57 | Stage 8 | Round 9
+  Player level 7, XP 38, Gold 887, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3528098320 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  elite: requested 928.5805004991728, effective 953.7455753492053, actual 962.4210087771598, deviation 0.9096171612411531% | STAGE_ENVELOPE_CONSTRAINT
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 58 | Stage 8 | Round 10
+  Player level 7, XP 40, Gold 906, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1002024108 | Battle result: 0 | Duration: 12.15s | Damage taken: 0
+  boss: requested 976.632755663843, effective 976.632755663843, actual 1007.3883365527458, deviation 3.149144927869787% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 59 | Stage 9 | Round 1
+  Player level 7, XP 42, Gold 925, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 4066018294 | Battle result: 0 | Duration: 10.85s | Damage taken: 0
+  normal: requested 918.0347903240123, effective 918.0347903240123, actual 962.4210087771598, deviation 4.834916815895595% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 60 | Stage 9 | Round 2
+  Player level 7, XP 44, Gold 944, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 497184296 | Battle result: 0 | Duration: 11.05s | Damage taken: 0
+  normal: requested 965.5413252673802, effective 965.5413252673801, actual 1007.3883365527458, deviation 4.334046631694129% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 61 | Stage 9 | Round 3
+  Player level 7, XP 46, Gold 963, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 4270066740 | Battle result: 0 | Duration: 12.65s | Damage taken: 0
+  normal: requested 1015.5062320351196, effective 1015.5062320351196, actual 1052.3556643283318, deviation 3.6286761351886834% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 62 | Stage 9 | Round 4
+  Player level 7, XP 48, Gold 982, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 1526760710 | Battle result: 0 | Duration: 14.35s | Damage taken: 0
+  normal: requested 1068.0567266414923, effective 1068.056726641492, actual 1119.4082982337889, deviation 4.80794421414038% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 63 | Stage 9 | Round 5
+  Player level 7, XP 50, Gold 1001, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2351366373 | Battle result: 0 | Duration: 13.25s | Damage taken: 0
+  normal: requested 1123.32660828485, effective 1123.32660828485, actual 1125.1149718657564, deviation 0.15920245881444894% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 64 | Stage 9 | Round 6
+  Player level 7, XP 52, Gold 1020, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 4043324602 | Battle result: 0 | Duration: 14.35s | Damage taken: 0
+  normal: requested 1181.4566000147543, effective 1181.4566000147543, actual 1182.3539348720083, deviation 0.07595157174988931% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 65 | Stage 9 | Round 7
+  Player level 7, XP 54, Gold 1039, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 2991599098 | Battle result: 0 | Duration: 14.45s | Damage taken: 0
+  normal: requested 1242.594707027958, effective 1242.5947070279578, actual 1242.3264976065218, deviation 0.02158462609884639% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 66 | Stage 9 | Round 8
+  Player level 8, XP 0, Gold 1054, HP 12 (was 20)
+  Board: warrior*2@4,3 guardian*2@1,3 scout*2@5,3 archer*2@0,3 ranger*2@3,3 archer*2@6,3 sakura*2@2,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 sasuke*1
+  Enemy count: 10 | Battle seed: 3471796623 | Battle result: 1 | Duration: 17.6s | Damage taken: 8
+  normal: requested 1306.8965935055207, effective 1306.8965935055207, actual 1306.0636077471684, deviation 0.06373769451170126% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 0, interest 5, streak 0 | Total 15
+Wave 67 | Stage 9 | Round 9
+  Player level 8, XP 2, Gold 1058, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 3951526957 | Battle result: 0 | Duration: 16.55s | Damage taken: 0
+  elite: requested 1374.5259789505164, effective 1374.5259789505164, actual 1369.0092443853878, deviation 0.4013554235868886% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 0 | Total 16
+Wave 68 | Stage 9 | Round 10
+  Player level 8, XP 4, Gold 1075, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 4134461894 | Battle result: 0 | Duration: 15.05s | Damage taken: 0
+  boss: requested 1445.6550550354573, effective 1445.6550550354575, actual 1447.565090157188, deviation 0.1321224669105915% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 1 | Total 17
+Wave 69 | Stage 10 | Round 1
+  Player level 8, XP 6, Gold 1092, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 2069073687 | Battle result: 0 | Duration: 17.65s | Damage taken: 0
+  normal: requested 1358.91575173333, effective 1358.91575173333, actual 1369.0092443853878, deviation 0.7427607369465974% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 1 | Total 17
+Wave 70 | Stage 10 | Round 2
+  Player level 8, XP 8, Gold 1110, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 1147120581 | Battle result: 0 | Duration: 16.55s | Damage taken: 0
+  normal: requested 1429.2370285795237, effective 1429.2370285795237, actual 1428.9818071199013, deviation 0.017857182155154427% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 2 | Total 18
+Wave 71 | Stage 10 | Round 3
+  Player level 8, XP 10, Gold 1128, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 1922071365 | Battle result: 0 | Duration: 15.55s | Damage taken: 0
+  normal: requested 1503.197296268948, effective 1503.197296268948, actual 1501.3059947451895, deviation 0.12581858206190988% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 2 | Total 18
+Wave 72 | Stage 10 | Round 4
+  Player level 8, XP 12, Gold 1147, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 203295595 | Battle result: 0 | Duration: 25.35s | Damage taken: 0
+  normal: requested 1580.9848655796634, effective 1580.984865579663, actual 1583.9728627373931, deviation 0.1889959368228782% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 73 | Stage 10 | Round 5
+  Player level 8, XP 14, Gold 1166, HP 12 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 3180336921 | Battle result: 0 | Duration: 21.8s | Damage taken: 0
+  normal: requested 1662.797792010357, effective 1662.797792010357, actual 1662.6403999114432, deviation 0.009465498431019095% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 74 | Stage 10 | Round 6
+  Player level 8, XP 16, Gold 1181, HP 4 (was 12)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 1480413276 | Battle result: 1 | Duration: 22.1s | Damage taken: 8
+  normal: requested 1748.8443800508983, effective 1748.8443800508983, actual 1750.1586422780933, deviation 0.07515032453355332% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 0, interest 5, streak 0 | Total 15
+Wave 75 | Stage 10 | Round 7
+  Player level 8, XP 18, Gold 1197, HP 0 (was 4)
+  Board: warrior*2@1,3 guardian*2@5,3 scout*2@0,3 archer*2@6,3 ranger*2@2,3 archer*2@3,2 sakura*2@4,3 sasuke*2@3,3 | Bench: guardian*2 young_sasuke*1 warrior*2 guardian*1 scout*1 warrior*1 champion*1 sakura*1 shaman*1
+  Enemy count: 10 | Battle seed: 1345216120 | Battle result: 1 | Duration: 22.8s | Damage taken: 4
+  normal: requested 1839.3437135479192, effective 1839.3437135479194, actual 1836.8888302973535, deviation 0.13346517197868704% | unsaturated
+  Formation L0 strength 0 | spacing 0 | template none used=false
+  Income: base 10, victory 0, interest 5, streak 1 | Total 16
+End state: PLAYER_DEAD | Waves: 75 | Game result: defeat

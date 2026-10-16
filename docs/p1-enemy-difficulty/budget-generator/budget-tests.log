@@ -1,0 +1,27 @@
+PASS C0 uses the published P1-B model and B0 is the old Stage 2-1 real army query
+PASS A legacy all 968 waves exactly equal P0, intro and population stay unchanged
+PASS B same seed regenerates all wave enemies and diagnostics exactly; another seed can vary choices
+PASS C 3 / 6 / 99 stage prefixes include identical budgets and final selected-stage Boss
+PASS D 1000 enemy draws and composition generation leave shop/battle/bot/formation streams unchanged
+PASS E mixed costs really occur, costs respect unlock and implemented 4-cost units enter the pool and army
+  seed12345 Stage6/7/8 2-star ratios 0.30337078651685395/0.47/0.65
+PASS F 1-star / 2-star mixtures and progressive feasible soft targets replace full-team tier switching
+PASS G normal/elite have zero 3-stars, Boss has at most one and its real nonlinear price is paid
+PASS H every budget multiplier is 1, enemy equipment is empty and legacy late bonuses are absent
+PASS I all 965 formal generated non-intro waves meet tolerance with explicit solution classification
+PASS J requested and effective Boss-to-next-first budgets recover exactly 6 percent at all 97 boundaries
+PASS K requested normal anchors follow 4 percent per budget wave with no compounded Boss multiplier
+PASS L saturation preserves huge requested budgets, returns within finite limits and never breaks population or star caps
+PASS wave kind rules are centralized and explicitly configurable
+PASS feasible intervals exactly account for the shared three-star quota and legal repeats
+PASS unreachable discrete target is reported with an exact small-population nearest certificate
+PASS bounded optimizer reports a limit rather than asserting an unproved discrete impossibility
+PASS stable candidate sorting and generation ignore object-key and roster load order
+PASS invalid candidates, models, policies and nonfinite targets fail loudly
+PASS missing P1-B points retain low-confidence fallback diagnostics; team confidence stays qualified
+PASS new games default budget-v1, missing old save fields pin to legacy and saved modes cannot be replaced
+PASS saved model/version/hash/config mismatches are refused before future waves can drift
+PASS budget save/load and debug extension retain all enemies, IDs, shops and isolated future combat seeds
+PASS run-sim exports the generator diagnostics and explicit modes without granting bot resources
+PASS P0/P1-A/P1-B evidence, old battle rules and all existing configuration data remain byte-identical
+Enemy budget: 25 passed, 0 failed

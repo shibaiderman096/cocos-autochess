@@ -1,0 +1,3869 @@
+{
+  "totalMilliseconds": 270.7639,
+  "measuredPerWaveScope": "EnemyBudget.calculate + EnemyGenerator.generate; stage-bound precomputation included only in total",
+  "averagePerWaveMilliseconds": 0.2423113989637326,
+  "p95Milliseconds": 0.5554000000000201,
+  "maxMilliseconds": 3.563199999999995,
+  "waves": [
+    {
+      "globalWaveId": 4,
+      "generationMilliseconds": 0.8310999999999922
+    },
+    {
+      "globalWaveId": 5,
+      "generationMilliseconds": 0.11329999999998108
+    },
+    {
+      "globalWaveId": 6,
+      "generationMilliseconds": 0.07389999999998054
+    },
+    {
+      "globalWaveId": 7,
+      "generationMilliseconds": 0.10550000000000637
+    },
+    {
+      "globalWaveId": 8,
+      "generationMilliseconds": 0.11910000000000309
+    },
+    {
+      "globalWaveId": 9,
+      "generationMilliseconds": 0.11029999999999518
+    },
+    {
+      "globalWaveId": 10,
+      "generationMilliseconds": 0.16059999999998809
+    },
+    {
+      "globalWaveId": 11,
+      "generationMilliseconds": 0.09750000000002501
+    },
+    {
+      "globalWaveId": 12,
+      "generationMilliseconds": 0.08100000000001728
+    },
+    {
+      "globalWaveId": 13,
+      "generationMilliseconds": 0.14580000000000837
+    },
+    {
+      "globalWaveId": 14,
+      "generationMilliseconds": 0.07740000000001146
+    },
+    {
+      "globalWaveId": 15,
+      "generationMilliseconds": 0.11660000000000537
+    },
+    {
+      "globalWaveId": 16,
+      "generationMilliseconds": 0.2044999999999959
+    },
+    {
+      "globalWaveId": 17,
+      "generationMilliseconds": 0.16800000000000637
+    },
+    {
+      "globalWaveId": 18,
+      "generationMilliseconds": 0.17130000000003065
+    },
+    {
+      "globalWaveId": 19,
+      "generationMilliseconds": 0.13940000000002328
+    },
+    {
+      "globalWaveId": 20,
+      "generationMilliseconds": 0.2118000000000393
+    },
+    {
+      "globalWaveId": 21,
+      "generationMilliseconds": 0.2167999999999779
+    },
+    {
+      "globalWaveId": 22,
+      "generationMilliseconds": 0.15780000000000882
+    },
+    {
+      "globalWaveId": 23,
+      "generationMilliseconds": 0.30719999999996617
+    },
+    {
+      "globalWaveId": 24,
+      "generationMilliseconds": 0.2510000000000332
+    },
+    {
+      "globalWaveId": 25,
+      "generationMilliseconds": 0.5588999999999942
+    },
+    {
+      "globalWaveId": 26,
+      "generationMilliseconds": 0.37069999999999936
+    },
+    {
+      "globalWaveId": 27,
+      "generationMilliseconds": 0.5072000000000116
+    },
+    {
+      "globalWaveId": 28,
+      "generationMilliseconds": 0.887800000000027
+    },
+    {
+      "globalWaveId": 29,
+      "generationMilliseconds": 3.563199999999995
+    },
+    {
+      "globalWaveId": 30,
+      "generationMilliseconds": 0.7101000000000113
+    },
+    {
+      "globalWaveId": 31,
+      "generationMilliseconds": 0.46940000000000737
+    },
+    {
+      "globalWaveId": 32,
+      "generationMilliseconds": 0.17910000000000537
+    },
+    {
+      "globalWaveId": 33,
+      "generationMilliseconds": 0.2547000000000139
+    },
+    {
+      "globalWaveId": 34,
+      "generationMilliseconds": 0.39869999999996253
+    },
+    {
+      "globalWaveId": 35,
+      "generationMilliseconds": 0.3795000000000073
+    },
+    {
+      "globalWaveId": 36,
+      "generationMilliseconds": 0.3178999999999519
+    },
+    {
+      "globalWaveId": 37,
+      "generationMilliseconds": 0.4479000000000042
+    },
+    {
+      "globalWaveId": 38,
+      "generationMilliseconds": 0.4525000000000432
+    },
+    {
+      "globalWaveId": 39,
+      "generationMilliseconds": 2.3840000000000146
+    },
+    {
+      "globalWaveId": 40,
+      "generationMilliseconds": 2.475599999999986
+    },
+    {
+      "globalWaveId": 41,
+      "generationMilliseconds": 2.413600000000031
+    },
+    {
+      "globalWaveId": 42,
+      "generationMilliseconds": 2.4073999999999955
+    },
+    {
+      "globalWaveId": 43,
+      "generationMilliseconds": 2.2737000000000194
+    },
+    {
+      "globalWaveId": 44,
+      "generationMilliseconds": 1.6263999999999896
+    },
+    {
+      "globalWaveId": 45,
+      "generationMilliseconds": 1.8465000000000487
+    },
+    {
+      "globalWaveId": 46,
+      "generationMilliseconds": 1.9543999999999642
+    },
+    {
+      "globalWaveId": 47,
+      "generationMilliseconds": 1.484199999999987
+    },
+    {
+      "globalWaveId": 48,
+      "generationMilliseconds": 1.5002999999999815
+    },
+    {
+      "globalWaveId": 49,
+      "generationMilliseconds": 1.5495000000000232
+    },
+    {
+      "globalWaveId": 50,
+      "generationMilliseconds": 1.7045999999999708
+    },
+    {
+      "globalWaveId": 51,
+      "generationMilliseconds": 2.0516000000000076
+    },
+    {
+      "globalWaveId": 52,
+      "generationMilliseconds": 1.7923999999999864
+    },
+    {
+      "globalWaveId": 53,
+      "generationMilliseconds": 2.0792000000000144
+    },
+    {
+      "globalWaveId": 54,
+      "generationMilliseconds": 1.9388000000000147
+    },
+    {
+      "globalWaveId": 55,
+      "generationMilliseconds": 2.3281000000000063
+    },
+    {
+      "globalWaveId": 56,
+      "generationMilliseconds": 2.0668999999999755
+    },
+    {
+      "globalWaveId": 57,
+      "generationMilliseconds": 2.4961000000000126
+    },
+    {
+      "globalWaveId": 58,
+      "generationMilliseconds": 2.286800000000028
+    },
+    {
+      "globalWaveId": 59,
+      "generationMilliseconds": 1.8494000000000028
+    },
+    {
+      "globalWaveId": 60,
+      "generationMilliseconds": 2.0892000000000053
+    },
+    {
+      "globalWaveId": 61,
+      "generationMilliseconds": 0.13960000000002992
+    },
+    {
+      "globalWaveId": 62,
+      "generationMilliseconds": 0.14660000000003492
+    },
+    {
+      "globalWaveId": 63,
+      "generationMilliseconds": 0.11880000000002156
+    },
+    {
+      "globalWaveId": 64,
+      "generationMilliseconds": 0.2547000000000139
+    },
+    {
+      "globalWaveId": 65,
+      "generationMilliseconds": 0.3383000000000038
+    },
+    {
+      "globalWaveId": 66,
+      "generationMilliseconds": 0.39560000000000173
+    },
+    {
+      "globalWaveId": 67,
+      "generationMilliseconds": 0.6169000000000437
+    },
+    {
+      "globalWaveId": 68,
+      "generationMilliseconds": 0.9154000000000337
+    },
+    {
+      "globalWaveId": 69,
+      "generationMilliseconds": 0.6181000000000267
+    },
+    {
+      "globalWaveId": 70,
+      "generationMilliseconds": 0.5701999999999998
+    },
+    {
+      "globalWaveId": 71,
+      "generationMilliseconds": 0.6126000000000431
+    },
+    {
+      "globalWaveId": 72,
+      "generationMilliseconds": 0.3423000000000229
+    },
+    {
+      "globalWaveId": 73,
+      "generationMilliseconds": 0.3634999999999877
+    },
+    {
+      "globalWaveId": 74,
+      "generationMilliseconds": 0.8431999999999675
+    },
+    {
+      "globalWaveId": 75,
+      "generationMilliseconds": 0.6854999999999905
+    },
+    {
+      "globalWaveId": 76,
+      "generationMilliseconds": 0.4279000000000224
+    },
+    {
+      "globalWaveId": 77,
+      "generationMilliseconds": 0.38589999999999236
+    },
+    {
+      "globalWaveId": 78,
+      "generationMilliseconds": 0.9186000000000263
+    },
+    {
+      "globalWaveId": 79,
+      "generationMilliseconds": 0.5009000000000015
+    },
+    {
+      "globalWaveId": 80,
+      "generationMilliseconds": 0.5156000000000063
+    },
+    {
+      "globalWaveId": 81,
+      "generationMilliseconds": 0.3158999999999992
+    },
+    {
+      "globalWaveId": 82,
+      "generationMilliseconds": 0.2795000000000414
+    },
+    {
+      "globalWaveId": 83,
+      "generationMilliseconds": 0.20520000000004757
+    },
+    {
+      "globalWaveId": 84,
+      "generationMilliseconds": 0.3442999999999756
+    },
+    {
+      "globalWaveId": 85,
+      "generationMilliseconds": 0.6237999999999602
+    },
+    {
+      "globalWaveId": 86,
+      "generationMilliseconds": 0.3883999999999901
+    },
+    {
+      "globalWaveId": 87,
+      "generationMilliseconds": 0.47610000000003083
+    },
+    {
+      "globalWaveId": 88,
+      "generationMilliseconds": 0.7525999999999726
+    },
+    {
+      "globalWaveId": 89,
+      "generationMilliseconds": 0.280399999999986
+    },
+    {
+      "globalWaveId": 90,
+      "generationMilliseconds": 0.551900000000046
+    },
+    {
+      "globalWaveId": 91,
+      "generationMilliseconds": 0.405900000000031
+    },
+    {
+      "globalWaveId": 92,
+      "generationMilliseconds": 0.3547999999999547
+    },
+    {
+      "globalWaveId": 93,
+      "generationMilliseconds": 0.16320000000001755
+    },
+    {
+      "globalWaveId": 94,
+      "generationMilliseconds": 0.14660000000003492
+    },
+    {
+      "globalWaveId": 95,
+      "generationMilliseconds": 0.20060000000000855
+    },
+    {
+      "globalWaveId": 96,
+      "generationMilliseconds": 0.13360000000000127
+    },
+    {
+      "globalWaveId": 97,
+      "generationMilliseconds": 0.21739999999999782
+    },
+    {
+      "globalWaveId": 98,
+      "generationMilliseconds": 0.3158999999999992
+    },
+    {
+      "globalWaveId": 99,
+      "generationMilliseconds": 0.13529999999997244
+    },
+    {
+      "globalWaveId": 100,
+      "generationMilliseconds": 0.17310000000003356
+    },
+    {
+      "globalWaveId": 101,
+      "generationMilliseconds": 0.14819999999997435
+    },
+    {
+      "globalWaveId": 102,
+      "generationMilliseconds": 0.25200000000000955
+    },
+    {
+      "globalWaveId": 103,
+      "generationMilliseconds": 0.136099999999999
+    },
+    {
+      "globalWaveId": 104,
+      "generationMilliseconds": 0.13030000000003383
+    },
+    {
+      "globalWaveId": 105,
+      "generationMilliseconds": 0.2544000000000324
+    },
+    {
+      "globalWaveId": 106,
+      "generationMilliseconds": 0.17200000000002547
+    },
+    {
+      "globalWaveId": 107,
+      "generationMilliseconds": 0.13150000000001683
+    },
+    {
+      "globalWaveId": 108,
+      "generationMilliseconds": 0.29849999999999
+    },
+    {
+      "globalWaveId": 109,
+      "generationMilliseconds": 0.13470000000000937
+    },
+    {
+      "globalWaveId": 110,
+      "generationMilliseconds": 0.12880000000001246
+    },
+    {
+      "globalWaveId": 111,
+      "generationMilliseconds": 0.12860000000000582
+    },
+    {
+      "globalWaveId": 112,
+      "generationMilliseconds": 0.13810000000000855
+    },
+    {
+      "globalWaveId": 113,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 114,
+      "generationMilliseconds": 0.13179999999999836
+    },
+    {
+      "globalWaveId": 115,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 116,
+      "generationMilliseconds": 0.13249999999999318
+    },
+    {
+      "globalWaveId": 117,
+      "generationMilliseconds": 0.3160000000000309
+    },
+    {
+      "globalWaveId": 118,
+      "generationMilliseconds": 0.2968999999999937
+    },
+    {
+      "globalWaveId": 119,
+      "generationMilliseconds": 0.13810000000000855
+    },
+    {
+      "globalWaveId": 120,
+      "generationMilliseconds": 0.1342999999999961
+    },
+    {
+      "globalWaveId": 121,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 122,
+      "generationMilliseconds": 0.13620000000003074
+    },
+    {
+      "globalWaveId": 123,
+      "generationMilliseconds": 0.13440000000002783
+    },
+    {
+      "globalWaveId": 124,
+      "generationMilliseconds": 0.1408999999999878
+    },
+    {
+      "globalWaveId": 125,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 126,
+      "generationMilliseconds": 0.1360000000000241
+    },
+    {
+      "globalWaveId": 127,
+      "generationMilliseconds": 0.1319000000000301
+    },
+    {
+      "globalWaveId": 128,
+      "generationMilliseconds": 0.3164000000000442
+    },
+    {
+      "globalWaveId": 129,
+      "generationMilliseconds": 0.1927000000000021
+    },
+    {
+      "globalWaveId": 130,
+      "generationMilliseconds": 0.13360000000000127
+    },
+    {
+      "globalWaveId": 131,
+      "generationMilliseconds": 0.2892999999999688
+    },
+    {
+      "globalWaveId": 132,
+      "generationMilliseconds": 0.14150000000000773
+    },
+    {
+      "globalWaveId": 133,
+      "generationMilliseconds": 0.1320999999999799
+    },
+    {
+      "globalWaveId": 134,
+      "generationMilliseconds": 0.13140000000004193
+    },
+    {
+      "globalWaveId": 135,
+      "generationMilliseconds": 0.132000000000005
+    },
+    {
+      "globalWaveId": 136,
+      "generationMilliseconds": 0.14369999999996708
+    },
+    {
+      "globalWaveId": 137,
+      "generationMilliseconds": 0.1321999999999548
+    },
+    {
+      "globalWaveId": 138,
+      "generationMilliseconds": 0.2980000000000018
+    },
+    {
+      "globalWaveId": 139,
+      "generationMilliseconds": 0.13800000000003365
+    },
+    {
+      "globalWaveId": 140,
+      "generationMilliseconds": 0.1338999999999828
+    },
+    {
+      "globalWaveId": 141,
+      "generationMilliseconds": 0.13460000000003447
+    },
+    {
+      "globalWaveId": 142,
+      "generationMilliseconds": 0.1320999999999799
+    },
+    {
+      "globalWaveId": 143,
+      "generationMilliseconds": 0.13339999999999463
+    },
+    {
+      "globalWaveId": 144,
+      "generationMilliseconds": 0.130800000000022
+    },
+    {
+      "globalWaveId": 145,
+      "generationMilliseconds": 0.15190000000001191
+    },
+    {
+      "globalWaveId": 146,
+      "generationMilliseconds": 0.322400000000016
+    },
+    {
+      "globalWaveId": 147,
+      "generationMilliseconds": 0.3299999999999841
+    },
+    {
+      "globalWaveId": 148,
+      "generationMilliseconds": 0.5568000000000097
+    },
+    {
+      "globalWaveId": 149,
+      "generationMilliseconds": 0.2676000000000158
+    },
+    {
+      "globalWaveId": 150,
+      "generationMilliseconds": 0.25080000000002656
+    },
+    {
+      "globalWaveId": 151,
+      "generationMilliseconds": 0.24729999999999563
+    },
+    {
+      "globalWaveId": 152,
+      "generationMilliseconds": 0.20229999999997972
+    },
+    {
+      "globalWaveId": 153,
+      "generationMilliseconds": 0.1342000000000212
+    },
+    {
+      "globalWaveId": 154,
+      "generationMilliseconds": 0.12479999999999336
+    },
+    {
+      "globalWaveId": 155,
+      "generationMilliseconds": 0.222500000000025
+    },
+    {
+      "globalWaveId": 156,
+      "generationMilliseconds": 0.2566999999999666
+    },
+    {
+      "globalWaveId": 157,
+      "generationMilliseconds": 0.2267999999999688
+    },
+    {
+      "globalWaveId": 158,
+      "generationMilliseconds": 0.4882999999999811
+    },
+    {
+      "globalWaveId": 159,
+      "generationMilliseconds": 0.228999999999985
+    },
+    {
+      "globalWaveId": 160,
+      "generationMilliseconds": 0.46050000000002456
+    },
+    {
+      "globalWaveId": 161,
+      "generationMilliseconds": 0.27209999999996626
+    },
+    {
+      "globalWaveId": 162,
+      "generationMilliseconds": 0.2611999999999739
+    },
+    {
+      "globalWaveId": 163,
+      "generationMilliseconds": 0.16660000000001673
+    },
+    {
+      "globalWaveId": 164,
+      "generationMilliseconds": 0.12659999999999627
+    },
+    {
+      "globalWaveId": 165,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 166,
+      "generationMilliseconds": 0.1261000000000081
+    },
+    {
+      "globalWaveId": 167,
+      "generationMilliseconds": 0.12749999999999773
+    },
+    {
+      "globalWaveId": 168,
+      "generationMilliseconds": 0.2902000000000271
+    },
+    {
+      "globalWaveId": 169,
+      "generationMilliseconds": 0.14079999999995607
+    },
+    {
+      "globalWaveId": 170,
+      "generationMilliseconds": 0.12599999999997635
+    },
+    {
+      "globalWaveId": 171,
+      "generationMilliseconds": 0.1251999999999498
+    },
+    {
+      "globalWaveId": 172,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 173,
+      "generationMilliseconds": 0.12730000000004793
+    },
+    {
+      "globalWaveId": 174,
+      "generationMilliseconds": 0.12450000000001182
+    },
+    {
+      "globalWaveId": 175,
+      "generationMilliseconds": 0.12439999999998008
+    },
+    {
+      "globalWaveId": 176,
+      "generationMilliseconds": 0.2989000000000033
+    },
+    {
+      "globalWaveId": 177,
+      "generationMilliseconds": 0.13510000000002265
+    },
+    {
+      "globalWaveId": 178,
+      "generationMilliseconds": 0.2921000000000049
+    },
+    {
+      "globalWaveId": 179,
+      "generationMilliseconds": 0.13290000000000646
+    },
+    {
+      "globalWaveId": 180,
+      "generationMilliseconds": 0.12740000000002283
+    },
+    {
+      "globalWaveId": 181,
+      "generationMilliseconds": 0.14220000000000255
+    },
+    {
+      "globalWaveId": 182,
+      "generationMilliseconds": 0.13189999999997326
+    },
+    {
+      "globalWaveId": 183,
+      "generationMilliseconds": 0.136099999999999
+    },
+    {
+      "globalWaveId": 184,
+      "generationMilliseconds": 0.127900000000011
+    },
+    {
+      "globalWaveId": 185,
+      "generationMilliseconds": 0.12779999999997926
+    },
+    {
+      "globalWaveId": 186,
+      "generationMilliseconds": 0.12969999999995707
+    },
+    {
+      "globalWaveId": 187,
+      "generationMilliseconds": 0.13060000000001537
+    },
+    {
+      "globalWaveId": 188,
+      "generationMilliseconds": 0.29970000000002983
+    },
+    {
+      "globalWaveId": 189,
+      "generationMilliseconds": 0.13069999999999027
+    },
+    {
+      "globalWaveId": 190,
+      "generationMilliseconds": 0.27640000000002374
+    },
+    {
+      "globalWaveId": 191,
+      "generationMilliseconds": 0.1309999999999718
+    },
+    {
+      "globalWaveId": 192,
+      "generationMilliseconds": 0.12749999999999773
+    },
+    {
+      "globalWaveId": 193,
+      "generationMilliseconds": 0.20699999999999363
+    },
+    {
+      "globalWaveId": 194,
+      "generationMilliseconds": 0.26909999999998035
+    },
+    {
+      "globalWaveId": 195,
+      "generationMilliseconds": 0.25579999999996517
+    },
+    {
+      "globalWaveId": 196,
+      "generationMilliseconds": 0.25950000000000273
+    },
+    {
+      "globalWaveId": 197,
+      "generationMilliseconds": 0.14210000000002765
+    },
+    {
+      "globalWaveId": 198,
+      "generationMilliseconds": 0.29300000000000637
+    },
+    {
+      "globalWaveId": 199,
+      "generationMilliseconds": 0.130800000000022
+    },
+    {
+      "globalWaveId": 200,
+      "generationMilliseconds": 0.12380000000001701
+    },
+    {
+      "globalWaveId": 201,
+      "generationMilliseconds": 0.12409999999999854
+    },
+    {
+      "globalWaveId": 202,
+      "generationMilliseconds": 0.1268000000000029
+    },
+    {
+      "globalWaveId": 203,
+      "generationMilliseconds": 0.12889999999998736
+    },
+    {
+      "globalWaveId": 204,
+      "generationMilliseconds": 0.12489999999996826
+    },
+    {
+      "globalWaveId": 205,
+      "generationMilliseconds": 0.12550000000004502
+    },
+    {
+      "globalWaveId": 206,
+      "generationMilliseconds": 0.2880999999999858
+    },
+    {
+      "globalWaveId": 207,
+      "generationMilliseconds": 0.13069999999999027
+    },
+    {
+      "globalWaveId": 208,
+      "generationMilliseconds": 0.3211000000000013
+    },
+    {
+      "globalWaveId": 209,
+      "generationMilliseconds": 0.1419999999999959
+    },
+    {
+      "globalWaveId": 210,
+      "generationMilliseconds": 0.12939999999997553
+    },
+    {
+      "globalWaveId": 211,
+      "generationMilliseconds": 0.12560000000001992
+    },
+    {
+      "globalWaveId": 212,
+      "generationMilliseconds": 0.12879999999995562
+    },
+    {
+      "globalWaveId": 213,
+      "generationMilliseconds": 0.130299999999977
+    },
+    {
+      "globalWaveId": 214,
+      "generationMilliseconds": 0.12650000000002137
+    },
+    {
+      "globalWaveId": 215,
+      "generationMilliseconds": 0.13059999999995853
+    },
+    {
+      "globalWaveId": 216,
+      "generationMilliseconds": 0.12409999999999854
+    },
+    {
+      "globalWaveId": 217,
+      "generationMilliseconds": 0.12819999999999254
+    },
+    {
+      "globalWaveId": 218,
+      "generationMilliseconds": 0.29009999999999536
+    },
+    {
+      "globalWaveId": 219,
+      "generationMilliseconds": 0.13280000000003156
+    },
+    {
+      "globalWaveId": 220,
+      "generationMilliseconds": 0.2773000000000252
+    },
+    {
+      "globalWaveId": 221,
+      "generationMilliseconds": 0.13840000000004693
+    },
+    {
+      "globalWaveId": 222,
+      "generationMilliseconds": 0.12620000000003984
+    },
+    {
+      "globalWaveId": 223,
+      "generationMilliseconds": 0.12580000000002656
+    },
+    {
+      "globalWaveId": 224,
+      "generationMilliseconds": 0.12569999999999482
+    },
+    {
+      "globalWaveId": 225,
+      "generationMilliseconds": 0.12370000000004211
+    },
+    {
+      "globalWaveId": 226,
+      "generationMilliseconds": 0.12479999999999336
+    },
+    {
+      "globalWaveId": 227,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 228,
+      "generationMilliseconds": 0.2914000000000101
+    },
+    {
+      "globalWaveId": 229,
+      "generationMilliseconds": 0.1320999999999799
+    },
+    {
+      "globalWaveId": 230,
+      "generationMilliseconds": 0.126700000000028
+    },
+    {
+      "globalWaveId": 231,
+      "generationMilliseconds": 0.12669999999997117
+    },
+    {
+      "globalWaveId": 232,
+      "generationMilliseconds": 0.12920000000002574
+    },
+    {
+      "globalWaveId": 233,
+      "generationMilliseconds": 0.13639999999998054
+    },
+    {
+      "globalWaveId": 234,
+      "generationMilliseconds": 0.13529999999997244
+    },
+    {
+      "globalWaveId": 235,
+      "generationMilliseconds": 0.12650000000002137
+    },
+    {
+      "globalWaveId": 236,
+      "generationMilliseconds": 0.2931000000000381
+    },
+    {
+      "globalWaveId": 237,
+      "generationMilliseconds": 0.1379999999999768
+    },
+    {
+      "globalWaveId": 238,
+      "generationMilliseconds": 0.2937000000000012
+    },
+    {
+      "globalWaveId": 239,
+      "generationMilliseconds": 0.13159999999999172
+    },
+    {
+      "globalWaveId": 240,
+      "generationMilliseconds": 0.12630000000001473
+    },
+    {
+      "globalWaveId": 241,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 242,
+      "generationMilliseconds": 0.13400000000001455
+    },
+    {
+      "globalWaveId": 243,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 244,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 245,
+      "generationMilliseconds": 0.13479999999998427
+    },
+    {
+      "globalWaveId": 246,
+      "generationMilliseconds": 0.12569999999999482
+    },
+    {
+      "globalWaveId": 247,
+      "generationMilliseconds": 0.1272000000000162
+    },
+    {
+      "globalWaveId": 248,
+      "generationMilliseconds": 0.2976000000000454
+    },
+    {
+      "globalWaveId": 249,
+      "generationMilliseconds": 0.13189999999997326
+    },
+    {
+      "globalWaveId": 250,
+      "generationMilliseconds": 0.27049999999997
+    },
+    {
+      "globalWaveId": 251,
+      "generationMilliseconds": 0.13060000000001537
+    },
+    {
+      "globalWaveId": 252,
+      "generationMilliseconds": 0.12450000000001182
+    },
+    {
+      "globalWaveId": 253,
+      "generationMilliseconds": 0.1239999999999668
+    },
+    {
+      "globalWaveId": 254,
+      "generationMilliseconds": 0.12439999999998008
+    },
+    {
+      "globalWaveId": 255,
+      "generationMilliseconds": 0.12430000000000518
+    },
+    {
+      "globalWaveId": 256,
+      "generationMilliseconds": 0.1239999999999668
+    },
+    {
+      "globalWaveId": 257,
+      "generationMilliseconds": 0.13069999999999027
+    },
+    {
+      "globalWaveId": 258,
+      "generationMilliseconds": 0.28870000000000573
+    },
+    {
+      "globalWaveId": 259,
+      "generationMilliseconds": 0.14449999999999363
+    },
+    {
+      "globalWaveId": 260,
+      "generationMilliseconds": 0.1349999999999909
+    },
+    {
+      "globalWaveId": 261,
+      "generationMilliseconds": 0.13860000000005357
+    },
+    {
+      "globalWaveId": 262,
+      "generationMilliseconds": 0.12659999999999627
+    },
+    {
+      "globalWaveId": 263,
+      "generationMilliseconds": 0.12489999999996826
+    },
+    {
+      "globalWaveId": 264,
+      "generationMilliseconds": 0.1298999999999637
+    },
+    {
+      "globalWaveId": 265,
+      "generationMilliseconds": 0.269299999999987
+    },
+    {
+      "globalWaveId": 266,
+      "generationMilliseconds": 0.13510000000002265
+    },
+    {
+      "globalWaveId": 267,
+      "generationMilliseconds": 0.12739999999996598
+    },
+    {
+      "globalWaveId": 268,
+      "generationMilliseconds": 0.287900000000036
+    },
+    {
+      "globalWaveId": 269,
+      "generationMilliseconds": 0.1279999999999859
+    },
+    {
+      "globalWaveId": 270,
+      "generationMilliseconds": 0.1362999999999488
+    },
+    {
+      "globalWaveId": 271,
+      "generationMilliseconds": 0.12520000000000664
+    },
+    {
+      "globalWaveId": 272,
+      "generationMilliseconds": 0.13069999999999027
+    },
+    {
+      "globalWaveId": 273,
+      "generationMilliseconds": 0.17739999999997735
+    },
+    {
+      "globalWaveId": 274,
+      "generationMilliseconds": 0.25260000000002947
+    },
+    {
+      "globalWaveId": 275,
+      "generationMilliseconds": 0.13160000000004857
+    },
+    {
+      "globalWaveId": 276,
+      "generationMilliseconds": 0.1260000000000332
+    },
+    {
+      "globalWaveId": 277,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 278,
+      "generationMilliseconds": 0.2878000000000043
+    },
+    {
+      "globalWaveId": 279,
+      "generationMilliseconds": 0.35130000000003747
+    },
+    {
+      "globalWaveId": 280,
+      "generationMilliseconds": 0.15500000000002956
+    },
+    {
+      "globalWaveId": 281,
+      "generationMilliseconds": 0.14969999999999573
+    },
+    {
+      "globalWaveId": 282,
+      "generationMilliseconds": 0.12649999999996453
+    },
+    {
+      "globalWaveId": 283,
+      "generationMilliseconds": 0.1251999999999498
+    },
+    {
+      "globalWaveId": 284,
+      "generationMilliseconds": 0.15970000000004347
+    },
+    {
+      "globalWaveId": 285,
+      "generationMilliseconds": 0.13450000000000273
+    },
+    {
+      "globalWaveId": 286,
+      "generationMilliseconds": 0.12650000000002137
+    },
+    {
+      "globalWaveId": 287,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 288,
+      "generationMilliseconds": 0.28879999999998063
+    },
+    {
+      "globalWaveId": 289,
+      "generationMilliseconds": 0.12800000000004275
+    },
+    {
+      "globalWaveId": 290,
+      "generationMilliseconds": 0.12489999999996826
+    },
+    {
+      "globalWaveId": 291,
+      "generationMilliseconds": 0.12550000000004502
+    },
+    {
+      "globalWaveId": 292,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 293,
+      "generationMilliseconds": 0.12400000000002365
+    },
+    {
+      "globalWaveId": 294,
+      "generationMilliseconds": 0.12409999999999854
+    },
+    {
+      "globalWaveId": 295,
+      "generationMilliseconds": 0.2687000000000239
+    },
+    {
+      "globalWaveId": 296,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 297,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 298,
+      "generationMilliseconds": 0.29410000000001446
+    },
+    {
+      "globalWaveId": 299,
+      "generationMilliseconds": 0.12949999999995043
+    },
+    {
+      "globalWaveId": 300,
+      "generationMilliseconds": 0.12520000000000664
+    },
+    {
+      "globalWaveId": 301,
+      "generationMilliseconds": 0.13030000000003383
+    },
+    {
+      "globalWaveId": 302,
+      "generationMilliseconds": 0.1262999999999579
+    },
+    {
+      "globalWaveId": 303,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 304,
+      "generationMilliseconds": 0.12830000000002428
+    },
+    {
+      "globalWaveId": 305,
+      "generationMilliseconds": 0.12380000000001701
+    },
+    {
+      "globalWaveId": 306,
+      "generationMilliseconds": 0.12259999999997717
+    },
+    {
+      "globalWaveId": 307,
+      "generationMilliseconds": 0.12510000000003174
+    },
+    {
+      "globalWaveId": 308,
+      "generationMilliseconds": 0.28499999999996817
+    },
+    {
+      "globalWaveId": 309,
+      "generationMilliseconds": 0.26490000000001146
+    },
+    {
+      "globalWaveId": 310,
+      "generationMilliseconds": 0.13049999999998363
+    },
+    {
+      "globalWaveId": 311,
+      "generationMilliseconds": 0.12249999999994543
+    },
+    {
+      "globalWaveId": 312,
+      "generationMilliseconds": 0.12120000000004438
+    },
+    {
+      "globalWaveId": 313,
+      "generationMilliseconds": 0.12040000000001783
+    },
+    {
+      "globalWaveId": 314,
+      "generationMilliseconds": 0.11939999999998463
+    },
+    {
+      "globalWaveId": 315,
+      "generationMilliseconds": 0.12180000000000746
+    },
+    {
+      "globalWaveId": 316,
+      "generationMilliseconds": 0.120900000000006
+    },
+    {
+      "globalWaveId": 317,
+      "generationMilliseconds": 0.125
+    },
+    {
+      "globalWaveId": 318,
+      "generationMilliseconds": 0.27899999999999636
+    },
+    {
+      "globalWaveId": 319,
+      "generationMilliseconds": 0.12220000000002074
+    },
+    {
+      "globalWaveId": 320,
+      "generationMilliseconds": 0.11879999999996471
+    },
+    {
+      "globalWaveId": 321,
+      "generationMilliseconds": 0.12050000000004957
+    },
+    {
+      "globalWaveId": 322,
+      "generationMilliseconds": 0.12250000000000227
+    },
+    {
+      "globalWaveId": 323,
+      "generationMilliseconds": 0.11939999999998463
+    },
+    {
+      "globalWaveId": 324,
+      "generationMilliseconds": 0.25159999999999627
+    },
+    {
+      "globalWaveId": 325,
+      "generationMilliseconds": 0.12899999999996226
+    },
+    {
+      "globalWaveId": 326,
+      "generationMilliseconds": 0.12270000000000891
+    },
+    {
+      "globalWaveId": 327,
+      "generationMilliseconds": 0.12430000000000518
+    },
+    {
+      "globalWaveId": 328,
+      "generationMilliseconds": 0.28059999999999263
+    },
+    {
+      "globalWaveId": 329,
+      "generationMilliseconds": 0.1852000000000089
+    },
+    {
+      "globalWaveId": 330,
+      "generationMilliseconds": 0.1350999999999658
+    },
+    {
+      "globalWaveId": 331,
+      "generationMilliseconds": 0.1338000000000079
+    },
+    {
+      "globalWaveId": 332,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 333,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 334,
+      "generationMilliseconds": 0.12369999999998527
+    },
+    {
+      "globalWaveId": 335,
+      "generationMilliseconds": 0.12530000000003838
+    },
+    {
+      "globalWaveId": 336,
+      "generationMilliseconds": 0.1269999999999527
+    },
+    {
+      "globalWaveId": 337,
+      "generationMilliseconds": 0.12330000000002883
+    },
+    {
+      "globalWaveId": 338,
+      "generationMilliseconds": 0.27899999999999636
+    },
+    {
+      "globalWaveId": 339,
+      "generationMilliseconds": 0.27369999999996253
+    },
+    {
+      "globalWaveId": 340,
+      "generationMilliseconds": 0.12669999999997117
+    },
+    {
+      "globalWaveId": 341,
+      "generationMilliseconds": 0.12250000000000227
+    },
+    {
+      "globalWaveId": 342,
+      "generationMilliseconds": 0.122099999999989
+    },
+    {
+      "globalWaveId": 343,
+      "generationMilliseconds": 0.12139999999999418
+    },
+    {
+      "globalWaveId": 344,
+      "generationMilliseconds": 0.1208000000000311
+    },
+    {
+      "globalWaveId": 345,
+      "generationMilliseconds": 0.1209999999999809
+    },
+    {
+      "globalWaveId": 346,
+      "generationMilliseconds": 0.12169999999997572
+    },
+    {
+      "globalWaveId": 347,
+      "generationMilliseconds": 0.12819999999999254
+    },
+    {
+      "globalWaveId": 348,
+      "generationMilliseconds": 0.29579999999998563
+    },
+    {
+      "globalWaveId": 349,
+      "generationMilliseconds": 0.1291999999999689
+    },
+    {
+      "globalWaveId": 350,
+      "generationMilliseconds": 0.12330000000002883
+    },
+    {
+      "globalWaveId": 351,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 352,
+      "generationMilliseconds": 0.12260000000003402
+    },
+    {
+      "globalWaveId": 353,
+      "generationMilliseconds": 0.126700000000028
+    },
+    {
+      "globalWaveId": 354,
+      "generationMilliseconds": 0.2709000000000401
+    },
+    {
+      "globalWaveId": 355,
+      "generationMilliseconds": 0.1272000000000162
+    },
+    {
+      "globalWaveId": 356,
+      "generationMilliseconds": 0.12369999999998527
+    },
+    {
+      "globalWaveId": 357,
+      "generationMilliseconds": 0.1239999999999668
+    },
+    {
+      "globalWaveId": 358,
+      "generationMilliseconds": 0.2837000000000103
+    },
+    {
+      "globalWaveId": 359,
+      "generationMilliseconds": 0.15359999999998308
+    },
+    {
+      "globalWaveId": 360,
+      "generationMilliseconds": 0.13889999999997826
+    },
+    {
+      "globalWaveId": 361,
+      "generationMilliseconds": 0.1338000000000079
+    },
+    {
+      "globalWaveId": 362,
+      "generationMilliseconds": 0.1238999999999919
+    },
+    {
+      "globalWaveId": 363,
+      "generationMilliseconds": 0.12740000000002283
+    },
+    {
+      "globalWaveId": 364,
+      "generationMilliseconds": 0.1220000000000141
+    },
+    {
+      "globalWaveId": 365,
+      "generationMilliseconds": 0.12369999999998527
+    },
+    {
+      "globalWaveId": 366,
+      "generationMilliseconds": 0.12479999999999336
+    },
+    {
+      "globalWaveId": 367,
+      "generationMilliseconds": 0.12819999999999254
+    },
+    {
+      "globalWaveId": 368,
+      "generationMilliseconds": 0.4269999999999641
+    },
+    {
+      "globalWaveId": 369,
+      "generationMilliseconds": 0.12889999999998736
+    },
+    {
+      "globalWaveId": 370,
+      "generationMilliseconds": 0.12659999999999627
+    },
+    {
+      "globalWaveId": 371,
+      "generationMilliseconds": 0.12250000000000227
+    },
+    {
+      "globalWaveId": 372,
+      "generationMilliseconds": 0.1261000000000081
+    },
+    {
+      "globalWaveId": 373,
+      "generationMilliseconds": 0.24840000000000373
+    },
+    {
+      "globalWaveId": 374,
+      "generationMilliseconds": 0.1301000000000272
+    },
+    {
+      "globalWaveId": 375,
+      "generationMilliseconds": 0.12439999999998008
+    },
+    {
+      "globalWaveId": 376,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 377,
+      "generationMilliseconds": 0.17689999999998918
+    },
+    {
+      "globalWaveId": 378,
+      "generationMilliseconds": 0.29599999999999227
+    },
+    {
+      "globalWaveId": 379,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 380,
+      "generationMilliseconds": 0.12839999999999918
+    },
+    {
+      "globalWaveId": 381,
+      "generationMilliseconds": 0.1298999999999637
+    },
+    {
+      "globalWaveId": 382,
+      "generationMilliseconds": 0.1257999999999697
+    },
+    {
+      "globalWaveId": 383,
+      "generationMilliseconds": 0.126199999999983
+    },
+    {
+      "globalWaveId": 384,
+      "generationMilliseconds": 0.5339000000000169
+    },
+    {
+      "globalWaveId": 385,
+      "generationMilliseconds": 0.3771000000000413
+    },
+    {
+      "globalWaveId": 386,
+      "generationMilliseconds": 0.3032000000000039
+    },
+    {
+      "globalWaveId": 387,
+      "generationMilliseconds": 0.14280000000002246
+    },
+    {
+      "globalWaveId": 388,
+      "generationMilliseconds": 0.28779999999994743
+    },
+    {
+      "globalWaveId": 389,
+      "generationMilliseconds": 0.13139999999998508
+    },
+    {
+      "globalWaveId": 390,
+      "generationMilliseconds": 0.125
+    },
+    {
+      "globalWaveId": 391,
+      "generationMilliseconds": 0.13640000000003738
+    },
+    {
+      "globalWaveId": 392,
+      "generationMilliseconds": 0.12430000000000518
+    },
+    {
+      "globalWaveId": 393,
+      "generationMilliseconds": 0.12330000000002883
+    },
+    {
+      "globalWaveId": 394,
+      "generationMilliseconds": 0.126199999999983
+    },
+    {
+      "globalWaveId": 395,
+      "generationMilliseconds": 0.26029999999997244
+    },
+    {
+      "globalWaveId": 396,
+      "generationMilliseconds": 0.13500000000004775
+    },
+    {
+      "globalWaveId": 397,
+      "generationMilliseconds": 0.16859999999996944
+    },
+    {
+      "globalWaveId": 398,
+      "generationMilliseconds": 0.5306999999999675
+    },
+    {
+      "globalWaveId": 399,
+      "generationMilliseconds": 0.2299000000000433
+    },
+    {
+      "globalWaveId": 400,
+      "generationMilliseconds": 0.22100000000000364
+    },
+    {
+      "globalWaveId": 401,
+      "generationMilliseconds": 0.13749999999998863
+    },
+    {
+      "globalWaveId": 402,
+      "generationMilliseconds": 0.129099999999994
+    },
+    {
+      "globalWaveId": 403,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 404,
+      "generationMilliseconds": 0.12470000000001846
+    },
+    {
+      "globalWaveId": 405,
+      "generationMilliseconds": 0.12360000000001037
+    },
+    {
+      "globalWaveId": 406,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 407,
+      "generationMilliseconds": 0.13119999999997844
+    },
+    {
+      "globalWaveId": 408,
+      "generationMilliseconds": 0.40090000000003556
+    },
+    {
+      "globalWaveId": 409,
+      "generationMilliseconds": 0.26830000000001064
+    },
+    {
+      "globalWaveId": 410,
+      "generationMilliseconds": 0.2367999999999597
+    },
+    {
+      "globalWaveId": 411,
+      "generationMilliseconds": 0.12880000000001246
+    },
+    {
+      "globalWaveId": 412,
+      "generationMilliseconds": 0.1268999999999778
+    },
+    {
+      "globalWaveId": 413,
+      "generationMilliseconds": 0.14079999999995607
+    },
+    {
+      "globalWaveId": 414,
+      "generationMilliseconds": 0.42959999999999354
+    },
+    {
+      "globalWaveId": 415,
+      "generationMilliseconds": 0.2441000000000031
+    },
+    {
+      "globalWaveId": 416,
+      "generationMilliseconds": 0.18419999999997572
+    },
+    {
+      "globalWaveId": 417,
+      "generationMilliseconds": 0.1261000000000081
+    },
+    {
+      "globalWaveId": 418,
+      "generationMilliseconds": 0.28659999999996444
+    },
+    {
+      "globalWaveId": 419,
+      "generationMilliseconds": 0.12959999999998217
+    },
+    {
+      "globalWaveId": 420,
+      "generationMilliseconds": 0.13630000000000564
+    },
+    {
+      "globalWaveId": 421,
+      "generationMilliseconds": 0.12930000000000064
+    },
+    {
+      "globalWaveId": 422,
+      "generationMilliseconds": 0.12770000000000437
+    },
+    {
+      "globalWaveId": 423,
+      "generationMilliseconds": 0.13059999999995853
+    },
+    {
+      "globalWaveId": 424,
+      "generationMilliseconds": 0.12630000000001473
+    },
+    {
+      "globalWaveId": 425,
+      "generationMilliseconds": 0.12599999999997635
+    },
+    {
+      "globalWaveId": 426,
+      "generationMilliseconds": 0.12839999999999918
+    },
+    {
+      "globalWaveId": 427,
+      "generationMilliseconds": 0.13349999999996953
+    },
+    {
+      "globalWaveId": 428,
+      "generationMilliseconds": 0.6127999999999929
+    },
+    {
+      "globalWaveId": 429,
+      "generationMilliseconds": 0.3059999999999832
+    },
+    {
+      "globalWaveId": 430,
+      "generationMilliseconds": 0.17629999999996926
+    },
+    {
+      "globalWaveId": 431,
+      "generationMilliseconds": 0.13100000000002865
+    },
+    {
+      "globalWaveId": 432,
+      "generationMilliseconds": 0.12860000000000582
+    },
+    {
+      "globalWaveId": 433,
+      "generationMilliseconds": 0.13009999999997035
+    },
+    {
+      "globalWaveId": 434,
+      "generationMilliseconds": 0.14580000000000837
+    },
+    {
+      "globalWaveId": 435,
+      "generationMilliseconds": 0.15730000000002065
+    },
+    {
+      "globalWaveId": 436,
+      "generationMilliseconds": 0.1803000000000452
+    },
+    {
+      "globalWaveId": 437,
+      "generationMilliseconds": 0.13889999999997826
+    },
+    {
+      "globalWaveId": 438,
+      "generationMilliseconds": 0.2992999999999597
+    },
+    {
+      "globalWaveId": 439,
+      "generationMilliseconds": 0.13639999999998054
+    },
+    {
+      "globalWaveId": 440,
+      "generationMilliseconds": 0.13230000000004338
+    },
+    {
+      "globalWaveId": 441,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 442,
+      "generationMilliseconds": 0.13049999999998363
+    },
+    {
+      "globalWaveId": 443,
+      "generationMilliseconds": 0.12459999999998672
+    },
+    {
+      "globalWaveId": 444,
+      "generationMilliseconds": 0.435100000000034
+    },
+    {
+      "globalWaveId": 445,
+      "generationMilliseconds": 0.164100000000019
+    },
+    {
+      "globalWaveId": 446,
+      "generationMilliseconds": 0.2880000000000109
+    },
+    {
+      "globalWaveId": 447,
+      "generationMilliseconds": 0.2115000000000009
+    },
+    {
+      "globalWaveId": 448,
+      "generationMilliseconds": 0.49979999999999336
+    },
+    {
+      "globalWaveId": 449,
+      "generationMilliseconds": 0.20990000000000464
+    },
+    {
+      "globalWaveId": 450,
+      "generationMilliseconds": 0.148900000000026
+    },
+    {
+      "globalWaveId": 451,
+      "generationMilliseconds": 0.13150000000001683
+    },
+    {
+      "globalWaveId": 452,
+      "generationMilliseconds": 0.12860000000000582
+    },
+    {
+      "globalWaveId": 453,
+      "generationMilliseconds": 0.13139999999998508
+    },
+    {
+      "globalWaveId": 454,
+      "generationMilliseconds": 0.13159999999999172
+    },
+    {
+      "globalWaveId": 455,
+      "generationMilliseconds": 0.22270000000003165
+    },
+    {
+      "globalWaveId": 456,
+      "generationMilliseconds": 0.14039999999999964
+    },
+    {
+      "globalWaveId": 457,
+      "generationMilliseconds": 0.1319000000000301
+    },
+    {
+      "globalWaveId": 458,
+      "generationMilliseconds": 0.5636000000000081
+    },
+    {
+      "globalWaveId": 459,
+      "generationMilliseconds": 0.251199999999983
+    },
+    {
+      "globalWaveId": 460,
+      "generationMilliseconds": 0.2755000000000223
+    },
+    {
+      "globalWaveId": 461,
+      "generationMilliseconds": 0.2575999999999681
+    },
+    {
+      "globalWaveId": 462,
+      "generationMilliseconds": 0.2015999999999849
+    },
+    {
+      "globalWaveId": 463,
+      "generationMilliseconds": 0.13649999999995543
+    },
+    {
+      "globalWaveId": 464,
+      "generationMilliseconds": 0.12829999999996744
+    },
+    {
+      "globalWaveId": 465,
+      "generationMilliseconds": 0.12739999999996598
+    },
+    {
+      "globalWaveId": 466,
+      "generationMilliseconds": 0.1268999999999778
+    },
+    {
+      "globalWaveId": 467,
+      "generationMilliseconds": 0.13060000000001537
+    },
+    {
+      "globalWaveId": 468,
+      "generationMilliseconds": 0.33379999999999654
+    },
+    {
+      "globalWaveId": 469,
+      "generationMilliseconds": 0.13339999999999463
+    },
+    {
+      "globalWaveId": 470,
+      "generationMilliseconds": 0.13150000000001683
+    },
+    {
+      "globalWaveId": 471,
+      "generationMilliseconds": 0.12999999999999545
+    },
+    {
+      "globalWaveId": 472,
+      "generationMilliseconds": 0.12779999999997926
+    },
+    {
+      "globalWaveId": 473,
+      "generationMilliseconds": 0.3549000000000433
+    },
+    {
+      "globalWaveId": 474,
+      "generationMilliseconds": 0.24090000000001055
+    },
+    {
+      "globalWaveId": 475,
+      "generationMilliseconds": 0.2447999999999979
+    },
+    {
+      "globalWaveId": 476,
+      "generationMilliseconds": 0.20999999999997954
+    },
+    {
+      "globalWaveId": 477,
+      "generationMilliseconds": 0.23090000000001965
+    },
+    {
+      "globalWaveId": 478,
+      "generationMilliseconds": 0.5054000000000087
+    },
+    {
+      "globalWaveId": 479,
+      "generationMilliseconds": 0.15739999999999554
+    },
+    {
+      "globalWaveId": 480,
+      "generationMilliseconds": 0.13179999999999836
+    },
+    {
+      "globalWaveId": 481,
+      "generationMilliseconds": 0.12770000000000437
+    },
+    {
+      "globalWaveId": 482,
+      "generationMilliseconds": 0.12349999999997863
+    },
+    {
+      "globalWaveId": 483,
+      "generationMilliseconds": 0.12290000000001555
+    },
+    {
+      "globalWaveId": 484,
+      "generationMilliseconds": 0.12439999999998008
+    },
+    {
+      "globalWaveId": 485,
+      "generationMilliseconds": 0.12860000000000582
+    },
+    {
+      "globalWaveId": 486,
+      "generationMilliseconds": 0.17149999999998045
+    },
+    {
+      "globalWaveId": 487,
+      "generationMilliseconds": 0.19729999999998427
+    },
+    {
+      "globalWaveId": 488,
+      "generationMilliseconds": 0.6202999999999861
+    },
+    {
+      "globalWaveId": 489,
+      "generationMilliseconds": 0.18580000000002883
+    },
+    {
+      "globalWaveId": 490,
+      "generationMilliseconds": 0.12879999999995562
+    },
+    {
+      "globalWaveId": 491,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 492,
+      "generationMilliseconds": 0.12520000000000664
+    },
+    {
+      "globalWaveId": 493,
+      "generationMilliseconds": 0.1260000000000332
+    },
+    {
+      "globalWaveId": 494,
+      "generationMilliseconds": 0.1279999999999859
+    },
+    {
+      "globalWaveId": 495,
+      "generationMilliseconds": 0.13360000000000127
+    },
+    {
+      "globalWaveId": 496,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 497,
+      "generationMilliseconds": 0.12479999999999336
+    },
+    {
+      "globalWaveId": 498,
+      "generationMilliseconds": 0.29630000000003065
+    },
+    {
+      "globalWaveId": 499,
+      "generationMilliseconds": 0.13220000000001164
+    },
+    {
+      "globalWaveId": 500,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 501,
+      "generationMilliseconds": 0.12630000000001473
+    },
+    {
+      "globalWaveId": 502,
+      "generationMilliseconds": 0.12659999999999627
+    },
+    {
+      "globalWaveId": 503,
+      "generationMilliseconds": 0.27120000000002165
+    },
+    {
+      "globalWaveId": 504,
+      "generationMilliseconds": 0.13560000000001082
+    },
+    {
+      "globalWaveId": 505,
+      "generationMilliseconds": 0.1280999999999608
+    },
+    {
+      "globalWaveId": 506,
+      "generationMilliseconds": 0.12789999999995416
+    },
+    {
+      "globalWaveId": 507,
+      "generationMilliseconds": 0.1350999999999658
+    },
+    {
+      "globalWaveId": 508,
+      "generationMilliseconds": 0.29939999999999145
+    },
+    {
+      "globalWaveId": 509,
+      "generationMilliseconds": 0.136099999999999
+    },
+    {
+      "globalWaveId": 510,
+      "generationMilliseconds": 0.1379999999999768
+    },
+    {
+      "globalWaveId": 511,
+      "generationMilliseconds": 0.12700000000000955
+    },
+    {
+      "globalWaveId": 512,
+      "generationMilliseconds": 0.1290000000000191
+    },
+    {
+      "globalWaveId": 513,
+      "generationMilliseconds": 0.1816000000000031
+    },
+    {
+      "globalWaveId": 514,
+      "generationMilliseconds": 0.23570000000000846
+    },
+    {
+      "globalWaveId": 515,
+      "generationMilliseconds": 0.17600000000004457
+    },
+    {
+      "globalWaveId": 516,
+      "generationMilliseconds": 0.161200000000008
+    },
+    {
+      "globalWaveId": 517,
+      "generationMilliseconds": 0.12990000000002055
+    },
+    {
+      "globalWaveId": 518,
+      "generationMilliseconds": 0.6338000000000079
+    },
+    {
+      "globalWaveId": 519,
+      "generationMilliseconds": 0.230700000000013
+    },
+    {
+      "globalWaveId": 520,
+      "generationMilliseconds": 0.21659999999997126
+    },
+    {
+      "globalWaveId": 521,
+      "generationMilliseconds": 0.1886000000000081
+    },
+    {
+      "globalWaveId": 522,
+      "generationMilliseconds": 0.14379999999999882
+    },
+    {
+      "globalWaveId": 523,
+      "generationMilliseconds": 0.13440000000002783
+    },
+    {
+      "globalWaveId": 524,
+      "generationMilliseconds": 0.1349999999999909
+    },
+    {
+      "globalWaveId": 525,
+      "generationMilliseconds": 0.1302000000000021
+    },
+    {
+      "globalWaveId": 526,
+      "generationMilliseconds": 0.1312000000000353
+    },
+    {
+      "globalWaveId": 527,
+      "generationMilliseconds": 0.13170000000002346
+    },
+    {
+      "globalWaveId": 528,
+      "generationMilliseconds": 0.3564999999999827
+    },
+    {
+      "globalWaveId": 529,
+      "generationMilliseconds": 0.15180000000003702
+    },
+    {
+      "globalWaveId": 530,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 531,
+      "generationMilliseconds": 0.12669999999997117
+    },
+    {
+      "globalWaveId": 532,
+      "generationMilliseconds": 0.13220000000001164
+    },
+    {
+      "globalWaveId": 533,
+      "generationMilliseconds": 0.544399999999996
+    },
+    {
+      "globalWaveId": 534,
+      "generationMilliseconds": 0.17760000000004084
+    },
+    {
+      "globalWaveId": 535,
+      "generationMilliseconds": 0.1671000000000049
+    },
+    {
+      "globalWaveId": 536,
+      "generationMilliseconds": 0.1741000000000099
+    },
+    {
+      "globalWaveId": 537,
+      "generationMilliseconds": 0.227800000000002
+    },
+    {
+      "globalWaveId": 538,
+      "generationMilliseconds": 0.4089000000000169
+    },
+    {
+      "globalWaveId": 539,
+      "generationMilliseconds": 0.2074999999999818
+    },
+    {
+      "globalWaveId": 540,
+      "generationMilliseconds": 0.23529999999999518
+    },
+    {
+      "globalWaveId": 541,
+      "generationMilliseconds": 0.19950000000000045
+    },
+    {
+      "globalWaveId": 542,
+      "generationMilliseconds": 0.23780000000004975
+    },
+    {
+      "globalWaveId": 543,
+      "generationMilliseconds": 0.24680000000000746
+    },
+    {
+      "globalWaveId": 544,
+      "generationMilliseconds": 0.2603000000000293
+    },
+    {
+      "globalWaveId": 545,
+      "generationMilliseconds": 0.22699999999997544
+    },
+    {
+      "globalWaveId": 546,
+      "generationMilliseconds": 0.242999999999995
+    },
+    {
+      "globalWaveId": 547,
+      "generationMilliseconds": 0.23239999999998417
+    },
+    {
+      "globalWaveId": 548,
+      "generationMilliseconds": 0.61099999999999
+    },
+    {
+      "globalWaveId": 549,
+      "generationMilliseconds": 0.1360000000000241
+    },
+    {
+      "globalWaveId": 550,
+      "generationMilliseconds": 0.14699999999999136
+    },
+    {
+      "globalWaveId": 551,
+      "generationMilliseconds": 0.20609999999999218
+    },
+    {
+      "globalWaveId": 552,
+      "generationMilliseconds": 0.214999999999975
+    },
+    {
+      "globalWaveId": 553,
+      "generationMilliseconds": 0.20170000000001664
+    },
+    {
+      "globalWaveId": 554,
+      "generationMilliseconds": 0.24549999999999272
+    },
+    {
+      "globalWaveId": 555,
+      "generationMilliseconds": 0.20769999999998845
+    },
+    {
+      "globalWaveId": 556,
+      "generationMilliseconds": 0.19480000000004338
+    },
+    {
+      "globalWaveId": 557,
+      "generationMilliseconds": 0.3721999999999639
+    },
+    {
+      "globalWaveId": 558,
+      "generationMilliseconds": 0.5013999999999896
+    },
+    {
+      "globalWaveId": 559,
+      "generationMilliseconds": 0.14639999999997144
+    },
+    {
+      "globalWaveId": 560,
+      "generationMilliseconds": 0.13479999999998427
+    },
+    {
+      "globalWaveId": 561,
+      "generationMilliseconds": 0.12849999999997408
+    },
+    {
+      "globalWaveId": 562,
+      "generationMilliseconds": 0.5721999999999525
+    },
+    {
+      "globalWaveId": 563,
+      "generationMilliseconds": 0.19739999999995916
+    },
+    {
+      "globalWaveId": 564,
+      "generationMilliseconds": 0.190400000000011
+    },
+    {
+      "globalWaveId": 565,
+      "generationMilliseconds": 0.19460000000003674
+    },
+    {
+      "globalWaveId": 566,
+      "generationMilliseconds": 0.20270000000004984
+    },
+    {
+      "globalWaveId": 567,
+      "generationMilliseconds": 0.23010000000004993
+    },
+    {
+      "globalWaveId": 568,
+      "generationMilliseconds": 0.5513000000000261
+    },
+    {
+      "globalWaveId": 569,
+      "generationMilliseconds": 0.21699999999998454
+    },
+    {
+      "globalWaveId": 570,
+      "generationMilliseconds": 0.19999999999998863
+    },
+    {
+      "globalWaveId": 571,
+      "generationMilliseconds": 0.20929999999998472
+    },
+    {
+      "globalWaveId": 572,
+      "generationMilliseconds": 0.248800000000017
+    },
+    {
+      "globalWaveId": 573,
+      "generationMilliseconds": 0.22149999999999181
+    },
+    {
+      "globalWaveId": 574,
+      "generationMilliseconds": 0.23149999999998272
+    },
+    {
+      "globalWaveId": 575,
+      "generationMilliseconds": 0.2447999999999979
+    },
+    {
+      "globalWaveId": 576,
+      "generationMilliseconds": 0.23869999999999436
+    },
+    {
+      "globalWaveId": 577,
+      "generationMilliseconds": 0.2803000000000111
+    },
+    {
+      "globalWaveId": 578,
+      "generationMilliseconds": 0.8947000000000003
+    },
+    {
+      "globalWaveId": 579,
+      "generationMilliseconds": 0.3453000000000088
+    },
+    {
+      "globalWaveId": 580,
+      "generationMilliseconds": 0.3299000000000092
+    },
+    {
+      "globalWaveId": 581,
+      "generationMilliseconds": 0.33039999999999736
+    },
+    {
+      "globalWaveId": 582,
+      "generationMilliseconds": 0.3154999999999859
+    },
+    {
+      "globalWaveId": 583,
+      "generationMilliseconds": 0.3269999999999982
+    },
+    {
+      "globalWaveId": 584,
+      "generationMilliseconds": 0.25130000000001473
+    },
+    {
+      "globalWaveId": 585,
+      "generationMilliseconds": 0.18680000000000518
+    },
+    {
+      "globalWaveId": 586,
+      "generationMilliseconds": 0.18840000000000146
+    },
+    {
+      "globalWaveId": 587,
+      "generationMilliseconds": 0.19819999999998572
+    },
+    {
+      "globalWaveId": 588,
+      "generationMilliseconds": 0.37030000000004293
+    },
+    {
+      "globalWaveId": 589,
+      "generationMilliseconds": 0.13259999999996808
+    },
+    {
+      "globalWaveId": 590,
+      "generationMilliseconds": 0.12569999999999482
+    },
+    {
+      "globalWaveId": 591,
+      "generationMilliseconds": 0.12740000000002283
+    },
+    {
+      "globalWaveId": 592,
+      "generationMilliseconds": 0.4013999999999669
+    },
+    {
+      "globalWaveId": 593,
+      "generationMilliseconds": 0.140199999999993
+    },
+    {
+      "globalWaveId": 594,
+      "generationMilliseconds": 0.13419999999996435
+    },
+    {
+      "globalWaveId": 595,
+      "generationMilliseconds": 0.14409999999998035
+    },
+    {
+      "globalWaveId": 596,
+      "generationMilliseconds": 0.14690000000001646
+    },
+    {
+      "globalWaveId": 597,
+      "generationMilliseconds": 0.14160000000003947
+    },
+    {
+      "globalWaveId": 598,
+      "generationMilliseconds": 0.32089999999999463
+    },
+    {
+      "globalWaveId": 599,
+      "generationMilliseconds": 0.13220000000001164
+    },
+    {
+      "globalWaveId": 600,
+      "generationMilliseconds": 0.15070000000002892
+    },
+    {
+      "globalWaveId": 601,
+      "generationMilliseconds": 0.15739999999999554
+    },
+    {
+      "globalWaveId": 602,
+      "generationMilliseconds": 0.1601999999999748
+    },
+    {
+      "globalWaveId": 603,
+      "generationMilliseconds": 0.1604000000000383
+    },
+    {
+      "globalWaveId": 604,
+      "generationMilliseconds": 0.14990000000000236
+    },
+    {
+      "globalWaveId": 605,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 606,
+      "generationMilliseconds": 0.1379000000000019
+    },
+    {
+      "globalWaveId": 607,
+      "generationMilliseconds": 0.1413000000000011
+    },
+    {
+      "globalWaveId": 608,
+      "generationMilliseconds": 0.49900000000002365
+    },
+    {
+      "globalWaveId": 609,
+      "generationMilliseconds": 0.13350000000002638
+    },
+    {
+      "globalWaveId": 610,
+      "generationMilliseconds": 0.1319000000000301
+    },
+    {
+      "globalWaveId": 611,
+      "generationMilliseconds": 0.12719999999995935
+    },
+    {
+      "globalWaveId": 612,
+      "generationMilliseconds": 0.1268999999999778
+    },
+    {
+      "globalWaveId": 613,
+      "generationMilliseconds": 0.1300000000000523
+    },
+    {
+      "globalWaveId": 614,
+      "generationMilliseconds": 0.13450000000000273
+    },
+    {
+      "globalWaveId": 615,
+      "generationMilliseconds": 0.1320999999999799
+    },
+    {
+      "globalWaveId": 616,
+      "generationMilliseconds": 0.13060000000001537
+    },
+    {
+      "globalWaveId": 617,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 618,
+      "generationMilliseconds": 0.3020000000000209
+    },
+    {
+      "globalWaveId": 619,
+      "generationMilliseconds": 0.13069999999999027
+    },
+    {
+      "globalWaveId": 620,
+      "generationMilliseconds": 0.12599999999997635
+    },
+    {
+      "globalWaveId": 621,
+      "generationMilliseconds": 0.1279999999999859
+    },
+    {
+      "globalWaveId": 622,
+      "generationMilliseconds": 0.5167999999999893
+    },
+    {
+      "globalWaveId": 623,
+      "generationMilliseconds": 0.3047000000000253
+    },
+    {
+      "globalWaveId": 624,
+      "generationMilliseconds": 0.18669999999997344
+    },
+    {
+      "globalWaveId": 625,
+      "generationMilliseconds": 0.18700000000001182
+    },
+    {
+      "globalWaveId": 626,
+      "generationMilliseconds": 0.14080000000001291
+    },
+    {
+      "globalWaveId": 627,
+      "generationMilliseconds": 0.1401000000000181
+    },
+    {
+      "globalWaveId": 628,
+      "generationMilliseconds": 0.309599999999989
+    },
+    {
+      "globalWaveId": 629,
+      "generationMilliseconds": 0.1341000000000463
+    },
+    {
+      "globalWaveId": 630,
+      "generationMilliseconds": 0.12950000000000728
+    },
+    {
+      "globalWaveId": 631,
+      "generationMilliseconds": 0.13470000000000937
+    },
+    {
+      "globalWaveId": 632,
+      "generationMilliseconds": 0.129099999999994
+    },
+    {
+      "globalWaveId": 633,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 634,
+      "generationMilliseconds": 0.13470000000000937
+    },
+    {
+      "globalWaveId": 635,
+      "generationMilliseconds": 0.13889999999997826
+    },
+    {
+      "globalWaveId": 636,
+      "generationMilliseconds": 0.14079999999995607
+    },
+    {
+      "globalWaveId": 637,
+      "generationMilliseconds": 0.8361999999999625
+    },
+    {
+      "globalWaveId": 638,
+      "generationMilliseconds": 0.31749999999999545
+    },
+    {
+      "globalWaveId": 639,
+      "generationMilliseconds": 0.13110000000000355
+    },
+    {
+      "globalWaveId": 640,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 641,
+      "generationMilliseconds": 0.12520000000000664
+    },
+    {
+      "globalWaveId": 642,
+      "generationMilliseconds": 0.12459999999998672
+    },
+    {
+      "globalWaveId": 643,
+      "generationMilliseconds": 0.13330000000001974
+    },
+    {
+      "globalWaveId": 644,
+      "generationMilliseconds": 0.1291999999999689
+    },
+    {
+      "globalWaveId": 645,
+      "generationMilliseconds": 0.130800000000022
+    },
+    {
+      "globalWaveId": 646,
+      "generationMilliseconds": 0.12770000000000437
+    },
+    {
+      "globalWaveId": 647,
+      "generationMilliseconds": 0.1312000000000353
+    },
+    {
+      "globalWaveId": 648,
+      "generationMilliseconds": 0.30299999999999727
+    },
+    {
+      "globalWaveId": 649,
+      "generationMilliseconds": 0.13690000000002556
+    },
+    {
+      "globalWaveId": 650,
+      "generationMilliseconds": 0.12849999999997408
+    },
+    {
+      "globalWaveId": 651,
+      "generationMilliseconds": 0.129099999999994
+    },
+    {
+      "globalWaveId": 652,
+      "generationMilliseconds": 0.2155999999999949
+    },
+    {
+      "globalWaveId": 653,
+      "generationMilliseconds": 0.2078000000000202
+    },
+    {
+      "globalWaveId": 654,
+      "generationMilliseconds": 0.2188000000000443
+    },
+    {
+      "globalWaveId": 655,
+      "generationMilliseconds": 0.23329999999998563
+    },
+    {
+      "globalWaveId": 656,
+      "generationMilliseconds": 0.2296000000000049
+    },
+    {
+      "globalWaveId": 657,
+      "generationMilliseconds": 0.20939999999995962
+    },
+    {
+      "globalWaveId": 658,
+      "generationMilliseconds": 0.5
+    },
+    {
+      "globalWaveId": 659,
+      "generationMilliseconds": 0.209699999999998
+    },
+    {
+      "globalWaveId": 660,
+      "generationMilliseconds": 0.21710000000001628
+    },
+    {
+      "globalWaveId": 661,
+      "generationMilliseconds": 0.20419999999995753
+    },
+    {
+      "globalWaveId": 662,
+      "generationMilliseconds": 0.2056999999999789
+    },
+    {
+      "globalWaveId": 663,
+      "generationMilliseconds": 0.20929999999998472
+    },
+    {
+      "globalWaveId": 664,
+      "generationMilliseconds": 0.22460000000000946
+    },
+    {
+      "globalWaveId": 665,
+      "generationMilliseconds": 0.5554000000000201
+    },
+    {
+      "globalWaveId": 666,
+      "generationMilliseconds": 0.30869999999998754
+    },
+    {
+      "globalWaveId": 667,
+      "generationMilliseconds": 0.6082000000000107
+    },
+    {
+      "globalWaveId": 668,
+      "generationMilliseconds": 0.37340000000000373
+    },
+    {
+      "globalWaveId": 669,
+      "generationMilliseconds": 0.192799999999977
+    },
+    {
+      "globalWaveId": 670,
+      "generationMilliseconds": 0.20410000000003947
+    },
+    {
+      "globalWaveId": 671,
+      "generationMilliseconds": 0.19470000000001164
+    },
+    {
+      "globalWaveId": 672,
+      "generationMilliseconds": 0.20539999999999736
+    },
+    {
+      "globalWaveId": 673,
+      "generationMilliseconds": 0.32519999999999527
+    },
+    {
+      "globalWaveId": 674,
+      "generationMilliseconds": 0.32200000000000273
+    },
+    {
+      "globalWaveId": 675,
+      "generationMilliseconds": 0.15939999999994825
+    },
+    {
+      "globalWaveId": 676,
+      "generationMilliseconds": 0.1541000000000281
+    },
+    {
+      "globalWaveId": 677,
+      "generationMilliseconds": 0.14879999999999427
+    },
+    {
+      "globalWaveId": 678,
+      "generationMilliseconds": 0.3272999999999797
+    },
+    {
+      "globalWaveId": 679,
+      "generationMilliseconds": 0.1605000000000132
+    },
+    {
+      "globalWaveId": 680,
+      "generationMilliseconds": 0.15079999999994698
+    },
+    {
+      "globalWaveId": 681,
+      "generationMilliseconds": 0.1823999999999728
+    },
+    {
+      "globalWaveId": 682,
+      "generationMilliseconds": 0.23670000000004165
+    },
+    {
+      "globalWaveId": 683,
+      "generationMilliseconds": 0.22219999999998663
+    },
+    {
+      "globalWaveId": 684,
+      "generationMilliseconds": 0.2266999999999939
+    },
+    {
+      "globalWaveId": 685,
+      "generationMilliseconds": 0.2296999999999798
+    },
+    {
+      "globalWaveId": 686,
+      "generationMilliseconds": 0.2197999999999638
+    },
+    {
+      "globalWaveId": 687,
+      "generationMilliseconds": 0.22929999999996653
+    },
+    {
+      "globalWaveId": 688,
+      "generationMilliseconds": 0.5538999999999987
+    },
+    {
+      "globalWaveId": 689,
+      "generationMilliseconds": 0.2581000000000131
+    },
+    {
+      "globalWaveId": 690,
+      "generationMilliseconds": 0.2289000000000101
+    },
+    {
+      "globalWaveId": 691,
+      "generationMilliseconds": 0.25790000000000646
+    },
+    {
+      "globalWaveId": 692,
+      "generationMilliseconds": 0.2795000000000414
+    },
+    {
+      "globalWaveId": 693,
+      "generationMilliseconds": 0.24269999999995662
+    },
+    {
+      "globalWaveId": 694,
+      "generationMilliseconds": 0.23140000000000782
+    },
+    {
+      "globalWaveId": 695,
+      "generationMilliseconds": 0.2588000000000079
+    },
+    {
+      "globalWaveId": 696,
+      "generationMilliseconds": 0.2358000000000402
+    },
+    {
+      "globalWaveId": 697,
+      "generationMilliseconds": 0.6648999999999887
+    },
+    {
+      "globalWaveId": 698,
+      "generationMilliseconds": 0.4008999999999787
+    },
+    {
+      "globalWaveId": 699,
+      "generationMilliseconds": 0.20479999999997744
+    },
+    {
+      "globalWaveId": 700,
+      "generationMilliseconds": 0.1712999999999738
+    },
+    {
+      "globalWaveId": 701,
+      "generationMilliseconds": 0.16149999999998954
+    },
+    {
+      "globalWaveId": 702,
+      "generationMilliseconds": 0.15289999999998827
+    },
+    {
+      "globalWaveId": 703,
+      "generationMilliseconds": 0.15339999999997644
+    },
+    {
+      "globalWaveId": 704,
+      "generationMilliseconds": 0.15180000000003702
+    },
+    {
+      "globalWaveId": 705,
+      "generationMilliseconds": 0.1600999999999999
+    },
+    {
+      "globalWaveId": 706,
+      "generationMilliseconds": 0.1519999999999868
+    },
+    {
+      "globalWaveId": 707,
+      "generationMilliseconds": 0.15559999999999263
+    },
+    {
+      "globalWaveId": 708,
+      "generationMilliseconds": 0.3382000000000289
+    },
+    {
+      "globalWaveId": 709,
+      "generationMilliseconds": 0.1563000000000443
+    },
+    {
+      "globalWaveId": 710,
+      "generationMilliseconds": 0.15350000000000819
+    },
+    {
+      "globalWaveId": 711,
+      "generationMilliseconds": 0.1560000000000059
+    },
+    {
+      "globalWaveId": 712,
+      "generationMilliseconds": 0.15370000000001482
+    },
+    {
+      "globalWaveId": 713,
+      "generationMilliseconds": 0.15210000000001855
+    },
+    {
+      "globalWaveId": 714,
+      "generationMilliseconds": 0.14969999999999573
+    },
+    {
+      "globalWaveId": 715,
+      "generationMilliseconds": 0.241800000000012
+    },
+    {
+      "globalWaveId": 716,
+      "generationMilliseconds": 0.15309999999993806
+    },
+    {
+      "globalWaveId": 717,
+      "generationMilliseconds": 0.137299999999982
+    },
+    {
+      "globalWaveId": 718,
+      "generationMilliseconds": 0.30589999999995143
+    },
+    {
+      "globalWaveId": 719,
+      "generationMilliseconds": 0.1333999999999378
+    },
+    {
+      "globalWaveId": 720,
+      "generationMilliseconds": 0.134900000000016
+    },
+    {
+      "globalWaveId": 721,
+      "generationMilliseconds": 0.13179999999999836
+    },
+    {
+      "globalWaveId": 722,
+      "generationMilliseconds": 0.13149999999995998
+    },
+    {
+      "globalWaveId": 723,
+      "generationMilliseconds": 0.13450000000000273
+    },
+    {
+      "globalWaveId": 724,
+      "generationMilliseconds": 0.12810000000001764
+    },
+    {
+      "globalWaveId": 725,
+      "generationMilliseconds": 0.12459999999998672
+    },
+    {
+      "globalWaveId": 726,
+      "generationMilliseconds": 0.12930000000005748
+    },
+    {
+      "globalWaveId": 727,
+      "generationMilliseconds": 0.45440000000007785
+    },
+    {
+      "globalWaveId": 728,
+      "generationMilliseconds": 0.314899999999966
+    },
+    {
+      "globalWaveId": 729,
+      "generationMilliseconds": 0.1350999999999658
+    },
+    {
+      "globalWaveId": 730,
+      "generationMilliseconds": 0.16089999999996962
+    },
+    {
+      "globalWaveId": 731,
+      "generationMilliseconds": 0.2320999999999458
+    },
+    {
+      "globalWaveId": 732,
+      "generationMilliseconds": 0.2157000000000835
+    },
+    {
+      "globalWaveId": 733,
+      "generationMilliseconds": 0.12979999999993197
+    },
+    {
+      "globalWaveId": 734,
+      "generationMilliseconds": 0.14020000000004984
+    },
+    {
+      "globalWaveId": 735,
+      "generationMilliseconds": 0.12999999999999545
+    },
+    {
+      "globalWaveId": 736,
+      "generationMilliseconds": 0.12940000000003238
+    },
+    {
+      "globalWaveId": 737,
+      "generationMilliseconds": 0.12999999999999545
+    },
+    {
+      "globalWaveId": 738,
+      "generationMilliseconds": 0.300200000000018
+    },
+    {
+      "globalWaveId": 739,
+      "generationMilliseconds": 0.13020000000005894
+    },
+    {
+      "globalWaveId": 740,
+      "generationMilliseconds": 0.12800000000004275
+    },
+    {
+      "globalWaveId": 741,
+      "generationMilliseconds": 0.12750000000005457
+    },
+    {
+      "globalWaveId": 742,
+      "generationMilliseconds": 0.12759999999991578
+    },
+    {
+      "globalWaveId": 743,
+      "generationMilliseconds": 0.1249000000000251
+    },
+    {
+      "globalWaveId": 744,
+      "generationMilliseconds": 0.12620000000003984
+    },
+    {
+      "globalWaveId": 745,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 746,
+      "generationMilliseconds": 0.12580000000002656
+    },
+    {
+      "globalWaveId": 747,
+      "generationMilliseconds": 0.13049999999998363
+    },
+    {
+      "globalWaveId": 748,
+      "generationMilliseconds": 0.29150000000004184
+    },
+    {
+      "globalWaveId": 749,
+      "generationMilliseconds": 0.12869999999998072
+    },
+    {
+      "globalWaveId": 750,
+      "generationMilliseconds": 0.1290000000000191
+    },
+    {
+      "globalWaveId": 751,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 752,
+      "generationMilliseconds": 0.1268000000000029
+    },
+    {
+      "globalWaveId": 753,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 754,
+      "generationMilliseconds": 0.1249000000000251
+    },
+    {
+      "globalWaveId": 755,
+      "generationMilliseconds": 0.151299999999992
+    },
+    {
+      "globalWaveId": 756,
+      "generationMilliseconds": 0.137299999999982
+    },
+    {
+      "globalWaveId": 757,
+      "generationMilliseconds": 0.4553000000000793
+    },
+    {
+      "globalWaveId": 758,
+      "generationMilliseconds": 0.31749999999999545
+    },
+    {
+      "globalWaveId": 759,
+      "generationMilliseconds": 0.13999999999998636
+    },
+    {
+      "globalWaveId": 760,
+      "generationMilliseconds": 0.14479999999991833
+    },
+    {
+      "globalWaveId": 761,
+      "generationMilliseconds": 0.1752999999999929
+    },
+    {
+      "globalWaveId": 762,
+      "generationMilliseconds": 0.16049999999995634
+    },
+    {
+      "globalWaveId": 763,
+      "generationMilliseconds": 0.1430000000000291
+    },
+    {
+      "globalWaveId": 764,
+      "generationMilliseconds": 0.13350000000002638
+    },
+    {
+      "globalWaveId": 765,
+      "generationMilliseconds": 0.15229999999996835
+    },
+    {
+      "globalWaveId": 766,
+      "generationMilliseconds": 0.13379999999995107
+    },
+    {
+      "globalWaveId": 767,
+      "generationMilliseconds": 0.13210000000003674
+    },
+    {
+      "globalWaveId": 768,
+      "generationMilliseconds": 0.30320000000006075
+    },
+    {
+      "globalWaveId": 769,
+      "generationMilliseconds": 0.14390000000003056
+    },
+    {
+      "globalWaveId": 770,
+      "generationMilliseconds": 0.1311999999999216
+    },
+    {
+      "globalWaveId": 771,
+      "generationMilliseconds": 0.13139999999998508
+    },
+    {
+      "globalWaveId": 772,
+      "generationMilliseconds": 0.12810000000001764
+    },
+    {
+      "globalWaveId": 773,
+      "generationMilliseconds": 0.1307000000000471
+    },
+    {
+      "globalWaveId": 774,
+      "generationMilliseconds": 0.1272000000000162
+    },
+    {
+      "globalWaveId": 775,
+      "generationMilliseconds": 0.12439999999992324
+    },
+    {
+      "globalWaveId": 776,
+      "generationMilliseconds": 0.12620000000003984
+    },
+    {
+      "globalWaveId": 777,
+      "generationMilliseconds": 0.12390000000004875
+    },
+    {
+      "globalWaveId": 778,
+      "generationMilliseconds": 0.29200000000003
+    },
+    {
+      "globalWaveId": 779,
+      "generationMilliseconds": 0.13580000000001746
+    },
+    {
+      "globalWaveId": 780,
+      "generationMilliseconds": 0.126700000000028
+    },
+    {
+      "globalWaveId": 781,
+      "generationMilliseconds": 0.1230999999999085
+    },
+    {
+      "globalWaveId": 782,
+      "generationMilliseconds": 0.1272000000000162
+    },
+    {
+      "globalWaveId": 783,
+      "generationMilliseconds": 0.12110000000006949
+    },
+    {
+      "globalWaveId": 784,
+      "generationMilliseconds": 0.12520000000006348
+    },
+    {
+      "globalWaveId": 785,
+      "generationMilliseconds": 0.12209999999993215
+    },
+    {
+      "globalWaveId": 786,
+      "generationMilliseconds": 0.1229999999999336
+    },
+    {
+      "globalWaveId": 787,
+      "generationMilliseconds": 0.3630000000000564
+    },
+    {
+      "globalWaveId": 788,
+      "generationMilliseconds": 0.5250999999999522
+    },
+    {
+      "globalWaveId": 789,
+      "generationMilliseconds": 0.2441000000000031
+    },
+    {
+      "globalWaveId": 790,
+      "generationMilliseconds": 0.23469999999997526
+    },
+    {
+      "globalWaveId": 791,
+      "generationMilliseconds": 0.2158999999999196
+    },
+    {
+      "globalWaveId": 792,
+      "generationMilliseconds": 0.1251999999999498
+    },
+    {
+      "globalWaveId": 793,
+      "generationMilliseconds": 0.12349999999992178
+    },
+    {
+      "globalWaveId": 794,
+      "generationMilliseconds": 0.13940000000002328
+    },
+    {
+      "globalWaveId": 795,
+      "generationMilliseconds": 0.12369999999998527
+    },
+    {
+      "globalWaveId": 796,
+      "generationMilliseconds": 0.1268999999999778
+    },
+    {
+      "globalWaveId": 797,
+      "generationMilliseconds": 0.12920000000008258
+    },
+    {
+      "globalWaveId": 798,
+      "generationMilliseconds": 0.29549999999994725
+    },
+    {
+      "globalWaveId": 799,
+      "generationMilliseconds": 0.12749999999994088
+    },
+    {
+      "globalWaveId": 800,
+      "generationMilliseconds": 0.12560000000007676
+    },
+    {
+      "globalWaveId": 801,
+      "generationMilliseconds": 0.12960000000009586
+    },
+    {
+      "globalWaveId": 802,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 803,
+      "generationMilliseconds": 0.12560000000007676
+    },
+    {
+      "globalWaveId": 804,
+      "generationMilliseconds": 0.14780000000007476
+    },
+    {
+      "globalWaveId": 805,
+      "generationMilliseconds": 0.133199999999988
+    },
+    {
+      "globalWaveId": 806,
+      "generationMilliseconds": 0.12839999999994234
+    },
+    {
+      "globalWaveId": 807,
+      "generationMilliseconds": 0.13419999999996435
+    },
+    {
+      "globalWaveId": 808,
+      "generationMilliseconds": 0.2905999999999267
+    },
+    {
+      "globalWaveId": 809,
+      "generationMilliseconds": 0.12840000000005602
+    },
+    {
+      "globalWaveId": 810,
+      "generationMilliseconds": 0.12979999999993197
+    },
+    {
+      "globalWaveId": 811,
+      "generationMilliseconds": 0.12489999999991142
+    },
+    {
+      "globalWaveId": 812,
+      "generationMilliseconds": 0.12390000000004875
+    },
+    {
+      "globalWaveId": 813,
+      "generationMilliseconds": 0.1247000000000753
+    },
+    {
+      "globalWaveId": 814,
+      "generationMilliseconds": 0.126700000000028
+    },
+    {
+      "globalWaveId": 815,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 816,
+      "generationMilliseconds": 0.12409999999999854
+    },
+    {
+      "globalWaveId": 817,
+      "generationMilliseconds": 0.3247000000000071
+    },
+    {
+      "globalWaveId": 818,
+      "generationMilliseconds": 0.5095000000000027
+    },
+    {
+      "globalWaveId": 819,
+      "generationMilliseconds": 0.20100000000002183
+    },
+    {
+      "globalWaveId": 820,
+      "generationMilliseconds": 0.20610000000010587
+    },
+    {
+      "globalWaveId": 821,
+      "generationMilliseconds": 0.199799999999982
+    },
+    {
+      "globalWaveId": 822,
+      "generationMilliseconds": 0.16800000000000637
+    },
+    {
+      "globalWaveId": 823,
+      "generationMilliseconds": 0.14840000000003783
+    },
+    {
+      "globalWaveId": 824,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 825,
+      "generationMilliseconds": 0.12619999999992615
+    },
+    {
+      "globalWaveId": 826,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 827,
+      "generationMilliseconds": 0.12369999999998527
+    },
+    {
+      "globalWaveId": 828,
+      "generationMilliseconds": 0.29369999999994434
+    },
+    {
+      "globalWaveId": 829,
+      "generationMilliseconds": 0.13030000000003383
+    },
+    {
+      "globalWaveId": 830,
+      "generationMilliseconds": 0.12940000000003238
+    },
+    {
+      "globalWaveId": 831,
+      "generationMilliseconds": 0.12599999999997635
+    },
+    {
+      "globalWaveId": 832,
+      "generationMilliseconds": 0.12469999999996162
+    },
+    {
+      "globalWaveId": 833,
+      "generationMilliseconds": 0.1250999999999749
+    },
+    {
+      "globalWaveId": 834,
+      "generationMilliseconds": 0.12459999999998672
+    },
+    {
+      "globalWaveId": 835,
+      "generationMilliseconds": 0.12420000000008713
+    },
+    {
+      "globalWaveId": 836,
+      "generationMilliseconds": 0.1250999999999749
+    },
+    {
+      "globalWaveId": 837,
+      "generationMilliseconds": 0.12559999999996307
+    },
+    {
+      "globalWaveId": 838,
+      "generationMilliseconds": 0.2877000000000862
+    },
+    {
+      "globalWaveId": 839,
+      "generationMilliseconds": 0.1308999999999969
+    },
+    {
+      "globalWaveId": 840,
+      "generationMilliseconds": 0.12839999999994234
+    },
+    {
+      "globalWaveId": 841,
+      "generationMilliseconds": 0.1291999999999689
+    },
+    {
+      "globalWaveId": 842,
+      "generationMilliseconds": 0.12819999999999254
+    },
+    {
+      "globalWaveId": 843,
+      "generationMilliseconds": 0.12770000000000437
+    },
+    {
+      "globalWaveId": 844,
+      "generationMilliseconds": 0.12590000000000146
+    },
+    {
+      "globalWaveId": 845,
+      "generationMilliseconds": 0.12430000000006203
+    },
+    {
+      "globalWaveId": 846,
+      "generationMilliseconds": 0.1250999999999749
+    },
+    {
+      "globalWaveId": 847,
+      "generationMilliseconds": 0.3026999999999589
+    },
+    {
+      "globalWaveId": 848,
+      "generationMilliseconds": 0.29200000000003
+    },
+    {
+      "globalWaveId": 849,
+      "generationMilliseconds": 0.12779999999997926
+    },
+    {
+      "globalWaveId": 850,
+      "generationMilliseconds": 0.12390000000004875
+    },
+    {
+      "globalWaveId": 851,
+      "generationMilliseconds": 0.12189999999998236
+    },
+    {
+      "globalWaveId": 852,
+      "generationMilliseconds": 0.15440000000000964
+    },
+    {
+      "globalWaveId": 853,
+      "generationMilliseconds": 0.13599999999996726
+    },
+    {
+      "globalWaveId": 854,
+      "generationMilliseconds": 0.16150000000004638
+    },
+    {
+      "globalWaveId": 855,
+      "generationMilliseconds": 0.13240000000007512
+    },
+    {
+      "globalWaveId": 856,
+      "generationMilliseconds": 0.12980000000004566
+    },
+    {
+      "globalWaveId": 857,
+      "generationMilliseconds": 0.13170000000002346
+    },
+    {
+      "globalWaveId": 858,
+      "generationMilliseconds": 0.300899999999956
+    },
+    {
+      "globalWaveId": 859,
+      "generationMilliseconds": 0.13589999999999236
+    },
+    {
+      "globalWaveId": 860,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 861,
+      "generationMilliseconds": 0.12840000000005602
+    },
+    {
+      "globalWaveId": 862,
+      "generationMilliseconds": 0.12649999999996453
+    },
+    {
+      "globalWaveId": 863,
+      "generationMilliseconds": 0.12609999999995125
+    },
+    {
+      "globalWaveId": 864,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 865,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 866,
+      "generationMilliseconds": 0.13159999999993488
+    },
+    {
+      "globalWaveId": 867,
+      "generationMilliseconds": 0.13190000000008695
+    },
+    {
+      "globalWaveId": 868,
+      "generationMilliseconds": 0.28969999999992524
+    },
+    {
+      "globalWaveId": 869,
+      "generationMilliseconds": 0.12950000000000728
+    },
+    {
+      "globalWaveId": 870,
+      "generationMilliseconds": 0.12760000000002947
+    },
+    {
+      "globalWaveId": 871,
+      "generationMilliseconds": 0.12549999999998818
+    },
+    {
+      "globalWaveId": 872,
+      "generationMilliseconds": 0.12790000000006785
+    },
+    {
+      "globalWaveId": 873,
+      "generationMilliseconds": 0.1292999999999438
+    },
+    {
+      "globalWaveId": 874,
+      "generationMilliseconds": 0.12390000000004875
+    },
+    {
+      "globalWaveId": 875,
+      "generationMilliseconds": 0.1271000000000413
+    },
+    {
+      "globalWaveId": 876,
+      "generationMilliseconds": 0.1249000000000251
+    },
+    {
+      "globalWaveId": 877,
+      "generationMilliseconds": 0.3266000000000986
+    },
+    {
+      "globalWaveId": 878,
+      "generationMilliseconds": 0.29789999999991323
+    },
+    {
+      "globalWaveId": 879,
+      "generationMilliseconds": 0.13039999999989504
+    },
+    {
+      "globalWaveId": 880,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 881,
+      "generationMilliseconds": 0.12530000000003838
+    },
+    {
+      "globalWaveId": 882,
+      "generationMilliseconds": 0.1251999999999498
+    },
+    {
+      "globalWaveId": 883,
+      "generationMilliseconds": 0.12329999999997199
+    },
+    {
+      "globalWaveId": 884,
+      "generationMilliseconds": 0.12440000000003693
+    },
+    {
+      "globalWaveId": 885,
+      "generationMilliseconds": 0.13030000000003383
+    },
+    {
+      "globalWaveId": 886,
+      "generationMilliseconds": 0.1270999999999276
+    },
+    {
+      "globalWaveId": 887,
+      "generationMilliseconds": 0.1268999999999778
+    },
+    {
+      "globalWaveId": 888,
+      "generationMilliseconds": 0.2923999999999296
+    },
+    {
+      "globalWaveId": 889,
+      "generationMilliseconds": 0.15589999999997417
+    },
+    {
+      "globalWaveId": 890,
+      "generationMilliseconds": 0.13189999999997326
+    },
+    {
+      "globalWaveId": 891,
+      "generationMilliseconds": 0.15039999999999054
+    },
+    {
+      "globalWaveId": 892,
+      "generationMilliseconds": 0.12739999999996598
+    },
+    {
+      "globalWaveId": 893,
+      "generationMilliseconds": 0.12580000000002656
+    },
+    {
+      "globalWaveId": 894,
+      "generationMilliseconds": 0.12540000000001328
+    },
+    {
+      "globalWaveId": 895,
+      "generationMilliseconds": 0.12609999999995125
+    },
+    {
+      "globalWaveId": 896,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 897,
+      "generationMilliseconds": 0.1292999999999438
+    },
+    {
+      "globalWaveId": 898,
+      "generationMilliseconds": 0.29349999999999454
+    },
+    {
+      "globalWaveId": 899,
+      "generationMilliseconds": 0.13150000000007367
+    },
+    {
+      "globalWaveId": 900,
+      "generationMilliseconds": 0.13199999999994816
+    },
+    {
+      "globalWaveId": 901,
+      "generationMilliseconds": 0.14569999999991978
+    },
+    {
+      "globalWaveId": 902,
+      "generationMilliseconds": 0.13990000000001146
+    },
+    {
+      "globalWaveId": 903,
+      "generationMilliseconds": 0.13160000000004857
+    },
+    {
+      "globalWaveId": 904,
+      "generationMilliseconds": 0.13350000000002638
+    },
+    {
+      "globalWaveId": 905,
+      "generationMilliseconds": 0.1369000000000824
+    },
+    {
+      "globalWaveId": 906,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 907,
+      "generationMilliseconds": 0.37019999999995434
+    },
+    {
+      "globalWaveId": 908,
+      "generationMilliseconds": 0.31549999999992906
+    },
+    {
+      "globalWaveId": 909,
+      "generationMilliseconds": 0.13779999999997017
+    },
+    {
+      "globalWaveId": 910,
+      "generationMilliseconds": 0.13409999999998945
+    },
+    {
+      "globalWaveId": 911,
+      "generationMilliseconds": 0.13059999999995853
+    },
+    {
+      "globalWaveId": 912,
+      "generationMilliseconds": 0.15030000000001564
+    },
+    {
+      "globalWaveId": 913,
+      "generationMilliseconds": 0.13269999999999982
+    },
+    {
+      "globalWaveId": 914,
+      "generationMilliseconds": 0.14030000000002474
+    },
+    {
+      "globalWaveId": 915,
+      "generationMilliseconds": 0.14299999999991542
+    },
+    {
+      "globalWaveId": 916,
+      "generationMilliseconds": 0.12990000000002055
+    },
+    {
+      "globalWaveId": 917,
+      "generationMilliseconds": 0.13200000000006185
+    },
+    {
+      "globalWaveId": 918,
+      "generationMilliseconds": 0.47480000000007294
+    },
+    {
+      "globalWaveId": 919,
+      "generationMilliseconds": 0.175200000000018
+    },
+    {
+      "globalWaveId": 920,
+      "generationMilliseconds": 0.133199999999988
+    },
+    {
+      "globalWaveId": 921,
+      "generationMilliseconds": 0.13279999999997472
+    },
+    {
+      "globalWaveId": 922,
+      "generationMilliseconds": 0.13630000000000564
+    },
+    {
+      "globalWaveId": 923,
+      "generationMilliseconds": 0.13040000000000873
+    },
+    {
+      "globalWaveId": 924,
+      "generationMilliseconds": 0.1330999999998994
+    },
+    {
+      "globalWaveId": 925,
+      "generationMilliseconds": 0.12959999999998217
+    },
+    {
+      "globalWaveId": 926,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 927,
+      "generationMilliseconds": 0.16669999999999163
+    },
+    {
+      "globalWaveId": 928,
+      "generationMilliseconds": 0.2879999999998972
+    },
+    {
+      "globalWaveId": 929,
+      "generationMilliseconds": 0.12990000000002055
+    },
+    {
+      "globalWaveId": 930,
+      "generationMilliseconds": 0.12819999999999254
+    },
+    {
+      "globalWaveId": 931,
+      "generationMilliseconds": 0.12739999999996598
+    },
+    {
+      "globalWaveId": 932,
+      "generationMilliseconds": 0.12749999999994088
+    },
+    {
+      "globalWaveId": 933,
+      "generationMilliseconds": 0.12780000000009295
+    },
+    {
+      "globalWaveId": 934,
+      "generationMilliseconds": 0.12779999999997926
+    },
+    {
+      "globalWaveId": 935,
+      "generationMilliseconds": 0.13060000000007221
+    },
+    {
+      "globalWaveId": 936,
+      "generationMilliseconds": 0.12620000000003984
+    },
+    {
+      "globalWaveId": 937,
+      "generationMilliseconds": 0.35740000000009786
+    },
+    {
+      "globalWaveId": 938,
+      "generationMilliseconds": 0.300899999999956
+    },
+    {
+      "globalWaveId": 939,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 940,
+      "generationMilliseconds": 0.129099999999994
+    },
+    {
+      "globalWaveId": 941,
+      "generationMilliseconds": 0.1272000000000162
+    },
+    {
+      "globalWaveId": 942,
+      "generationMilliseconds": 0.13380000000006476
+    },
+    {
+      "globalWaveId": 943,
+      "generationMilliseconds": 0.13230000000010023
+    },
+    {
+      "globalWaveId": 944,
+      "generationMilliseconds": 0.12810000000001764
+    },
+    {
+      "globalWaveId": 945,
+      "generationMilliseconds": 0.12570000000005166
+    },
+    {
+      "globalWaveId": 946,
+      "generationMilliseconds": 0.1272999999999911
+    },
+    {
+      "globalWaveId": 947,
+      "generationMilliseconds": 0.30090000000006967
+    },
+    {
+      "globalWaveId": 948,
+      "generationMilliseconds": 0.32310000000006767
+    },
+    {
+      "globalWaveId": 949,
+      "generationMilliseconds": 0.13650000000006912
+    },
+    {
+      "globalWaveId": 950,
+      "generationMilliseconds": 0.12860000000000582
+    },
+    {
+      "globalWaveId": 951,
+      "generationMilliseconds": 0.13179999999999836
+    },
+    {
+      "globalWaveId": 952,
+      "generationMilliseconds": 0.1269000000000915
+    },
+    {
+      "globalWaveId": 953,
+      "generationMilliseconds": 0.1269999999999527
+    },
+    {
+      "globalWaveId": 954,
+      "generationMilliseconds": 0.12749999999994088
+    },
+    {
+      "globalWaveId": 955,
+      "generationMilliseconds": 0.13190000000008695
+    },
+    {
+      "globalWaveId": 956,
+      "generationMilliseconds": 0.1270000000000664
+    },
+    {
+      "globalWaveId": 957,
+      "generationMilliseconds": 0.1330000000000382
+    },
+    {
+      "globalWaveId": 958,
+      "generationMilliseconds": 0.2987999999999147
+    },
+    {
+      "globalWaveId": 959,
+      "generationMilliseconds": 0.1331000000000131
+    },
+    {
+      "globalWaveId": 960,
+      "generationMilliseconds": 0.13020000000005894
+    },
+    {
+      "globalWaveId": 961,
+      "generationMilliseconds": 0.13139999999998508
+    },
+    {
+      "globalWaveId": 962,
+      "generationMilliseconds": 0.12829999999996744
+    },
+    {
+      "globalWaveId": 963,
+      "generationMilliseconds": 0.12850000000003092
+    },
+    {
+      "globalWaveId": 964,
+      "generationMilliseconds": 0.12980000000004566
+    },
+    {
+      "globalWaveId": 965,
+      "generationMilliseconds": 0.12800000000004275
+    },
+    {
+      "globalWaveId": 966,
+      "generationMilliseconds": 0.1311000000000604
+    },
+    {
+      "globalWaveId": 967,
+      "generationMilliseconds": 0.4513000000000602
+    },
+    {
+      "globalWaveId": 968,
+      "generationMilliseconds": 0.3747000000000753
+    }
+  ]
+}

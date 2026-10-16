@@ -1,0 +1,14 @@
+{
+  "waveVictory": 0,
+  "rewardId": "equipment-reward-v1:12345:14",
+  "choice": "guinsoo",
+  "initial": {
+    "attackSpeed": 0.7,
+    "spellPower": 10,
+    "stacks": 0
+  },
+  "afterBattleStacks": 7,
+  "nextBattleStacks": 0,
+  "nextBattleAttackSpeed": 0.7,
+  "originalAttackSpeed": 0.6
+}

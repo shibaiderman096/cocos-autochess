@@ -1,0 +1,18 @@
+{
+  "hashes": {
+    "weak/per-run.jsonl": "11ba8f13df699e7ea6539ab1dd91ee99ff4f2d161e1d7a42355dda0169eba5ce",
+    "weak/per-wave.csv": "acb305be5c94c3cd556b0d04d48a65f2df2558938f9bde6edebf17d9796733d6",
+    "weak/summary.json": "66ebabc2b8e2ed31d97c15c06affdb0e3dd450ed4a01d80eb764eaa857c6a115",
+    "weak/per-stage.csv": "5715f6b881343406e038c760e311b5c5914f90aafd12d728beb97255aae7e961",
+    "medium/per-run.jsonl": "d665fe61e74a3093dd1ef016471e7fcb46264b6da01a3b85228d0eb4c54007ce",
+    "medium/per-wave.csv": "99e66047c541a83bf58f8ef5d57f96f52ad997454efd2915a92da8264c54267e",
+    "medium/summary.json": "44a37fb42be40f0c7af182f5e64937de69650b18544c18d9093af89b72d9f892",
+    "medium/per-stage.csv": "614eb728e712bd614a694d60c460ebf51747f48cd5f94c5f8a2a3123da12d6f2",
+    "strong/per-run.jsonl": "7b7eea8fc0f9d598e91144e719fdc2382330b7ab3ed9ba9bb4d94bbde20d769d",
+    "strong/per-wave.csv": "1d32ff1e09194293636bbcaba9bc44fc1716eec62f121b12258955fcaaf4727e",
+    "strong/summary.json": "75116ecb824d0185ebb5e9146d6d67b53d64254a8bd2b41b4cea800a119b281c",
+    "strong/per-stage.csv": "2483a2c928713c811bff3fbd126a6d675dc0d43c535cdaa70a7e48c6a57a4059",
+    "aggregate.json": "4c7855f69dcdc5c3bfaf50c6057d127cb792fedde62c6b8587a43256ab089d35",
+    "provenance.json": "c33b7606aea5e8ea68e62d0ee2abf518e85e6f69095b637719f76569207c08f3"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "version": "budget-v1",
+  "powerModelVersion": "enemy-power-v1",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "growthRate": 1.04,
+  "waveKindMultipliers": { "normal": 1, "elite": 1.15, "boss": 1.35 },
+  "classification": {
+    "elite": { "enabled": true, "minRounds": 5, "roundFromEnd": 2 },
+    "boss": { "enabled": true, "roundFromEnd": 1 }
+  },
+  "stageRecovery": { "min": 0.05, "target": 0.06, "max": 0.08 },
+  "costUnlock": [ { "stage": 2, "maxCost": 1 }, { "stage": 4, "maxCost": 2 }, { "stage": 6, "maxCost": 3 }, { "stage": 7, "maxCost": 4 }, { "stage": 8, "maxCost": 5 } ],
+  "starPolicy": {
+    "twoStarUnlockStage": 6, "threeStarUnlockStage": 10,
+    "maxThreeStars": { "normal": 0, "elite": 0, "boss": 1 },
+    "twoStarTargets": [ { "stage": 2, "ratio": 0 }, { "stage": 6, "ratio": 0.3333333333333333 }, { "stage": 7, "ratio": 0.6666666666666666 }, { "stage": 8, "ratio": 1 } ]
+  },
+  "maxPopulation": 10,
+  "optimizer": { "maxIterations": 100, "topK": 3, "pairTopK": 6, "targetDeviation": 0.05, "starPenalty": 0.03, "diversityPenalty": 0.005, "concentrationPenalty": 0.005 },
+  "attributeAdjustment": { "min": 0.95, "max": 1.05, "enabled": false },
+  "saturationPolicy": "feasible-stage-envelope"
+}

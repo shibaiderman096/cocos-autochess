@@ -1,0 +1,149 @@
+{
+  "version": "enemy-roles-v1",
+  "units": {
+    "warrior": {
+      "role": "mage",
+      "tags": ["aoe"],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range-4 physical caster; rasengan splits physical damage among enemies within 2 hexes of the target."
+    },
+    "guardian": {
+      "role": "tank",
+      "tags": [
+        "shield",
+        "durable"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range-1 defensive tank with a self shield."
+    },
+    "champion": {
+      "role": "ranged_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "medium",
+      "reason": "Range-3 physical archer; sage_clone_rasengan deals delayed single-target physical damage."
+    },
+    "duelist": {
+      "role": "melee_dps",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Melee fighter with radius-1 physical cleave."
+    },
+    "sasuke": {
+      "role": "melee_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Existing fighter with single-target physical attack and burn; no teleport."
+    },
+    "enderman": {
+      "role": "assassin",
+      "tags": [
+        "teleport",
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Existing ender_ambush teleportEmpower; targetRange remains 3 and is not extended by formation."
+    },
+    "archer": {
+      "role": "ranged_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range-4 archer with a charged physical arrow."
+    },
+    "scout": {
+      "role": "tank",
+      "tags": [],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range 1 magic tank; academy_shield grants a spell-scaled self shield."
+    },
+    "ranger": {
+      "role": "ranged_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range-4 marksman targeting the lowest health ratio."
+    },
+    "young_sasuke": {
+      "role": "ranged_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Existing magicArcher, range 4, hybrid_bolt single target."
+    },
+    "mage": {
+      "role": "mage",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Range-4 caster with radius-1 magic fireball."
+    },
+    "shaman": {
+      "role": "support",
+      "tags": [
+        "healing"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Ranged healer prioritizing injured allies within 3 hexes."
+    },
+    "sorcerer": {
+      "role": "mage",
+      "tags": [
+        "damage-over-time"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Magic curse with five periodic magic damage pulses."
+    },
+    "itachi": {
+      "role": "mage",
+      "tags": [
+        "control",
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Tsukuyomi single-target damageStun; no AoE radius."
+    },
+    "sakura": {
+      "role": "tank",
+      "tags": [
+        "healing",
+        "durable"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Existing tank; healing_channel heals herself only, not allies."
+    },
+    "iron_golem": {
+      "role": "tank",
+      "tags": [
+        "control",
+        "damage-reduction"
+      ],
+      "confidence": "high",
+      "reason": "4费近战坦克，以护甲加成重拳击飞目标并获得限时减伤。"
+    }
+  }
+}

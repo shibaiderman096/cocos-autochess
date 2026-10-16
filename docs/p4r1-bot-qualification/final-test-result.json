@@ -1,0 +1,5 @@
+{
+  "command": "npm.cmd test",
+  "exitCode": 0,
+  "log": "docs/p4r1-bot-qualification/final-tests.log"
+}

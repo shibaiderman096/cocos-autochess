@@ -1,0 +1,50 @@
+Balance development: 200 runs, 12 campaign stages, 4 worker processes; no difficulty values are changed
+progress 10/200
+progress 20/200
+progress 30/200
+progress 40/200
+progress 50/200
+progress 60/200
+progress 70/200
+progress 80/200
+progress 90/200
+progress 100/200
+progress 110/200
+progress 120/200
+progress 130/200
+progress 140/200
+progress 150/200
+progress 160/200
+progress 170/200
+progress 170/200
+progress 180/200
+progress 180/200
+progress 190/200
+progress 190/200
+progress 200/200
+progress 200/200
+{
+  "output": "docs/p4r1-bot-qualification/development-200",
+  "runs": 200,
+  "battles": 19600,
+  "seconds": 100.5231855,
+  "results": {
+    "medium": {
+      "stage3": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "failedActions": 0
+    }
+  }
+}

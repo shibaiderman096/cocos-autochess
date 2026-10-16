@@ -1,0 +1,1517 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/training/confirmation-500",
+    "bot": "all",
+    "seedStart": 1,
+    "seedCount": 500,
+    "stages": 12,
+    "workers": 4,
+    "partition": "training",
+    "audit": true,
+    "config": "docs/p4-balance/training/search-v1/iteration-13-config.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1
+    },
+    {
+      "bot": "weak",
+      "seed": 5
+    },
+    {
+      "bot": "weak",
+      "seed": 9
+    },
+    {
+      "bot": "weak",
+      "seed": 13
+    },
+    {
+      "bot": "weak",
+      "seed": 17
+    },
+    {
+      "bot": "weak",
+      "seed": 21
+    },
+    {
+      "bot": "weak",
+      "seed": 25
+    },
+    {
+      "bot": "weak",
+      "seed": 29
+    },
+    {
+      "bot": "weak",
+      "seed": 33
+    },
+    {
+      "bot": "weak",
+      "seed": 37
+    },
+    {
+      "bot": "weak",
+      "seed": 41
+    },
+    {
+      "bot": "weak",
+      "seed": 45
+    },
+    {
+      "bot": "weak",
+      "seed": 49
+    },
+    {
+      "bot": "weak",
+      "seed": 53
+    },
+    {
+      "bot": "weak",
+      "seed": 57
+    },
+    {
+      "bot": "weak",
+      "seed": 61
+    },
+    {
+      "bot": "weak",
+      "seed": 65
+    },
+    {
+      "bot": "weak",
+      "seed": 69
+    },
+    {
+      "bot": "weak",
+      "seed": 73
+    },
+    {
+      "bot": "weak",
+      "seed": 77
+    },
+    {
+      "bot": "weak",
+      "seed": 81
+    },
+    {
+      "bot": "weak",
+      "seed": 85
+    },
+    {
+      "bot": "weak",
+      "seed": 89
+    },
+    {
+      "bot": "weak",
+      "seed": 93
+    },
+    {
+      "bot": "weak",
+      "seed": 97
+    },
+    {
+      "bot": "weak",
+      "seed": 101
+    },
+    {
+      "bot": "weak",
+      "seed": 105
+    },
+    {
+      "bot": "weak",
+      "seed": 109
+    },
+    {
+      "bot": "weak",
+      "seed": 113
+    },
+    {
+      "bot": "weak",
+      "seed": 117
+    },
+    {
+      "bot": "weak",
+      "seed": 121
+    },
+    {
+      "bot": "weak",
+      "seed": 125
+    },
+    {
+      "bot": "weak",
+      "seed": 129
+    },
+    {
+      "bot": "weak",
+      "seed": 133
+    },
+    {
+      "bot": "weak",
+      "seed": 137
+    },
+    {
+      "bot": "weak",
+      "seed": 141
+    },
+    {
+      "bot": "weak",
+      "seed": 145
+    },
+    {
+      "bot": "weak",
+      "seed": 149
+    },
+    {
+      "bot": "weak",
+      "seed": 153
+    },
+    {
+      "bot": "weak",
+      "seed": 157
+    },
+    {
+      "bot": "weak",
+      "seed": 161
+    },
+    {
+      "bot": "weak",
+      "seed": 165
+    },
+    {
+      "bot": "weak",
+      "seed": 169
+    },
+    {
+      "bot": "weak",
+      "seed": 173
+    },
+    {
+      "bot": "weak",
+      "seed": 177
+    },
+    {
+      "bot": "weak",
+      "seed": 181
+    },
+    {
+      "bot": "weak",
+      "seed": 185
+    },
+    {
+      "bot": "weak",
+      "seed": 189
+    },
+    {
+      "bot": "weak",
+      "seed": 193
+    },
+    {
+      "bot": "weak",
+      "seed": 197
+    },
+    {
+      "bot": "weak",
+      "seed": 201
+    },
+    {
+      "bot": "weak",
+      "seed": 205
+    },
+    {
+      "bot": "weak",
+      "seed": 209
+    },
+    {
+      "bot": "weak",
+      "seed": 213
+    },
+    {
+      "bot": "weak",
+      "seed": 217
+    },
+    {
+      "bot": "weak",
+      "seed": 221
+    },
+    {
+      "bot": "weak",
+      "seed": 225
+    },
+    {
+      "bot": "weak",
+      "seed": 229
+    },
+    {
+      "bot": "weak",
+      "seed": 233
+    },
+    {
+      "bot": "weak",
+      "seed": 237
+    },
+    {
+      "bot": "weak",
+      "seed": 241
+    },
+    {
+      "bot": "weak",
+      "seed": 245
+    },
+    {
+      "bot": "weak",
+      "seed": 249
+    },
+    {
+      "bot": "weak",
+      "seed": 253
+    },
+    {
+      "bot": "weak",
+      "seed": 257
+    },
+    {
+      "bot": "weak",
+      "seed": 261
+    },
+    {
+      "bot": "weak",
+      "seed": 265
+    },
+    {
+      "bot": "weak",
+      "seed": 269
+    },
+    {
+      "bot": "weak",
+      "seed": 273
+    },
+    {
+      "bot": "weak",
+      "seed": 277
+    },
+    {
+      "bot": "weak",
+      "seed": 281
+    },
+    {
+      "bot": "weak",
+      "seed": 285
+    },
+    {
+      "bot": "weak",
+      "seed": 289
+    },
+    {
+      "bot": "weak",
+      "seed": 293
+    },
+    {
+      "bot": "weak",
+      "seed": 297
+    },
+    {
+      "bot": "weak",
+      "seed": 301
+    },
+    {
+      "bot": "weak",
+      "seed": 305
+    },
+    {
+      "bot": "weak",
+      "seed": 309
+    },
+    {
+      "bot": "weak",
+      "seed": 313
+    },
+    {
+      "bot": "weak",
+      "seed": 317
+    },
+    {
+      "bot": "weak",
+      "seed": 321
+    },
+    {
+      "bot": "weak",
+      "seed": 325
+    },
+    {
+      "bot": "weak",
+      "seed": 329
+    },
+    {
+      "bot": "weak",
+      "seed": 333
+    },
+    {
+      "bot": "weak",
+      "seed": 337
+    },
+    {
+      "bot": "weak",
+      "seed": 341
+    },
+    {
+      "bot": "weak",
+      "seed": 345
+    },
+    {
+      "bot": "weak",
+      "seed": 349
+    },
+    {
+      "bot": "weak",
+      "seed": 353
+    },
+    {
+      "bot": "weak",
+      "seed": 357
+    },
+    {
+      "bot": "weak",
+      "seed": 361
+    },
+    {
+      "bot": "weak",
+      "seed": 365
+    },
+    {
+      "bot": "weak",
+      "seed": 369
+    },
+    {
+      "bot": "weak",
+      "seed": 373
+    },
+    {
+      "bot": "weak",
+      "seed": 377
+    },
+    {
+      "bot": "weak",
+      "seed": 381
+    },
+    {
+      "bot": "weak",
+      "seed": 385
+    },
+    {
+      "bot": "weak",
+      "seed": 389
+    },
+    {
+      "bot": "weak",
+      "seed": 393
+    },
+    {
+      "bot": "weak",
+      "seed": 397
+    },
+    {
+      "bot": "weak",
+      "seed": 401
+    },
+    {
+      "bot": "weak",
+      "seed": 405
+    },
+    {
+      "bot": "weak",
+      "seed": 409
+    },
+    {
+      "bot": "weak",
+      "seed": 413
+    },
+    {
+      "bot": "weak",
+      "seed": 417
+    },
+    {
+      "bot": "weak",
+      "seed": 421
+    },
+    {
+      "bot": "weak",
+      "seed": 425
+    },
+    {
+      "bot": "weak",
+      "seed": 429
+    },
+    {
+      "bot": "weak",
+      "seed": 433
+    },
+    {
+      "bot": "weak",
+      "seed": 437
+    },
+    {
+      "bot": "weak",
+      "seed": 441
+    },
+    {
+      "bot": "weak",
+      "seed": 445
+    },
+    {
+      "bot": "weak",
+      "seed": 449
+    },
+    {
+      "bot": "weak",
+      "seed": 453
+    },
+    {
+      "bot": "weak",
+      "seed": 457
+    },
+    {
+      "bot": "weak",
+      "seed": 461
+    },
+    {
+      "bot": "weak",
+      "seed": 465
+    },
+    {
+      "bot": "weak",
+      "seed": 469
+    },
+    {
+      "bot": "weak",
+      "seed": 473
+    },
+    {
+      "bot": "weak",
+      "seed": 477
+    },
+    {
+      "bot": "weak",
+      "seed": 481
+    },
+    {
+      "bot": "weak",
+      "seed": 485
+    },
+    {
+      "bot": "weak",
+      "seed": 489
+    },
+    {
+      "bot": "weak",
+      "seed": 493
+    },
+    {
+      "bot": "weak",
+      "seed": 497
+    },
+    {
+      "bot": "medium",
+      "seed": 1
+    },
+    {
+      "bot": "medium",
+      "seed": 5
+    },
+    {
+      "bot": "medium",
+      "seed": 9
+    },
+    {
+      "bot": "medium",
+      "seed": 13
+    },
+    {
+      "bot": "medium",
+      "seed": 17
+    },
+    {
+      "bot": "medium",
+      "seed": 21
+    },
+    {
+      "bot": "medium",
+      "seed": 25
+    },
+    {
+      "bot": "medium",
+      "seed": 29
+    },
+    {
+      "bot": "medium",
+      "seed": 33
+    },
+    {
+      "bot": "medium",
+      "seed": 37
+    },
+    {
+      "bot": "medium",
+      "seed": 41
+    },
+    {
+      "bot": "medium",
+      "seed": 45
+    },
+    {
+      "bot": "medium",
+      "seed": 49
+    },
+    {
+      "bot": "medium",
+      "seed": 53
+    },
+    {
+      "bot": "medium",
+      "seed": 57
+    },
+    {
+      "bot": "medium",
+      "seed": 61
+    },
+    {
+      "bot": "medium",
+      "seed": 65
+    },
+    {
+      "bot": "medium",
+      "seed": 69
+    },
+    {
+      "bot": "medium",
+      "seed": 73
+    },
+    {
+      "bot": "medium",
+      "seed": 77
+    },
+    {
+      "bot": "medium",
+      "seed": 81
+    },
+    {
+      "bot": "medium",
+      "seed": 85
+    },
+    {
+      "bot": "medium",
+      "seed": 89
+    },
+    {
+      "bot": "medium",
+      "seed": 93
+    },
+    {
+      "bot": "medium",
+      "seed": 97
+    },
+    {
+      "bot": "medium",
+      "seed": 101
+    },
+    {
+      "bot": "medium",
+      "seed": 105
+    },
+    {
+      "bot": "medium",
+      "seed": 109
+    },
+    {
+      "bot": "medium",
+      "seed": 113
+    },
+    {
+      "bot": "medium",
+      "seed": 117
+    },
+    {
+      "bot": "medium",
+      "seed": 121
+    },
+    {
+      "bot": "medium",
+      "seed": 125
+    },
+    {
+      "bot": "medium",
+      "seed": 129
+    },
+    {
+      "bot": "medium",
+      "seed": 133
+    },
+    {
+      "bot": "medium",
+      "seed": 137
+    },
+    {
+      "bot": "medium",
+      "seed": 141
+    },
+    {
+      "bot": "medium",
+      "seed": 145
+    },
+    {
+      "bot": "medium",
+      "seed": 149
+    },
+    {
+      "bot": "medium",
+      "seed": 153
+    },
+    {
+      "bot": "medium",
+      "seed": 157
+    },
+    {
+      "bot": "medium",
+      "seed": 161
+    },
+    {
+      "bot": "medium",
+      "seed": 165
+    },
+    {
+      "bot": "medium",
+      "seed": 169
+    },
+    {
+      "bot": "medium",
+      "seed": 173
+    },
+    {
+      "bot": "medium",
+      "seed": 177
+    },
+    {
+      "bot": "medium",
+      "seed": 181
+    },
+    {
+      "bot": "medium",
+      "seed": 185
+    },
+    {
+      "bot": "medium",
+      "seed": 189
+    },
+    {
+      "bot": "medium",
+      "seed": 193
+    },
+    {
+      "bot": "medium",
+      "seed": 197
+    },
+    {
+      "bot": "medium",
+      "seed": 201
+    },
+    {
+      "bot": "medium",
+      "seed": 205
+    },
+    {
+      "bot": "medium",
+      "seed": 209
+    },
+    {
+      "bot": "medium",
+      "seed": 213
+    },
+    {
+      "bot": "medium",
+      "seed": 217
+    },
+    {
+      "bot": "medium",
+      "seed": 221
+    },
+    {
+      "bot": "medium",
+      "seed": 225
+    },
+    {
+      "bot": "medium",
+      "seed": 229
+    },
+    {
+      "bot": "medium",
+      "seed": 233
+    },
+    {
+      "bot": "medium",
+      "seed": 237
+    },
+    {
+      "bot": "medium",
+      "seed": 241
+    },
+    {
+      "bot": "medium",
+      "seed": 245
+    },
+    {
+      "bot": "medium",
+      "seed": 249
+    },
+    {
+      "bot": "medium",
+      "seed": 253
+    },
+    {
+      "bot": "medium",
+      "seed": 257
+    },
+    {
+      "bot": "medium",
+      "seed": 261
+    },
+    {
+      "bot": "medium",
+      "seed": 265
+    },
+    {
+      "bot": "medium",
+      "seed": 269
+    },
+    {
+      "bot": "medium",
+      "seed": 273
+    },
+    {
+      "bot": "medium",
+      "seed": 277
+    },
+    {
+      "bot": "medium",
+      "seed": 281
+    },
+    {
+      "bot": "medium",
+      "seed": 285
+    },
+    {
+      "bot": "medium",
+      "seed": 289
+    },
+    {
+      "bot": "medium",
+      "seed": 293
+    },
+    {
+      "bot": "medium",
+      "seed": 297
+    },
+    {
+      "bot": "medium",
+      "seed": 301
+    },
+    {
+      "bot": "medium",
+      "seed": 305
+    },
+    {
+      "bot": "medium",
+      "seed": 309
+    },
+    {
+      "bot": "medium",
+      "seed": 313
+    },
+    {
+      "bot": "medium",
+      "seed": 317
+    },
+    {
+      "bot": "medium",
+      "seed": 321
+    },
+    {
+      "bot": "medium",
+      "seed": 325
+    },
+    {
+      "bot": "medium",
+      "seed": 329
+    },
+    {
+      "bot": "medium",
+      "seed": 333
+    },
+    {
+      "bot": "medium",
+      "seed": 337
+    },
+    {
+      "bot": "medium",
+      "seed": 341
+    },
+    {
+      "bot": "medium",
+      "seed": 345
+    },
+    {
+      "bot": "medium",
+      "seed": 349
+    },
+    {
+      "bot": "medium",
+      "seed": 353
+    },
+    {
+      "bot": "medium",
+      "seed": 357
+    },
+    {
+      "bot": "medium",
+      "seed": 361
+    },
+    {
+      "bot": "medium",
+      "seed": 365
+    },
+    {
+      "bot": "medium",
+      "seed": 369
+    },
+    {
+      "bot": "medium",
+      "seed": 373
+    },
+    {
+      "bot": "medium",
+      "seed": 377
+    },
+    {
+      "bot": "medium",
+      "seed": 381
+    },
+    {
+      "bot": "medium",
+      "seed": 385
+    },
+    {
+      "bot": "medium",
+      "seed": 389
+    },
+    {
+      "bot": "medium",
+      "seed": 393
+    },
+    {
+      "bot": "medium",
+      "seed": 397
+    },
+    {
+      "bot": "medium",
+      "seed": 401
+    },
+    {
+      "bot": "medium",
+      "seed": 405
+    },
+    {
+      "bot": "medium",
+      "seed": 409
+    },
+    {
+      "bot": "medium",
+      "seed": 413
+    },
+    {
+      "bot": "medium",
+      "seed": 417
+    },
+    {
+      "bot": "medium",
+      "seed": 421
+    },
+    {
+      "bot": "medium",
+      "seed": 425
+    },
+    {
+      "bot": "medium",
+      "seed": 429
+    },
+    {
+      "bot": "medium",
+      "seed": 433
+    },
+    {
+      "bot": "medium",
+      "seed": 437
+    },
+    {
+      "bot": "medium",
+      "seed": 441
+    },
+    {
+      "bot": "medium",
+      "seed": 445
+    },
+    {
+      "bot": "medium",
+      "seed": 449
+    },
+    {
+      "bot": "medium",
+      "seed": 453
+    },
+    {
+      "bot": "medium",
+      "seed": 457
+    },
+    {
+      "bot": "medium",
+      "seed": 461
+    },
+    {
+      "bot": "medium",
+      "seed": 465
+    },
+    {
+      "bot": "medium",
+      "seed": 469
+    },
+    {
+      "bot": "medium",
+      "seed": 473
+    },
+    {
+      "bot": "medium",
+      "seed": 477
+    },
+    {
+      "bot": "medium",
+      "seed": 481
+    },
+    {
+      "bot": "medium",
+      "seed": 485
+    },
+    {
+      "bot": "medium",
+      "seed": 489
+    },
+    {
+      "bot": "medium",
+      "seed": 493
+    },
+    {
+      "bot": "medium",
+      "seed": 497
+    },
+    {
+      "bot": "strong",
+      "seed": 1
+    },
+    {
+      "bot": "strong",
+      "seed": 5
+    },
+    {
+      "bot": "strong",
+      "seed": 9
+    },
+    {
+      "bot": "strong",
+      "seed": 13
+    },
+    {
+      "bot": "strong",
+      "seed": 17
+    },
+    {
+      "bot": "strong",
+      "seed": 21
+    },
+    {
+      "bot": "strong",
+      "seed": 25
+    },
+    {
+      "bot": "strong",
+      "seed": 29
+    },
+    {
+      "bot": "strong",
+      "seed": 33
+    },
+    {
+      "bot": "strong",
+      "seed": 37
+    },
+    {
+      "bot": "strong",
+      "seed": 41
+    },
+    {
+      "bot": "strong",
+      "seed": 45
+    },
+    {
+      "bot": "strong",
+      "seed": 49
+    },
+    {
+      "bot": "strong",
+      "seed": 53
+    },
+    {
+      "bot": "strong",
+      "seed": 57
+    },
+    {
+      "bot": "strong",
+      "seed": 61
+    },
+    {
+      "bot": "strong",
+      "seed": 65
+    },
+    {
+      "bot": "strong",
+      "seed": 69
+    },
+    {
+      "bot": "strong",
+      "seed": 73
+    },
+    {
+      "bot": "strong",
+      "seed": 77
+    },
+    {
+      "bot": "strong",
+      "seed": 81
+    },
+    {
+      "bot": "strong",
+      "seed": 85
+    },
+    {
+      "bot": "strong",
+      "seed": 89
+    },
+    {
+      "bot": "strong",
+      "seed": 93
+    },
+    {
+      "bot": "strong",
+      "seed": 97
+    },
+    {
+      "bot": "strong",
+      "seed": 101
+    },
+    {
+      "bot": "strong",
+      "seed": 105
+    },
+    {
+      "bot": "strong",
+      "seed": 109
+    },
+    {
+      "bot": "strong",
+      "seed": 113
+    },
+    {
+      "bot": "strong",
+      "seed": 117
+    },
+    {
+      "bot": "strong",
+      "seed": 121
+    },
+    {
+      "bot": "strong",
+      "seed": 125
+    },
+    {
+      "bot": "strong",
+      "seed": 129
+    },
+    {
+      "bot": "strong",
+      "seed": 133
+    },
+    {
+      "bot": "strong",
+      "seed": 137
+    },
+    {
+      "bot": "strong",
+      "seed": 141
+    },
+    {
+      "bot": "strong",
+      "seed": 145
+    },
+    {
+      "bot": "strong",
+      "seed": 149
+    },
+    {
+      "bot": "strong",
+      "seed": 153
+    },
+    {
+      "bot": "strong",
+      "seed": 157
+    },
+    {
+      "bot": "strong",
+      "seed": 161
+    },
+    {
+      "bot": "strong",
+      "seed": 165
+    },
+    {
+      "bot": "strong",
+      "seed": 169
+    },
+    {
+      "bot": "strong",
+      "seed": 173
+    },
+    {
+      "bot": "strong",
+      "seed": 177
+    },
+    {
+      "bot": "strong",
+      "seed": 181
+    },
+    {
+      "bot": "strong",
+      "seed": 185
+    },
+    {
+      "bot": "strong",
+      "seed": 189
+    },
+    {
+      "bot": "strong",
+      "seed": 193
+    },
+    {
+      "bot": "strong",
+      "seed": 197
+    },
+    {
+      "bot": "strong",
+      "seed": 201
+    },
+    {
+      "bot": "strong",
+      "seed": 205
+    },
+    {
+      "bot": "strong",
+      "seed": 209
+    },
+    {
+      "bot": "strong",
+      "seed": 213
+    },
+    {
+      "bot": "strong",
+      "seed": 217
+    },
+    {
+      "bot": "strong",
+      "seed": 221
+    },
+    {
+      "bot": "strong",
+      "seed": 225
+    },
+    {
+      "bot": "strong",
+      "seed": 229
+    },
+    {
+      "bot": "strong",
+      "seed": 233
+    },
+    {
+      "bot": "strong",
+      "seed": 237
+    },
+    {
+      "bot": "strong",
+      "seed": 241
+    },
+    {
+      "bot": "strong",
+      "seed": 245
+    },
+    {
+      "bot": "strong",
+      "seed": 249
+    },
+    {
+      "bot": "strong",
+      "seed": 253
+    },
+    {
+      "bot": "strong",
+      "seed": 257
+    },
+    {
+      "bot": "strong",
+      "seed": 261
+    },
+    {
+      "bot": "strong",
+      "seed": 265
+    },
+    {
+      "bot": "strong",
+      "seed": 269
+    },
+    {
+      "bot": "strong",
+      "seed": 273
+    },
+    {
+      "bot": "strong",
+      "seed": 277
+    },
+    {
+      "bot": "strong",
+      "seed": 281
+    },
+    {
+      "bot": "strong",
+      "seed": 285
+    },
+    {
+      "bot": "strong",
+      "seed": 289
+    },
+    {
+      "bot": "strong",
+      "seed": 293
+    },
+    {
+      "bot": "strong",
+      "seed": 297
+    },
+    {
+      "bot": "strong",
+      "seed": 301
+    },
+    {
+      "bot": "strong",
+      "seed": 305
+    },
+    {
+      "bot": "strong",
+      "seed": 309
+    },
+    {
+      "bot": "strong",
+      "seed": 313
+    },
+    {
+      "bot": "strong",
+      "seed": 317
+    },
+    {
+      "bot": "strong",
+      "seed": 321
+    },
+    {
+      "bot": "strong",
+      "seed": 325
+    },
+    {
+      "bot": "strong",
+      "seed": 329
+    },
+    {
+      "bot": "strong",
+      "seed": 333
+    },
+    {
+      "bot": "strong",
+      "seed": 337
+    },
+    {
+      "bot": "strong",
+      "seed": 341
+    },
+    {
+      "bot": "strong",
+      "seed": 345
+    },
+    {
+      "bot": "strong",
+      "seed": 349
+    },
+    {
+      "bot": "strong",
+      "seed": 353
+    },
+    {
+      "bot": "strong",
+      "seed": 357
+    },
+    {
+      "bot": "strong",
+      "seed": 361
+    },
+    {
+      "bot": "strong",
+      "seed": 365
+    },
+    {
+      "bot": "strong",
+      "seed": 369
+    },
+    {
+      "bot": "strong",
+      "seed": 373
+    },
+    {
+      "bot": "strong",
+      "seed": 377
+    },
+    {
+      "bot": "strong",
+      "seed": 381
+    },
+    {
+      "bot": "strong",
+      "seed": 385
+    },
+    {
+      "bot": "strong",
+      "seed": 389
+    },
+    {
+      "bot": "strong",
+      "seed": 393
+    },
+    {
+      "bot": "strong",
+      "seed": 397
+    },
+    {
+      "bot": "strong",
+      "seed": 401
+    },
+    {
+      "bot": "strong",
+      "seed": 405
+    },
+    {
+      "bot": "strong",
+      "seed": 409
+    },
+    {
+      "bot": "strong",
+      "seed": 413
+    },
+    {
+      "bot": "strong",
+      "seed": 417
+    },
+    {
+      "bot": "strong",
+      "seed": 421
+    },
+    {
+      "bot": "strong",
+      "seed": 425
+    },
+    {
+      "bot": "strong",
+      "seed": 429
+    },
+    {
+      "bot": "strong",
+      "seed": 433
+    },
+    {
+      "bot": "strong",
+      "seed": 437
+    },
+    {
+      "bot": "strong",
+      "seed": 441
+    },
+    {
+      "bot": "strong",
+      "seed": 445
+    },
+    {
+      "bot": "strong",
+      "seed": 449
+    },
+    {
+      "bot": "strong",
+      "seed": 453
+    },
+    {
+      "bot": "strong",
+      "seed": 457
+    },
+    {
+      "bot": "strong",
+      "seed": 461
+    },
+    {
+      "bot": "strong",
+      "seed": 465
+    },
+    {
+      "bot": "strong",
+      "seed": 469
+    },
+    {
+      "bot": "strong",
+      "seed": 473
+    },
+    {
+      "bot": "strong",
+      "seed": 477
+    },
+    {
+      "bot": "strong",
+      "seed": 481
+    },
+    {
+      "bot": "strong",
+      "seed": 485
+    },
+    {
+      "bot": "strong",
+      "seed": 489
+    },
+    {
+      "bot": "strong",
+      "seed": 493
+    },
+    {
+      "bot": "strong",
+      "seed": 497
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\confirmation-500\\parts\\part-0.jsonl"
+}

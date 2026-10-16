@@ -1,0 +1,144 @@
+{
+  "environment": "Cocos Creator 3.8.8 Browser Preview, isolated nonpersistent Electron partition; legal debug fixture, not a normal player or balance sample",
+  "twoChoice": {
+    "wave": 14,
+    "pending": {
+      "rewardId": "equipment-reward-v1:1:14",
+      "waveId": 14,
+      "stage": 3,
+      "round": 6,
+      "source": "boss",
+      "candidates": [
+        "jeweled_gauntlet",
+        "guinsoo"
+      ],
+      "claimed": false,
+      "diagnostics": [
+        "EMPTY_BASIC_POOL_CONFIGURED_ADVANCED_FALLBACK",
+        "INSUFFICIENT_POOL_FEWER_CHOICES:2"
+      ]
+    },
+    "versions": [
+      "equipment-policy-v1",
+      "equipment-reward-v1"
+    ],
+    "timer": null,
+    "gold": 9744,
+    "xp": 2
+  },
+  "reloaded": {
+    "pending": {
+      "rewardId": "equipment-reward-v1:1:14",
+      "waveId": 14,
+      "stage": 3,
+      "round": 6,
+      "source": "boss",
+      "candidates": [
+        "jeweled_gauntlet",
+        "guinsoo"
+      ],
+      "claimed": false,
+      "diagnostics": [
+        "EMPTY_BASIC_POOL_CONFIGURED_ADVANCED_FALLBACK",
+        "INSUFFICIENT_POOL_FEWER_CHOICES:2"
+      ]
+    },
+    "gold": 9744,
+    "xp": 2,
+    "timer": null,
+    "cards": 2,
+    "innerWidth": 1266,
+    "innerHeight": 697,
+    "devicePixelRatio": 1.5
+  },
+  "pointerClaim": {
+    "pending": null,
+    "inventory": [
+      "guinsoo"
+    ],
+    "claimedMarker": 14,
+    "savedPending": null,
+    "panel": false,
+    "gold": 9744,
+    "xp": 2
+  },
+  "threeChoice": {
+    "winner": 0,
+    "wave": 21,
+    "pending": {
+      "rewardId": "equipment-reward-v1:1:21",
+      "waveId": 21,
+      "stage": 4,
+      "round": 7,
+      "source": "boss",
+      "candidates": [
+        "arcane_veil",
+        "arcane_sovereignty",
+        "crimson_bloodclaw"
+      ],
+      "claimed": false,
+      "diagnostics": []
+    },
+    "cards": 3
+  },
+  "midRunPending": {
+    "winner": 0,
+    "wave": 29,
+    "phase": "settlement",
+    "stage": 5,
+    "round": 8,
+    "pending": {
+      "rewardId": "equipment-reward-v1:1:29",
+      "waveId": 29,
+      "stage": 5,
+      "round": 8,
+      "source": "boss",
+      "candidates": [
+        "arcane_veil",
+        "crimson_bloodclaw",
+        "guinsoo"
+      ],
+      "claimed": false,
+      "diagnostics": []
+    },
+    "timer": null,
+    "inventory": [
+      "guinsoo",
+      "arcane_sovereignty"
+    ]
+  },
+  "midRunWait": {
+    "wave": 29,
+    "phase": "settlement",
+    "timer": null,
+    "pending": {
+      "rewardId": "equipment-reward-v1:1:29",
+      "waveId": 29,
+      "stage": 5,
+      "round": 8,
+      "source": "boss",
+      "candidates": [
+        "arcane_veil",
+        "crimson_bloodclaw",
+        "guinsoo"
+      ],
+      "claimed": false,
+      "diagnostics": []
+    },
+    "manualRestartBlocked": true,
+    "pendingStillPresent": true
+  },
+  "afterMidRunClaim": {
+    "wave": 30,
+    "stage": 6,
+    "round": 1,
+    "phase": "prepare",
+    "pending": null,
+    "inventory": [
+      "guinsoo",
+      "arcane_sovereignty",
+      "crimson_bloodclaw"
+    ],
+    "claimedMarker": 29
+  }
+}

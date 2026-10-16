@@ -1,0 +1,3881 @@
+{
+  "unit": "milliseconds",
+  "generation": {
+    "mean": 1.081308290155438,
+    "p95": 4.248800000000074,
+    "max": 52.56820000000005
+  },
+  "reward": {
+    "samples": 2000,
+    "mean": 0.0027967499999945176,
+    "p95": 0.002899999999499414,
+    "max": 1.1503999999995358,
+    "note": "Isolated candidate-generation microbenchmark; never included in actual victory/reward statistics."
+  },
+  "waves": 965,
+  "maxCandidateCountBefore": 48,
+  "maxCandidateCountAfter": 228,
+  "maxEquipmentCandidatesPerUnit": 12,
+  "timings": [
+    {
+      "waveId": 4,
+      "milliseconds": 0.4895000000000209
+    },
+    {
+      "waveId": 5,
+      "milliseconds": 0.08939999999995507
+    },
+    {
+      "waveId": 6,
+      "milliseconds": 0.07129999999995107
+    },
+    {
+      "waveId": 7,
+      "milliseconds": 1.8276999999999362
+    },
+    {
+      "waveId": 8,
+      "milliseconds": 0.19889999999998054
+    },
+    {
+      "waveId": 9,
+      "milliseconds": 0.15799999999990177
+    },
+    {
+      "waveId": 10,
+      "milliseconds": 0.15460000000007312
+    },
+    {
+      "waveId": 11,
+      "milliseconds": 0.17840000000001055
+    },
+    {
+      "waveId": 12,
+      "milliseconds": 0.11040000000002692
+    },
+    {
+      "waveId": 13,
+      "milliseconds": 1.2969000000000506
+    },
+    {
+      "waveId": 14,
+      "milliseconds": 0.4619000000000142
+    },
+    {
+      "waveId": 15,
+      "milliseconds": 0.320699999999988
+    },
+    {
+      "waveId": 16,
+      "milliseconds": 0.49079999999992197
+    },
+    {
+      "waveId": 17,
+      "milliseconds": 0.2457000000000562
+    },
+    {
+      "waveId": 18,
+      "milliseconds": 0.2438000000000784
+    },
+    {
+      "waveId": 19,
+      "milliseconds": 0.2857999999999947
+    },
+    {
+      "waveId": 20,
+      "milliseconds": 0.5041999999999689
+    },
+    {
+      "waveId": 21,
+      "milliseconds": 0.6644999999999754
+    },
+    {
+      "waveId": 22,
+      "milliseconds": 0.2518999999999778
+    },
+    {
+      "waveId": 23,
+      "milliseconds": 0.4014999999999418
+    },
+    {
+      "waveId": 24,
+      "milliseconds": 0.37000000000000455
+    },
+    {
+      "waveId": 25,
+      "milliseconds": 0.2721000000000231
+    },
+    {
+      "waveId": 26,
+      "milliseconds": 0.3751999999999498
+    },
+    {
+      "waveId": 27,
+      "milliseconds": 0.4956000000000813
+    },
+    {
+      "waveId": 28,
+      "milliseconds": 1.1281000000000176
+    },
+    {
+      "waveId": 29,
+      "milliseconds": 1.0851999999999862
+    },
+    {
+      "waveId": 30,
+      "milliseconds": 0.49459999999999127
+    },
+    {
+      "waveId": 31,
+      "milliseconds": 1.175799999999981
+    },
+    {
+      "waveId": 32,
+      "milliseconds": 0.2377999999999929
+    },
+    {
+      "waveId": 33,
+      "milliseconds": 0.35789999999997235
+    },
+    {
+      "waveId": 34,
+      "milliseconds": 0.48860000000001946
+    },
+    {
+      "waveId": 35,
+      "milliseconds": 0.5158000000000129
+    },
+    {
+      "waveId": 36,
+      "milliseconds": 0.5105000000000928
+    },
+    {
+      "waveId": 37,
+      "milliseconds": 1.741200000000049
+    },
+    {
+      "waveId": 38,
+      "milliseconds": 2.01299999999992
+    },
+    {
+      "waveId": 39,
+      "milliseconds": 5.380499999999984
+    },
+    {
+      "waveId": 40,
+      "milliseconds": 2.630800000000022
+    },
+    {
+      "waveId": 41,
+      "milliseconds": 3.863200000000006
+    },
+    {
+      "waveId": 42,
+      "milliseconds": 4.0353999999999814
+    },
+    {
+      "waveId": 43,
+      "milliseconds": 3.076999999999998
+    },
+    {
+      "waveId": 44,
+      "milliseconds": 2.8836000000000013
+    },
+    {
+      "waveId": 45,
+      "milliseconds": 4.7379000000000815
+    },
+    {
+      "waveId": 46,
+      "milliseconds": 5.803800000000024
+    },
+    {
+      "waveId": 47,
+      "milliseconds": 21.64199999999994
+    },
+    {
+      "waveId": 48,
+      "milliseconds": 41.32159999999999
+    },
+    {
+      "waveId": 49,
+      "milliseconds": 2.5698999999999614
+    },
+    {
+      "waveId": 50,
+      "milliseconds": 3.269300000000044
+    },
+    {
+      "waveId": 51,
+      "milliseconds": 4.2549999999999955
+    },
+    {
+      "waveId": 52,
+      "milliseconds": 3.9721000000000686
+    },
+    {
+      "waveId": 53,
+      "milliseconds": 4.706699999999955
+    },
+    {
+      "waveId": 54,
+      "milliseconds": 3.532600000000002
+    },
+    {
+      "waveId": 55,
+      "milliseconds": 4.988200000000006
+    },
+    {
+      "waveId": 56,
+      "milliseconds": 3.8644999999999072
+    },
+    {
+      "waveId": 57,
+      "milliseconds": 37.246399999999994
+    },
+    {
+      "waveId": 58,
+      "milliseconds": 52.56820000000005
+    },
+    {
+      "waveId": 59,
+      "milliseconds": 3.4827999999999975
+    },
+    {
+      "waveId": 60,
+      "milliseconds": 4.493399999999951
+    },
+    {
+      "waveId": 61,
+      "milliseconds": 0.28890000000001237
+    },
+    {
+      "waveId": 62,
+      "milliseconds": 0.3287000000000262
+    },
+    {
+      "waveId": 63,
+      "milliseconds": 0.3810999999999467
+    },
+    {
+      "waveId": 64,
+      "milliseconds": 0.574100000000044
+    },
+    {
+      "waveId": 65,
+      "milliseconds": 0.9083000000000538
+    },
+    {
+      "waveId": 66,
+      "milliseconds": 0.9223000000000638
+    },
+    {
+      "waveId": 67,
+      "milliseconds": 2.8548999999999296
+    },
+    {
+      "waveId": 68,
+      "milliseconds": 3.9601000000000113
+    },
+    {
+      "waveId": 69,
+      "milliseconds": 1.15199999999993
+    },
+    {
+      "waveId": 70,
+      "milliseconds": 1.6268999999999778
+    },
+    {
+      "waveId": 71,
+      "milliseconds": 2.915899999999965
+    },
+    {
+      "waveId": 72,
+      "milliseconds": 0.948099999999954
+    },
+    {
+      "waveId": 73,
+      "milliseconds": 0.8838000000000648
+    },
+    {
+      "waveId": 74,
+      "milliseconds": 1.747199999999907
+    },
+    {
+      "waveId": 75,
+      "milliseconds": 1.6906000000000176
+    },
+    {
+      "waveId": 76,
+      "milliseconds": 1.1497000000000526
+    },
+    {
+      "waveId": 77,
+      "milliseconds": 3.9704000000000406
+    },
+    {
+      "waveId": 78,
+      "milliseconds": 10.828899999999976
+    },
+    {
+      "waveId": 79,
+      "milliseconds": 1.4996999999999616
+    },
+    {
+      "waveId": 80,
+      "milliseconds": 2.032100000000014
+    },
+    {
+      "waveId": 81,
+      "milliseconds": 1.8237000000000307
+    },
+    {
+      "waveId": 82,
+      "milliseconds": 0.5530999999999722
+    },
+    {
+      "waveId": 83,
+      "milliseconds": 1.407699999999977
+    },
+    {
+      "waveId": 84,
+      "milliseconds": 1.6460000000000719
+    },
+    {
+      "waveId": 85,
+      "milliseconds": 1.1073000000000093
+    },
+    {
+      "waveId": 86,
+      "milliseconds": 1.0021000000000413
+    },
+    {
+      "waveId": 87,
+      "milliseconds": 2.570600000000013
+    },
+    {
+      "waveId": 88,
+      "milliseconds": 7.3016999999999825
+    },
+    {
+      "waveId": 89,
+      "milliseconds": 1.1736000000000786
+    },
+    {
+      "waveId": 90,
+      "milliseconds": 0.8618000000000166
+    },
+    {
+      "waveId": 91,
+      "milliseconds": 1.1692000000000462
+    },
+    {
+      "waveId": 92,
+      "milliseconds": 0.8712000000000444
+    },
+    {
+      "waveId": 93,
+      "milliseconds": 0.35930000000007567
+    },
+    {
+      "waveId": 94,
+      "milliseconds": 0.31759999999997035
+    },
+    {
+      "waveId": 95,
+      "milliseconds": 0.4414000000000442
+    },
+    {
+      "waveId": 96,
+      "milliseconds": 0.30979999999999563
+    },
+    {
+      "waveId": 97,
+      "milliseconds": 1.9329000000000178
+    },
+    {
+      "waveId": 98,
+      "milliseconds": 3.7807999999999993
+    },
+    {
+      "waveId": 99,
+      "milliseconds": 0.310100000000034
+    },
+    {
+      "waveId": 100,
+      "milliseconds": 0.27910000000008495
+    },
+    {
+      "waveId": 101,
+      "milliseconds": 0.2807000000000244
+    },
+    {
+      "waveId": 102,
+      "milliseconds": 0.29510000000004766
+    },
+    {
+      "waveId": 103,
+      "milliseconds": 0.28710000000000946
+    },
+    {
+      "waveId": 104,
+      "milliseconds": 0.2989000000000033
+    },
+    {
+      "waveId": 105,
+      "milliseconds": 0.2839000000000169
+    },
+    {
+      "waveId": 106,
+      "milliseconds": 0.2961999999999989
+    },
+    {
+      "waveId": 107,
+      "milliseconds": 1.9278000000000475
+    },
+    {
+      "waveId": 108,
+      "milliseconds": 4.005999999999972
+    },
+    {
+      "waveId": 109,
+      "milliseconds": 0.3166999999999689
+    },
+    {
+      "waveId": 110,
+      "milliseconds": 0.30140000000005784
+    },
+    {
+      "waveId": 111,
+      "milliseconds": 0.2742000000000644
+    },
+    {
+      "waveId": 112,
+      "milliseconds": 0.5513999999999442
+    },
+    {
+      "waveId": 113,
+      "milliseconds": 0.40639999999996235
+    },
+    {
+      "waveId": 114,
+      "milliseconds": 0.2801000000000613
+    },
+    {
+      "waveId": 115,
+      "milliseconds": 0.3222999999999274
+    },
+    {
+      "waveId": 116,
+      "milliseconds": 0.273900000000026
+    },
+    {
+      "waveId": 117,
+      "milliseconds": 1.6861999999999853
+    },
+    {
+      "waveId": 118,
+      "milliseconds": 4.377099999999928
+    },
+    {
+      "waveId": 119,
+      "milliseconds": 0.29179999999996653
+    },
+    {
+      "waveId": 120,
+      "milliseconds": 0.2907000000000153
+    },
+    {
+      "waveId": 121,
+      "milliseconds": 0.28509999999994307
+    },
+    {
+      "waveId": 122,
+      "milliseconds": 0.29099999999994
+    },
+    {
+      "waveId": 123,
+      "milliseconds": 0.282799999999952
+    },
+    {
+      "waveId": 124,
+      "milliseconds": 0.2921999999999798
+    },
+    {
+      "waveId": 125,
+      "milliseconds": 0.2907000000000153
+    },
+    {
+      "waveId": 126,
+      "milliseconds": 0.29930000000001655
+    },
+    {
+      "waveId": 127,
+      "milliseconds": 2.0515000000000327
+    },
+    {
+      "waveId": 128,
+      "milliseconds": 3.379199999999969
+    },
+    {
+      "waveId": 129,
+      "milliseconds": 0.30579999999997654
+    },
+    {
+      "waveId": 130,
+      "milliseconds": 0.2883000000000493
+    },
+    {
+      "waveId": 131,
+      "milliseconds": 0.2804999999999609
+    },
+    {
+      "waveId": 132,
+      "milliseconds": 0.27909999999997126
+    },
+    {
+      "waveId": 133,
+      "milliseconds": 0.30539999999996326
+    },
+    {
+      "waveId": 134,
+      "milliseconds": 0.2898999999999887
+    },
+    {
+      "waveId": 135,
+      "milliseconds": 0.28120000000001255
+    },
+    {
+      "waveId": 136,
+      "milliseconds": 0.3047000000000253
+    },
+    {
+      "waveId": 137,
+      "milliseconds": 1.7233999999999696
+    },
+    {
+      "waveId": 138,
+      "milliseconds": 4.5253999999999905
+    },
+    {
+      "waveId": 139,
+      "milliseconds": 0.2984000000000151
+    },
+    {
+      "waveId": 140,
+      "milliseconds": 0.28160000000002583
+    },
+    {
+      "waveId": 141,
+      "milliseconds": 0.2784000000000333
+    },
+    {
+      "waveId": 142,
+      "milliseconds": 0.2760999999999285
+    },
+    {
+      "waveId": 143,
+      "milliseconds": 0.27500000000009095
+    },
+    {
+      "waveId": 144,
+      "milliseconds": 0.275600000000054
+    },
+    {
+      "waveId": 145,
+      "milliseconds": 0.2778999999999314
+    },
+    {
+      "waveId": 146,
+      "milliseconds": 0.274599999999964
+    },
+    {
+      "waveId": 147,
+      "milliseconds": 1.707899999999995
+    },
+    {
+      "waveId": 148,
+      "milliseconds": 3.4791000000000167
+    },
+    {
+      "waveId": 149,
+      "milliseconds": 0.28740000000004784
+    },
+    {
+      "waveId": 150,
+      "milliseconds": 0.27319999999997435
+    },
+    {
+      "waveId": 151,
+      "milliseconds": 0.26969999999994343
+    },
+    {
+      "waveId": 152,
+      "milliseconds": 0.27760000000000673
+    },
+    {
+      "waveId": 153,
+      "milliseconds": 0.27539999999999054
+    },
+    {
+      "waveId": 154,
+      "milliseconds": 0.27739999999994325
+    },
+    {
+      "waveId": 155,
+      "milliseconds": 0.27729999999996835
+    },
+    {
+      "waveId": 156,
+      "milliseconds": 0.2784000000000333
+    },
+    {
+      "waveId": 157,
+      "milliseconds": 1.7245000000000346
+    },
+    {
+      "waveId": 158,
+      "milliseconds": 3.2345000000000255
+    },
+    {
+      "waveId": 159,
+      "milliseconds": 0.28959999999995034
+    },
+    {
+      "waveId": 160,
+      "milliseconds": 0.27939999999989595
+    },
+    {
+      "waveId": 161,
+      "milliseconds": 0.2800000000000864
+    },
+    {
+      "waveId": 162,
+      "milliseconds": 0.27949999999998454
+    },
+    {
+      "waveId": 163,
+      "milliseconds": 0.2740999999999758
+    },
+    {
+      "waveId": 164,
+      "milliseconds": 0.5597999999999956
+    },
+    {
+      "waveId": 165,
+      "milliseconds": 0.31569999999999254
+    },
+    {
+      "waveId": 166,
+      "milliseconds": 0.28880000000003747
+    },
+    {
+      "waveId": 167,
+      "milliseconds": 1.8602000000000771
+    },
+    {
+      "waveId": 168,
+      "milliseconds": 4.431799999999953
+    },
+    {
+      "waveId": 169,
+      "milliseconds": 0.28500000000008185
+    },
+    {
+      "waveId": 170,
+      "milliseconds": 0.2766000000000304
+    },
+    {
+      "waveId": 171,
+      "milliseconds": 0.27919999999994616
+    },
+    {
+      "waveId": 172,
+      "milliseconds": 0.27740000000005693
+    },
+    {
+      "waveId": 173,
+      "milliseconds": 0.27860000000009677
+    },
+    {
+      "waveId": 174,
+      "milliseconds": 0.2767999999999802
+    },
+    {
+      "waveId": 175,
+      "milliseconds": 0.2744999999999891
+    },
+    {
+      "waveId": 176,
+      "milliseconds": 0.2759999999999536
+    },
+    {
+      "waveId": 177,
+      "milliseconds": 2.018199999999979
+    },
+    {
+      "waveId": 178,
+      "milliseconds": 3.1865999999999985
+    },
+    {
+      "waveId": 179,
+      "milliseconds": 0.2865000000000464
+    },
+    {
+      "waveId": 180,
+      "milliseconds": 0.27719999999999345
+    },
+    {
+      "waveId": 181,
+      "milliseconds": 0.4230999999999767
+    },
+    {
+      "waveId": 182,
+      "milliseconds": 0.30600000000004
+    },
+    {
+      "waveId": 183,
+      "milliseconds": 0.27929999999992106
+    },
+    {
+      "waveId": 184,
+      "milliseconds": 0.47100000000000364
+    },
+    {
+      "waveId": 185,
+      "milliseconds": 0.2763999999999669
+    },
+    {
+      "waveId": 186,
+      "milliseconds": 0.2693000000001575
+    },
+    {
+      "waveId": 187,
+      "milliseconds": 1.6586999999999534
+    },
+    {
+      "waveId": 188,
+      "milliseconds": 3.5434000000000196
+    },
+    {
+      "waveId": 189,
+      "milliseconds": 0.2898999999999887
+    },
+    {
+      "waveId": 190,
+      "milliseconds": 0.2787999999998192
+    },
+    {
+      "waveId": 191,
+      "milliseconds": 0.27670000000011896
+    },
+    {
+      "waveId": 192,
+      "milliseconds": 0.3061999999999898
+    },
+    {
+      "waveId": 193,
+      "milliseconds": 0.29970000000002983
+    },
+    {
+      "waveId": 194,
+      "milliseconds": 0.27890000000002146
+    },
+    {
+      "waveId": 195,
+      "milliseconds": 0.2898000000000138
+    },
+    {
+      "waveId": 196,
+      "milliseconds": 0.28909999999996217
+    },
+    {
+      "waveId": 197,
+      "milliseconds": 1.7425000000000637
+    },
+    {
+      "waveId": 198,
+      "milliseconds": 4.530999999999949
+    },
+    {
+      "waveId": 199,
+      "milliseconds": 0.28700000000003456
+    },
+    {
+      "waveId": 200,
+      "milliseconds": 0.28359999999997854
+    },
+    {
+      "waveId": 201,
+      "milliseconds": 0.2764999999999418
+    },
+    {
+      "waveId": 202,
+      "milliseconds": 0.2764999999999418
+    },
+    {
+      "waveId": 203,
+      "milliseconds": 0.279700000000048
+    },
+    {
+      "waveId": 204,
+      "milliseconds": 0.2749999999998636
+    },
+    {
+      "waveId": 205,
+      "milliseconds": 0.27710000000001855
+    },
+    {
+      "waveId": 206,
+      "milliseconds": 0.27899999999999636
+    },
+    {
+      "waveId": 207,
+      "milliseconds": 1.7098000000000866
+    },
+    {
+      "waveId": 208,
+      "milliseconds": 3.360500000000002
+    },
+    {
+      "waveId": 209,
+      "milliseconds": 0.30709999999999127
+    },
+    {
+      "waveId": 210,
+      "milliseconds": 0.27719999999999345
+    },
+    {
+      "waveId": 211,
+      "milliseconds": 0.2756000000001677
+    },
+    {
+      "waveId": 212,
+      "milliseconds": 0.2824999999997999
+    },
+    {
+      "waveId": 213,
+      "milliseconds": 0.2759000000000924
+    },
+    {
+      "waveId": 214,
+      "milliseconds": 0.27350000000001273
+    },
+    {
+      "waveId": 215,
+      "milliseconds": 0.27700000000004366
+    },
+    {
+      "waveId": 216,
+      "milliseconds": 0.5776000000000749
+    },
+    {
+      "waveId": 217,
+      "milliseconds": 1.8051000000000386
+    },
+    {
+      "waveId": 218,
+      "milliseconds": 4.184299999999894
+    },
+    {
+      "waveId": 219,
+      "milliseconds": 0.29779999999982465
+    },
+    {
+      "waveId": 220,
+      "milliseconds": 0.2949999999998454
+    },
+    {
+      "waveId": 221,
+      "milliseconds": 0.28500000000008185
+    },
+    {
+      "waveId": 222,
+      "milliseconds": 0.2826999999999771
+    },
+    {
+      "waveId": 223,
+      "milliseconds": 0.29300000000012005
+    },
+    {
+      "waveId": 224,
+      "milliseconds": 0.2798999999999978
+    },
+    {
+      "waveId": 225,
+      "milliseconds": 0.27470000000016626
+    },
+    {
+      "waveId": 226,
+      "milliseconds": 0.2758000000001175
+    },
+    {
+      "waveId": 227,
+      "milliseconds": 2.2864999999999327
+    },
+    {
+      "waveId": 228,
+      "milliseconds": 3.0960000000000036
+    },
+    {
+      "waveId": 229,
+      "milliseconds": 0.2704999999998563
+    },
+    {
+      "waveId": 230,
+      "milliseconds": 0.26690000000007785
+    },
+    {
+      "waveId": 231,
+      "milliseconds": 0.28350000000000364
+    },
+    {
+      "waveId": 232,
+      "milliseconds": 0.30960000000004584
+    },
+    {
+      "waveId": 233,
+      "milliseconds": 0.31749999999988177
+    },
+    {
+      "waveId": 234,
+      "milliseconds": 0.2886000000000877
+    },
+    {
+      "waveId": 235,
+      "milliseconds": 0.28110000000015134
+    },
+    {
+      "waveId": 236,
+      "milliseconds": 0.2865999999999076
+    },
+    {
+      "waveId": 237,
+      "milliseconds": 1.731999999999971
+    },
+    {
+      "waveId": 238,
+      "milliseconds": 4.554099999999835
+    },
+    {
+      "waveId": 239,
+      "milliseconds": 0.28729999999995925
+    },
+    {
+      "waveId": 240,
+      "milliseconds": 0.27919999999994616
+    },
+    {
+      "waveId": 241,
+      "milliseconds": 0.27340000000003783
+    },
+    {
+      "waveId": 242,
+      "milliseconds": 0.27340000000003783
+    },
+    {
+      "waveId": 243,
+      "milliseconds": 0.28130000000010114
+    },
+    {
+      "waveId": 244,
+      "milliseconds": 0.27749999999991815
+    },
+    {
+      "waveId": 245,
+      "milliseconds": 0.2782999999999447
+    },
+    {
+      "waveId": 246,
+      "milliseconds": 0.27369999999996253
+    },
+    {
+      "waveId": 247,
+      "milliseconds": 1.937599999999975
+    },
+    {
+      "waveId": 248,
+      "milliseconds": 3.122100000000046
+    },
+    {
+      "waveId": 249,
+      "milliseconds": 0.2806000000000495
+    },
+    {
+      "waveId": 250,
+      "milliseconds": 0.6345999999998639
+    },
+    {
+      "waveId": 251,
+      "milliseconds": 0.28559999999993124
+    },
+    {
+      "waveId": 252,
+      "milliseconds": 0.28379999999992833
+    },
+    {
+      "waveId": 253,
+      "milliseconds": 0.2748999999998887
+    },
+    {
+      "waveId": 254,
+      "milliseconds": 0.27309999999988577
+    },
+    {
+      "waveId": 255,
+      "milliseconds": 0.27549999999996544
+    },
+    {
+      "waveId": 256,
+      "milliseconds": 0.2780999999999949
+    },
+    {
+      "waveId": 257,
+      "milliseconds": 1.7129999999999654
+    },
+    {
+      "waveId": 258,
+      "milliseconds": 3.1817000000000917
+    },
+    {
+      "waveId": 259,
+      "milliseconds": 0.3040000000000873
+    },
+    {
+      "waveId": 260,
+      "milliseconds": 0.3007000000000062
+    },
+    {
+      "waveId": 261,
+      "milliseconds": 0.28559999999993124
+    },
+    {
+      "waveId": 262,
+      "milliseconds": 0.29510000000004766
+    },
+    {
+      "waveId": 263,
+      "milliseconds": 0.2865999999999076
+    },
+    {
+      "waveId": 264,
+      "milliseconds": 0.2828999999999269
+    },
+    {
+      "waveId": 265,
+      "milliseconds": 0.28680000000008476
+    },
+    {
+      "waveId": 266,
+      "milliseconds": 0.2880000000000109
+    },
+    {
+      "waveId": 267,
+      "milliseconds": 2.3946999999998297
+    },
+    {
+      "waveId": 268,
+      "milliseconds": 4.223199999999906
+    },
+    {
+      "waveId": 269,
+      "milliseconds": 0.2943000000000211
+    },
+    {
+      "waveId": 270,
+      "milliseconds": 0.2798999999999978
+    },
+    {
+      "waveId": 271,
+      "milliseconds": 0.2826999999999771
+    },
+    {
+      "waveId": 272,
+      "milliseconds": 0.28539999999998145
+    },
+    {
+      "waveId": 273,
+      "milliseconds": 0.2826999999999771
+    },
+    {
+      "waveId": 274,
+      "milliseconds": 0.28460000000018226
+    },
+    {
+      "waveId": 275,
+      "milliseconds": 0.2825000000000273
+    },
+    {
+      "waveId": 276,
+      "milliseconds": 0.2784999999998945
+    },
+    {
+      "waveId": 277,
+      "milliseconds": 1.7311999999999443
+    },
+    {
+      "waveId": 278,
+      "milliseconds": 3.363499999999931
+    },
+    {
+      "waveId": 279,
+      "milliseconds": 0.2998999999999796
+    },
+    {
+      "waveId": 280,
+      "milliseconds": 0.28359999999997854
+    },
+    {
+      "waveId": 281,
+      "milliseconds": 0.28150000000005093
+    },
+    {
+      "waveId": 282,
+      "milliseconds": 0.28110000000015134
+    },
+    {
+      "waveId": 283,
+      "milliseconds": 0.2844000000000051
+    },
+    {
+      "waveId": 284,
+      "milliseconds": 0.276299999999992
+    },
+    {
+      "waveId": 285,
+      "milliseconds": 0.2785000000001219
+    },
+    {
+      "waveId": 286,
+      "milliseconds": 0.28729999999995925
+    },
+    {
+      "waveId": 287,
+      "milliseconds": 1.9583000000000084
+    },
+    {
+      "waveId": 288,
+      "milliseconds": 3.3816000000001623
+    },
+    {
+      "waveId": 289,
+      "milliseconds": 0.29759999999987485
+    },
+    {
+      "waveId": 290,
+      "milliseconds": 0.28749999999990905
+    },
+    {
+      "waveId": 291,
+      "milliseconds": 0.28569999999990614
+    },
+    {
+      "waveId": 292,
+      "milliseconds": 0.27530000000001564
+    },
+    {
+      "waveId": 293,
+      "milliseconds": 0.2765999999999167
+    },
+    {
+      "waveId": 294,
+      "milliseconds": 0.27909999999997126
+    },
+    {
+      "waveId": 295,
+      "milliseconds": 0.27759999999989304
+    },
+    {
+      "waveId": 296,
+      "milliseconds": 0.2795000000000982
+    },
+    {
+      "waveId": 297,
+      "milliseconds": 1.7217999999998028
+    },
+    {
+      "waveId": 298,
+      "milliseconds": 4.18990000000008
+    },
+    {
+      "waveId": 299,
+      "milliseconds": 0.2821000000001277
+    },
+    {
+      "waveId": 300,
+      "milliseconds": 0.2817000000000007
+    },
+    {
+      "waveId": 301,
+      "milliseconds": 0.2778000000000702
+    },
+    {
+      "waveId": 302,
+      "milliseconds": 0.5586000000000695
+    },
+    {
+      "waveId": 303,
+      "milliseconds": 0.28350000000000364
+    },
+    {
+      "waveId": 304,
+      "milliseconds": 0.2787999999998192
+    },
+    {
+      "waveId": 305,
+      "milliseconds": 0.27340000000003783
+    },
+    {
+      "waveId": 306,
+      "milliseconds": 0.28520000000003165
+    },
+    {
+      "waveId": 307,
+      "milliseconds": 2.1342999999999392
+    },
+    {
+      "waveId": 308,
+      "milliseconds": 4.277599999999893
+    },
+    {
+      "waveId": 309,
+      "milliseconds": 0.28549999999995634
+    },
+    {
+      "waveId": 310,
+      "milliseconds": 0.2838000000001557
+    },
+    {
+      "waveId": 311,
+      "milliseconds": 0.2817999999999756
+    },
+    {
+      "waveId": 312,
+      "milliseconds": 0.27779999999984284
+    },
+    {
+      "waveId": 313,
+      "milliseconds": 0.288300000000163
+    },
+    {
+      "waveId": 314,
+      "milliseconds": 0.2855000000001837
+    },
+    {
+      "waveId": 315,
+      "milliseconds": 0.28929999999991196
+    },
+    {
+      "waveId": 316,
+      "milliseconds": 0.28389999999990323
+    },
+    {
+      "waveId": 317,
+      "milliseconds": 2.097400000000107
+    },
+    {
+      "waveId": 318,
+      "milliseconds": 4.24369999999999
+    },
+    {
+      "waveId": 319,
+      "milliseconds": 0.28330000000005384
+    },
+    {
+      "waveId": 320,
+      "milliseconds": 0.2826999999999771
+    },
+    {
+      "waveId": 321,
+      "milliseconds": 0.6587000000001808
+    },
+    {
+      "waveId": 322,
+      "milliseconds": 0.4535000000000764
+    },
+    {
+      "waveId": 323,
+      "milliseconds": 0.3148999999998523
+    },
+    {
+      "waveId": 324,
+      "milliseconds": 0.32759999999984757
+    },
+    {
+      "waveId": 325,
+      "milliseconds": 0.49250000000006366
+    },
+    {
+      "waveId": 326,
+      "milliseconds": 0.5961999999999534
+    },
+    {
+      "waveId": 327,
+      "milliseconds": 2.4972000000000207
+    },
+    {
+      "waveId": 328,
+      "milliseconds": 3.6237999999998465
+    },
+    {
+      "waveId": 329,
+      "milliseconds": 0.27800000000002
+    },
+    {
+      "waveId": 330,
+      "milliseconds": 0.26340000000004693
+    },
+    {
+      "waveId": 331,
+      "milliseconds": 0.27319999999986067
+    },
+    {
+      "waveId": 332,
+      "milliseconds": 0.2830999999998767
+    },
+    {
+      "waveId": 333,
+      "milliseconds": 0.266399999999976
+    },
+    {
+      "waveId": 334,
+      "milliseconds": 0.2703000000001339
+    },
+    {
+      "waveId": 335,
+      "milliseconds": 0.2824000000000524
+    },
+    {
+      "waveId": 336,
+      "milliseconds": 0.2817999999999756
+    },
+    {
+      "waveId": 337,
+      "milliseconds": 1.9126999999998588
+    },
+    {
+      "waveId": 338,
+      "milliseconds": 3.425899999999956
+    },
+    {
+      "waveId": 339,
+      "milliseconds": 0.28559999999993124
+    },
+    {
+      "waveId": 340,
+      "milliseconds": 0.2739999999998872
+    },
+    {
+      "waveId": 341,
+      "milliseconds": 0.2701000000001841
+    },
+    {
+      "waveId": 342,
+      "milliseconds": 0.26910000000020773
+    },
+    {
+      "waveId": 343,
+      "milliseconds": 0.2595000000001164
+    },
+    {
+      "waveId": 344,
+      "milliseconds": 0.2635999999999967
+    },
+    {
+      "waveId": 345,
+      "milliseconds": 0.26300000000014734
+    },
+    {
+      "waveId": 346,
+      "milliseconds": 0.26549999999997453
+    },
+    {
+      "waveId": 347,
+      "milliseconds": 1.6404999999999745
+    },
+    {
+      "waveId": 348,
+      "milliseconds": 4.053200000000061
+    },
+    {
+      "waveId": 349,
+      "milliseconds": 0.27719999999999345
+    },
+    {
+      "waveId": 350,
+      "milliseconds": 0.2636999999999716
+    },
+    {
+      "waveId": 351,
+      "milliseconds": 0.3029999999998836
+    },
+    {
+      "waveId": 352,
+      "milliseconds": 0.27510000000006585
+    },
+    {
+      "waveId": 353,
+      "milliseconds": 0.2667999999998756
+    },
+    {
+      "waveId": 354,
+      "milliseconds": 0.2880999999999858
+    },
+    {
+      "waveId": 355,
+      "milliseconds": 0.2741000000000895
+    },
+    {
+      "waveId": 356,
+      "milliseconds": 0.26720000000000255
+    },
+    {
+      "waveId": 357,
+      "milliseconds": 1.6621999999999844
+    },
+    {
+      "waveId": 358,
+      "milliseconds": 4.245400000000018
+    },
+    {
+      "waveId": 359,
+      "milliseconds": 0.28359999999997854
+    },
+    {
+      "waveId": 360,
+      "milliseconds": 0.2699999999999818
+    },
+    {
+      "waveId": 361,
+      "milliseconds": 0.27890000000002146
+    },
+    {
+      "waveId": 362,
+      "milliseconds": 0.2778000000000702
+    },
+    {
+      "waveId": 363,
+      "milliseconds": 0.2717000000000098
+    },
+    {
+      "waveId": 364,
+      "milliseconds": 0.27739999999994325
+    },
+    {
+      "waveId": 365,
+      "milliseconds": 0.2741000000000895
+    },
+    {
+      "waveId": 366,
+      "milliseconds": 0.2763999999999669
+    },
+    {
+      "waveId": 367,
+      "milliseconds": 2.205799999999954
+    },
+    {
+      "waveId": 368,
+      "milliseconds": 2.9911999999999352
+    },
+    {
+      "waveId": 369,
+      "milliseconds": 0.28650000000016007
+    },
+    {
+      "waveId": 370,
+      "milliseconds": 0.2718999999999596
+    },
+    {
+      "waveId": 371,
+      "milliseconds": 0.2680000000000291
+    },
+    {
+      "waveId": 372,
+      "milliseconds": 0.27759999999989304
+    },
+    {
+      "waveId": 373,
+      "milliseconds": 0.27710000000001855
+    },
+    {
+      "waveId": 374,
+      "milliseconds": 0.27769999999986794
+    },
+    {
+      "waveId": 375,
+      "milliseconds": 0.2748999999998887
+    },
+    {
+      "waveId": 376,
+      "milliseconds": 0.2826000000000022
+    },
+    {
+      "waveId": 377,
+      "milliseconds": 1.8561999999999443
+    },
+    {
+      "waveId": 378,
+      "milliseconds": 4.905799999999999
+    },
+    {
+      "waveId": 379,
+      "milliseconds": 0.27520000000004075
+    },
+    {
+      "waveId": 380,
+      "milliseconds": 0.48949999999990723
+    },
+    {
+      "waveId": 381,
+      "milliseconds": 0.2721999999998843
+    },
+    {
+      "waveId": 382,
+      "milliseconds": 0.26320000000009713
+    },
+    {
+      "waveId": 383,
+      "milliseconds": 0.33039999999982683
+    },
+    {
+      "waveId": 384,
+      "milliseconds": 0.2635999999999967
+    },
+    {
+      "waveId": 385,
+      "milliseconds": 0.26769999999987704
+    },
+    {
+      "waveId": 386,
+      "milliseconds": 0.2624999999998181
+    },
+    {
+      "waveId": 387,
+      "milliseconds": 1.6681999999998425
+    },
+    {
+      "waveId": 388,
+      "milliseconds": 3.6144999999999072
+    },
+    {
+      "waveId": 389,
+      "milliseconds": 0.2784999999998945
+    },
+    {
+      "waveId": 390,
+      "milliseconds": 0.2750999999998385
+    },
+    {
+      "waveId": 391,
+      "milliseconds": 0.2703999999998814
+    },
+    {
+      "waveId": 392,
+      "milliseconds": 0.38850000000002183
+    },
+    {
+      "waveId": 393,
+      "milliseconds": 0.2738000000001648
+    },
+    {
+      "waveId": 394,
+      "milliseconds": 0.26919999999995525
+    },
+    {
+      "waveId": 395,
+      "milliseconds": 0.38019999999983156
+    },
+    {
+      "waveId": 396,
+      "milliseconds": 0.2767999999998665
+    },
+    {
+      "waveId": 397,
+      "milliseconds": 1.8122999999998228
+    },
+    {
+      "waveId": 398,
+      "milliseconds": 3.2001999999999953
+    },
+    {
+      "waveId": 399,
+      "milliseconds": 0.28510000000005675
+    },
+    {
+      "waveId": 400,
+      "milliseconds": 0.2727999999999611
+    },
+    {
+      "waveId": 401,
+      "milliseconds": 0.2749999999998636
+    },
+    {
+      "waveId": 402,
+      "milliseconds": 0.3843000000001666
+    },
+    {
+      "waveId": 403,
+      "milliseconds": 0.2738000000001648
+    },
+    {
+      "waveId": 404,
+      "milliseconds": 0.45280000000002474
+    },
+    {
+      "waveId": 405,
+      "milliseconds": 0.4037999999998192
+    },
+    {
+      "waveId": 406,
+      "milliseconds": 0.6951000000001386
+    },
+    {
+      "waveId": 407,
+      "milliseconds": 1.8964000000000851
+    },
+    {
+      "waveId": 408,
+      "milliseconds": 4.45029999999997
+    },
+    {
+      "waveId": 409,
+      "milliseconds": 0.2963999999999487
+    },
+    {
+      "waveId": 410,
+      "milliseconds": 0.2803000000001248
+    },
+    {
+      "waveId": 411,
+      "milliseconds": 0.2877000000000862
+    },
+    {
+      "waveId": 412,
+      "milliseconds": 0.2768999999998414
+    },
+    {
+      "waveId": 413,
+      "milliseconds": 0.27310000000011314
+    },
+    {
+      "waveId": 414,
+      "milliseconds": 0.3772999999998774
+    },
+    {
+      "waveId": 415,
+      "milliseconds": 0.2942999999997937
+    },
+    {
+      "waveId": 416,
+      "milliseconds": 0.2769999999998163
+    },
+    {
+      "waveId": 417,
+      "milliseconds": 1.9851999999998498
+    },
+    {
+      "waveId": 418,
+      "milliseconds": 3.3545000000001437
+    },
+    {
+      "waveId": 419,
+      "milliseconds": 0.28769999999985885
+    },
+    {
+      "waveId": 420,
+      "milliseconds": 0.27749999999991815
+    },
+    {
+      "waveId": 421,
+      "milliseconds": 0.39990000000011605
+    },
+    {
+      "waveId": 422,
+      "milliseconds": 0.2883999999999105
+    },
+    {
+      "waveId": 423,
+      "milliseconds": 0.2843000000000302
+    },
+    {
+      "waveId": 424,
+      "milliseconds": 0.2925000000000182
+    },
+    {
+      "waveId": 425,
+      "milliseconds": 0.2826999999999771
+    },
+    {
+      "waveId": 426,
+      "milliseconds": 0.39640000000008513
+    },
+    {
+      "waveId": 427,
+      "milliseconds": 1.7065000000000055
+    },
+    {
+      "waveId": 428,
+      "milliseconds": 4.759599999999864
+    },
+    {
+      "waveId": 429,
+      "milliseconds": 0.565599999999904
+    },
+    {
+      "waveId": 430,
+      "milliseconds": 0.2864999999999327
+    },
+    {
+      "waveId": 431,
+      "milliseconds": 0.2776000000001204
+    },
+    {
+      "waveId": 432,
+      "milliseconds": 0.3849999999999909
+    },
+    {
+      "waveId": 433,
+      "milliseconds": 0.3225999999999658
+    },
+    {
+      "waveId": 434,
+      "milliseconds": 0.3319000000001324
+    },
+    {
+      "waveId": 435,
+      "milliseconds": 0.2725000000000364
+    },
+    {
+      "waveId": 436,
+      "milliseconds": 0.2703999999998814
+    },
+    {
+      "waveId": 437,
+      "milliseconds": 1.8673000000001139
+    },
+    {
+      "waveId": 438,
+      "milliseconds": 3.3646000000001095
+    },
+    {
+      "waveId": 439,
+      "milliseconds": 0.2785000000001219
+    },
+    {
+      "waveId": 440,
+      "milliseconds": 0.3993000000000393
+    },
+    {
+      "waveId": 441,
+      "milliseconds": 0.5419000000001688
+    },
+    {
+      "waveId": 442,
+      "milliseconds": 0.3505999999999858
+    },
+    {
+      "waveId": 443,
+      "milliseconds": 0.27599999999983993
+    },
+    {
+      "waveId": 444,
+      "milliseconds": 0.27350000000001273
+    },
+    {
+      "waveId": 445,
+      "milliseconds": 0.27350000000001273
+    },
+    {
+      "waveId": 446,
+      "milliseconds": 0.27130000000011023
+    },
+    {
+      "waveId": 447,
+      "milliseconds": 1.7078999999998814
+    },
+    {
+      "waveId": 448,
+      "milliseconds": 4.707899999999881
+    },
+    {
+      "waveId": 449,
+      "milliseconds": 0.3586999999999989
+    },
+    {
+      "waveId": 450,
+      "milliseconds": 0.32110000000011496
+    },
+    {
+      "waveId": 451,
+      "milliseconds": 0.26700000000005275
+    },
+    {
+      "waveId": 452,
+      "milliseconds": 0.2621999999998934
+    },
+    {
+      "waveId": 453,
+      "milliseconds": 0.26340000000004693
+    },
+    {
+      "waveId": 454,
+      "milliseconds": 0.27060000000005857
+    },
+    {
+      "waveId": 455,
+      "milliseconds": 0.2659000000001015
+    },
+    {
+      "waveId": 456,
+      "milliseconds": 0.5767000000000735
+    },
+    {
+      "waveId": 457,
+      "milliseconds": 2.020999999999958
+    },
+    {
+      "waveId": 458,
+      "milliseconds": 3.322599999999966
+    },
+    {
+      "waveId": 459,
+      "milliseconds": 0.28769999999985885
+    },
+    {
+      "waveId": 460,
+      "milliseconds": 0.28099999999994907
+    },
+    {
+      "waveId": 461,
+      "milliseconds": 0.34169999999994616
+    },
+    {
+      "waveId": 462,
+      "milliseconds": 0.2760000000000673
+    },
+    {
+      "waveId": 463,
+      "milliseconds": 0.2739999999998872
+    },
+    {
+      "waveId": 464,
+      "milliseconds": 0.27549999999996544
+    },
+    {
+      "waveId": 465,
+      "milliseconds": 0.2737000000001899
+    },
+    {
+      "waveId": 466,
+      "milliseconds": 0.27309999999988577
+    },
+    {
+      "waveId": 467,
+      "milliseconds": 1.831000000000131
+    },
+    {
+      "waveId": 468,
+      "milliseconds": 4.711000000000013
+    },
+    {
+      "waveId": 469,
+      "milliseconds": 0.2944999999999709
+    },
+    {
+      "waveId": 470,
+      "milliseconds": 0.2898999999999887
+    },
+    {
+      "waveId": 471,
+      "milliseconds": 0.35370000000011714
+    },
+    {
+      "waveId": 472,
+      "milliseconds": 0.3059000000000651
+    },
+    {
+      "waveId": 473,
+      "milliseconds": 0.28510000000005675
+    },
+    {
+      "waveId": 474,
+      "milliseconds": 0.27569999999991524
+    },
+    {
+      "waveId": 475,
+      "milliseconds": 0.2764999999999418
+    },
+    {
+      "waveId": 476,
+      "milliseconds": 0.2788999999997941
+    },
+    {
+      "waveId": 477,
+      "milliseconds": 4.46569999999997
+    },
+    {
+      "waveId": 478,
+      "milliseconds": 3.5919000000001233
+    },
+    {
+      "waveId": 479,
+      "milliseconds": 0.2922000000000935
+    },
+    {
+      "waveId": 480,
+      "milliseconds": 0.2765999999999167
+    },
+    {
+      "waveId": 481,
+      "milliseconds": 0.2739999999998872
+    },
+    {
+      "waveId": 482,
+      "milliseconds": 0.40059999999994034
+    },
+    {
+      "waveId": 483,
+      "milliseconds": 0.2776000000001204
+    },
+    {
+      "waveId": 484,
+      "milliseconds": 0.27690000000006876
+    },
+    {
+      "waveId": 485,
+      "milliseconds": 0.3383000000001175
+    },
+    {
+      "waveId": 486,
+      "milliseconds": 0.29909999999995307
+    },
+    {
+      "waveId": 487,
+      "milliseconds": 1.6969000000001415
+    },
+    {
+      "waveId": 488,
+      "milliseconds": 4.280899999999974
+    },
+    {
+      "waveId": 489,
+      "milliseconds": 0.4096999999999298
+    },
+    {
+      "waveId": 490,
+      "milliseconds": 0.7255000000000109
+    },
+    {
+      "waveId": 491,
+      "milliseconds": 0.2807999999999993
+    },
+    {
+      "waveId": 492,
+      "milliseconds": 0.38249999999993634
+    },
+    {
+      "waveId": 493,
+      "milliseconds": 0.2777000000000953
+    },
+    {
+      "waveId": 494,
+      "milliseconds": 0.2822000000001026
+    },
+    {
+      "waveId": 495,
+      "milliseconds": 0.2782999999999447
+    },
+    {
+      "waveId": 496,
+      "milliseconds": 0.27089999999998327
+    },
+    {
+      "waveId": 497,
+      "milliseconds": 1.669499999999971
+    },
+    {
+      "waveId": 498,
+      "milliseconds": 3.4144000000001142
+    },
+    {
+      "waveId": 499,
+      "milliseconds": 0.28109999999992397
+    },
+    {
+      "waveId": 500,
+      "milliseconds": 0.284099999999853
+    },
+    {
+      "waveId": 501,
+      "milliseconds": 0.5625999999999749
+    },
+    {
+      "waveId": 502,
+      "milliseconds": 0.3042000000000371
+    },
+    {
+      "waveId": 503,
+      "milliseconds": 0.2819999999999254
+    },
+    {
+      "waveId": 504,
+      "milliseconds": 0.3592999999998483
+    },
+    {
+      "waveId": 505,
+      "milliseconds": 0.32600000000002183
+    },
+    {
+      "waveId": 506,
+      "milliseconds": 0.28650000000016007
+    },
+    {
+      "waveId": 507,
+      "milliseconds": 2.8012999999998556
+    },
+    {
+      "waveId": 508,
+      "milliseconds": 4.302200000000084
+    },
+    {
+      "waveId": 509,
+      "milliseconds": 0.288300000000163
+    },
+    {
+      "waveId": 510,
+      "milliseconds": 0.2826000000000022
+    },
+    {
+      "waveId": 511,
+      "milliseconds": 0.27749999999991815
+    },
+    {
+      "waveId": 512,
+      "milliseconds": 0.27589999999986503
+    },
+    {
+      "waveId": 513,
+      "milliseconds": 0.27559999999994034
+    },
+    {
+      "waveId": 514,
+      "milliseconds": 0.27789999999981774
+    },
+    {
+      "waveId": 515,
+      "milliseconds": 0.27909999999997126
+    },
+    {
+      "waveId": 516,
+      "milliseconds": 0.4049999999999727
+    },
+    {
+      "waveId": 517,
+      "milliseconds": 2.0673000000001593
+    },
+    {
+      "waveId": 518,
+      "milliseconds": 3.885300000000143
+    },
+    {
+      "waveId": 519,
+      "milliseconds": 0.3509000000001379
+    },
+    {
+      "waveId": 520,
+      "milliseconds": 0.2839999999998781
+    },
+    {
+      "waveId": 521,
+      "milliseconds": 0.27359999999998763
+    },
+    {
+      "waveId": 522,
+      "milliseconds": 0.27300000000013824
+    },
+    {
+      "waveId": 523,
+      "milliseconds": 0.2720000000001619
+    },
+    {
+      "waveId": 524,
+      "milliseconds": 0.27289999999993597
+    },
+    {
+      "waveId": 525,
+      "milliseconds": 0.2798999999999978
+    },
+    {
+      "waveId": 526,
+      "milliseconds": 0.2727999999999611
+    },
+    {
+      "waveId": 527,
+      "milliseconds": 2.1947999999999865
+    },
+    {
+      "waveId": 528,
+      "milliseconds": 3.458099999999831
+    },
+    {
+      "waveId": 529,
+      "milliseconds": 0.28900000000021464
+    },
+    {
+      "waveId": 530,
+      "milliseconds": 0.4068999999999505
+    },
+    {
+      "waveId": 531,
+      "milliseconds": 0.2777000000000953
+    },
+    {
+      "waveId": 532,
+      "milliseconds": 0.2800999999999476
+    },
+    {
+      "waveId": 533,
+      "milliseconds": 0.28150000000005093
+    },
+    {
+      "waveId": 534,
+      "milliseconds": 0.27099999999995816
+    },
+    {
+      "waveId": 535,
+      "milliseconds": 0.27510000000006585
+    },
+    {
+      "waveId": 536,
+      "milliseconds": 0.2726999999999862
+    },
+    {
+      "waveId": 537,
+      "milliseconds": 1.9743999999998323
+    },
+    {
+      "waveId": 538,
+      "milliseconds": 5.186200000000099
+    },
+    {
+      "waveId": 539,
+      "milliseconds": 0.2740000000001146
+    },
+    {
+      "waveId": 540,
+      "milliseconds": 0.2722000000001117
+    },
+    {
+      "waveId": 541,
+      "milliseconds": 0.26559999999994943
+    },
+    {
+      "waveId": 542,
+      "milliseconds": 0.565900000000056
+    },
+    {
+      "waveId": 543,
+      "milliseconds": 0.2825000000000273
+    },
+    {
+      "waveId": 544,
+      "milliseconds": 0.2764999999999418
+    },
+    {
+      "waveId": 545,
+      "milliseconds": 0.2775000000001455
+    },
+    {
+      "waveId": 546,
+      "milliseconds": 0.2842000000000553
+    },
+    {
+      "waveId": 547,
+      "milliseconds": 1.8792000000000826
+    },
+    {
+      "waveId": 548,
+      "milliseconds": 4.726499999999987
+    },
+    {
+      "waveId": 549,
+      "milliseconds": 0.36149999999997817
+    },
+    {
+      "waveId": 550,
+      "milliseconds": 0.2862999999999829
+    },
+    {
+      "waveId": 551,
+      "milliseconds": 0.2869999999998072
+    },
+    {
+      "waveId": 552,
+      "milliseconds": 0.28369999999995343
+    },
+    {
+      "waveId": 553,
+      "milliseconds": 0.40399999999999636
+    },
+    {
+      "waveId": 554,
+      "milliseconds": 0.2726000000000113
+    },
+    {
+      "waveId": 555,
+      "milliseconds": 0.27340000000003783
+    },
+    {
+      "waveId": 556,
+      "milliseconds": 0.36429999999995744
+    },
+    {
+      "waveId": 557,
+      "milliseconds": 1.917699999999968
+    },
+    {
+      "waveId": 558,
+      "milliseconds": 4.804499999999962
+    },
+    {
+      "waveId": 559,
+      "milliseconds": 0.9348999999999705
+    },
+    {
+      "waveId": 560,
+      "milliseconds": 0.6835000000000946
+    },
+    {
+      "waveId": 561,
+      "milliseconds": 0.5517999999999574
+    },
+    {
+      "waveId": 562,
+      "milliseconds": 0.26759999999990214
+    },
+    {
+      "waveId": 563,
+      "milliseconds": 0.27150000000006
+    },
+    {
+      "waveId": 564,
+      "milliseconds": 0.260300000000143
+    },
+    {
+      "waveId": 565,
+      "milliseconds": 0.26099999999996726
+    },
+    {
+      "waveId": 566,
+      "milliseconds": 0.2642000000000735
+    },
+    {
+      "waveId": 567,
+      "milliseconds": 2.327600000000075
+    },
+    {
+      "waveId": 568,
+      "milliseconds": 3.3506999999999607
+    },
+    {
+      "waveId": 569,
+      "milliseconds": 0.393100000000004
+    },
+    {
+      "waveId": 570,
+      "milliseconds": 0.28330000000005384
+    },
+    {
+      "waveId": 571,
+      "milliseconds": 0.28290000000015425
+    },
+    {
+      "waveId": 572,
+      "milliseconds": 0.279700000000048
+    },
+    {
+      "waveId": 573,
+      "milliseconds": 0.27880000000004657
+    },
+    {
+      "waveId": 574,
+      "milliseconds": 0.27119999999990796
+    },
+    {
+      "waveId": 575,
+      "milliseconds": 0.2796000000000731
+    },
+    {
+      "waveId": 576,
+      "milliseconds": 0.27680000000009386
+    },
+    {
+      "waveId": 577,
+      "milliseconds": 1.8099999999999454
+    },
+    {
+      "waveId": 578,
+      "milliseconds": 5.028500000000122
+    },
+    {
+      "waveId": 579,
+      "milliseconds": 0.350800000000163
+    },
+    {
+      "waveId": 580,
+      "milliseconds": 0.26909999999998035
+    },
+    {
+      "waveId": 581,
+      "milliseconds": 0.266399999999976
+    },
+    {
+      "waveId": 582,
+      "milliseconds": 0.2677000000001044
+    },
+    {
+      "waveId": 583,
+      "milliseconds": 0.26520000000004984
+    },
+    {
+      "waveId": 584,
+      "milliseconds": 0.26739999999995234
+    },
+    {
+      "waveId": 585,
+      "milliseconds": 0.26710000000002765
+    },
+    {
+      "waveId": 586,
+      "milliseconds": 0.5414000000000669
+    },
+    {
+      "waveId": 587,
+      "milliseconds": 1.8380000000001928
+    },
+    {
+      "waveId": 588,
+      "milliseconds": 5.088199999999915
+    },
+    {
+      "waveId": 589,
+      "milliseconds": 0.6322999999999865
+    },
+    {
+      "waveId": 590,
+      "milliseconds": 0.7725000000000364
+    },
+    {
+      "waveId": 591,
+      "milliseconds": 0.310799999999972
+    },
+    {
+      "waveId": 592,
+      "milliseconds": 0.26520000000004984
+    },
+    {
+      "waveId": 593,
+      "milliseconds": 0.3712000000000444
+    },
+    {
+      "waveId": 594,
+      "milliseconds": 0.2659000000001015
+    },
+    {
+      "waveId": 595,
+      "milliseconds": 0.2643000000000484
+    },
+    {
+      "waveId": 596,
+      "milliseconds": 0.264299999999821
+    },
+    {
+      "waveId": 597,
+      "milliseconds": 1.6394999999999982
+    },
+    {
+      "waveId": 598,
+      "milliseconds": 4.448000000000093
+    },
+    {
+      "waveId": 599,
+      "milliseconds": 0.39869999999996253
+    },
+    {
+      "waveId": 600,
+      "milliseconds": 0.279700000000048
+    },
+    {
+      "waveId": 601,
+      "milliseconds": 0.3412999999998192
+    },
+    {
+      "waveId": 602,
+      "milliseconds": 0.2762000000000171
+    },
+    {
+      "waveId": 603,
+      "milliseconds": 0.5240999999998621
+    },
+    {
+      "waveId": 604,
+      "milliseconds": 0.2782999999999447
+    },
+    {
+      "waveId": 605,
+      "milliseconds": 0.27559999999994034
+    },
+    {
+      "waveId": 606,
+      "milliseconds": 0.2749999999998636
+    },
+    {
+      "waveId": 607,
+      "milliseconds": 2.1224999999999454
+    },
+    {
+      "waveId": 608,
+      "milliseconds": 4.495300000000043
+    },
+    {
+      "waveId": 609,
+      "milliseconds": 0.34969999999998436
+    },
+    {
+      "waveId": 610,
+      "milliseconds": 0.27700000000004366
+    },
+    {
+      "waveId": 611,
+      "milliseconds": 0.2801999999999225
+    },
+    {
+      "waveId": 612,
+      "milliseconds": 0.276299999999992
+    },
+    {
+      "waveId": 613,
+      "milliseconds": 0.2717000000000098
+    },
+    {
+      "waveId": 614,
+      "milliseconds": 0.27150000000006
+    },
+    {
+      "waveId": 615,
+      "milliseconds": 0.27510000000006585
+    },
+    {
+      "waveId": 616,
+      "milliseconds": 0.2724000000000615
+    },
+    {
+      "waveId": 617,
+      "milliseconds": 2.7118000000000393
+    },
+    {
+      "waveId": 618,
+      "milliseconds": 4.2625000000000455
+    },
+    {
+      "waveId": 619,
+      "milliseconds": 0.28729999999995925
+    },
+    {
+      "waveId": 620,
+      "milliseconds": 0.28449999999998
+    },
+    {
+      "waveId": 621,
+      "milliseconds": 0.2783999999999196
+    },
+    {
+      "waveId": 622,
+      "milliseconds": 0.3428999999998723
+    },
+    {
+      "waveId": 623,
+      "milliseconds": 0.31989999999996144
+    },
+    {
+      "waveId": 624,
+      "milliseconds": 0.2786999999998443
+    },
+    {
+      "waveId": 625,
+      "milliseconds": 0.46509999999989304
+    },
+    {
+      "waveId": 626,
+      "milliseconds": 0.28940000000011423
+    },
+    {
+      "waveId": 627,
+      "milliseconds": 2.2438999999999396
+    },
+    {
+      "waveId": 628,
+      "milliseconds": 4.438300000000027
+    },
+    {
+      "waveId": 629,
+      "milliseconds": 0.3183999999998832
+    },
+    {
+      "waveId": 630,
+      "milliseconds": 0.2807999999999993
+    },
+    {
+      "waveId": 631,
+      "milliseconds": 0.2799999999999727
+    },
+    {
+      "waveId": 632,
+      "milliseconds": 0.5361000000000331
+    },
+    {
+      "waveId": 633,
+      "milliseconds": 0.2844000000000051
+    },
+    {
+      "waveId": 634,
+      "milliseconds": 0.28139999999984866
+    },
+    {
+      "waveId": 635,
+      "milliseconds": 0.34350000000017644
+    },
+    {
+      "waveId": 636,
+      "milliseconds": 0.274599999999964
+    },
+    {
+      "waveId": 637,
+      "milliseconds": 1.7016000000000986
+    },
+    {
+      "waveId": 638,
+      "milliseconds": 4.600199999999859
+    },
+    {
+      "waveId": 639,
+      "milliseconds": 0.2899999999999636
+    },
+    {
+      "waveId": 640,
+      "milliseconds": 0.3994999999999891
+    },
+    {
+      "waveId": 641,
+      "milliseconds": 0.2766999999998916
+    },
+    {
+      "waveId": 642,
+      "milliseconds": 0.28140000000007603
+    },
+    {
+      "waveId": 643,
+      "milliseconds": 0.2767999999998665
+    },
+    {
+      "waveId": 644,
+      "milliseconds": 0.276299999999992
+    },
+    {
+      "waveId": 645,
+      "milliseconds": 0.39220000000000255
+    },
+    {
+      "waveId": 646,
+      "milliseconds": 0.2767999999998665
+    },
+    {
+      "waveId": 647,
+      "milliseconds": 1.3646000000001095
+    },
+    {
+      "waveId": 648,
+      "milliseconds": 3.3478000000000065
+    },
+    {
+      "waveId": 649,
+      "milliseconds": 0.8506999999999607
+    },
+    {
+      "waveId": 650,
+      "milliseconds": 0.5567000000000917
+    },
+    {
+      "waveId": 651,
+      "milliseconds": 0.3088000000000193
+    },
+    {
+      "waveId": 652,
+      "milliseconds": 0.27870000000007167
+    },
+    {
+      "waveId": 653,
+      "milliseconds": 0.3508999999999105
+    },
+    {
+      "waveId": 654,
+      "milliseconds": 0.2719999999999345
+    },
+    {
+      "waveId": 655,
+      "milliseconds": 0.2661000000000513
+    },
+    {
+      "waveId": 656,
+      "milliseconds": 0.33330000000000837
+    },
+    {
+      "waveId": 657,
+      "milliseconds": 1.7679999999998017
+    },
+    {
+      "waveId": 658,
+      "milliseconds": 4.847000000000207
+    },
+    {
+      "waveId": 659,
+      "milliseconds": 0.2925999999999931
+    },
+    {
+      "waveId": 660,
+      "milliseconds": 0.5382999999999356
+    },
+    {
+      "waveId": 661,
+      "milliseconds": 0.2921000000001186
+    },
+    {
+      "waveId": 662,
+      "milliseconds": 0.2856000000001586
+    },
+    {
+      "waveId": 663,
+      "milliseconds": 0.2880999999999858
+    },
+    {
+      "waveId": 664,
+      "milliseconds": 0.608199999999897
+    },
+    {
+      "waveId": 665,
+      "milliseconds": 0.28490000000010696
+    },
+    {
+      "waveId": 666,
+      "milliseconds": 0.27529999999978827
+    },
+    {
+      "waveId": 667,
+      "milliseconds": 2.0679000000000087
+    },
+    {
+      "waveId": 668,
+      "milliseconds": 3.5620000000001255
+    },
+    {
+      "waveId": 669,
+      "milliseconds": 0.3529000000000906
+    },
+    {
+      "waveId": 670,
+      "milliseconds": 0.2777000000000953
+    },
+    {
+      "waveId": 671,
+      "milliseconds": 0.2785999999998694
+    },
+    {
+      "waveId": 672,
+      "milliseconds": 0.3000999999999294
+    },
+    {
+      "waveId": 673,
+      "milliseconds": 0.37639999999987594
+    },
+    {
+      "waveId": 674,
+      "milliseconds": 0.2820000000001528
+    },
+    {
+      "waveId": 675,
+      "milliseconds": 0.2764999999999418
+    },
+    {
+      "waveId": 676,
+      "milliseconds": 0.2727999999999611
+    },
+    {
+      "waveId": 677,
+      "milliseconds": 1.790899999999965
+    },
+    {
+      "waveId": 678,
+      "milliseconds": 4.6788000000001375
+    },
+    {
+      "waveId": 679,
+      "milliseconds": 0.2860000000000582
+    },
+    {
+      "waveId": 680,
+      "milliseconds": 0.2746999999999389
+    },
+    {
+      "waveId": 681,
+      "milliseconds": 0.2798999999999978
+    },
+    {
+      "waveId": 682,
+      "milliseconds": 0.28119999999989886
+    },
+    {
+      "waveId": 683,
+      "milliseconds": 0.27579999999989013
+    },
+    {
+      "waveId": 684,
+      "milliseconds": 0.27700000000004366
+    },
+    {
+      "waveId": 685,
+      "milliseconds": 0.2739999999998872
+    },
+    {
+      "waveId": 686,
+      "milliseconds": 0.2759000000000924
+    },
+    {
+      "waveId": 687,
+      "milliseconds": 1.9100000000000819
+    },
+    {
+      "waveId": 688,
+      "milliseconds": 3.844400000000178
+    },
+    {
+      "waveId": 689,
+      "milliseconds": 0.2863999999999578
+    },
+    {
+      "waveId": 690,
+      "milliseconds": 0.274199999999837
+    },
+    {
+      "waveId": 691,
+      "milliseconds": 0.3383000000001175
+    },
+    {
+      "waveId": 692,
+      "milliseconds": 0.27569999999991524
+    },
+    {
+      "waveId": 693,
+      "milliseconds": 0.271900000000187
+    },
+    {
+      "waveId": 694,
+      "milliseconds": 0.28579999999988104
+    },
+    {
+      "waveId": 695,
+      "milliseconds": 0.28670000000010987
+    },
+    {
+      "waveId": 696,
+      "milliseconds": 0.28769999999985885
+    },
+    {
+      "waveId": 697,
+      "milliseconds": 2.013400000000047
+    },
+    {
+      "waveId": 698,
+      "milliseconds": 3.6170999999999367
+    },
+    {
+      "waveId": 699,
+      "milliseconds": 0.3889999999998963
+    },
+    {
+      "waveId": 700,
+      "milliseconds": 0.27929999999992106
+    },
+    {
+      "waveId": 701,
+      "milliseconds": 0.27099999999995816
+    },
+    {
+      "waveId": 702,
+      "milliseconds": 0.26530000000002474
+    },
+    {
+      "waveId": 703,
+      "milliseconds": 0.6996000000001459
+    },
+    {
+      "waveId": 704,
+      "milliseconds": 0.42000000000007276
+    },
+    {
+      "waveId": 705,
+      "milliseconds": 0.33740000000011605
+    },
+    {
+      "waveId": 706,
+      "milliseconds": 0.28549999999995634
+    },
+    {
+      "waveId": 707,
+      "milliseconds": 1.932700000000068
+    },
+    {
+      "waveId": 708,
+      "milliseconds": 3.1467999999999847
+    },
+    {
+      "waveId": 709,
+      "milliseconds": 0.29510000000004766
+    },
+    {
+      "waveId": 710,
+      "milliseconds": 0.2881999999999607
+    },
+    {
+      "waveId": 711,
+      "milliseconds": 0.2717000000000098
+    },
+    {
+      "waveId": 712,
+      "milliseconds": 0.2700999999999567
+    },
+    {
+      "waveId": 713,
+      "milliseconds": 0.3002999999998792
+    },
+    {
+      "waveId": 714,
+      "milliseconds": 0.2624000000000706
+    },
+    {
+      "waveId": 715,
+      "milliseconds": 0.2636999999999716
+    },
+    {
+      "waveId": 716,
+      "milliseconds": 0.264699999999948
+    },
+    {
+      "waveId": 717,
+      "milliseconds": 2.11869999999999
+    },
+    {
+      "waveId": 718,
+      "milliseconds": 5.3460999999999785
+    },
+    {
+      "waveId": 719,
+      "milliseconds": 0.27710000000001855
+    },
+    {
+      "waveId": 720,
+      "milliseconds": 0.26530000000002474
+    },
+    {
+      "waveId": 721,
+      "milliseconds": 0.2682000000002063
+    },
+    {
+      "waveId": 722,
+      "milliseconds": 0.2686999999998534
+    },
+    {
+      "waveId": 723,
+      "milliseconds": 0.26850000000013097
+    },
+    {
+      "waveId": 724,
+      "milliseconds": 0.2681999999999789
+    },
+    {
+      "waveId": 725,
+      "milliseconds": 0.532799999999952
+    },
+    {
+      "waveId": 726,
+      "milliseconds": 0.28100000000017644
+    },
+    {
+      "waveId": 727,
+      "milliseconds": 1.9217000000001008
+    },
+    {
+      "waveId": 728,
+      "milliseconds": 3.887200000000121
+    },
+    {
+      "waveId": 729,
+      "milliseconds": 0.28099999999994907
+    },
+    {
+      "waveId": 730,
+      "milliseconds": 0.27369999999996253
+    },
+    {
+      "waveId": 731,
+      "milliseconds": 0.2686999999998534
+    },
+    {
+      "waveId": 732,
+      "milliseconds": 0.2695000000001073
+    },
+    {
+      "waveId": 733,
+      "milliseconds": 0.2737999999999374
+    },
+    {
+      "waveId": 734,
+      "milliseconds": 0.3909000000001015
+    },
+    {
+      "waveId": 735,
+      "milliseconds": 0.27579999999989013
+    },
+    {
+      "waveId": 736,
+      "milliseconds": 0.32370000000014443
+    },
+    {
+      "waveId": 737,
+      "milliseconds": 1.8537000000001171
+    },
+    {
+      "waveId": 738,
+      "milliseconds": 5.047500000000127
+    },
+    {
+      "waveId": 739,
+      "milliseconds": 0.29599999999982174
+    },
+    {
+      "waveId": 740,
+      "milliseconds": 0.30149999999980537
+    },
+    {
+      "waveId": 741,
+      "milliseconds": 0.27520000000004075
+    },
+    {
+      "waveId": 742,
+      "milliseconds": 0.27719999999999345
+    },
+    {
+      "waveId": 743,
+      "milliseconds": 0.26759999999990214
+    },
+    {
+      "waveId": 744,
+      "milliseconds": 0.2636999999999716
+    },
+    {
+      "waveId": 745,
+      "milliseconds": 0.2666999999999007
+    },
+    {
+      "waveId": 746,
+      "milliseconds": 0.6656000000000404
+    },
+    {
+      "waveId": 747,
+      "milliseconds": 1.744899999999916
+    },
+    {
+      "waveId": 748,
+      "milliseconds": 3.9594999999999345
+    },
+    {
+      "waveId": 749,
+      "milliseconds": 0.2726999999999862
+    },
+    {
+      "waveId": 750,
+      "milliseconds": 0.26670000000012806
+    },
+    {
+      "waveId": 751,
+      "milliseconds": 0.2724000000000615
+    },
+    {
+      "waveId": 752,
+      "milliseconds": 0.7508000000000266
+    },
+    {
+      "waveId": 753,
+      "milliseconds": 0.29300000000012005
+    },
+    {
+      "waveId": 754,
+      "milliseconds": 0.2931999999998425
+    },
+    {
+      "waveId": 755,
+      "milliseconds": 0.29149999999981446
+    },
+    {
+      "waveId": 756,
+      "milliseconds": 0.2828999999999269
+    },
+    {
+      "waveId": 757,
+      "milliseconds": 1.6142999999999574
+    },
+    {
+      "waveId": 758,
+      "milliseconds": 3.294199999999819
+    },
+    {
+      "waveId": 759,
+      "milliseconds": 0.2860000000000582
+    },
+    {
+      "waveId": 760,
+      "milliseconds": 0.27899999999999636
+    },
+    {
+      "waveId": 761,
+      "milliseconds": 0.2723000000000866
+    },
+    {
+      "waveId": 762,
+      "milliseconds": 0.2702999999999065
+    },
+    {
+      "waveId": 763,
+      "milliseconds": 0.27549999999996544
+    },
+    {
+      "waveId": 764,
+      "milliseconds": 0.34600000000000364
+    },
+    {
+      "waveId": 765,
+      "milliseconds": 0.2757000000001426
+    },
+    {
+      "waveId": 766,
+      "milliseconds": 0.27119999999990796
+    },
+    {
+      "waveId": 767,
+      "milliseconds": 2.056100000000015
+    },
+    {
+      "waveId": 768,
+      "milliseconds": 3.3342999999999847
+    },
+    {
+      "waveId": 769,
+      "milliseconds": 0.31369999999992615
+    },
+    {
+      "waveId": 770,
+      "milliseconds": 0.2761000000000422
+    },
+    {
+      "waveId": 771,
+      "milliseconds": 0.30549999999993815
+    },
+    {
+      "waveId": 772,
+      "milliseconds": 0.3022000000000844
+    },
+    {
+      "waveId": 773,
+      "milliseconds": 0.320699999999988
+    },
+    {
+      "waveId": 774,
+      "milliseconds": 0.279700000000048
+    },
+    {
+      "waveId": 775,
+      "milliseconds": 0.29690000000005057
+    },
+    {
+      "waveId": 776,
+      "milliseconds": 0.2761999999997897
+    },
+    {
+      "waveId": 777,
+      "milliseconds": 1.7644999999999982
+    },
+    {
+      "waveId": 778,
+      "milliseconds": 3.3594000000000506
+    },
+    {
+      "waveId": 779,
+      "milliseconds": 0.28329999999982647
+    },
+    {
+      "waveId": 780,
+      "milliseconds": 0.2679000000000542
+    },
+    {
+      "waveId": 781,
+      "milliseconds": 0.27080000000000837
+    },
+    {
+      "waveId": 782,
+      "milliseconds": 0.2726999999999862
+    },
+    {
+      "waveId": 783,
+      "milliseconds": 0.2718999999999596
+    },
+    {
+      "waveId": 784,
+      "milliseconds": 0.26720000000000255
+    },
+    {
+      "waveId": 785,
+      "milliseconds": 0.35989999999992506
+    },
+    {
+      "waveId": 786,
+      "milliseconds": 0.28140000000007603
+    },
+    {
+      "waveId": 787,
+      "milliseconds": 1.9528999999999996
+    },
+    {
+      "waveId": 788,
+      "milliseconds": 3.0118999999999687
+    },
+    {
+      "waveId": 789,
+      "milliseconds": 0.2697000000000571
+    },
+    {
+      "waveId": 790,
+      "milliseconds": 0.2626000000000204
+    },
+    {
+      "waveId": 791,
+      "milliseconds": 0.261600000000044
+    },
+    {
+      "waveId": 792,
+      "milliseconds": 0.2619999999999436
+    },
+    {
+      "waveId": 793,
+      "milliseconds": 0.2623000000000957
+    },
+    {
+      "waveId": 794,
+      "milliseconds": 0.5598999999999705
+    },
+    {
+      "waveId": 795,
+      "milliseconds": 0.35149999999998727
+    },
+    {
+      "waveId": 796,
+      "milliseconds": 0.26529999999979736
+    },
+    {
+      "waveId": 797,
+      "milliseconds": 2.0846999999998843
+    },
+    {
+      "waveId": 798,
+      "milliseconds": 4.248800000000074
+    },
+    {
+      "waveId": 799,
+      "milliseconds": 0.2778000000000702
+    },
+    {
+      "waveId": 800,
+      "milliseconds": 0.26720000000000255
+    },
+    {
+      "waveId": 801,
+      "milliseconds": 0.26549999999997453
+    },
+    {
+      "waveId": 802,
+      "milliseconds": 0.2877000000000862
+    },
+    {
+      "waveId": 803,
+      "milliseconds": 0.27070000000003347
+    },
+    {
+      "waveId": 804,
+      "milliseconds": 0.26789999999982683
+    },
+    {
+      "waveId": 805,
+      "milliseconds": 0.2744999999999891
+    },
+    {
+      "waveId": 806,
+      "milliseconds": 0.2742000000000644
+    },
+    {
+      "waveId": 807,
+      "milliseconds": 2.128500000000031
+    },
+    {
+      "waveId": 808,
+      "milliseconds": 3.110200000000077
+    },
+    {
+      "waveId": 809,
+      "milliseconds": 0.345299999999952
+    },
+    {
+      "waveId": 810,
+      "milliseconds": 0.2759000000000924
+    },
+    {
+      "waveId": 811,
+      "milliseconds": 0.3773999999998523
+    },
+    {
+      "waveId": 812,
+      "milliseconds": 0.26890000000003056
+    },
+    {
+      "waveId": 813,
+      "milliseconds": 0.2726999999999862
+    },
+    {
+      "waveId": 814,
+      "milliseconds": 0.26949999999987995
+    },
+    {
+      "waveId": 815,
+      "milliseconds": 0.26919999999995525
+    },
+    {
+      "waveId": 816,
+      "milliseconds": 0.2742000000000644
+    },
+    {
+      "waveId": 817,
+      "milliseconds": 2.0622000000000753
+    },
+    {
+      "waveId": 818,
+      "milliseconds": 3.732400000000098
+    },
+    {
+      "waveId": 819,
+      "milliseconds": 0.28119999999989886
+    },
+    {
+      "waveId": 820,
+      "milliseconds": 0.37820000000010623
+    },
+    {
+      "waveId": 821,
+      "milliseconds": 0.2723999999998341
+    },
+    {
+      "waveId": 822,
+      "milliseconds": 0.27539999999999054
+    },
+    {
+      "waveId": 823,
+      "milliseconds": 0.3868999999999687
+    },
+    {
+      "waveId": 824,
+      "milliseconds": 0.30960000000004584
+    },
+    {
+      "waveId": 825,
+      "milliseconds": 0.2977000000000771
+    },
+    {
+      "waveId": 826,
+      "milliseconds": 0.27549999999996544
+    },
+    {
+      "waveId": 827,
+      "milliseconds": 2.275000000000091
+    },
+    {
+      "waveId": 828,
+      "milliseconds": 2.9829999999999472
+    },
+    {
+      "waveId": 829,
+      "milliseconds": 0.2740000000001146
+    },
+    {
+      "waveId": 830,
+      "milliseconds": 0.2667999999998756
+    },
+    {
+      "waveId": 831,
+      "milliseconds": 0.6752999999998792
+    },
+    {
+      "waveId": 832,
+      "milliseconds": 0.31529999999997926
+    },
+    {
+      "waveId": 833,
+      "milliseconds": 0.3108999999999469
+    },
+    {
+      "waveId": 834,
+      "milliseconds": 0.2719999999999345
+    },
+    {
+      "waveId": 835,
+      "milliseconds": 0.26710000000002765
+    },
+    {
+      "waveId": 836,
+      "milliseconds": 0.2621999999998934
+    },
+    {
+      "waveId": 837,
+      "milliseconds": 1.8432000000000244
+    },
+    {
+      "waveId": 838,
+      "milliseconds": 4.497000000000071
+    },
+    {
+      "waveId": 839,
+      "milliseconds": 0.2925000000000182
+    },
+    {
+      "waveId": 840,
+      "milliseconds": 0.2946999999999207
+    },
+    {
+      "waveId": 841,
+      "milliseconds": 0.26969999999982974
+    },
+    {
+      "waveId": 842,
+      "milliseconds": 0.26919999999995525
+    },
+    {
+      "waveId": 843,
+      "milliseconds": 0.2699000000000069
+    },
+    {
+      "waveId": 844,
+      "milliseconds": 0.26690000000007785
+    },
+    {
+      "waveId": 845,
+      "milliseconds": 0.2681999999999789
+    },
+    {
+      "waveId": 846,
+      "milliseconds": 0.621199999999817
+    },
+    {
+      "waveId": 847,
+      "milliseconds": 2.0686000000000604
+    },
+    {
+      "waveId": 848,
+      "milliseconds": 3.1603999999999814
+    },
+    {
+      "waveId": 849,
+      "milliseconds": 0.28559999999993124
+    },
+    {
+      "waveId": 850,
+      "milliseconds": 0.34570000000007894
+    },
+    {
+      "waveId": 851,
+      "milliseconds": 0.2742000000000644
+    },
+    {
+      "waveId": 852,
+      "milliseconds": 0.33120000000008076
+    },
+    {
+      "waveId": 853,
+      "milliseconds": 0.2807000000000244
+    },
+    {
+      "waveId": 854,
+      "milliseconds": 0.27280000000018845
+    },
+    {
+      "waveId": 855,
+      "milliseconds": 0.2705000000000837
+    },
+    {
+      "waveId": 856,
+      "milliseconds": 0.2806000000000495
+    },
+    {
+      "waveId": 857,
+      "milliseconds": 1.847300000000132
+    },
+    {
+      "waveId": 858,
+      "milliseconds": 5.367500000000064
+    },
+    {
+      "waveId": 859,
+      "milliseconds": 0.2817999999999756
+    },
+    {
+      "waveId": 860,
+      "milliseconds": 0.2746999999999389
+    },
+    {
+      "waveId": 861,
+      "milliseconds": 0.2692000000001826
+    },
+    {
+      "waveId": 862,
+      "milliseconds": 0.27060000000005857
+    },
+    {
+      "waveId": 863,
+      "milliseconds": 0.2704000000001088
+    },
+    {
+      "waveId": 864,
+      "milliseconds": 0.27739999999994325
+    },
+    {
+      "waveId": 865,
+      "milliseconds": 0.27089999999998327
+    },
+    {
+      "waveId": 866,
+      "milliseconds": 0.5408999999999651
+    },
+    {
+      "waveId": 867,
+      "milliseconds": 1.8437000000001262
+    },
+    {
+      "waveId": 868,
+      "milliseconds": 4.819599999999809
+    },
+    {
+      "waveId": 869,
+      "milliseconds": 0.28320000000007894
+    },
+    {
+      "waveId": 870,
+      "milliseconds": 0.27719999999999345
+    },
+    {
+      "waveId": 871,
+      "milliseconds": 0.2719999999999345
+    },
+    {
+      "waveId": 872,
+      "milliseconds": 0.26890000000003056
+    },
+    {
+      "waveId": 873,
+      "milliseconds": 0.28549999999995634
+    },
+    {
+      "waveId": 874,
+      "milliseconds": 0.2720999999999094
+    },
+    {
+      "waveId": 875,
+      "milliseconds": 0.27369999999996253
+    },
+    {
+      "waveId": 876,
+      "milliseconds": 0.38160000000016225
+    },
+    {
+      "waveId": 877,
+      "milliseconds": 1.7083999999999833
+    },
+    {
+      "waveId": 878,
+      "milliseconds": 3.3114000000000487
+    },
+    {
+      "waveId": 879,
+      "milliseconds": 0.2823000000000775
+    },
+    {
+      "waveId": 880,
+      "milliseconds": 0.27130000000011023
+    },
+    {
+      "waveId": 881,
+      "milliseconds": 0.5852999999999611
+    },
+    {
+      "waveId": 882,
+      "milliseconds": 0.29130000000009204
+    },
+    {
+      "waveId": 883,
+      "milliseconds": 0.2880999999999858
+    },
+    {
+      "waveId": 884,
+      "milliseconds": 0.39340000000015607
+    },
+    {
+      "waveId": 885,
+      "milliseconds": 0.4656999999999698
+    },
+    {
+      "waveId": 886,
+      "milliseconds": 0.6898999999998523
+    },
+    {
+      "waveId": 887,
+      "milliseconds": 1.6717999999998483
+    },
+    {
+      "waveId": 888,
+      "milliseconds": 4.524599999999964
+    },
+    {
+      "waveId": 889,
+      "milliseconds": 0.30340000000001055
+    },
+    {
+      "waveId": 890,
+      "milliseconds": 0.2817000000000007
+    },
+    {
+      "waveId": 891,
+      "milliseconds": 0.540599999999813
+    },
+    {
+      "waveId": 892,
+      "milliseconds": 0.327199999999948
+    },
+    {
+      "waveId": 893,
+      "milliseconds": 0.28520000000003165
+    },
+    {
+      "waveId": 894,
+      "milliseconds": 0.3401000000001204
+    },
+    {
+      "waveId": 895,
+      "milliseconds": 0.32209999999986394
+    },
+    {
+      "waveId": 896,
+      "milliseconds": 0.7514000000001033
+    },
+    {
+      "waveId": 897,
+      "milliseconds": 2.054499999999962
+    },
+    {
+      "waveId": 898,
+      "milliseconds": 4.192000000000007
+    },
+    {
+      "waveId": 899,
+      "milliseconds": 0.28730000000018663
+    },
+    {
+      "waveId": 900,
+      "milliseconds": 0.3043999999999869
+    },
+    {
+      "waveId": 901,
+      "milliseconds": 0.31409999999982574
+    },
+    {
+      "waveId": 902,
+      "milliseconds": 0.28320000000007894
+    },
+    {
+      "waveId": 903,
+      "milliseconds": 0.2817000000000007
+    },
+    {
+      "waveId": 904,
+      "milliseconds": 0.2859000000000833
+    },
+    {
+      "waveId": 905,
+      "milliseconds": 0.2763999999999669
+    },
+    {
+      "waveId": 906,
+      "milliseconds": 0.27700000000004366
+    },
+    {
+      "waveId": 907,
+      "milliseconds": 2.404499999999871
+    },
+    {
+      "waveId": 908,
+      "milliseconds": 4.2560000000000855
+    },
+    {
+      "waveId": 909,
+      "milliseconds": 0.29139999999983957
+    },
+    {
+      "waveId": 910,
+      "milliseconds": 0.28480000000013206
+    },
+    {
+      "waveId": 911,
+      "milliseconds": 0.2817000000000007
+    },
+    {
+      "waveId": 912,
+      "milliseconds": 0.2805000000000746
+    },
+    {
+      "waveId": 913,
+      "milliseconds": 0.2781999999999698
+    },
+    {
+      "waveId": 914,
+      "milliseconds": 0.2820000000001528
+    },
+    {
+      "waveId": 915,
+      "milliseconds": 0.28510000000005675
+    },
+    {
+      "waveId": 916,
+      "milliseconds": 0.2818999999999505
+    },
+    {
+      "waveId": 917,
+      "milliseconds": 1.952600000000075
+    },
+    {
+      "waveId": 918,
+      "milliseconds": 4.744999999999891
+    },
+    {
+      "waveId": 919,
+      "milliseconds": 0.2787999999998192
+    },
+    {
+      "waveId": 920,
+      "milliseconds": 0.27800000000002
+    },
+    {
+      "waveId": 921,
+      "milliseconds": 0.2767999999998665
+    },
+    {
+      "waveId": 922,
+      "milliseconds": 0.2765999999999167
+    },
+    {
+      "waveId": 923,
+      "milliseconds": 0.2806000000000495
+    },
+    {
+      "waveId": 924,
+      "milliseconds": 0.2796000000000731
+    },
+    {
+      "waveId": 925,
+      "milliseconds": 0.2807999999999993
+    },
+    {
+      "waveId": 926,
+      "milliseconds": 0.37429999999994834
+    },
+    {
+      "waveId": 927,
+      "milliseconds": 1.8295000000000528
+    },
+    {
+      "waveId": 928,
+      "milliseconds": 3.8436000000001513
+    },
+    {
+      "waveId": 929,
+      "milliseconds": 0.2907000000000153
+    },
+    {
+      "waveId": 930,
+      "milliseconds": 0.2726999999999862
+    },
+    {
+      "waveId": 931,
+      "milliseconds": 0.29549999999994725
+    },
+    {
+      "waveId": 932,
+      "milliseconds": 0.2800999999999476
+    },
+    {
+      "waveId": 933,
+      "milliseconds": 0.2639000000001488
+    },
+    {
+      "waveId": 934,
+      "milliseconds": 0.2641999999998461
+    },
+    {
+      "waveId": 935,
+      "milliseconds": 0.26279999999997017
+    },
+    {
+      "waveId": 936,
+      "milliseconds": 0.5376000000001113
+    },
+    {
+      "waveId": 937,
+      "milliseconds": 1.6469999999999345
+    },
+    {
+      "waveId": 938,
+      "milliseconds": 3.3032000000000608
+    },
+    {
+      "waveId": 939,
+      "milliseconds": 0.2859000000000833
+    },
+    {
+      "waveId": 940,
+      "milliseconds": 0.2746999999999389
+    },
+    {
+      "waveId": 941,
+      "milliseconds": 0.27559999999994034
+    },
+    {
+      "waveId": 942,
+      "milliseconds": 0.2744999999999891
+    },
+    {
+      "waveId": 943,
+      "milliseconds": 0.2721999999998843
+    },
+    {
+      "waveId": 944,
+      "milliseconds": 0.2727999999999611
+    },
+    {
+      "waveId": 945,
+      "milliseconds": 0.2760000000000673
+    },
+    {
+      "waveId": 946,
+      "milliseconds": 0.5567000000000917
+    },
+    {
+      "waveId": 947,
+      "milliseconds": 1.758199999999988
+    },
+    {
+      "waveId": 948,
+      "milliseconds": 3.633100000000013
+    },
+    {
+      "waveId": 949,
+      "milliseconds": 0.2883999999999105
+    },
+    {
+      "waveId": 950,
+      "milliseconds": 0.2740000000001146
+    },
+    {
+      "waveId": 951,
+      "milliseconds": 0.26860000000010587
+    },
+    {
+      "waveId": 952,
+      "milliseconds": 0.26120000000014443
+    },
+    {
+      "waveId": 953,
+      "milliseconds": 0.262000000000171
+    },
+    {
+      "waveId": 954,
+      "milliseconds": 0.26499999999987267
+    },
+    {
+      "waveId": 955,
+      "milliseconds": 0.259900000000016
+    },
+    {
+      "waveId": 956,
+      "milliseconds": 0.2620999999999185
+    },
+    {
+      "waveId": 957,
+      "milliseconds": 1.6648000000000138
+    },
+    {
+      "waveId": 958,
+      "milliseconds": 3.297399999999925
+    },
+    {
+      "waveId": 959,
+      "milliseconds": 0.27330000000006294
+    },
+    {
+      "waveId": 960,
+      "milliseconds": 0.2804000000000997
+    },
+    {
+      "waveId": 961,
+      "milliseconds": 0.27320000000008804
+    },
+    {
+      "waveId": 962,
+      "milliseconds": 0.27350000000001273
+    },
+    {
+      "waveId": 963,
+      "milliseconds": 0.2781999999999698
+    },
+    {
+      "waveId": 964,
+      "milliseconds": 0.29710000000000036
+    },
+    {
+      "waveId": 965,
+      "milliseconds": 0.2742000000000644
+    },
+    {
+      "waveId": 966,
+      "milliseconds": 0.27139999999985776
+    },
+    {
+      "waveId": 967,
+      "milliseconds": 1.581000000000131
+    },
+    {
+      "waveId": 968,
+      "milliseconds": 4.414399999999887
+    }
+  ]
+}

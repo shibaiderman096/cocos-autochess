@@ -1,0 +1,507 @@
+{
+  "validation": {
+    "weak": {
+      "runs": 500,
+      "ironGolemPlayerRuns": 149,
+      "ironGolemPlayerWaves": 1113,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "6-normal": 126,
+        "5-normal": 171,
+        "5-boss": 69,
+        "5-elite": 63,
+        "6-elite": 9,
+        "4-normal": 31,
+        "6-boss": 8,
+        "7-boss": 2,
+        "7-normal": 8,
+        "4-boss": 10,
+        "4-elite": 3
+      },
+      "stage3And6Composition": {}
+    },
+    "medium": {
+      "runs": 500,
+      "ironGolemPlayerRuns": 490,
+      "ironGolemPlayerWaves": 222340,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "6-elite": 47,
+        "6-boss": 105,
+        "6-normal": 68,
+        "7-normal": 27,
+        "5-boss": 1,
+        "8-elite": 7,
+        "8-normal": 13,
+        "5-elite": 1,
+        "7-boss": 1
+      },
+      "stage3And6Composition": {
+        "3-1": {
+          "encounters": 500,
+          "units": {
+            "shaman": 500,
+            "mage": 500
+          },
+          "stars": {
+            "1": 500,
+            "2": 500
+          },
+          "items": {}
+        },
+        "3-2": {
+          "encounters": 500,
+          "units": {
+            "scout": 331,
+            "shaman": 331,
+            "mage": 669,
+            "sorcerer": 169
+          },
+          "stars": {
+            "1": 1000,
+            "2": 500
+          },
+          "items": {}
+        },
+        "3-3": {
+          "encounters": 500,
+          "units": {
+            "duelist": 500,
+            "ranger": 500,
+            "mage": 500
+          },
+          "stars": {
+            "1": 1000,
+            "2": 500
+          },
+          "items": {}
+        },
+        "3-4": {
+          "encounters": 500,
+          "units": {
+            "champion": 1000,
+            "archer": 500
+          },
+          "stars": {
+            "1": 1000,
+            "2": 500
+          },
+          "items": {}
+        },
+        "3-5": {
+          "encounters": 500,
+          "units": {
+            "duelist": 317,
+            "champion": 1183,
+            "ranger": 317,
+            "warrior": 183
+          },
+          "stars": {
+            "1": 1500,
+            "2": 500
+          },
+          "items": {
+            "infinity_edge": 500
+          }
+        },
+        "3-6": {
+          "encounters": 500,
+          "units": {
+            "champion": 1500,
+            "duelist": 500
+          },
+          "stars": {
+            "1": 1000,
+            "2": 1000
+          },
+          "items": {
+            "guinsoo": 500
+          }
+        },
+        "6-1": {
+          "encounters": 498,
+          "units": {
+            "champion": 3486,
+            "duelist": 996
+          },
+          "stars": {
+            "1": 2988,
+            "2": 1494
+          },
+          "items": {}
+        },
+        "6-2": {
+          "encounters": 498,
+          "units": {
+            "champion": 3984,
+            "young_sasuke": 498,
+            "ranger": 498
+          },
+          "stars": {
+            "1": 3486,
+            "2": 1494
+          },
+          "items": {}
+        },
+        "6-3": {
+          "encounters": 495,
+          "units": {
+            "champion": 4455,
+            "duelist": 495
+          },
+          "stars": {
+            "1": 3465,
+            "2": 1485
+          },
+          "items": {}
+        },
+        "6-4": {
+          "encounters": 490,
+          "units": {
+            "champion": 4410,
+            "ranger": 490
+          },
+          "stars": {
+            "1": 2940,
+            "2": 1960
+          },
+          "items": {}
+        },
+        "6-5": {
+          "encounters": 477,
+          "units": {
+            "champion": 4293,
+            "duelist": 477
+          },
+          "stars": {
+            "1": 2862,
+            "2": 1908
+          },
+          "items": {}
+        },
+        "6-6": {
+          "encounters": 473,
+          "units": {
+            "champion": 4257,
+            "duelist": 473
+          },
+          "stars": {
+            "1": 2365,
+            "2": 2365
+          },
+          "items": {}
+        },
+        "6-7": {
+          "encounters": 458,
+          "units": {
+            "champion": 4122,
+            "duelist": 458
+          },
+          "stars": {
+            "1": 1832,
+            "2": 2748
+          },
+          "items": {}
+        },
+        "6-8": {
+          "encounters": 430,
+          "units": {
+            "champion": 3870,
+            "duelist": 430
+          },
+          "stars": {
+            "1": 1720,
+            "2": 2580
+          },
+          "items": {
+            "guinsoo": 860
+          }
+        },
+        "6-9": {
+          "encounters": 383,
+          "units": {
+            "champion": 3447,
+            "duelist": 383
+          },
+          "stars": {
+            "1": 766,
+            "2": 3064
+          },
+          "items": {
+            "guinsoo": 766
+          }
+        }
+      }
+    },
+    "strong": {
+      "runs": 500,
+      "ironGolemPlayerRuns": 500,
+      "ironGolemPlayerWaves": 462894,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "7-normal": 4,
+        "8-normal": 2,
+        "6-boss": 1,
+        "7-boss": 3
+      },
+      "stage3And6Composition": {}
+    }
+  },
+  "holdout": {
+    "weak": {
+      "runs": 250,
+      "ironGolemPlayerRuns": 87,
+      "ironGolemPlayerWaves": 3368,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "5-boss": 37,
+        "5-normal": 87,
+        "5-elite": 39,
+        "6-normal": 51,
+        "4-normal": 14,
+        "6-elite": 3,
+        "4-boss": 7,
+        "6-boss": 3,
+        "7-normal": 4,
+        "7-elite": 1,
+        "4-elite": 1
+      },
+      "stage3And6Composition": {}
+    },
+    "medium": {
+      "runs": 250,
+      "ironGolemPlayerRuns": 246,
+      "ironGolemPlayerWaves": 112110,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "8-normal": 8,
+        "6-elite": 14,
+        "6-boss": 51,
+        "6-normal": 41,
+        "7-normal": 11,
+        "8-elite": 3,
+        "5-elite": 1,
+        "5-normal": 1,
+        "5-boss": 1,
+        "7-elite": 1,
+        "8-boss": 1,
+        "7-boss": 1
+      },
+      "stage3And6Composition": {
+        "3-1": {
+          "encounters": 250,
+          "units": {
+            "shaman": 250,
+            "mage": 250
+          },
+          "stars": {
+            "1": 250,
+            "2": 250
+          },
+          "items": {}
+        },
+        "3-2": {
+          "encounters": 250,
+          "units": {
+            "scout": 169,
+            "shaman": 169,
+            "mage": 331,
+            "sorcerer": 81
+          },
+          "stars": {
+            "1": 500,
+            "2": 250
+          },
+          "items": {}
+        },
+        "3-3": {
+          "encounters": 250,
+          "units": {
+            "duelist": 250,
+            "ranger": 250,
+            "mage": 250
+          },
+          "stars": {
+            "1": 500,
+            "2": 250
+          },
+          "items": {}
+        },
+        "3-4": {
+          "encounters": 250,
+          "units": {
+            "champion": 500,
+            "archer": 250
+          },
+          "stars": {
+            "1": 500,
+            "2": 250
+          },
+          "items": {}
+        },
+        "3-5": {
+          "encounters": 250,
+          "units": {
+            "duelist": 171,
+            "champion": 579,
+            "ranger": 171,
+            "warrior": 79
+          },
+          "stars": {
+            "1": 750,
+            "2": 250
+          },
+          "items": {
+            "infinity_edge": 250
+          }
+        },
+        "3-6": {
+          "encounters": 250,
+          "units": {
+            "champion": 750,
+            "duelist": 250
+          },
+          "stars": {
+            "1": 500,
+            "2": 500
+          },
+          "items": {
+            "guinsoo": 250
+          }
+        },
+        "6-1": {
+          "encounters": 247,
+          "units": {
+            "champion": 1729,
+            "duelist": 494
+          },
+          "stars": {
+            "1": 1482,
+            "2": 741
+          },
+          "items": {}
+        },
+        "6-2": {
+          "encounters": 247,
+          "units": {
+            "champion": 1976,
+            "young_sasuke": 247,
+            "ranger": 247
+          },
+          "stars": {
+            "1": 1729,
+            "2": 741
+          },
+          "items": {}
+        },
+        "6-3": {
+          "encounters": 244,
+          "units": {
+            "champion": 2196,
+            "duelist": 244
+          },
+          "stars": {
+            "1": 1708,
+            "2": 732
+          },
+          "items": {}
+        },
+        "6-4": {
+          "encounters": 244,
+          "units": {
+            "champion": 2196,
+            "ranger": 244
+          },
+          "stars": {
+            "1": 1464,
+            "2": 976
+          },
+          "items": {}
+        },
+        "6-5": {
+          "encounters": 237,
+          "units": {
+            "champion": 2133,
+            "duelist": 237
+          },
+          "stars": {
+            "1": 1422,
+            "2": 948
+          },
+          "items": {}
+        },
+        "6-6": {
+          "encounters": 232,
+          "units": {
+            "champion": 2088,
+            "duelist": 232
+          },
+          "stars": {
+            "1": 1160,
+            "2": 1160
+          },
+          "items": {}
+        },
+        "6-7": {
+          "encounters": 223,
+          "units": {
+            "champion": 2007,
+            "duelist": 223
+          },
+          "stars": {
+            "1": 892,
+            "2": 1338
+          },
+          "items": {}
+        },
+        "6-8": {
+          "encounters": 206,
+          "units": {
+            "champion": 1854,
+            "duelist": 206
+          },
+          "stars": {
+            "1": 824,
+            "2": 1236
+          },
+          "items": {
+            "guinsoo": 412
+          }
+        },
+        "6-9": {
+          "encounters": 192,
+          "units": {
+            "champion": 1728,
+            "duelist": 192
+          },
+          "stars": {
+            "1": 384,
+            "2": 1536
+          },
+          "items": {
+            "guinsoo": 384
+          }
+        }
+      }
+    },
+    "strong": {
+      "runs": 250,
+      "ironGolemPlayerRuns": 250,
+      "ironGolemPlayerWaves": 232498,
+      "ironGolemEnemyWaves": 0,
+      "uncalibratedEnemyItems": [],
+      "deathByKind": {
+        "7-normal": 1,
+        "7-elite": 1,
+        "6-elite": 1,
+        "6-boss": 1
+      },
+      "stage3And6Composition": {}
+    }
+  }
+}

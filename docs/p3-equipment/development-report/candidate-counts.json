@@ -1,0 +1,1766 @@
+[
+  {
+    "stage": 2,
+    "kind": "normal",
+    "naked": 4,
+    "equipped": 4
+  },
+  {
+    "stage": 2,
+    "kind": "elite",
+    "naked": 4,
+    "equipped": 4
+  },
+  {
+    "stage": 2,
+    "kind": "boss",
+    "naked": 4,
+    "equipped": 4
+  },
+  {
+    "stage": 3,
+    "kind": "normal",
+    "naked": 4,
+    "equipped": 4
+  },
+  {
+    "stage": 3,
+    "kind": "elite",
+    "naked": 4,
+    "equipped": 12
+  },
+  {
+    "stage": 3,
+    "kind": "boss",
+    "naked": 4,
+    "equipped": 12
+  },
+  {
+    "stage": 4,
+    "kind": "normal",
+    "naked": 9,
+    "equipped": 9
+  },
+  {
+    "stage": 4,
+    "kind": "elite",
+    "naked": 9,
+    "equipped": 27
+  },
+  {
+    "stage": 4,
+    "kind": "boss",
+    "naked": 9,
+    "equipped": 27
+  },
+  {
+    "stage": 5,
+    "kind": "normal",
+    "naked": 9,
+    "equipped": 9
+  },
+  {
+    "stage": 5,
+    "kind": "elite",
+    "naked": 9,
+    "equipped": 27
+  },
+  {
+    "stage": 5,
+    "kind": "boss",
+    "naked": 9,
+    "equipped": 27
+  },
+  {
+    "stage": 6,
+    "kind": "normal",
+    "naked": 24,
+    "equipped": 24
+  },
+  {
+    "stage": 6,
+    "kind": "elite",
+    "naked": 24,
+    "equipped": 72
+  },
+  {
+    "stage": 6,
+    "kind": "boss",
+    "naked": 24,
+    "equipped": 120
+  },
+  {
+    "stage": 7,
+    "kind": "normal",
+    "naked": 30,
+    "equipped": 30
+  },
+  {
+    "stage": 7,
+    "kind": "elite",
+    "naked": 30,
+    "equipped": 86
+  },
+  {
+    "stage": 7,
+    "kind": "boss",
+    "naked": 30,
+    "equipped": 142
+  },
+  {
+    "stage": 8,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 8,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 8,
+    "kind": "boss",
+    "naked": 32,
+    "equipped": 152
+  },
+  {
+    "stage": 9,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 9,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 9,
+    "kind": "boss",
+    "naked": 32,
+    "equipped": 152
+  },
+  {
+    "stage": 10,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 10,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 10,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 11,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 11,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 11,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 12,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 12,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 12,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 13,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 13,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 13,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 14,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 14,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 14,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 15,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 15,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 15,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 16,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 16,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 16,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 17,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 17,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 17,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 18,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 18,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 18,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 19,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 19,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 19,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 20,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 20,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 20,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 21,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 21,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 21,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 22,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 22,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 22,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 23,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 23,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 23,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 24,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 24,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 24,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 25,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 25,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 25,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 26,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 26,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 26,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 27,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 27,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 27,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 28,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 28,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 28,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 29,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 29,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 29,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 30,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 30,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 30,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 31,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 31,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 31,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 32,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 32,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 32,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 33,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 33,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 33,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 34,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 34,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 34,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 35,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 35,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 35,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 36,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 36,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 36,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 37,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 37,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 37,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 38,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 38,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 38,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 39,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 39,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 39,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 40,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 40,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 40,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 41,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 41,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 41,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 42,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 42,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 42,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 43,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 43,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 43,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 44,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 44,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 44,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 45,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 45,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 45,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 46,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 46,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 46,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 47,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 47,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 47,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 48,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 48,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 48,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 49,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 49,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 49,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 50,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 50,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 50,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 51,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 51,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 51,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 52,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 52,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 52,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 53,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 53,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 53,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 54,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 54,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 54,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 55,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 55,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 55,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 56,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 56,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 56,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 57,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 57,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 57,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 58,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 58,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 58,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 59,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 59,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 59,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 60,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 60,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 60,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 61,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 61,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 61,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 62,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 62,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 62,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 63,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 63,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 63,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 64,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 64,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 64,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 65,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 65,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 65,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 66,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 66,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 66,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 67,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 67,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 67,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 68,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 68,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 68,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 69,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 69,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 69,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 70,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 70,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 70,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 71,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 71,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 71,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 72,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 72,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 72,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 73,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 73,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 73,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 74,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 74,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 74,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 75,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 75,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 75,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 76,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 76,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 76,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 77,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 77,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 77,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 78,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 78,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 78,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 79,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 79,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 79,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 80,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 80,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 80,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 81,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 81,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 81,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 82,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 82,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 82,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 83,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 83,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 83,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 84,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 84,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 84,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 85,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 85,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 85,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 86,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 86,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 86,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 87,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 87,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 87,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 88,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 88,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 88,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 89,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 89,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 89,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 90,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 90,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 90,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 91,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 91,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 91,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 92,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 92,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 92,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 93,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 93,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 93,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 94,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 94,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 94,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 95,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 95,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 95,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 96,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 96,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 96,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 97,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 97,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 97,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 98,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 98,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 98,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  },
+  {
+    "stage": 99,
+    "kind": "normal",
+    "naked": 32,
+    "equipped": 32
+  },
+  {
+    "stage": 99,
+    "kind": "elite",
+    "naked": 32,
+    "equipped": 92
+  },
+  {
+    "stage": 99,
+    "kind": "boss",
+    "naked": 48,
+    "equipped": 228
+  }
+]

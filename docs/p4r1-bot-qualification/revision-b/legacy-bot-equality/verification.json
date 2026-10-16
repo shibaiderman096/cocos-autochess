@@ -1,0 +1,72 @@
+{
+  "unchanged": true,
+  "comparison": "original captured strategy source vs current source, same current production inputs and separately corrected prices",
+  "old": [
+    {
+      "bot": "weak",
+      "seed": 5799,
+      "version": "weak-v1",
+      "fullReportSha256": "433861d8ae60c6e0b4a683f2ee3e32273d17a1a4c6927f92c2273e3ae185de40",
+      "decisionsSha256": "0e0522da35204fbdb3986f6d21bbba9fb089c800d552f891cdf5e3326cdc1f63",
+      "waves": 88
+    },
+    {
+      "bot": "weak",
+      "seed": 5800,
+      "version": "weak-v1",
+      "fullReportSha256": "78f1f37c5fb838a57181bc664c881c487c6381a7b2cd8e84bc77c475a1098986",
+      "decisionsSha256": "7fc57f6613093feefd19c22d049c14795ebf45fc3a3f9271b24e8ccfc3a1c898",
+      "waves": 98
+    },
+    {
+      "bot": "strong",
+      "seed": 5799,
+      "version": "strong-v1",
+      "fullReportSha256": "3fabd79e0f8690b1ec4e387f09264a881b1e96ebdd8224dfa84893dbb9a92882",
+      "decisionsSha256": "acc3c2d353b6f7bd6d01107a8834f61ac695dc098ada48c3f3adb73027e5144a",
+      "waves": 98
+    },
+    {
+      "bot": "strong",
+      "seed": 5800,
+      "version": "strong-v1",
+      "fullReportSha256": "47164fda8fb61058503d4b0fa15109fb64f38d77fd6064a100c8650f852f2268",
+      "decisionsSha256": "97dc7ba67d77a3a526c0c3ff4ea593261b49aef973526182f4f3fec9fce14b02",
+      "waves": 98
+    }
+  ],
+  "current": [
+    {
+      "bot": "weak",
+      "seed": 5799,
+      "version": "weak-v1",
+      "fullReportSha256": "433861d8ae60c6e0b4a683f2ee3e32273d17a1a4c6927f92c2273e3ae185de40",
+      "decisionsSha256": "0e0522da35204fbdb3986f6d21bbba9fb089c800d552f891cdf5e3326cdc1f63",
+      "waves": 88
+    },
+    {
+      "bot": "weak",
+      "seed": 5800,
+      "version": "weak-v1",
+      "fullReportSha256": "78f1f37c5fb838a57181bc664c881c487c6381a7b2cd8e84bc77c475a1098986",
+      "decisionsSha256": "7fc57f6613093feefd19c22d049c14795ebf45fc3a3f9271b24e8ccfc3a1c898",
+      "waves": 98
+    },
+    {
+      "bot": "strong",
+      "seed": 5799,
+      "version": "strong-v1",
+      "fullReportSha256": "3fabd79e0f8690b1ec4e387f09264a881b1e96ebdd8224dfa84893dbb9a92882",
+      "decisionsSha256": "acc3c2d353b6f7bd6d01107a8834f61ac695dc098ada48c3f3adb73027e5144a",
+      "waves": 98
+    },
+    {
+      "bot": "strong",
+      "seed": 5800,
+      "version": "strong-v1",
+      "fullReportSha256": "47164fda8fb61058503d4b0fa15109fb64f38d77fd6064a100c8650f852f2268",
+      "decisionsSha256": "97dc7ba67d77a3a526c0c3ff4ea593261b49aef973526182f4f3fec9fce14b02",
+      "waves": 98
+    }
+  ]
+}

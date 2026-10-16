@@ -1,0 +1,36 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot medium --seed-start 1 --seed-count 50 --stages 12 --workers 2 --partition training --formation L3 --config docs/p4-balance/training/search-v1/iteration-13-config.json --output docs/p4-balance/formation/L3
+
+Balance training: 50 runs, 12 campaign stages, 2 worker processes; no difficulty values are changed
+progress 10/50
+progress 20/50
+progress 30/50
+progress 40/50
+progress 45/50
+progress 50/50
+{
+  "output": "docs/p4-balance/formation/L3",
+  "runs": 50,
+  "battles": 3310,
+  "seconds": 18.6456959,
+  "results": {
+    "medium": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 29,
+        "total": 50,
+        "rate": 0.58,
+        "low": 0.4423344176857823,
+        "high": 0.7062499664528802
+      },
+      "failedActions": 0
+    }
+  }
+}

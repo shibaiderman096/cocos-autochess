@@ -1,0 +1,133 @@
+{
+  "baseline": {
+    "seed": 12345,
+    "pureGeneration": true,
+    "battles": 0,
+    "permanentAboveMaxFrom": {
+      "waveId": 93,
+      "stage": 12,
+      "round": 5
+    },
+    "checkpoints": [
+      {
+        "stage": 7,
+        "round": 1,
+        "requested": 418.9790944625196,
+        "effective": 788.9373849986606,
+        "actual": 827.5190254504018,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "BELOW_MIN_FEASIBLE"
+      },
+      {
+        "stage": 8,
+        "round": 1,
+        "requested": 620.1914100784078,
+        "effective": 788.9373849986606,
+        "actual": 827.5190254504018,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "STAGE_ENVELOPE_CONSTRAINT"
+      },
+      {
+        "stage": 12,
+        "round": 5,
+        "requested": 3643.3947242587656,
+        "effective": 3329.748606389021,
+        "actual": 3333.087481542704,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 25,
+        "round": 1,
+        "requested": 487745.67557815247,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 50,
+        "round": 1,
+        "requested": 8841546844.556034,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 99,
+        "round": 1,
+        "requested": 1962747842591467800,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      }
+    ]
+  },
+  "candidate": {
+    "seed": 12345,
+    "pureGeneration": true,
+    "battles": 0,
+    "permanentAboveMaxFrom": {
+      "waveId": 41,
+      "stage": 7,
+      "round": 3
+    },
+    "checkpoints": [
+      {
+        "stage": 7,
+        "round": 1,
+        "requested": 3221.1355476400004,
+        "effective": 3221.1355476400004,
+        "actual": 3100.2918072701787,
+        "maxFeasible": 3599.3945795087557
+      },
+      {
+        "stage": 8,
+        "round": 1,
+        "requested": 5002.325008741766,
+        "effective": 3383.4309047382303,
+        "actual": 3377.5528885476565,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 12,
+        "round": 5,
+        "requested": 36368.717800336366,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 25,
+        "round": 1,
+        "requested": 8890809.012996672,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 50,
+        "round": 1,
+        "requested": 534581460114.8228,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      },
+      {
+        "stage": 99,
+        "round": 1,
+        "requested": 1.2445037567142108e+21,
+        "effective": 3599.3945795087557,
+        "actual": 3571.281689478653,
+        "maxFeasible": 3599.3945795087557,
+        "reason": "ABOVE_MAX_FEASIBLE"
+      }
+    ]
+  }
+}

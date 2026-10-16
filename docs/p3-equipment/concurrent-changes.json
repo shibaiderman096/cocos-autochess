@@ -1,0 +1,7 @@
+{
+  "tests/advanced-equipment-tests.cjs": {
+    "before": "9dcc4dd48bf6ebde02d87e36b72418ded6d502044bd4a3efc7857d6d24aa82e9",
+    "after": "f8459c27a550fff08453ec099b91979c04e3c1b3ed879a34b67ae64defe9e1bc",
+    "reason": "This existing equipment test changed externally after the P3 baseline capture. P3 did not edit it. Preserve and pin its observed new bytes."
+  }
+}

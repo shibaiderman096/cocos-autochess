@@ -1,0 +1,22 @@
+{
+  "seed": 12345,
+  "mode": "budget-v1",
+  "powerModelVersion": "enemy-power-v1",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "configHash": "8911e884330bb3116b9f29566cbbdc1ef08d0df56562b383b04f114dae93fbb2",
+  "sourceHashes": {
+    "assets/scripts/core/EnemyBudget.ts": "7382a3fa396dcee48f9a16223544ba261304b1008e1ae7aec36124ad41ccee21",
+    "assets/scripts/core/EnemyCandidates.ts": "c478b775ed1fca06e356e5358b196d01830acde65a419489aba415b46228d497",
+    "assets/scripts/core/EnemyGenerationTypes.ts": "117d7125ef9f47e97a8f904fe24ed2dc3c5adbd136390ebb28758eec9c9e84c3",
+    "assets/scripts/core/EnemyGenerator.ts": "dce86b863269b310c57790edacfdaddfe17504b269de89e792bf6aa03cf8fafa",
+    "assets/scripts/core/RoundFlow.ts": "36de5512d11a91857cd73ad1c47bd8af309a48afa9e681dc6dd9bfc870fdbbb9",
+    "assets/scripts/core/RunSession.ts": "2fa6e1f8e9bd57a4f5986efa34c9b3511ad7dbc087ff5f10a71da83a59ff890e",
+    "assets/scripts/core/RunSessionTypes.ts": "81b7c3df537cc819f9de77c052edd871da86842d15e4af6400efacf2ecc99019",
+    "assets/scripts/core/RunSetup.ts": "7c59d846bc48d372a34e79b10ab6b9982723bed91fa7d549faab139501209a9c",
+    "assets/scripts/core/ShopSave.ts": "be02b8ca54c7c85576a76229a7a3a25aee195b7b0246e2daca76c7485a0f02d5",
+    "assets/scripts/view/BattleStage.ts": "848201bc8a9290262261cd78a5e820d014f47f1f7b08eef3070874265fdc97cc",
+    "tools/report-enemy-budget.ts": "2ac611e5cd5b58f29d5f129f331afc0d734ee6ed21fd4d191e44f2a8bdbdc2eb",
+    "tools/run-sim.ts": "4fbdb1423cb5973f374897f627eb7e9123cbe1a2533b9f5bf393d0d57ac293ff",
+    "tools/run-simulation.ts": "7ceeea540b4e74d4988dabd9d6d637e9363b1b1d6788ff6e488035bf33e7a3ba"
+  }
+}

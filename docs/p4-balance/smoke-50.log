@@ -1,0 +1,80 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1 --seed-count 50 --stages 12 --workers 4 --partition smoke --output docs/p4-balance/smoke-50
+
+Balance smoke: 150 runs, 12 campaign stages, 4 worker processes; no difficulty values are changed
+progress 10/150
+progress 20/150
+progress 30/150
+progress 40/150
+progress 50/150
+progress 60/150
+progress 70/150
+progress 80/150
+progress 90/150
+progress 100/150
+progress 110/150
+progress 120/150
+progress 127/150
+progress 134/150
+progress 142/150
+progress 150/150
+{
+  "output": "docs/p4-balance/smoke-50",
+  "runs": 150,
+  "battles": 14435,
+  "seconds": 31.4301347,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "failedActions": 0
+    }
+  }
+}

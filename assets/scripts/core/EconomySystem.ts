@@ -2,11 +2,11 @@
  * 经济系统（纯逻辑，无 cc）。
  * 结算顺序（固定且可测试）：
  *   1. 用战斗结果更新连胜/连败计数
- *   2. 每小关结算基础收入（当前阶段 × 每阶段金币系数）
+ *   2. 阶段固定金币为 0
  *   3. 计算胜利奖励（胜 +1 / 负 +0 / 平 +0）
  *   4. 计算存款利息 = min(floor(结算前余额 × 0.1), 5)
  *   5. 计算连胜/连败奖励 = min(floor(计数 / 2), 3)
- *   6. 总收入入账
+ *   6. 加入奇遇/其他额外收入后入账
  *
  * 平局处理：按现有项目规则，BattleSim 超时判 winner = -1（平局）。
  * 平局既不增加连胜也不增加连败，两个计数都保持不变。
@@ -15,9 +15,9 @@
  */
 
 export interface EconomyConfig {
-  /** 每小关基础收入 = 当前阶段数 × 此系数 */
+  /** Legacy field, ignored: there is no fixed stage income. */
   incomePerFloor: number;
-  /** Cap for stage base income, excluding interest and other bonuses. */
+  /** Legacy field, ignored. */
   incomeCap?: number;
   /** 利息上限 */
   interestCap: number;
@@ -32,8 +32,8 @@ export interface EconomyConfig {
 }
 
 export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
-  incomePerFloor: 2,
-  incomeCap: 10,
+  incomePerFloor: 0,
+  incomeCap: 0,
   interestCap: 5,
   interestRate: 0.1,
   streakCap: 3,
@@ -44,10 +44,14 @@ export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
 export interface BattleOutcome {
   /** 0 = 己方胜，1 = 敌方胜，-1 = 平局 */
   winner: number;
+  /** Encounter and other one-time income; excluded from this round's interest. */
+  extraIncome?: number;
 }
 
 export interface SettlementBreakdown {
+  /** Kept as zero for old save/report readers. */
   floorIncome: number;
+  extraIncome: number;
   winBonus: number;
   interest: number;
   streakBonus: number;
@@ -90,8 +94,10 @@ export class EconomySystem {
    */
   settleBattle(floor: number, outcome: BattleOutcome): SettlementBreakdown {
     if (!Number.isSafeInteger(floor) || floor < 1 || ![-1, 0, 1].includes(outcome.winner)) throw new Error('Invalid settlement input');
-    const floorIncome = Math.min(floor * this.config.incomePerFloor, this.config.incomeCap ?? 10);
-    const projected = floorIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
+    const extraIncome = outcome.extraIncome ?? 0;
+    if (!Number.isSafeInteger(extraIncome) || extraIncome < 0) throw new Error('Invalid extra income');
+    const floorIncome = 0;
+    const projected = extraIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
     if (!Number.isFinite(projected) || projected > Number.MAX_SAFE_INTEGER - this.gold) throw new Error('Settlement exceeds safe range');
     // 1. 先更新连胜/连败（在计算奖励之前）
     if (outcome.winner === 0) {
@@ -114,13 +120,13 @@ export class EconomySystem {
       Math.floor(Math.max(this.winStreak, this.loseStreak) / 2),
       this.config.streakCap,
     );
-    const total = floorIncome + winBonus + interest + streakBonus;
+    const total = winBonus + interest + streakBonus + extraIncome;
 
     // 6. 入账
     this.gold += total;
 
     return {
-      floorIncome, winBonus, interest, streakBonus, total,
+      floorIncome, winBonus, interest, streakBonus, extraIncome, total,
       goldBefore, goldAfter: this.gold,
       winStreak: this.winStreak, loseStreak: this.loseStreak,
     };

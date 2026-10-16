@@ -1,0 +1,62 @@
+{
+  "partition": "training",
+  "seedRange": [
+    1,
+    50
+  ],
+  "campaignStages": 12,
+  "formation": "L2",
+  "audit": true,
+  "inputHash": "8499f2fb2eb41befdb833c80d7707409bcafb7194b158a2043adb9c7fd0b6e35",
+  "bots": [
+    {
+      "id": "medium",
+      "version": "medium-v1",
+      "config": {
+        "version": "medium-v1",
+        "qualityWeight": 1,
+        "mergeWeight": 25,
+        "coreCopies": 1,
+        "reserveStages": [
+          0,
+          0,
+          0,
+          10,
+          20,
+          30,
+          40,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "dangerHp": 0.5,
+        "criticalHp": 0.25,
+        "targetLevels": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          7,
+          8,
+          8,
+          9,
+          9,
+          10
+        ],
+        "maxXpBuys": 3,
+        "maxRolls": 3,
+        "rollEvery": 1,
+        "mergeBuyThreshold": 2,
+        "benchBuffer": 1,
+        "formation": "spread",
+        "equipment": "roles",
+        "reward": "roles"
+      }
+    }
+  ],
+  "configFile": "docs/p4-balance/training/search-v1/iteration-13-config.json"
+}

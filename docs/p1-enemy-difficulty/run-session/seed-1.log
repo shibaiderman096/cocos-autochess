@@ -1,0 +1,162 @@
+
+> run-sim
+> node --require tsx/cjs tools/run-sim.ts --seed 1 --json docs/p1-enemy-difficulty/run-session/seed-1.json
+
+Run Seed: 1 | Rules version: 1 | Bot: MinimalBaselineBot
+Campaign stages: 99 | Max stage: 99
+Wave 1 | Stage 1 | Round 1
+  Player level 2, XP 0, Gold 3, HP 20 (was 20)
+  Board: warrior*1@3,3 | Bench: (empty)
+  Enemy count: 1 | Battle seed: 2173138777 | Battle result: 0 | Duration: 4.4s | Damage taken: 0
+  Income: base 2, victory 1, interest 0, streak 0 | Total 3
+Wave 2 | Stage 1 | Round 2
+  Player level 3, XP 0, Gold 4, HP 20 (was 20)
+  Board: warrior*1@3,3 guardian*1@2,3 | Bench: archer*1 scout*1
+  Enemy count: 2 | Battle seed: 191622995 | Battle result: 0 | Duration: 4.4s | Damage taken: 0
+  Income: base 2, victory 1, interest 0, streak 1 | Total 4
+Wave 3 | Stage 1 | Round 3
+  Player level 3, XP 2, Gold 4, HP 20 (was 20)
+  Board: warrior*1@2,3 guardian*1@4,3 shaman*1@3,3 | Bench: archer*1 scout*1 scout*1 guardian*1
+  Enemy count: 3 | Battle seed: 3026798930 | Battle result: 0 | Duration: 5.45s | Damage taken: 0
+  Income: base 2, victory 1, interest 0, streak 1 | Total 4
+Wave 4 | Stage 2 | Round 1
+  Player level 3, XP 4, Gold 7, HP 20 (was 20)
+  Board: guardian*2@3,3 scout*2@2,3 shaman*1@4,3 | Bench: warrior*1 archer*1 warrior*1 guardian*1
+  Enemy count: 1 | Battle seed: 414476927 | Battle result: 0 | Duration: 5s | Damage taken: 0
+  Income: base 4, victory 1, interest 0, streak 2 | Total 7
+Wave 5 | Stage 2 | Round 2
+  Player level 4, XP 0, Gold 8, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 scout*2@4,3 | Bench: archer*1 shaman*1 guardian*2 shaman*1 archer*1
+  Enemy count: 1 | Battle seed: 3848338923 | Battle result: 0 | Duration: 3.35s | Damage taken: 0
+  Income: base 4, victory 1, interest 0, streak 2 | Total 7
+Wave 6 | Stage 2 | Round 3
+  Player level 4, XP 2, Gold 10, HP 20 (was 20)
+  Board: warrior*2@3,3 guardian*2@2,3 archer*2@4,3 scout*2@1,3 | Bench: shaman*1 guardian*2 shaman*1 archer*1 guardian*1 guardian*1 young_sasuke*1
+  Enemy count: 1 | Battle seed: 3604645448 | Battle result: 0 | Duration: 1.85s | Damage taken: 0
+  Income: base 4, victory 1, interest 0, streak 3 | Total 8
+Wave 7 | Stage 2 | Round 4
+  Player level 4, XP 4, Gold 10, HP 20 (was 20)
+  Board: warrior*2@2,3 guardian*3@3,3 archer*2@4,3 scout*2@1,3 | Bench: shaman*1 shaman*1 archer*2 young_sasuke*1 ranger*1 sorcerer*1
+  Enemy count: 2 | Battle seed: 2402123548 | Battle result: 0 | Duration: 3.35s | Damage taken: 0
+  Income: base 4, victory 1, interest 0, streak 3 | Total 8
+Wave 8 | Stage 2 | Round 5
+  Player level 4, XP 6, Gold 9, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*3@3,3 archer*2@1,3 shaman*2@2,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 champion*1 archer*1 champion*1
+  Enemy count: 2 | Battle seed: 2507962389 | Battle result: 0 | Duration: 4.45s | Damage taken: 0
+  Income: base 4, victory 1, interest 0, streak 3 | Total 8
+Wave 9 | Stage 3 | Round 1
+  Player level 4, XP 8, Gold 18, HP 20 (was 20)
+  Board: warrior*2@4,3 guardian*3@3,3 archer*2@1,3 shaman*2@2,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 champion*1 archer*1 champion*1 guardian*1
+  Enemy count: 2 | Battle seed: 1978408110 | Battle result: 0 | Duration: 3.35s | Damage taken: 0
+  Income: base 6, victory 1, interest 0, streak 3 | Total 10
+Wave 10 | Stage 3 | Round 2
+  Player level 5, XP 0, Gold 23, HP 20 (was 20)
+  Board: warrior*2@1,3 guardian*3@3,3 shaman*2@4,3 champion*2@2,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*1 mage*1
+  Enemy count: 3 | Battle seed: 2200602087 | Battle result: 0 | Duration: 5s | Damage taken: 0
+  Income: base 6, victory 1, interest 1, streak 3 | Total 11
+Wave 11 | Stage 3 | Round 3
+  Player level 5, XP 2, Gold 32, HP 20 (was 20)
+  Board: warrior*2@1,3 guardian*3@3,3 archer*2@5,3 shaman*2@4,3 champion*2@2,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*1 mage*1 mage*1
+  Enemy count: 3 | Battle seed: 366498321 | Battle result: 0 | Duration: 4.1s | Damage taken: 0
+  Income: base 6, victory 1, interest 2, streak 3 | Total 12
+Wave 12 | Stage 3 | Round 4
+  Player level 5, XP 4, Gold 40, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*1 guardian*1
+  Enemy count: 3 | Battle seed: 1689338912 | Battle result: 0 | Duration: 5.05s | Damage taken: 0
+  Income: base 6, victory 1, interest 2, streak 3 | Total 12
+Wave 13 | Stage 3 | Round 5
+  Player level 5, XP 6, Gold 54, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*1 guardian*1
+  Enemy count: 4 | Battle seed: 1605884931 | Battle result: 0 | Duration: 6.95s | Damage taken: 0
+  Income: base 6, victory 1, interest 4, streak 3 | Total 14
+Wave 14 | Stage 3 | Round 6
+  Player level 5, XP 8, Gold 69, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*1 guardian*1
+  Enemy count: 4 | Battle seed: 368779900 | Battle result: 0 | Duration: 6.95s | Damage taken: 0
+  Income: base 6, victory 1, interest 5, streak 3 | Total 15
+Wave 15 | Stage 4 | Round 1
+  Player level 5, XP 10, Gold 84, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 4 | Battle seed: 741432532 | Battle result: 0 | Duration: 7.85s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 16 | Stage 4 | Round 2
+  Player level 5, XP 12, Gold 101, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 5 | Battle seed: 1759582075 | Battle result: 0 | Duration: 10.65s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 17 | Stage 4 | Round 3
+  Player level 5, XP 14, Gold 118, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 5 | Battle seed: 4133263622 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 18 | Stage 4 | Round 4
+  Player level 5, XP 16, Gold 135, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 5 | Battle seed: 977163158 | Battle result: 0 | Duration: 9.3s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 19 | Stage 4 | Round 5
+  Player level 5, XP 18, Gold 152, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 6 | Battle seed: 11896625 | Battle result: 0 | Duration: 12.55s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 20 | Stage 4 | Round 6
+  Player level 6, XP 0, Gold 169, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: archer*2 scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1
+  Enemy count: 6 | Battle seed: 2888504067 | Battle result: 0 | Duration: 12.2s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 21 | Stage 4 | Round 7
+  Player level 6, XP 2, Gold 184, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 6 | Battle seed: 1135651278 | Battle result: 0 | Duration: 9.95s | Damage taken: 0
+  Income: base 8, victory 1, interest 5, streak 3 | Total 17
+Wave 22 | Stage 5 | Round 1
+  Player level 6, XP 4, Gold 203, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 7 | Battle seed: 1555661242 | Battle result: 0 | Duration: 11.6s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 23 | Stage 5 | Round 2
+  Player level 6, XP 6, Gold 222, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 7 | Battle seed: 1011689773 | Battle result: 0 | Duration: 12.2s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 24 | Stage 5 | Round 3
+  Player level 6, XP 8, Gold 241, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 7 | Battle seed: 1526792369 | Battle result: 0 | Duration: 11.6s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 25 | Stage 5 | Round 4
+  Player level 6, XP 10, Gold 260, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 8 | Battle seed: 2386703465 | Battle result: 0 | Duration: 13.25s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 26 | Stage 5 | Round 5
+  Player level 6, XP 12, Gold 279, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 8 | Battle seed: 991503040 | Battle result: 0 | Duration: 13.8s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 27 | Stage 5 | Round 6
+  Player level 6, XP 14, Gold 298, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 8 | Battle seed: 2434539665 | Battle result: 0 | Duration: 13.55s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 28 | Stage 5 | Round 7
+  Player level 6, XP 16, Gold 317, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 9 | Battle seed: 2609698733 | Battle result: 0 | Duration: 14.9s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 29 | Stage 5 | Round 8
+  Player level 6, XP 18, Gold 336, HP 20 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 9 | Battle seed: 2755779756 | Battle result: 0 | Duration: 18.2s | Damage taken: 0
+  Income: base 10, victory 1, interest 5, streak 3 | Total 19
+Wave 30 | Stage 6 | Round 1
+  Player level 6, XP 20, Gold 351, HP 6 (was 20)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 9 | Battle seed: 1767948723 | Battle result: 1 | Duration: 11.65s | Damage taken: 14
+  Income: base 10, victory 0, interest 5, streak 0 | Total 15
+Wave 31 | Stage 6 | Round 2
+  Player level 6, XP 22, Gold 367, HP 0 (was 6)
+  Board: warrior*2@5,3 guardian*3@3,3 archer*2@0,3 shaman*2@1,3 champion*2@2,3 mage*2@4,3 | Bench: scout*2 archer*2 young_sasuke*1 ranger*1 sorcerer*1 archer*1 guardian*2 guardian*1 duelist*1
+  Enemy count: 10 | Battle seed: 370923877 | Battle result: 1 | Duration: 9.15s | Damage taken: 6
+  Income: base 10, victory 0, interest 5, streak 1 | Total 16
+End state: PLAYER_DEAD | Waves: 31 | Game result: defeat

@@ -1,0 +1,2232 @@
+{
+  "schemaVersion": 1,
+  "scope": "P0 pre-change evidence, no difficulty tuning",
+  "exclusions": [
+    "No run-sim exists",
+    "No weak/medium/strong strategy bots",
+    "No player star timing estimate",
+    "No campaign completion rate",
+    "No cost/equipment calibration",
+    "No editor/browser/device visual verification"
+  ],
+  "configuration": {
+    "purchasableUnits": 15,
+    "unitsByCost": [
+      {
+        "cost": 1,
+        "count": 4
+      },
+      {
+        "cost": 2,
+        "count": 5
+      },
+      {
+        "cost": 3,
+        "count": 3
+      },
+      {
+        "cost": 4,
+        "count": 2
+      },
+      {
+        "cost": 5,
+        "count": 1
+      }
+    ],
+    "equipmentIds": [
+      "guinsoo",
+      "totem_of_undying",
+      "jeweled_gauntlet",
+      "infinity_edge"
+    ],
+    "generatedWaves": 968,
+    "roundsFor3Stages": 14,
+    "roundsFor6Stages": 38,
+    "enemyFullPopulationWave": 31,
+    "waveTypeFieldPresent": false
+  },
+  "batch": {
+    "first": {
+      "n": 1000,
+      "seeds": [
+        1,
+        1000
+      ],
+      "own": 153,
+      "enemy": 826,
+      "draw": 21,
+      "meanSeconds": 18.15505,
+      "meanEvents": 141.382,
+      "ownWinWilson95": [
+        0.13201921562431126,
+        0.17663655476466403
+      ],
+      "resultAndEventSha256": "9ce67c10478b080cecb80cdb2a8fddf1050c602f0743fd097556e0415f26fadf"
+    },
+    "repeat": {
+      "n": 1000,
+      "seeds": [
+        1,
+        1000
+      ],
+      "own": 153,
+      "enemy": 826,
+      "draw": 21,
+      "meanSeconds": 18.15505,
+      "meanEvents": 141.382,
+      "ownWinWilson95": [
+        0.13201921562431126,
+        0.17663655476466403
+      ],
+      "resultAndEventSha256": "9ce67c10478b080cecb80cdb2a8fddf1050c602f0743fd097556e0415f26fadf"
+    },
+    "identical": true,
+    "fixture": [
+      {
+        "unitId": "warrior",
+        "side": 0,
+        "x": 3,
+        "y": 3,
+        "star": 1
+      },
+      {
+        "unitId": "archer",
+        "side": 0,
+        "x": 4,
+        "y": 1,
+        "star": 1
+      },
+      {
+        "unitId": "mage",
+        "side": 0,
+        "x": 2,
+        "y": 0,
+        "star": 1
+      },
+      {
+        "unitId": "warrior",
+        "side": 1,
+        "x": 3,
+        "y": 6,
+        "star": 1
+      },
+      {
+        "unitId": "archer",
+        "side": 1,
+        "x": 4,
+        "y": 4,
+        "star": 1
+      },
+      {
+        "unitId": "mage",
+        "side": 1,
+        "x": 2,
+        "y": 7,
+        "star": 1
+      }
+    ]
+  },
+  "mirrors": [
+    {
+      "unitId": "warrior",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 27,
+      "enemy": 38,
+      "draw": 35
+    },
+    {
+      "unitId": "warrior",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 38,
+      "enemy": 27,
+      "draw": 35
+    },
+    {
+      "unitId": "archer",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 22,
+      "enemy": 34,
+      "draw": 44
+    },
+    {
+      "unitId": "archer",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 34,
+      "enemy": 22,
+      "draw": 44
+    },
+    {
+      "unitId": "mage",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 22,
+      "enemy": 39,
+      "draw": 39
+    },
+    {
+      "unitId": "mage",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 39,
+      "enemy": 22,
+      "draw": 39
+    },
+    {
+      "unitId": "scout",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 20,
+      "enemy": 40,
+      "draw": 40
+    },
+    {
+      "unitId": "scout",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 40,
+      "enemy": 20,
+      "draw": 40
+    },
+    {
+      "unitId": "guardian",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 27,
+      "enemy": 44,
+      "draw": 29
+    },
+    {
+      "unitId": "guardian",
+      "cost": 1,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 44,
+      "enemy": 27,
+      "draw": 29
+    },
+    {
+      "unitId": "duelist",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 25,
+      "enemy": 37,
+      "draw": 38
+    },
+    {
+      "unitId": "duelist",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 37,
+      "enemy": 25,
+      "draw": 38
+    },
+    {
+      "unitId": "ranger",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 22,
+      "enemy": 30,
+      "draw": 48
+    },
+    {
+      "unitId": "ranger",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 30,
+      "enemy": 22,
+      "draw": 48
+    },
+    {
+      "unitId": "shaman",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 9,
+      "enemy": 7,
+      "draw": 84
+    },
+    {
+      "unitId": "shaman",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 7,
+      "enemy": 9,
+      "draw": 84
+    },
+    {
+      "unitId": "sorcerer",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 25,
+      "enemy": 37,
+      "draw": 38
+    },
+    {
+      "unitId": "sorcerer",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 37,
+      "enemy": 25,
+      "draw": 38
+    },
+    {
+      "unitId": "champion",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 26,
+      "enemy": 36,
+      "draw": 38
+    },
+    {
+      "unitId": "champion",
+      "cost": 3,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 36,
+      "enemy": 26,
+      "draw": 38
+    },
+    {
+      "unitId": "enderman",
+      "cost": 5,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 22,
+      "enemy": 36,
+      "draw": 42
+    },
+    {
+      "unitId": "enderman",
+      "cost": 5,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 36,
+      "enemy": 22,
+      "draw": 42
+    },
+    {
+      "unitId": "sasuke",
+      "cost": 4,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 23,
+      "enemy": 28,
+      "draw": 49
+    },
+    {
+      "unitId": "sasuke",
+      "cost": 4,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 28,
+      "enemy": 23,
+      "draw": 49
+    },
+    {
+      "unitId": "sakura",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 33,
+      "enemy": 40,
+      "draw": 27
+    },
+    {
+      "unitId": "sakura",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 40,
+      "enemy": 33,
+      "draw": 27
+    },
+    {
+      "unitId": "young_sasuke",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 18,
+      "enemy": 24,
+      "draw": 58
+    },
+    {
+      "unitId": "young_sasuke",
+      "cost": 2,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 24,
+      "enemy": 18,
+      "draw": 58
+    },
+    {
+      "unitId": "itachi",
+      "cost": 4,
+      "star": 1,
+      "equipment": [],
+      "order": "own-first",
+      "n": 100,
+      "own": 27,
+      "enemy": 34,
+      "draw": 39
+    },
+    {
+      "unitId": "itachi",
+      "cost": 4,
+      "star": 1,
+      "equipment": [],
+      "order": "enemy-first",
+      "n": 100,
+      "own": 34,
+      "enemy": 27,
+      "draw": 39
+    }
+  ],
+  "starExamples": [
+    {
+      "unitId": "warrior",
+      "baseHp": 700,
+      "stars": [
+        {
+          "star": 1,
+          "hp": 700,
+          "atk": 55
+        },
+        {
+          "star": 2,
+          "hp": 1260,
+          "atk": 99
+        },
+        {
+          "star": 3,
+          "hp": 2268,
+          "atk": 178
+        }
+      ]
+    },
+    {
+      "unitId": "enderman",
+      "baseHp": 1000,
+      "stars": [
+        {
+          "star": 1,
+          "hp": 1000,
+          "atk": 90
+        },
+        {
+          "star": 2,
+          "hp": 1800,
+          "atk": 162
+        },
+        {
+          "star": 3,
+          "hp": 8240,
+          "atk": 292
+        }
+      ]
+    }
+  ],
+  "invalidProbes": [
+    {
+      "name": "out-of-board",
+      "cell": {
+        "x": 7,
+        "y": 4
+      },
+      "generationAccepted": true,
+      "battleAccepted": false,
+      "error": "placement out of bounds: (7, 4)"
+    },
+    {
+      "name": "in-player-half",
+      "cell": {
+        "x": 3,
+        "y": 0
+      },
+      "generationAccepted": true,
+      "battleAccepted": true,
+      "error": null
+    }
+  ],
+  "handwrittenTemplateEnemiesIgnored": true,
+  "hexExample": {
+    "a": {
+      "x": 3,
+      "y": 3
+    },
+    "b": {
+      "x": 4,
+      "y": 4
+    },
+    "hexDistance": 1,
+    "manhattanDistance": 2
+  },
+  "staticEncounterProbe": {
+    "label": "five fixed two-star units without economy; every wave resets health and roster",
+    "fixture": [
+      {
+        "unitId": "warrior",
+        "side": 0,
+        "x": 3,
+        "y": 3,
+        "star": 2
+      },
+      {
+        "unitId": "guardian",
+        "side": 0,
+        "x": 2,
+        "y": 3,
+        "star": 2
+      },
+      {
+        "unitId": "ranger",
+        "side": 0,
+        "x": 4,
+        "y": 1,
+        "star": 2
+      },
+      {
+        "unitId": "mage",
+        "side": 0,
+        "x": 2,
+        "y": 0,
+        "star": 2
+      },
+      {
+        "unitId": "sakura",
+        "side": 0,
+        "x": 4,
+        "y": 3,
+        "star": 2
+      }
+    ],
+    "seeds": [
+      1,
+      100
+    ],
+    "encounters": [
+      {
+        "wave": 1,
+        "stage": 1,
+        "round": 1,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 0.05,
+        "meanOwnRemainingHp": 6109.5,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 175,
+        "meanEnemyDamage": 10.5,
+        "resultAndEventSha256": "abbc9aa843e0dc2f8ecb2bdd5bde7cb152b3561003ab23d30f96656400014630"
+      },
+      {
+        "wave": 2,
+        "stage": 1,
+        "round": 2,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 0.9645,
+        "meanOwnRemainingHp": 6099.95,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 350,
+        "meanEnemyDamage": 20.05,
+        "resultAndEventSha256": "3430375aef8dd057bc2a32248e8bd4e8d9c73827c7cd5e813ca3939f9da783a3"
+      },
+      {
+        "wave": 3,
+        "stage": 1,
+        "round": 3,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 1.6559999999999997,
+        "meanOwnRemainingHp": 6079.45,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 525,
+        "meanEnemyDamage": 40.55,
+        "resultAndEventSha256": "547e74d1b41863026d1f3527d73c5121afbe6420a9df0765b3b6623f8f0d0d45"
+      },
+      {
+        "wave": 4,
+        "stage": 2,
+        "round": 1,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 1.722,
+        "meanOwnRemainingHp": 6032.2,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 700,
+        "meanEnemyDamage": 87.8,
+        "resultAndEventSha256": "ba4da32f638c00a26e8c687f653a81995e5761ccdc80f2dfacc7670b99d0baf8"
+      },
+      {
+        "wave": 5,
+        "stage": 2,
+        "round": 2,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 1.722,
+        "meanOwnRemainingHp": 6032.2,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 700,
+        "meanEnemyDamage": 87.8,
+        "resultAndEventSha256": "ba4da32f638c00a26e8c687f653a81995e5761ccdc80f2dfacc7670b99d0baf8"
+      },
+      {
+        "wave": 6,
+        "stage": 2,
+        "round": 3,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 1.722,
+        "meanOwnRemainingHp": 6032.2,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 700,
+        "meanEnemyDamage": 87.8,
+        "resultAndEventSha256": "ba4da32f638c00a26e8c687f653a81995e5761ccdc80f2dfacc7670b99d0baf8"
+      },
+      {
+        "wave": 7,
+        "stage": 2,
+        "round": 4,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 3.2165,
+        "meanOwnRemainingHp": 5867.43,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1150,
+        "meanEnemyDamage": 252.57,
+        "resultAndEventSha256": "af83610ad24545c8d8edc86327fbfc3924eaa5a2e8c0c8262f142953720696d7"
+      },
+      {
+        "wave": 8,
+        "stage": 2,
+        "round": 5,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 3.2165,
+        "meanOwnRemainingHp": 5867.43,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1150,
+        "meanEnemyDamage": 252.57,
+        "resultAndEventSha256": "af83610ad24545c8d8edc86327fbfc3924eaa5a2e8c0c8262f142953720696d7"
+      },
+      {
+        "wave": 9,
+        "stage": 3,
+        "round": 1,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 3.2165,
+        "meanOwnRemainingHp": 5867.43,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1150,
+        "meanEnemyDamage": 252.57,
+        "resultAndEventSha256": "af83610ad24545c8d8edc86327fbfc3924eaa5a2e8c0c8262f142953720696d7"
+      },
+      {
+        "wave": 10,
+        "stage": 3,
+        "round": 2,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 4.615,
+        "meanOwnRemainingHp": 5626.98,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1570,
+        "meanEnemyDamage": 493.02,
+        "resultAndEventSha256": "a99e1852571824a129d86da4a6324aedd92dbc185852e5f955a267f89d8627fc"
+      },
+      {
+        "wave": 11,
+        "stage": 3,
+        "round": 3,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 4.615,
+        "meanOwnRemainingHp": 5626.98,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1570,
+        "meanEnemyDamage": 493.02,
+        "resultAndEventSha256": "a99e1852571824a129d86da4a6324aedd92dbc185852e5f955a267f89d8627fc"
+      },
+      {
+        "wave": 12,
+        "stage": 3,
+        "round": 4,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 4.615,
+        "meanOwnRemainingHp": 5626.98,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 1570,
+        "meanEnemyDamage": 493.02,
+        "resultAndEventSha256": "a99e1852571824a129d86da4a6324aedd92dbc185852e5f955a267f89d8627fc"
+      },
+      {
+        "wave": 13,
+        "stage": 3,
+        "round": 5,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 8.2385,
+        "meanOwnRemainingHp": 5404.96,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 2420,
+        "meanEnemyDamage": 715.04,
+        "resultAndEventSha256": "bd5deb780780e10883d2161ddad7499d34c4dc4cbe591465475ec6c6928f75bc"
+      },
+      {
+        "wave": 14,
+        "stage": 3,
+        "round": 6,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 8.2385,
+        "meanOwnRemainingHp": 5404.96,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 2420,
+        "meanEnemyDamage": 715.04,
+        "resultAndEventSha256": "bd5deb780780e10883d2161ddad7499d34c4dc4cbe591465475ec6c6928f75bc"
+      },
+      {
+        "wave": 15,
+        "stage": 4,
+        "round": 1,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 8.795,
+        "meanOwnRemainingHp": 5041.75,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 2951,
+        "meanEnemyDamage": 1078.25,
+        "resultAndEventSha256": "48ec5c82cb22d89be3d986fe3d3a10eb1eb8598a3c608746ae640cc7d6c6df44"
+      },
+      {
+        "wave": 16,
+        "stage": 4,
+        "round": 2,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 9.9855,
+        "meanOwnRemainingHp": 4376.37,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 3551,
+        "meanEnemyDamage": 1857.63,
+        "resultAndEventSha256": "2e2cd0c56fc8623500c1f24544bf438e34c9a5110836778a97293a29c9ae7cee"
+      },
+      {
+        "wave": 17,
+        "stage": 4,
+        "round": 3,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 9.9855,
+        "meanOwnRemainingHp": 4376.37,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 3551,
+        "meanEnemyDamage": 1857.63,
+        "resultAndEventSha256": "2e2cd0c56fc8623500c1f24544bf438e34c9a5110836778a97293a29c9ae7cee"
+      },
+      {
+        "wave": 18,
+        "stage": 4,
+        "round": 4,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 9.9855,
+        "meanOwnRemainingHp": 4376.37,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 3551,
+        "meanEnemyDamage": 1857.63,
+        "resultAndEventSha256": "2e2cd0c56fc8623500c1f24544bf438e34c9a5110836778a97293a29c9ae7cee"
+      },
+      {
+        "wave": 19,
+        "stage": 4,
+        "round": 5,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 12.804,
+        "meanOwnRemainingHp": 2791.91,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 4401,
+        "meanEnemyDamage": 3442.09,
+        "resultAndEventSha256": "9ed82fd1d122139bbc9667c557c2b8f1dc82ff1e13c25fbd9696bc982a7a5602"
+      },
+      {
+        "wave": 20,
+        "stage": 4,
+        "round": 6,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 12.804,
+        "meanOwnRemainingHp": 2791.91,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 4401,
+        "meanEnemyDamage": 3442.09,
+        "resultAndEventSha256": "9ed82fd1d122139bbc9667c557c2b8f1dc82ff1e13c25fbd9696bc982a7a5602"
+      },
+      {
+        "wave": 21,
+        "stage": 4,
+        "round": 7,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 12.804,
+        "meanOwnRemainingHp": 2791.91,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 4401,
+        "meanEnemyDamage": 3442.09,
+        "resultAndEventSha256": "9ed82fd1d122139bbc9667c557c2b8f1dc82ff1e13c25fbd9696bc982a7a5602"
+      },
+      {
+        "wave": 22,
+        "stage": 5,
+        "round": 1,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 18.0445,
+        "meanOwnRemainingHp": 1420.95,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 5001,
+        "meanEnemyDamage": 4813.05,
+        "resultAndEventSha256": "71effedea4049e6a7b8a77c508e0d1026bd1bcb6e619aedfb4cbfcf86ff18df4"
+      },
+      {
+        "wave": 23,
+        "stage": 5,
+        "round": 2,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 18.0445,
+        "meanOwnRemainingHp": 1420.95,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 5001,
+        "meanEnemyDamage": 4813.05,
+        "resultAndEventSha256": "71effedea4049e6a7b8a77c508e0d1026bd1bcb6e619aedfb4cbfcf86ff18df4"
+      },
+      {
+        "wave": 24,
+        "stage": 5,
+        "round": 3,
+        "n": 100,
+        "own": 100,
+        "enemy": 0,
+        "draw": 0,
+        "ownWinRate": 1,
+        "ownWinWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "meanHealthLost": 0,
+        "meanSeconds": 18.0445,
+        "meanOwnRemainingHp": 1420.95,
+        "meanEnemyRemainingHp": 0,
+        "meanOwnDamage": 5001,
+        "meanEnemyDamage": 4813.05,
+        "resultAndEventSha256": "71effedea4049e6a7b8a77c508e0d1026bd1bcb6e619aedfb4cbfcf86ff18df4"
+      },
+      {
+        "wave": 25,
+        "stage": 5,
+        "round": 4,
+        "n": 100,
+        "own": 45,
+        "enemy": 55,
+        "draw": 0,
+        "ownWinRate": 0.45,
+        "ownWinWilson95": [
+          0.3561453797951198,
+          0.5475539700255787
+        ],
+        "meanHealthLost": 2.7,
+        "meanSeconds": 20.4005,
+        "meanOwnRemainingHp": 584.12,
+        "meanEnemyRemainingHp": 570.98,
+        "meanOwnDamage": 5030.02,
+        "meanEnemyDamage": 5649.88,
+        "resultAndEventSha256": "1151ee594daaddefecf7207586c554c3878dae8faf156302f8145be631332f3c"
+      },
+      {
+        "wave": 26,
+        "stage": 5,
+        "round": 5,
+        "n": 100,
+        "own": 45,
+        "enemy": 55,
+        "draw": 0,
+        "ownWinRate": 0.45,
+        "ownWinWilson95": [
+          0.3561453797951198,
+          0.5475539700255787
+        ],
+        "meanHealthLost": 2.7,
+        "meanSeconds": 20.4005,
+        "meanOwnRemainingHp": 584.12,
+        "meanEnemyRemainingHp": 570.98,
+        "meanOwnDamage": 5030.02,
+        "meanEnemyDamage": 5649.88,
+        "resultAndEventSha256": "1151ee594daaddefecf7207586c554c3878dae8faf156302f8145be631332f3c"
+      },
+      {
+        "wave": 27,
+        "stage": 5,
+        "round": 6,
+        "n": 100,
+        "own": 45,
+        "enemy": 55,
+        "draw": 0,
+        "ownWinRate": 0.45,
+        "ownWinWilson95": [
+          0.3561453797951198,
+          0.5475539700255787
+        ],
+        "meanHealthLost": 2.7,
+        "meanSeconds": 20.4005,
+        "meanOwnRemainingHp": 584.12,
+        "meanEnemyRemainingHp": 570.98,
+        "meanOwnDamage": 5030.02,
+        "meanEnemyDamage": 5649.88,
+        "resultAndEventSha256": "1151ee594daaddefecf7207586c554c3878dae8faf156302f8145be631332f3c"
+      },
+      {
+        "wave": 28,
+        "stage": 5,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 9.38,
+        "meanSeconds": 17.261,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 2037.39,
+        "meanOwnDamage": 4475.03,
+        "meanEnemyDamage": 6234,
+        "resultAndEventSha256": "621b8382fee2f01f2016a65e9d8917068b47dce1ff5a7deec97be67cefe0061b"
+      },
+      {
+        "wave": 29,
+        "stage": 5,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 9.38,
+        "meanSeconds": 17.261,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 2037.39,
+        "meanOwnDamage": 4475.03,
+        "meanEnemyDamage": 6234,
+        "resultAndEventSha256": "621b8382fee2f01f2016a65e9d8917068b47dce1ff5a7deec97be67cefe0061b"
+      },
+      {
+        "wave": 30,
+        "stage": 6,
+        "round": 1,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 16,
+        "meanSeconds": 9.0945,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 9724.04,
+        "meanOwnDamage": 2425.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "6f63611f3f9ab275ae3a9265ba342e1d9b84a13798c5e806c499ed251c30586b"
+      },
+      {
+        "wave": 31,
+        "stage": 6,
+        "round": 2,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 32,
+        "stage": 6,
+        "round": 3,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 33,
+        "stage": 6,
+        "round": 4,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 34,
+        "stage": 6,
+        "round": 5,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 35,
+        "stage": 6,
+        "round": 6,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 36,
+        "stage": 6,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 37,
+        "stage": 6,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 38,
+        "stage": 6,
+        "round": 9,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 39,
+        "stage": 7,
+        "round": 1,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 40,
+        "stage": 7,
+        "round": 2,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 41,
+        "stage": 7,
+        "round": 3,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 42,
+        "stage": 7,
+        "round": 4,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 43,
+        "stage": 7,
+        "round": 5,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 44,
+        "stage": 7,
+        "round": 6,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 45,
+        "stage": 7,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 46,
+        "stage": 7,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 47,
+        "stage": 7,
+        "round": 9,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 48,
+        "stage": 7,
+        "round": 10,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 18,
+        "meanSeconds": 8.7665,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 10455.04,
+        "meanOwnDamage": 2414.96,
+        "meanEnemyDamage": 6196,
+        "resultAndEventSha256": "eba91d08c10104b974fcb8399878469d6fe003a41d55cbe15182866413ec4169"
+      },
+      {
+        "wave": 49,
+        "stage": 8,
+        "round": 1,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 50,
+        "stage": 8,
+        "round": 2,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 51,
+        "stage": 8,
+        "round": 3,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 52,
+        "stage": 8,
+        "round": 4,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 53,
+        "stage": 8,
+        "round": 5,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 54,
+        "stage": 8,
+        "round": 6,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 55,
+        "stage": 8,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 56,
+        "stage": 8,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 57,
+        "stage": 8,
+        "round": 9,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 58,
+        "stage": 8,
+        "round": 10,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 59,
+        "stage": 9,
+        "round": 1,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 60,
+        "stage": 9,
+        "round": 2,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 61,
+        "stage": 9,
+        "round": 3,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 62,
+        "stage": 9,
+        "round": 4,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 63,
+        "stage": 9,
+        "round": 5,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 64,
+        "stage": 9,
+        "round": 6,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 65,
+        "stage": 9,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 66,
+        "stage": 9,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 67,
+        "stage": 9,
+        "round": 9,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 68,
+        "stage": 9,
+        "round": 10,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 6.2255,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 15976.8,
+        "meanOwnDamage": 2023.2,
+        "meanEnemyDamage": 6173.2,
+        "resultAndEventSha256": "fbd53ce89f2eb01c265ea86f029e5a43106777f01d12c48e173c07da3f6debdb"
+      },
+      {
+        "wave": 69,
+        "stage": 10,
+        "round": 1,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 70,
+        "stage": 10,
+        "round": 2,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 71,
+        "stage": 10,
+        "round": 3,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 72,
+        "stage": 10,
+        "round": 4,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 73,
+        "stage": 10,
+        "round": 5,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 74,
+        "stage": 10,
+        "round": 6,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 75,
+        "stage": 10,
+        "round": 7,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 76,
+        "stage": 10,
+        "round": 8,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 77,
+        "stage": 10,
+        "round": 9,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      },
+      {
+        "wave": 78,
+        "stage": 10,
+        "round": 10,
+        "n": 100,
+        "own": 0,
+        "enemy": 100,
+        "draw": 0,
+        "ownWinRate": 0,
+        "ownWinWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        "meanHealthLost": 20,
+        "meanSeconds": 3.8115,
+        "meanOwnRemainingHp": 0,
+        "meanEnemyRemainingHp": 81315.76,
+        "meanOwnDamage": 1084.24,
+        "meanEnemyDamage": 6120,
+        "resultAndEventSha256": "8d1147538fdb4476ce030277b71ac6c0c33071aaca0d3233e309b14869c80758"
+      }
+    ]
+  },
+  "checks": {
+    "all99StageCellsLegal": true,
+    "populationAtMost10": true,
+    "uniqueCells": true,
+    "stageCountPrefixStable": true,
+    "batchFullEventsRepeat": true,
+    "noCritMirrorMutualDeath": true
+  }
+}

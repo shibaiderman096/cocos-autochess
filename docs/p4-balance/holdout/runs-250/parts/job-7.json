@@ -1,0 +1,265 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/holdout/runs-250",
+    "bot": "all",
+    "seedStart": 1001,
+    "seedCount": 250,
+    "stages": 99,
+    "workers": 12,
+    "partition": "holdout",
+    "audit": true,
+    "config": "docs/p4-balance/freeze/candidate.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1008
+    },
+    {
+      "bot": "weak",
+      "seed": 1020
+    },
+    {
+      "bot": "weak",
+      "seed": 1032
+    },
+    {
+      "bot": "weak",
+      "seed": 1044
+    },
+    {
+      "bot": "weak",
+      "seed": 1056
+    },
+    {
+      "bot": "weak",
+      "seed": 1068
+    },
+    {
+      "bot": "weak",
+      "seed": 1080
+    },
+    {
+      "bot": "weak",
+      "seed": 1092
+    },
+    {
+      "bot": "weak",
+      "seed": 1104
+    },
+    {
+      "bot": "weak",
+      "seed": 1116
+    },
+    {
+      "bot": "weak",
+      "seed": 1128
+    },
+    {
+      "bot": "weak",
+      "seed": 1140
+    },
+    {
+      "bot": "weak",
+      "seed": 1152
+    },
+    {
+      "bot": "weak",
+      "seed": 1164
+    },
+    {
+      "bot": "weak",
+      "seed": 1176
+    },
+    {
+      "bot": "weak",
+      "seed": 1188
+    },
+    {
+      "bot": "weak",
+      "seed": 1200
+    },
+    {
+      "bot": "weak",
+      "seed": 1212
+    },
+    {
+      "bot": "weak",
+      "seed": 1224
+    },
+    {
+      "bot": "weak",
+      "seed": 1236
+    },
+    {
+      "bot": "weak",
+      "seed": 1248
+    },
+    {
+      "bot": "medium",
+      "seed": 1010
+    },
+    {
+      "bot": "medium",
+      "seed": 1022
+    },
+    {
+      "bot": "medium",
+      "seed": 1034
+    },
+    {
+      "bot": "medium",
+      "seed": 1046
+    },
+    {
+      "bot": "medium",
+      "seed": 1058
+    },
+    {
+      "bot": "medium",
+      "seed": 1070
+    },
+    {
+      "bot": "medium",
+      "seed": 1082
+    },
+    {
+      "bot": "medium",
+      "seed": 1094
+    },
+    {
+      "bot": "medium",
+      "seed": 1106
+    },
+    {
+      "bot": "medium",
+      "seed": 1118
+    },
+    {
+      "bot": "medium",
+      "seed": 1130
+    },
+    {
+      "bot": "medium",
+      "seed": 1142
+    },
+    {
+      "bot": "medium",
+      "seed": 1154
+    },
+    {
+      "bot": "medium",
+      "seed": 1166
+    },
+    {
+      "bot": "medium",
+      "seed": 1178
+    },
+    {
+      "bot": "medium",
+      "seed": 1190
+    },
+    {
+      "bot": "medium",
+      "seed": 1202
+    },
+    {
+      "bot": "medium",
+      "seed": 1214
+    },
+    {
+      "bot": "medium",
+      "seed": 1226
+    },
+    {
+      "bot": "medium",
+      "seed": 1238
+    },
+    {
+      "bot": "medium",
+      "seed": 1250
+    },
+    {
+      "bot": "strong",
+      "seed": 1012
+    },
+    {
+      "bot": "strong",
+      "seed": 1024
+    },
+    {
+      "bot": "strong",
+      "seed": 1036
+    },
+    {
+      "bot": "strong",
+      "seed": 1048
+    },
+    {
+      "bot": "strong",
+      "seed": 1060
+    },
+    {
+      "bot": "strong",
+      "seed": 1072
+    },
+    {
+      "bot": "strong",
+      "seed": 1084
+    },
+    {
+      "bot": "strong",
+      "seed": 1096
+    },
+    {
+      "bot": "strong",
+      "seed": 1108
+    },
+    {
+      "bot": "strong",
+      "seed": 1120
+    },
+    {
+      "bot": "strong",
+      "seed": 1132
+    },
+    {
+      "bot": "strong",
+      "seed": 1144
+    },
+    {
+      "bot": "strong",
+      "seed": 1156
+    },
+    {
+      "bot": "strong",
+      "seed": 1168
+    },
+    {
+      "bot": "strong",
+      "seed": 1180
+    },
+    {
+      "bot": "strong",
+      "seed": 1192
+    },
+    {
+      "bot": "strong",
+      "seed": 1204
+    },
+    {
+      "bot": "strong",
+      "seed": 1216
+    },
+    {
+      "bot": "strong",
+      "seed": 1228
+    },
+    {
+      "bot": "strong",
+      "seed": 1240
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\holdout\\runs-250\\parts\\part-7.jsonl"
+}

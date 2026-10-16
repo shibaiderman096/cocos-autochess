@@ -1,0 +1,89 @@
+PASS exact batch fixture: 1000 seeds repeated with identical complete event hashes
+PASS mirror baseline: 15 real units x 100 seeds x both ID orders; no-crit mutual death in both orders
+PASS static diagnostic fixture: 78 encounters x 100 seeds; not campaign completion rates
+{
+  "batch": {
+    "n": 1000,
+    "seeds": [
+      1,
+      1000
+    ],
+    "own": 153,
+    "enemy": 826,
+    "draw": 21,
+    "meanSeconds": 18.15505,
+    "meanEvents": 141.382,
+    "ownWinWilson95": [
+      0.13201921562431126,
+      0.17663655476466403
+    ],
+    "resultAndEventSha256": "9ce67c10478b080cecb80cdb2a8fddf1050c602f0743fd097556e0415f26fadf"
+  },
+  "configuration": {
+    "purchasableUnits": 15,
+    "unitsByCost": [
+      {
+        "cost": 1,
+        "count": 4
+      },
+      {
+        "cost": 2,
+        "count": 5
+      },
+      {
+        "cost": 3,
+        "count": 3
+      },
+      {
+        "cost": 4,
+        "count": 2
+      },
+      {
+        "cost": 5,
+        "count": 1
+      }
+    ],
+    "equipmentIds": [
+      "guinsoo",
+      "totem_of_undying",
+      "jeweled_gauntlet",
+      "infinity_edge"
+    ],
+    "generatedWaves": 968,
+    "roundsFor3Stages": 14,
+    "roundsFor6Stages": 38,
+    "enemyFullPopulationWave": 31,
+    "waveTypeFieldPresent": false
+  },
+  "checks": {
+    "all99StageCellsLegal": true,
+    "populationAtMost10": true,
+    "uniqueCells": true,
+    "stageCountPrefixStable": true,
+    "batchFullEventsRepeat": true,
+    "noCritMirrorMutualDeath": true
+  },
+  "invalidProbes": [
+    {
+      "name": "out-of-board",
+      "cell": {
+        "x": 7,
+        "y": 4
+      },
+      "generationAccepted": true,
+      "battleAccepted": false,
+      "error": "placement out of bounds: (7, 4)"
+    },
+    {
+      "name": "in-player-half",
+      "cell": {
+        "x": 3,
+        "y": 0
+      },
+      "generationAccepted": true,
+      "battleAccepted": true,
+      "error": null
+    }
+  ],
+  "output": "D:\\cocos\\NewProject\\docs\\p0-enemy-difficulty\\baseline"
+}

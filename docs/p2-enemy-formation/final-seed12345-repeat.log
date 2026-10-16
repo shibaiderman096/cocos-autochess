@@ -1,0 +1,81 @@
+
+> report-enemy-formation
+> node --require tsx/cjs tools/report-enemy-formation.ts --seed 12345 --output docs/p2-enemy-formation/final-seed12345-repeat
+
+{
+  "destination": "D:\\cocos\\NewProject\\docs\\p2-enemy-formation\\final-seed12345-repeat",
+  "summary": [
+    {
+      "level": "L0",
+      "waves": 965,
+      "spacingViolations": 0,
+      "wavesWithSpacingViolations": 0,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 0,
+      "templateUsedWaves": 0,
+      "meanCoverScore": 0
+    },
+    {
+      "level": "L1",
+      "waves": 965,
+      "spacingViolations": 731,
+      "wavesWithSpacingViolations": 73,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 112,
+      "templateUsedWaves": 98,
+      "meanCoverScore": 0.045994736409244195
+    },
+    {
+      "level": "L2",
+      "waves": 965,
+      "spacingViolations": 334,
+      "wavesWithSpacingViolations": 58,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 155,
+      "templateUsedWaves": 98,
+      "meanCoverScore": 0.03928201332346411
+    }
+  ],
+  "actualBattleSimCalls": 3150,
+  "deterministicFiles": 10,
+  "formationsSha256": "aede69fd0a33ebe05f0f9c38cf25c88e0621c06ed06e28453b698597b444688b",
+  "performance": [
+    {
+      "level": "L0",
+      "samples": 974,
+      "meanMilliseconds": 0.026046098562628742,
+      "p95Milliseconds": 0.036999999999920874,
+      "maxMilliseconds": 0.9560000000000173,
+      "maxIterations": 0
+    },
+    {
+      "level": "L1",
+      "samples": 965,
+      "meanMilliseconds": 0.14440528497409263,
+      "p95Milliseconds": 0.2948999999999842,
+      "maxMilliseconds": 1.0149000000000115,
+      "maxIterations": 3
+    },
+    {
+      "level": "L2",
+      "samples": 965,
+      "meanMilliseconds": 0.14572880829015317,
+      "p95Milliseconds": 0.34359999999992397,
+      "maxMilliseconds": 0.9331999999999425,
+      "maxIterations": 6
+    },
+    {
+      "level": "L3",
+      "samples": 18,
+      "meanMilliseconds": 1.2702777777777594,
+      "p95Milliseconds": 2.917599999999993,
+      "maxMilliseconds": 2.917599999999993,
+      "maxIterations": 6
+    }
+  ]
+}
+npm notice
+npm notice New major version of npm available! 11.12.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

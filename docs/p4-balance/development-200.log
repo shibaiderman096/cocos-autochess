@@ -1,0 +1,128 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1 --seed-count 200 --stages 12 --workers 4 --partition development --output docs/p4-balance/development-200
+
+Balance development: 600 runs, 12 campaign stages, 4 worker processes; no difficulty values are changed
+progress 10/600
+progress 20/600
+progress 30/600
+progress 40/600
+progress 50/600
+progress 60/600
+progress 70/600
+progress 80/600
+progress 90/600
+progress 100/600
+progress 110/600
+progress 120/600
+progress 130/600
+progress 140/600
+progress 150/600
+progress 160/600
+progress 170/600
+progress 180/600
+progress 190/600
+progress 200/600
+progress 210/600
+progress 220/600
+progress 230/600
+progress 240/600
+progress 250/600
+progress 260/600
+progress 270/600
+progress 280/600
+progress 290/600
+progress 300/600
+progress 310/600
+progress 320/600
+progress 330/600
+progress 340/600
+progress 350/600
+progress 360/600
+progress 370/600
+progress 380/600
+progress 390/600
+progress 400/600
+progress 410/600
+progress 420/600
+progress 430/600
+progress 440/600
+progress 450/600
+progress 460/600
+progress 470/600
+progress 480/600
+progress 490/600
+progress 500/600
+progress 510/600
+progress 520/600
+progress 530/600
+progress 540/600
+progress 550/600
+progress 560/600
+progress 560/600
+progress 570/600
+progress 570/600
+progress 580/600
+progress 580/600
+progress 590/600
+progress 600/600
+progress 600/600
+{
+  "output": "docs/p4-balance/development-200",
+  "runs": 600,
+  "battles": 57597,
+  "seconds": 132.8830998,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 200,
+        "total": 200,
+        "rate": 1,
+        "low": 0.9811546736227335,
+        "high": 1
+      },
+      "failedActions": 0
+    }
+  }
+}

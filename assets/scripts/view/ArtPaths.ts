@@ -1,6 +1,12 @@
 /** Runtime resource paths, relative to assets/resources. */
+export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(['monster', 'elite', 'specialShop', 'boss'].map((kind, i) => [kind, `art/ui/stage_encounter_atlas/spriteFrame#${i},2,2`]));
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  red_guard: 'art/units/warrior_enemy/spriteFrame',
+  red_archer: 'art/units/archer_enemy/spriteFrame',
+  red_mage: 'art/units/mage_enemy/spriteFrame',
+  ender_dragon: 'art/units/monsters/ender_dragon/spriteFrame',
+  iron_golem: 'art/units/iron_golem/spriteFrame',
   itachi: 'art/units/itachi/spriteFrame',
   young_sasuke: 'art/units/young_sasuke/spriteFrame',
   sakura: 'art/units/sakura/spriteFrame',
@@ -42,6 +48,7 @@ export const UI_SPRITE = {
   hpFillAlly:   'art/ui/hp_fill_ally/spriteFrame',
   hpFillEnemy:  'art/ui/hp_fill_enemy/spriteFrame',
   manaFill:     'art/ui/mana_fill/spriteFrame',
+  shieldFill:   'art/ui/shield_fill/spriteFrame',
   iconGold:     'art/ui/icon_gold/spriteFrame',
   iconStar:     'art/ui/icon_star/spriteFrame',
   iconHeart:    'art/ui/icon_heart/spriteFrame',
@@ -51,6 +58,10 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  ninjaBolt: 'art/fx/young_sasuke_ninja_bolt/spriteFrame',
+  sageCloneRasengan: 'art/fx/sage_clone_rasengan/spriteFrame',
+  rasenganSmall: 'art/fx/rasengan_small/spriteFrame',
+  rasenganLarge: 'art/fx/rasengan_large/spriteFrame',
   itachiVortex: 'art/fx/itachi_vortex/spriteFrame',
   itachiRaven: 'art/fx/itachi_raven/spriteFrame',
   blackFlameImpact: 'art/fx/sasuke_black_flame/spriteFrame',

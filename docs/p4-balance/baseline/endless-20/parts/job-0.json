@@ -1,0 +1,136 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/baseline/endless-20",
+    "bot": "all",
+    "seedStart": 1,
+    "seedCount": 20,
+    "stages": 99,
+    "workers": 2,
+    "partition": "baseline",
+    "audit": true
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1
+    },
+    {
+      "bot": "weak",
+      "seed": 3
+    },
+    {
+      "bot": "weak",
+      "seed": 5
+    },
+    {
+      "bot": "weak",
+      "seed": 7
+    },
+    {
+      "bot": "weak",
+      "seed": 9
+    },
+    {
+      "bot": "weak",
+      "seed": 11
+    },
+    {
+      "bot": "weak",
+      "seed": 13
+    },
+    {
+      "bot": "weak",
+      "seed": 15
+    },
+    {
+      "bot": "weak",
+      "seed": 17
+    },
+    {
+      "bot": "weak",
+      "seed": 19
+    },
+    {
+      "bot": "medium",
+      "seed": 1
+    },
+    {
+      "bot": "medium",
+      "seed": 3
+    },
+    {
+      "bot": "medium",
+      "seed": 5
+    },
+    {
+      "bot": "medium",
+      "seed": 7
+    },
+    {
+      "bot": "medium",
+      "seed": 9
+    },
+    {
+      "bot": "medium",
+      "seed": 11
+    },
+    {
+      "bot": "medium",
+      "seed": 13
+    },
+    {
+      "bot": "medium",
+      "seed": 15
+    },
+    {
+      "bot": "medium",
+      "seed": 17
+    },
+    {
+      "bot": "medium",
+      "seed": 19
+    },
+    {
+      "bot": "strong",
+      "seed": 1
+    },
+    {
+      "bot": "strong",
+      "seed": 3
+    },
+    {
+      "bot": "strong",
+      "seed": 5
+    },
+    {
+      "bot": "strong",
+      "seed": 7
+    },
+    {
+      "bot": "strong",
+      "seed": 9
+    },
+    {
+      "bot": "strong",
+      "seed": 11
+    },
+    {
+      "bot": "strong",
+      "seed": 13
+    },
+    {
+      "bot": "strong",
+      "seed": 15
+    },
+    {
+      "bot": "strong",
+      "seed": 17
+    },
+    {
+      "bot": "strong",
+      "seed": 19
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\baseline\\endless-20\\parts\\part-0.jsonl"
+}

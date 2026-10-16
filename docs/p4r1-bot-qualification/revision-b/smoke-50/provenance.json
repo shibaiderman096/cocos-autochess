@@ -1,0 +1,76 @@
+{
+  "partition": "smoke",
+  "seedRange": [
+    5501,
+    5550
+  ],
+  "campaignStages": 12,
+  "formation": "auto",
+  "audit": true,
+  "inputHash": "72e674a7d65370f0dd9b94263280881692a335060dc1e8a461e1839014352aeb",
+  "bots": [
+    {
+      "id": "medium",
+      "version": "medium-v2r1b",
+      "config": {
+        "version": "medium-v2r1b",
+        "qualityWeight": 1,
+        "mergeWeight": 25,
+        "coreCopies": 2,
+        "reserveStages": [
+          0,
+          0,
+          0,
+          20,
+          30,
+          40,
+          50,
+          50,
+          50,
+          50,
+          50,
+          50
+        ],
+        "dangerHp": 0.5,
+        "criticalHp": 0.25,
+        "targetLevels": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7,
+          7,
+          8,
+          8,
+          9,
+          9,
+          10
+        ],
+        "maxXpBuys": 20,
+        "maxRolls": 18,
+        "rollEvery": 1,
+        "mergeBuyThreshold": 2,
+        "benchBuffer": 1,
+        "formation": "spread",
+        "equipment": "roles",
+        "reward": "roles",
+        "economyV2": {
+          "excessGoldThreshold": 100,
+          "minGold": 4,
+          "bossReserve": 20,
+          "eliteReserve": 30,
+          "saveRolls": 0,
+          "developRolls": 12,
+          "stabilizeRolls": 14,
+          "allInRolls": 18,
+          "populationValuePerGold": 0.007,
+          "benchValueRatio": 0.3,
+          "weakSlotRatio": 0.45,
+          "maxThreeStarCores": 2
+        }
+      }
+    }
+  ],
+  "configFile": null
+}

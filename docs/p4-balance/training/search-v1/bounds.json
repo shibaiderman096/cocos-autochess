@@ -1,0 +1,35 @@
+{
+  "maxIterations": 20,
+  "bounds": {
+    "budgetScale": {
+      "min": 1,
+      "max": 12,
+      "step": 0.25
+    },
+    "growthRate": {
+      "min": 1.02,
+      "max": 1.06,
+      "step": 0.005
+    },
+    "earlyChallengeStage": {
+      "min": 3,
+      "max": 6,
+      "step": 1
+    }
+  },
+  "seedRange": [
+    1,
+    100
+  ],
+  "campaignStages": 6,
+  "parameterClasses": {
+    "budget": [
+      "budgetScale",
+      "growthRate"
+    ],
+    "unlock": [
+      "earlyChallengeStage"
+    ]
+  },
+  "rationale": "Full 500-seed baseline is 100% through Stage3/6. Growth 1.02..1.06 leaves Stage3 effective budgets identical because 1-cost/1-star caps dominate. Keep measured B0 reference and add an explicit static budget scale plus a coherent earlier cost-3/two-star unlock. No unit/equipment/economy/model or player-adaptive changes."
+}

@@ -42,12 +42,12 @@ export const POOL_STOCK: Readonly<Record<Cost, number>> = {
 
 /** 购买价格（按费用） */
 export const COST_PRICE: Readonly<Record<Cost, number>> = {
-  1: 1, 2: 2, 3: 3, 4: 5, 5: 8,
+  1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 };
 
 /** One-cost units keep full combined value; upgraded higher costs lose one gold. */
 export const COST_SELL: Readonly<Record<Cost, number>> = {
-  1: 1, 2: 2, 3: 3, 4: 5, 5: 8,
+  1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
 };
 
 export function sellPrice(cost: Cost, star: number): number {
