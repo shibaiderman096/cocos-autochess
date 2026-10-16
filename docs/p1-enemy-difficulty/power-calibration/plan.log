@@ -1,0 +1,5 @@
+
+> calibrate-power
+> node --require tsx/cjs tools/calibrate-enemy-power.ts --plan
+
+{"plan":{"version":"enemy-power-v1","mode":"full","seedStart":1,"seedCount":20,"trainSeeds":[1,16],"validationSeeds":[17,20],"caseCount":967,"counts":{"mirror":165,"unit":210,"star":45,"single":180,"combo":300,"team":67},"orientationsPerSeed":4,"distanceAssignment":"offset modulo 3; all four side/ID orientations share the assigned distance","logicalBattles":77360,"trainingBattles":61888,"validationBattles":15472}}

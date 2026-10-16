@@ -1,0 +1,428 @@
+{
+  "rows": [
+    {
+      "growthRate": 1.02,
+      "stage3": [
+        {
+          "round": 1,
+          "requested": 117.22664537386305,
+          "effective": 188.42015824070776,
+          "maxFeasible": 212.3515688962267,
+          "stars": [
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1
+          ]
+        },
+        {
+          "round": 2,
+          "requested": 121.54048709696424,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 3,
+          "requested": 126.01307455873788,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 4,
+          "requested": 130.65024946853825,
+          "effective": 294.58696916707635,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 5,
+          "requested": 135.45806850569906,
+          "effective": 376.8403164814155,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 6,
+          "requested": 140.44281123024751,
+          "effective": 396.8298299877575,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "stage6": [
+        {
+          "round": 1,
+          "effective": 788.9373849986606
+        },
+        {
+          "round": 2,
+          "effective": 795.0630209998864
+        },
+        {
+          "round": 3,
+          "effective": 801.2362189713432
+        },
+        {
+          "round": 4,
+          "effective": 807.4573482038301
+        },
+        {
+          "round": 5,
+          "effective": 813.726780855472
+        },
+        {
+          "round": 6,
+          "effective": 820.0448919739841
+        },
+        {
+          "round": 7,
+          "effective": 826.4120595191064
+        },
+        {
+          "round": 8,
+          "effective": 832.8286643852149
+        },
+        {
+          "round": 9,
+          "effective": 839.2950904241072
+        }
+      ]
+    },
+    {
+      "growthRate": 1.04,
+      "stage3": [
+        {
+          "round": 1,
+          "requested": 129.1790763133939,
+          "effective": 188.42015824070776,
+          "maxFeasible": 212.3515688962267,
+          "stars": [
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1
+          ]
+        },
+        {
+          "round": 2,
+          "requested": 137.09026352486467,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 3,
+          "requested": 145.48594779949056,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 4,
+          "requested": 154.39580071473927,
+          "effective": 294.58696916707635,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 5,
+          "requested": 163.85131099533558,
+          "effective": 376.8403164814155,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 6,
+          "requested": 173.885895799025,
+          "effective": 396.8298299877575,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "stage6": [
+        {
+          "round": 1,
+          "effective": 788.9373849986606
+        },
+        {
+          "round": 2,
+          "effective": 795.0630209998864
+        },
+        {
+          "round": 3,
+          "effective": 801.2362189713432
+        },
+        {
+          "round": 4,
+          "effective": 807.4573482038301
+        },
+        {
+          "round": 5,
+          "effective": 813.726780855472
+        },
+        {
+          "round": 6,
+          "effective": 820.0448919739841
+        },
+        {
+          "round": 7,
+          "effective": 826.4120595191064
+        },
+        {
+          "round": 8,
+          "effective": 832.8286643852149
+        },
+        {
+          "round": 9,
+          "effective": 839.2950904241072
+        }
+      ]
+    },
+    {
+      "growthRate": 1.06,
+      "stage3": [
+        {
+          "round": 1,
+          "requested": 142.08715047020962,
+          "effective": 188.42015824070776,
+          "maxFeasible": 212.3515688962267,
+          "stars": [
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1
+          ]
+        },
+        {
+          "round": 2,
+          "requested": 154.2752547596838,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 3,
+          "requested": 167.5088433570599,
+          "effective": 282.63023736106163,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 4,
+          "requested": 181.8775969388491,
+          "effective": 294.58696916707635,
+          "maxFeasible": 318.52735334434004,
+          "stars": [
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 5,
+          "requested": 197.47888890700924,
+          "effective": 376.8403164814155,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "round": 6,
+          "requested": 214.41844526381547,
+          "effective": 396.8298299877575,
+          "maxFeasible": 424.7031377924534,
+          "stars": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "costs": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "stage6": [
+        {
+          "round": 1,
+          "effective": 788.9373849986606
+        },
+        {
+          "round": 2,
+          "effective": 798.4313534570192
+        },
+        {
+          "round": 3,
+          "effective": 808.0395710798896
+        },
+        {
+          "round": 4,
+          "effective": 817.7634127266523
+        },
+        {
+          "round": 5,
+          "effective": 827.6042698015641
+        },
+        {
+          "round": 6,
+          "effective": 837.5635504528573
+        },
+        {
+          "round": 7,
+          "effective": 847.6426797742339
+        },
+        {
+          "round": 8,
+          "effective": 857.8431000087862
+        },
+        {
+          "round": 9,
+          "effective": 868.1662707553692
+        }
+      ]
+    }
+  ],
+  "note": "Pure generator sensitivity probe after full untuned baseline; original production config remains unchanged. Early requested power is clipped by population/one-cost one-star feasible envelopes. Kind multipliers are algebraically canceled by existing pacing, so they are not selected as meaningful independent tuning knobs."
+}

@@ -1,0 +1,73 @@
+PASS attack speed bonuses are flat additions in preparation and combat
+PASS audit: unknown saved equipment is repaired and visible backpack indices stay aligned
+PASS audit: exhausted cost tiers show the same probabilities as actual draws
+PASS board units use 1.3-cell portraits while reserve units retain their slot size
+PASS drag highlights valid cells, rejects over-cap/enemy cells, and clears on cancel
+PASS one second preparation uses real time and never ticks early or charges twice
+PASS stage base gold caps at ten but interest and victory bonuses remain
+PASS preparation crossing frame spends only leftover time on combat
+PASS legacy ten-round progress maps to the same stage and clamps its subround
+PASS audit: run numeric configuration cannot produce infinite counts or population
+PASS audit: duplicate and out-of-range saved positions are repaired
+PASS audit: restore reconciles pool, owned stars and reserved shop per unit
+PASS audit: exhausted weighted tier never creates a false empty slot
+PASS audit: nonfinite money and level inputs cannot poison state
+PASS audit: invalid costs and pool counts are rejected or bounded
+PASS audit: saved coordinates and reward fields are finite
+PASS audit: failed full-bench merge rolls back gold, units, UID and reservation
+PASS locked shop retains exact slots and inventory across waves and reload
+PASS tap opens star-scaled attributes and skill without moving or selling
+PASS skill detail resolves current-star damage instead of multiplier lists
+PASS drag sale refunds discounted upgraded unit and restores original cards once
+PASS shop drag mode previews population, blocks transactions, and cancels without selling
+PASS settlement reload does not grant duplicate income and advances exactly one wave
+PASS auto next wave waits one real second, advances once and preserves rewards
+PASS manual next wave cancels automatic transition and run end retains final result
+PASS zero-gold starter earns base income per subround from the current stage
+PASS run end restarts health, economy, levels, inventory, lock, and wave together
+PASS experience button exchanges exactly four gold for four XP and persists upgrades
+PASS XP purchase rejects insufficient gold and max level, and remains available during combat
+PASS XP purchase carries remaining XP and stops charging after reaching level ten
+PASS star rank reaches bench and combat views and updates after merging
+PASS perspective hex centers round trip, edges reject outside points
+PASS fourth deployment row is playable and enemy formation stays in its half
+PASS old eighth-column save retains unit identity and star in a free valid cell
+PASS refresh conserves cards across owned, shop and remaining pool
+PASS last reserved card remains purchasable
+PASS zero inventory survives save migration and reload
+PASS fresh game renders bench and populates shop without charging
+PASS bench drag deploys, enforces cap, undeploys, and binds new nodes
+PASS ally view IDs match events without overwriting enemies
+PASS startFight binds current simulation and restart restores free shop
+PASS purchase immediately renders new bench unit and persists initialization
+PASS legacy unreserved shop is deducted exactly once on restore
+PASS full bench merge and sale return the original three cards
+PASS empty formation cannot start, and combat freezes deployed units while allowing shop purchases
+PASS cancelled or invalid drag restores position and does not persist a move
+PASS selected stage count survives reload, stage boundaries, and a complete restart
+PASS runtime population grows across stages without increasing shared base stats
+PASS late-stage bonuses reach combat and detail without mutating shared unit configs
+PASS main menu return preserves run and is blocked during battle
+PASS combat shop, XP, lock, reserve swap/sale and board merging preserve the active battle
+PASS combat ending mid-drag restores the reserve piece and prevents a late sale
+PASS combat merge keeps the deployed position even when the oldest copy was on the bench
+PASS combat details follow runtime HP/mana for allies and enemies even after death
+PASS displayed cost rates match implemented tiers and refresh stays populated at high level
+PASS equipment detail edits persist, cap at three and lock during combat
+PASS totem grant, equip, detail stats, save reload, combat stats and equipment lock
+PASS skill-crit items grant, stack matching attributes, reload, unlock combat and unequip
+PASS backpack drag equips reserve unit and generic consumables survive reload
+PASS debug catalogue follows configs and gold grants preserve combat and survive reload at the save cap
+PASS debug unit grants conserve star copies and equipment through reload and sale
+PASS debug unit rejects invalid/full bench, allows full-bench merge and rolls back failures
+PASS debug stage jump extends the run without changing existing waves, resources or shop and resumes exactly
+PASS debug jump cancels countdown, active battle and pending settlement without stale rewards or timers
+PASS debug mutations reject an in-progress drag
+PASS RunSession: repeated UI preview rebuilds preserve shops, combat seed and complete battle events
+PASS RunSession: Cocos adapter and pure headless session consume identical actions and settlement
+PASS budget-v1: new Cocos sessions and headless sessions consume the same generated enemies and real combat
+PASS budget-v1: Cocos debug extension, persisted continuation and late combat keep versioned budgets without free scaling
+PASS P2: Cocos loads versioned formation resources and shows fixed L2 preview before L3 locks at battle start
+PASS advanced equipment stays in save, debug catalogue and detail with live missing-HP lifesteal
+PASS P3: actual Cocos adapter persists pending before UI, blocks auto/manual restart and restores/claims exactly once
+Regression: 72 passed, 0 failed

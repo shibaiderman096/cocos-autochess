@@ -1,0 +1,7 @@
+PASS bounded plan contains exact matrix counts and all fixture cells are legal odd-r half-boards
+PASS real sampling, seed partitions and clustered summaries are deterministic
+PASS cache keys include source/config/version, unit/star/equipment, positions, orientations and seed range
+PASS cache replay preserves data, config changes miss cache and corrupt cache is recomputed
+PASS relative-value fitting is bounded, deterministic and rejects disconnected/nonfinite input
+PASS validation seed data cannot influence fitted powers or training win-probability slope
+Power calibration: 6 passed, 0 failed

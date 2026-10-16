@@ -1,0 +1,9 @@
+PASS byte-identical repeat: input-configs.json 8FC289465CBF3D5779C66C0DAB24588D60A8CEF7B867A56F078ECC952D9299D3
+PASS byte-identical repeat: diagnostics.json 03C87826B0829494CB6055642C100E88AA5E688AB60B3003DA549069CCF8690C
+PASS byte-identical repeat: waves-before.json B4C4EE640DFDB506D8F8B09DAF6E9ABFA72B23882086F5C8CE2101981EDD1105
+PASS byte-identical repeat: waves-before.csv 20F0B4ADA1B10ECCB3913C22021A5BCFE8C37C84A7F76429C6361199A28BE987
+PASS byte-identical repeat: encounters-before.csv 22C849B7A83D6712BCD7773A3D679DA42441D1FB1DBE9BB7FFF75C5532459FC7
+PASS unchanged baseline source files: 120
+PASS audit script matches manifest
+PASS audit script syntax
+PASS existing baseline overwrite rejected; final source hashes and deterministic outputs rechecked

@@ -1,0 +1,17 @@
+{
+  "before": {
+    "unitStar": "c9923ebabb8c4375a089b13f5dd958f74e4ecb1de0c7e13b4c9d13a7d3f847e6",
+    "rawL0Position": "b04774f7262a6ed0f2412a9d5d989152c6ca58be47c9bc06151b1820a4d28a80",
+    "target": "3c955fcee3fd2a4f0746f8d3c65bd527ac1cd934ed840336325df8be9bd6d2c7",
+    "population": "9edbeb662a4c564bac29b0c9e36053403b16c5e69da9058331a23b26e111a78e",
+    "waveKind": "e5529f56d4641a7f6bef9db2589ede394497d76f563c098a46894ad9b8f009b5"
+  },
+  "after": {
+    "unitStar": "2e8b73458ae4e039876441a7bad9d304cdda27d983bf0b2489c675ceb067ec8a",
+    "rawL0Position": "b04774f7262a6ed0f2412a9d5d989152c6ca58be47c9bc06151b1820a4d28a80",
+    "target": "3c955fcee3fd2a4f0746f8d3c65bd527ac1cd934ed840336325df8be9bd6d2c7",
+    "population": "9edbeb662a4c564bac29b0c9e36053403b16c5e69da9058331a23b26e111a78e",
+    "waveKind": "e5529f56d4641a7f6bef9db2589ede394497d76f563c098a46894ad9b8f009b5"
+  },
+  "unitStarChangedWaves": 194
+}

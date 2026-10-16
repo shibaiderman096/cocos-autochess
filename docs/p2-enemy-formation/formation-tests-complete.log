@@ -1,0 +1,26 @@
+PASS P2-0 generator waves, member/budget/position baseline and P0 legacy remain exact
+PASS all 15 purchasable units have auditable roles; self-heal and damage casters are not invented support
+PASS odd-r even and odd row adjacency comes from the existing HexMath
+PASS L0 exactly preserves all 968 P1-C positions and ignores malformed templates and player snapshots
+PASS L1 uses role depth including a synthetic support classification without adding game content
+PASS L0/L1/L2 never access a supplied player snapshot
+PASS L2 spaces three key backliners by at least two actual hexes when a feasible layout exists
+PASS crowded backline retains legal unique cells, terminates and diagnoses spacing relaxation
+PASS tank cover is stronger than a deterministic random-position baseline, without requiring every backliner covered
+PASS L3 reacts to left versus right backline mages using existing assassin/teleport capability only
+PASS L3 ranged density and cluster heuristics report existing melee/AoE/control responses
+PASS no assassin or teleport enemy gets no new ability and only coordinates can change
+PASS all seven templates extract coordinates only; malicious old stars, identities and multipliers never enter placements
+PASS legal templates apply, invalid templates fall back and partial templates fill remaining units
+PASS all L1/L2/L3 formations retain exact members and budget diagnostics over all 99 stages
+PASS same inputs repeat exactly and configuration key order does not affect formations
+PASS formation RNG consumption leaves shop/battle/enemy/bot/reward streams unchanged
+PASS snapshot identity ignores order and future data but includes current tactical positions/stars/equipment
+PASS progression strengths vary smoothly; early bosses do not unlock counter scoring through a bonus alone
+PASS repeated previews freeze the L2 base and do not alter final L3, shop, members, budgets or battle seed
+PASS interrupt/load to preparation rebuilds the same final snapshot/formation, while changed player positions may change it
+PASS legacy and pre-P2 saves pin to L0; future versions/configurations are rejected explicitly
+PASS L0/L1/L2 preserve 3/6/99 prefixes; L3 full simulations keep prefixes with matching bot snapshots
+PASS invalid config/snapshot/insufficient cells fail clearly; invalid template alone does not crash
+PASS P2 does not import BattleSim/EnemyGenerator into formation or alter generator/config/battle evidence
+Enemy formation: 25 passed, 0 failed

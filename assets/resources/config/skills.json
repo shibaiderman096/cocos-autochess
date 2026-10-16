@@ -1,62 +1,125 @@
 {
   "fireball": {
-    "name": "火球",
-    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
+    "id": "fireball",
+    "name": "爆裂火球",
+    "description": "施法0.3秒后，对当前目标及其1格内所有敌人各造成{魔法+:dmg}点魔法伤害。",
     "dmgType": "magic",
-    "power": 220,
+    "power": 0,
     "radius": 1,
     "targeting": "nearest",
-    "id": "fireball"
+    "effect": "delayedArea",
+    "castSeconds": 0.3,
+    "starDamage": [
+      210,
+      315,
+      500
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "210/315/500"
+      }
+    ]
   },
   "cleave": {
-    "name": "横扫",
-    "description": "对最近敌人及其周围 1 格敌人造成物理伤害。",
+    "id": "cleave",
+    "name": "回旋斩",
+    "description": "施法0.2秒后，对当前目标及其1格内所有敌人各造成{物理+:dmg}点物理伤害。",
     "dmgType": "physical",
-    "power": 160,
+    "power": 0,
     "radius": 1,
     "targeting": "nearest",
-    "id": "cleave"
+    "effect": "delayedArea",
+    "castSeconds": 0.2,
+    "starDamage": [
+      190,
+      285,
+      450
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "190/285/450"
+      }
+    ]
   },
   "piercing_shot": {
-    "name": "精准射击",
-    "description": "对射程内生命比例最低的敌人造成物理伤害。",
+    "id": "piercing_shot",
+    "name": "猎杀箭",
+    "description": "施法0.25秒后，对射程内生命比例最低的敌人造成{物理+:dmg}点物理伤害。",
     "dmgType": "physical",
-    "power": 200,
+    "power": 0,
     "radius": 0,
     "targeting": "lowestHp",
-    "id": "piercing_shot"
+    "effect": "delayedDamage",
+    "castSeconds": 0.25,
+    "starDamage": [
+      260,
+      390,
+      600
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "260/390/600"
+      }
+    ]
   },
   "lightning": {
     "name": "雷击",
-    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
+    "description": "对最近敌人及其周围1格敌人各造成{魔法+:dmg}点魔法伤害。",
     "dmgType": "magic",
     "power": 170,
     "radius": 1,
     "targeting": "nearest",
-    "id": "lightning"
+    "id": "lightning",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "170/306/551"
+      }
+    ]
   },
   "arcane_burst": {
     "name": "奥术爆发",
-    "description": "对最近敌人及其周围 1 格敌人造成魔法伤害。",
+    "description": "对最近敌人及其周围1格敌人各造成{魔法+:dmg}点魔法伤害。",
     "dmgType": "magic",
     "power": 260,
     "radius": 1,
     "targeting": "nearest",
-    "id": "arcane_burst"
+    "id": "arcane_burst",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "260/468/842"
+      }
+    ]
   },
   "judgment": {
     "name": "裁决",
-    "description": "对射程内生命比例最低的敌人造成真实伤害。",
+    "description": "对射程内生命比例最低的敌人造成{真实:dmg}点真实伤害。",
     "dmgType": "true",
     "power": 180,
     "radius": 0,
     "targeting": "lowestHp",
-    "id": "judgment"
+    "id": "judgment",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{真实:dmg}",
+        "stars": "180/324/583"
+      }
+    ]
   },
   "ender_ambush": {
     "id": "ender_ambush",
     "name": "末影突袭",
-    "description": "传送至三格内生命值最低的敌人旁，下3次普攻造成强化物理伤害，期间获得攻速加成。三星首次施法后，本场战斗永久保持强化普攻、攻速加成和回蓝锁定。",
+    "description": "传送至三格内生命值最低的敌人旁，接下来3次普攻各造成{物理+:dmg}点物理伤害，并获得{攻速:aspd}攻击速度。",
     "dmgType": "physical",
     "power": 0,
     "radius": 0,
@@ -65,45 +128,81 @@
     "castSeconds": 0.3,
     "targetRange": 3,
     "empoweredAttacks": 3,
-    "attackMultipliers": [
-      1.25,
-      1.5,
-      50
-    ],
     "attackSpeedBonuses": [
       0.5,
       1,
-      5
+      4
     ],
     "manaLockDuringEmpower": true,
-    "permanentEmpowerStar": 3
+    "permanentEmpowerStar": 3,
+    "mechanics": [
+      "三星首次施法后，本场战斗永久保持强化普攻、攻速加成和回蓝锁定。",
+      "攻速加成按次/秒直接相加，最终攻速上限500%。"
+    ],
+    "statRows": [
+      {
+        "label": "强化普攻",
+        "value": "{物理+:dmg}",
+        "stars": "250/400/12000"
+      },
+      {
+        "label": "攻击速度",
+        "value": "+{攻速:aspd}",
+        "stars": "50%/100%/400%"
+      }
+    ],
+    "starDamage": [
+      250,
+      400,
+      12000
+    ]
   },
   "black_flame": {
     "id": "black_flame",
     "name": "黑炎",
-    "description": "施法0.5秒后，对当前目标造成150%/200%/500%攻击力的物理伤害（1~3星），并施加5秒灼烧，每秒造成目标最大生命值2%的真实伤害。同一施法者再次命中刷新灼烧。",
+    "description": "施法0.5秒后，对当前目标造成{物理+:dmg}点物理伤害。\n\n施加5秒灼烧，每秒造成目标最大生命值{真实:burn}的真实伤害。",
     "dmgType": "physical",
     "power": 0,
     "radius": 0,
     "targeting": "nearest",
     "effect": "damageBurn",
     "castSeconds": 0.5,
-    "attackMultipliers": [
-      1.5,
-      2,
-      5
-    ],
     "burn": {
       "durationSeconds": 5,
       "intervalSeconds": 1,
       "maxHpFraction": 0.02,
       "dmgType": "true"
-    }
+    },
+    "mechanics": [
+      "同一施法者再次命中刷新灼烧。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "300/500/2000"
+      },
+      {
+        "label": "每秒生命伤害",
+        "value": "{真实:burn}",
+        "stars": "2%/2%/2%"
+      },
+      {
+        "label": "持续时间",
+        "value": "{控制:burnDuration}秒",
+        "stars": "5/5/5秒"
+      }
+    ],
+    "starDamage": [
+      300,
+      500,
+      2000
+    ]
   },
   "healing_channel": {
     "id": "healing_channel",
     "name": "掌仙术",
-    "description": "持续施法1.5秒，期间每0.5秒回复自身2%/2.5%/4%最大生命值（1~3星），共3次。",
+    "description": "持续施法1.5秒，每0.5秒回复自身{治疗:heal}点生命值，共3次。",
     "dmgType": "physical",
     "power": 0,
     "radius": 0,
@@ -116,50 +215,377 @@
         0.02,
         0.025,
         0.04
+      ],
+      "bonusAmounts": [
+        10,
+        15,
+        20
       ]
-    }
+    },
+    "mechanics": [
+      "施法期间停止攻击和移动。"
+    ],
+    "statRows": [
+      {
+        "label": "每次治疗",
+        "value": "{治疗:heal}",
+        "stars": "36/74/188"
+      },
+      {
+        "label": "生命比例",
+        "value": "{治疗:healPercent}",
+        "stars": "2%/2.5%/4%"
+      },
+      {
+        "label": "额外治疗",
+        "value": "{治疗+:healBonus}",
+        "stars": "10/15/20"
+      }
+    ]
   },
   "hybrid_bolt": {
     "id": "hybrid_bolt",
     "name": "忍术飞弹",
-    "description": "对当前目标造成魔法伤害：25%攻击力＋100%/125%/175%基础法术伤害（1~3星），两部分分别受物理与法术增伤影响。",
+    "description": "对当前目标造成{魔法++:dmg}点魔法伤害。",
     "dmgType": "magic",
     "power": 100,
     "radius": 0,
     "targeting": "nearest",
     "effect": "hybridSpell",
     "hybrid": {
-      "attackRatios": [
-        0.25,
-        0.25,
-        0.25
+      "physicalDamage": [
+        20,
+        30,
+        50
       ],
-      "spellRatios": [
-        1,
-        1.25,
-        1.75
+      "magicDamage": [
+        100,
+        150,
+        250
       ]
-    }
+    },
+    "mechanics": [
+      "物理部分与法术部分分别计算对应加成。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法++:dmg}",
+        "stars": "120/180/300"
+      },
+      {
+        "label": "基础物理伤害",
+        "value": "{物理:basePhysical}",
+        "stars": "20/30/50"
+      },
+      {
+        "label": "基础魔法伤害",
+        "value": "{魔法:baseMagic}",
+        "stars": "100/150/250"
+      }
+    ]
   },
   "tsukuyomi": {
     "id": "tsukuyomi",
     "name": "月读",
-    "description": "施法0.45秒后，对当前目标造成120%/180%/500%基础法术伤害的魔法伤害，眩晕0.3/0.5/5秒（1~3星）。",
+    "description": "施法0.45秒后，对当前目标造成{魔法+:dmg}点魔法伤害，并眩晕{控制:stun}秒。",
     "dmgType": "magic",
-    "power": 100,
+    "power": 0,
     "radius": 0,
     "targeting": "nearest",
     "effect": "damageStun",
     "castSeconds": 0.45,
-    "spellMultipliers": [
-      1.2,
-      1.8,
-      5
-    ],
     "stunSeconds": [
-      0.3,
       0.5,
-      5
+      1,
+      3
+    ],
+    "mechanics": [
+      "眩晕打断施法。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "500/750/3000"
+      },
+      {
+        "label": "眩晕时间",
+        "value": "{控制:stun}秒",
+        "stars": "0.5/1/3秒"
+      }
+    ],
+    "starDamage": [
+      500,
+      750,
+      3000
+    ]
+  },
+  "iron_uppercut": {
+    "id": "iron_uppercut",
+    "name": "铁壁重拳",
+    "description": "施法0.3秒后击飞当前目标0.5秒，造成{物理+:dmg}点物理伤害。\n\n自身获得{控制:guardDuration}秒{控制:guardReduction}伤害减免。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "knockupGuard",
+    "castSeconds": 0.3,
+    "knockupSeconds": 0.5,
+    "guard": {
+      "durations": [
+        3,
+        4,
+        6
+      ],
+      "reductions": [
+        0.3,
+        0.4,
+        0.6
+      ]
+    },
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "250/400/1500"
+      },
+      {
+        "label": "伤害减免",
+        "value": "{控制:guardReduction}",
+        "stars": "30%/40%/60%"
+      },
+      {
+        "label": "减免持续",
+        "value": "{控制:guardDuration}秒",
+        "stars": "3/4/6秒"
+      }
+    ],
+    "starDamage": [
+      250,
+      400,
+      1500
+    ]
+  },
+  "academy_shield": {
+    "id": "academy_shield",
+    "name": "护身术",
+    "description": "施法0.5秒后，自身获得{魔法+:shield}点护盾。",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "selfShield",
+    "castSeconds": 0.5,
+    "shieldAmounts": [
+      70,
+      80,
+      100
+    ],
+    "statRows": [
+      {
+        "label": "护盾",
+        "value": "{魔法+:shield}",
+        "stars": "70/80/100"
+      }
+    ]
+  },
+  "rasengan": {
+    "id": "rasengan",
+    "name": "螺旋丸",
+    "description": "施法0.1秒后，对目标及其2格内敌人造成总计{物理+:dmg}点物理伤害，由命中敌人平摊。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 2,
+    "targeting": "nearest",
+    "effect": "splitPhysical",
+    "castSeconds": 0.1,
+    "splitDamage": [
+      240,
+      360,
+      600
+    ],
+    "mechanics": [
+      "每个敌人分别计算护甲减伤。"
+    ],
+    "statRows": [
+      {
+        "label": "平摊总伤害",
+        "value": "{物理+:dmg}",
+        "stars": "240/360/600"
+      }
+    ]
+  },
+  "sage_clone_rasengan": {
+    "id": "sage_clone_rasengan",
+    "name": "影分身·螺旋丸",
+    "description": "施法0.1秒后，召唤短暂影分身攻击当前目标造成{物理+:dmg}点物理伤害。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "delayedDamage",
+    "castSeconds": 0.1,
+    "starDamage": [
+      280,
+      420,
+      700
+    ],
+    "mechanics": [
+      "影分身不占格，攻击后消散。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "280/420/700"
+      }
+    ]
+  },
+  "aimed_arrow": {
+    "id": "aimed_arrow",
+    "name": "蓄力箭",
+    "description": "施法0.15秒后，对当前目标造成{物理+:dmg}点物理伤害。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "delayedDamage",
+    "castSeconds": 0.15,
+    "starDamage": [
+      150,
+      225,
+      350
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "150/225/350"
+      }
+    ]
+  },
+  "guardian_bulwark": {
+    "id": "guardian_bulwark",
+    "name": "坚守",
+    "description": "施法0.25秒后，自身获得{魔法+:shield}点护盾。",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "selfShield",
+    "castSeconds": 0.25,
+    "shieldAmounts": [
+      160,
+      240,
+      360
+    ],
+    "mechanics": [
+      "护盾持续至被击破。"
+    ],
+    "statRows": [
+      {
+        "label": "护盾",
+        "value": "{魔法+:shield}",
+        "stars": "160/240/360"
+      }
+    ]
+  },
+  "corrupt_curse": {
+    "id": "corrupt_curse",
+    "name": "腐蚀诅咒",
+    "description": "施法0.25秒后，对当前目标造成{魔法+:dmg}点魔法伤害。\n\n诅咒目标5秒，每秒造成目标最大生命值{魔法+:burn}的魔法伤害。",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "damageBurn",
+    "castSeconds": 0.25,
+    "starDamage": [
+      140,
+      210,
+      330
+    ],
+    "burn": {
+      "durationSeconds": 5,
+      "intervalSeconds": 1,
+      "maxHpFraction": 0.015,
+      "dmgType": "magic"
+    },
+    "mechanics": [
+      "重复施放刷新诅咒。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "140/210/330"
+      },
+      {
+        "label": "每秒生命伤害",
+        "value": "{魔法+:burn}",
+        "stars": "1.5%/1.5%/1.5%"
+      },
+      {
+        "label": "持续时间",
+        "value": "{控制:burnDuration}秒",
+        "stars": "5/5/5秒"
+      }
+    ]
+  },
+  "divine_mend": {
+    "id": "divine_mend",
+    "name": "圣愈术",
+    "description": "施法0.3秒后，治疗自身3格内生命比例最低的受伤友军，回复{治疗:heal}点生命值。",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "healAlly",
+    "castSeconds": 0.3,
+    "healAmounts": [
+      180,
+      270,
+      420
+    ],
+    "targetRange": 3,
+    "mechanics": [
+      "可治疗自己。",
+      "治疗受法术加成影响，不超过最大生命值。",
+      "没有受伤友军时保留法力。"
+    ],
+    "statRows": [
+      {
+        "label": "治疗",
+        "value": "{治疗:heal}",
+        "stars": "180/270/420"
+      }
+    ]
+  },
+  "dragon_breath": {
+    "id": "dragon_breath",
+    "name": "末影吐息",
+    "description": "蓄力0.6秒后，向当前目标喷吐紫焰，对目标及其1格内所有敌人各造成{魔法+:dmg}点魔法伤害。",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 1,
+    "targeting": "nearest",
+    "effect": "delayedArea",
+    "castSeconds": 0.6,
+    "starDamage": [
+      320,
+      320,
+      320
+    ],
+    "mechanics": [
+      "野怪专属技能，巨龙固定1星，不进入商店或共享卡池。"
+    ],
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "320/320/320"
+      }
     ]
   }
 }

@@ -1,0 +1,2233 @@
+[
+  {
+    "fromStage": 2,
+    "toStage": 3,
+    "fromWaveId": 8,
+    "toWaveId": 9,
+    "legacyUnadjustedModelPowerBefore": 206.29452312317426,
+    "legacyUnadjustedModelPowerAfter": 206.29452312317426,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -6.000000000000005,
+    "actualModelPowerBefore": 200,
+    "actualModelPowerAfter": 194.09134044529299,
+    "actualModelChangePct": -2.9543297773535038,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 3,
+    "toStage": 4,
+    "fromWaveId": 14,
+    "toWaveId": 15,
+    "legacyUnadjustedModelPowerBefore": 400.38586356846724,
+    "legacyUnadjustedModelPowerAfter": 500.17391970439166,
+    "legacyModelChangePct": 24.922971866827748,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 400.38586356846724,
+    "actualModelPowerAfter": 387.4650891674769,
+    "actualModelChangePct": -3.2270805681881565,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 4,
+    "toStage": 5,
+    "fromWaveId": 21,
+    "toWaveId": 22,
+    "legacyUnadjustedModelPowerBefore": 793.7190508079274,
+    "legacyUnadjustedModelPowerAfter": 936.2616111003317,
+    "legacyModelChangePct": 17.958818066330927,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -6.000000000000005,
+    "actualModelPowerBefore": 696.5842437314377,
+    "actualModelPowerAfter": 667.2301193088459,
+    "actualModelChangePct": -4.214009243928441,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 5,
+    "toStage": 6,
+    "fromWaveId": 29,
+    "toWaveId": 30,
+    "legacyUnadjustedModelPowerBefore": 1138.865179773579,
+    "legacyUnadjustedModelPowerAfter": 2007.462165725759,
+    "legacyModelChangePct": 76.26864016729952,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -6.000000000000005,
+    "actualModelPowerBefore": 853.740139403092,
+    "actualModelPowerAfter": 791.8448033531306,
+    "actualModelChangePct": -7.249903476863196,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 6,
+    "toStage": 7,
+    "fromWaveId": 38,
+    "toWaveId": 39,
+    "legacyUnadjustedModelPowerBefore": 2114.0289050903375,
+    "legacyUnadjustedModelPowerAfter": 2114.0289050903375,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -6.0000000000000275,
+    "actualModelPowerBefore": 853.4442149421234,
+    "actualModelPowerAfter": 795.8634269922716,
+    "actualModelChangePct": -6.7468719034854185,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 7,
+    "toStage": 8,
+    "fromWaveId": 48,
+    "toWaveId": 49,
+    "legacyUnadjustedModelPowerBefore": 2114.0289050903375,
+    "legacyUnadjustedModelPowerAfter": 3318.26567920772,
+    "legacyModelChangePct": 56.964063793911215,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -6.0000000000000275,
+    "actualModelPowerBefore": 840.8307547678576,
+    "actualModelPowerAfter": 795.8634269922716,
+    "actualModelChangePct": -5.347964203331368,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 8,
+    "toStage": 9,
+    "fromWaveId": 58,
+    "toWaveId": 59,
+    "legacyUnadjustedModelPowerBefore": 3318.26567920772,
+    "legacyUnadjustedModelPowerAfter": 3318.26567920772,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -6.000000000000016,
+    "actualModelPowerBefore": 1020.7000658702016,
+    "actualModelPowerAfter": 930.7654103190296,
+    "actualModelChangePct": -8.811075707582905,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 9,
+    "toStage": 10,
+    "fromWaveId": 68,
+    "toWaveId": 69,
+    "legacyUnadjustedModelPowerBefore": 3318.26567920772,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 210.89298289218462,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0,
+      "damageReduction": 0
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.05,
+      "damageReduction": 0.05
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -6.000000000000016,
+    "actualModelPowerBefore": 1447.565090157188,
+    "actualModelPowerAfter": 1369.0092443853878,
+    "actualModelChangePct": -5.426757408419547,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 10,
+    "toStage": 11,
+    "fromWaveId": 78,
+    "toWaveId": 79,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.05,
+      "damageReduction": 0.05
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.1,
+      "damageReduction": 0.1
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 2138.7694613596645,
+    "actualModelPowerAfter": 2013.660834988697,
+    "actualModelChangePct": -5.849561097222377,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 11,
+    "toStage": 12,
+    "fromWaveId": 88,
+    "toWaveId": 89,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.1,
+      "damageReduction": 0.1
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.15,
+      "damageReduction": 0.15
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -6.000000000000005,
+    "actualModelPowerBefore": 3174.0954396226616,
+    "actualModelPowerAfter": 2978.9429092350347,
+    "actualModelChangePct": -6.148288042996808,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 12,
+    "toStage": 13,
+    "fromWaveId": 98,
+    "toWaveId": 99,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.15,
+      "damageReduction": 0.15
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.2,
+      "damageReduction": 0.2
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -6.000000000000005,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 13,
+    "toStage": 14,
+    "fromWaveId": 108,
+    "toWaveId": 109,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.2,
+      "damageReduction": 0.2
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.25,
+      "damageReduction": 0.25
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 14,
+    "toStage": 15,
+    "fromWaveId": 118,
+    "toWaveId": 119,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.25,
+      "damageReduction": 0.25
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.3,
+      "damageReduction": 0.3
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 15,
+    "toStage": 16,
+    "fromWaveId": 128,
+    "toWaveId": 129,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.3,
+      "damageReduction": 0.3
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.35,
+      "damageReduction": 0.35
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 16,
+    "toStage": 17,
+    "fromWaveId": 138,
+    "toWaveId": 139,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.35,
+      "damageReduction": 0.35
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.4,
+      "damageReduction": 0.4
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 17,
+    "toStage": 18,
+    "fromWaveId": 148,
+    "toWaveId": 149,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.4,
+      "damageReduction": 0.4
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.45,
+      "damageReduction": 0.45
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 18,
+    "toStage": 19,
+    "fromWaveId": 158,
+    "toWaveId": 159,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.45,
+      "damageReduction": 0.45
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.5,
+      "damageReduction": 0.5
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 19,
+    "toStage": 20,
+    "fromWaveId": 168,
+    "toWaveId": 169,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.5,
+      "damageReduction": 0.5
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.55,
+      "damageReduction": 0.55
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 20,
+    "toStage": 21,
+    "fromWaveId": 178,
+    "toWaveId": 179,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.55,
+      "damageReduction": 0.55
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.6,
+      "damageReduction": 0.6
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 21,
+    "toStage": 22,
+    "fromWaveId": 188,
+    "toWaveId": 189,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.6,
+      "damageReduction": 0.6
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.65,
+      "damageReduction": 0.65
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 22,
+    "toStage": 23,
+    "fromWaveId": 198,
+    "toWaveId": 199,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.65,
+      "damageReduction": 0.65
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.7,
+      "damageReduction": 0.7
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 23,
+    "toStage": 24,
+    "fromWaveId": 208,
+    "toWaveId": 209,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.7,
+      "damageReduction": 0.7
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.75,
+      "damageReduction": 0.75
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 24,
+    "toStage": 25,
+    "fromWaveId": 218,
+    "toWaveId": 219,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.75,
+      "damageReduction": 0.75
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.8,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 25,
+    "toStage": 26,
+    "fromWaveId": 228,
+    "toWaveId": 229,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.8,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.85,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 26,
+    "toStage": 27,
+    "fromWaveId": 238,
+    "toWaveId": 239,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.85,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.9,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 27,
+    "toStage": 28,
+    "fromWaveId": 248,
+    "toWaveId": 249,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.9,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 0.95,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 28,
+    "toStage": 29,
+    "fromWaveId": 258,
+    "toWaveId": 259,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 0.95,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 29,
+    "toStage": 30,
+    "fromWaveId": 268,
+    "toWaveId": 269,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.05,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 30,
+    "toStage": 31,
+    "fromWaveId": 278,
+    "toWaveId": 279,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.05,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.1,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 31,
+    "toStage": 32,
+    "fromWaveId": 288,
+    "toWaveId": 289,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.1,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.15,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 32,
+    "toStage": 33,
+    "fromWaveId": 298,
+    "toWaveId": 299,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.15,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.2,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 33,
+    "toStage": 34,
+    "fromWaveId": 308,
+    "toWaveId": 309,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.2,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.25,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 34,
+    "toStage": 35,
+    "fromWaveId": 318,
+    "toWaveId": 319,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.25,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.3,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 35,
+    "toStage": 36,
+    "fromWaveId": 328,
+    "toWaveId": 329,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.3,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.35,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 36,
+    "toStage": 37,
+    "fromWaveId": 338,
+    "toWaveId": 339,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.35,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.4,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 37,
+    "toStage": 38,
+    "fromWaveId": 348,
+    "toWaveId": 349,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.4,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.45,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 38,
+    "toStage": 39,
+    "fromWaveId": 358,
+    "toWaveId": 359,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.45,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.5,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 39,
+    "toStage": 40,
+    "fromWaveId": 368,
+    "toWaveId": 369,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.5,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.55,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 40,
+    "toStage": 41,
+    "fromWaveId": 378,
+    "toWaveId": 379,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.55,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.6,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 41,
+    "toStage": 42,
+    "fromWaveId": 388,
+    "toWaveId": 389,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.6,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.65,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 42,
+    "toStage": 43,
+    "fromWaveId": 398,
+    "toWaveId": 399,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.65,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.7,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 43,
+    "toStage": 44,
+    "fromWaveId": 408,
+    "toWaveId": 409,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.7,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.75,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 44,
+    "toStage": 45,
+    "fromWaveId": 418,
+    "toWaveId": 419,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.75,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.8,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 45,
+    "toStage": 46,
+    "fromWaveId": 428,
+    "toWaveId": 429,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.8,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.85,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 46,
+    "toStage": 47,
+    "fromWaveId": 438,
+    "toWaveId": 439,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.85,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.9,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 47,
+    "toStage": 48,
+    "fromWaveId": 448,
+    "toWaveId": 449,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.9,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 1.95,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 48,
+    "toStage": 49,
+    "fromWaveId": 458,
+    "toWaveId": 459,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 1.95,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 49,
+    "toStage": 50,
+    "fromWaveId": 468,
+    "toWaveId": 469,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.05,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 50,
+    "toStage": 51,
+    "fromWaveId": 478,
+    "toWaveId": 479,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.05,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.1,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 51,
+    "toStage": 52,
+    "fromWaveId": 488,
+    "toWaveId": 489,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.1,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.15,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 52,
+    "toStage": 53,
+    "fromWaveId": 498,
+    "toWaveId": 499,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.15,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.2,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 53,
+    "toStage": 54,
+    "fromWaveId": 508,
+    "toWaveId": 509,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.2,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.25,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 54,
+    "toStage": 55,
+    "fromWaveId": 518,
+    "toWaveId": 519,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.25,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.3,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 55,
+    "toStage": 56,
+    "fromWaveId": 528,
+    "toWaveId": 529,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.3,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.35,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 56,
+    "toStage": 57,
+    "fromWaveId": 538,
+    "toWaveId": 539,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.35,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.4,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 57,
+    "toStage": 58,
+    "fromWaveId": 548,
+    "toWaveId": 549,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.4,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.45,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 58,
+    "toStage": 59,
+    "fromWaveId": 558,
+    "toWaveId": 559,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.45,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.5,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 59,
+    "toStage": 60,
+    "fromWaveId": 568,
+    "toWaveId": 569,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.5,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.55,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 60,
+    "toStage": 61,
+    "fromWaveId": 578,
+    "toWaveId": 579,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.55,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.6,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 61,
+    "toStage": 62,
+    "fromWaveId": 588,
+    "toWaveId": 589,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.6,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.65,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 62,
+    "toStage": 63,
+    "fromWaveId": 598,
+    "toWaveId": 599,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.65,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.7,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 63,
+    "toStage": 64,
+    "fromWaveId": 608,
+    "toWaveId": 609,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.7,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.75,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 64,
+    "toStage": 65,
+    "fromWaveId": 618,
+    "toWaveId": 619,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.75,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.8,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 65,
+    "toStage": 66,
+    "fromWaveId": 628,
+    "toWaveId": 629,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.8,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.85,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 66,
+    "toStage": 67,
+    "fromWaveId": 638,
+    "toWaveId": 639,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.85,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.9,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 67,
+    "toStage": 68,
+    "fromWaveId": 648,
+    "toWaveId": 649,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.9,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 2.95,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999972,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 68,
+    "toStage": 69,
+    "fromWaveId": 658,
+    "toWaveId": 659,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 2.95,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 69,
+    "toStage": 70,
+    "fromWaveId": 668,
+    "toWaveId": 669,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.05,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 70,
+    "toStage": 71,
+    "fromWaveId": 678,
+    "toWaveId": 679,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.05,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.1,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.0000000000000275,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 71,
+    "toStage": 72,
+    "fromWaveId": 688,
+    "toWaveId": 689,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.1,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.15,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 72,
+    "toStage": 73,
+    "fromWaveId": 698,
+    "toWaveId": 699,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.15,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.2,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 73,
+    "toStage": 74,
+    "fromWaveId": 708,
+    "toWaveId": 709,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.2,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.25,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 74,
+    "toStage": 75,
+    "fromWaveId": 718,
+    "toWaveId": 719,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.25,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.3,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 75,
+    "toStage": 76,
+    "fromWaveId": 728,
+    "toWaveId": 729,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.3,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.35,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 76,
+    "toStage": 77,
+    "fromWaveId": 738,
+    "toWaveId": 739,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.35,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.4,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 77,
+    "toStage": 78,
+    "fromWaveId": 748,
+    "toWaveId": 749,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.4,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.45,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 78,
+    "toStage": 79,
+    "fromWaveId": 758,
+    "toWaveId": 759,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.45,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.5,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 79,
+    "toStage": 80,
+    "fromWaveId": 768,
+    "toWaveId": 769,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.5,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.55,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 80,
+    "toStage": 81,
+    "fromWaveId": 778,
+    "toWaveId": 779,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.55,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.6,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 81,
+    "toStage": 82,
+    "fromWaveId": 788,
+    "toWaveId": 789,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.6,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.65,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999972,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 82,
+    "toStage": 83,
+    "fromWaveId": 798,
+    "toWaveId": 799,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.65,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.7,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 83,
+    "toStage": 84,
+    "fromWaveId": 808,
+    "toWaveId": 809,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.7,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.75,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 84,
+    "toStage": 85,
+    "fromWaveId": 818,
+    "toWaveId": 819,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.75,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.8,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 85,
+    "toStage": 86,
+    "fromWaveId": 828,
+    "toWaveId": 829,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.8,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.85,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000016,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 86,
+    "toStage": 87,
+    "fromWaveId": 838,
+    "toWaveId": 839,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.85,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.9,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 87,
+    "toStage": 88,
+    "fromWaveId": 848,
+    "toWaveId": 849,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.9,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 3.95,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 88,
+    "toStage": 89,
+    "fromWaveId": 858,
+    "toWaveId": 859,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 3.95,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 89,
+    "toStage": 90,
+    "fromWaveId": 868,
+    "toWaveId": 869,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.05,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 90,
+    "toStage": 91,
+    "fromWaveId": 878,
+    "toWaveId": 879,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.05,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.1,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 91,
+    "toStage": 92,
+    "fromWaveId": 888,
+    "toWaveId": 889,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.1,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.15,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 92,
+    "toStage": 93,
+    "fromWaveId": 898,
+    "toWaveId": 899,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.15,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.2,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999983,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 93,
+    "toStage": 94,
+    "fromWaveId": 908,
+    "toWaveId": 909,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.2,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.25,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 94,
+    "toStage": 95,
+    "fromWaveId": 918,
+    "toWaveId": 919,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.25,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.3,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 95,
+    "toStage": 96,
+    "fromWaveId": 928,
+    "toWaveId": 929,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.3,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.35,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 96,
+    "toStage": 97,
+    "fromWaveId": 938,
+    "toWaveId": 939,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.35,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.4,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 97,
+    "toStage": 98,
+    "fromWaveId": 948,
+    "toWaveId": 949,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.4,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.45,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -6.000000000000005,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  },
+  {
+    "fromStage": 98,
+    "toStage": 99,
+    "fromWaveId": 958,
+    "toWaveId": 959,
+    "legacyUnadjustedModelPowerBefore": 10316.25515037649,
+    "legacyUnadjustedModelPowerAfter": 10316.25515037649,
+    "legacyModelChangePct": 0,
+    "legacyFreeScalingBefore": {
+      "damageAmp": 4.45,
+      "damageReduction": 0.8
+    },
+    "legacyFreeScalingAfter": {
+      "damageAmp": 4.5,
+      "damageReduction": 0.8
+    },
+    "requestedChangePct": -5.999999999999995,
+    "effectiveChangePct": -5.999999999999995,
+    "actualModelPowerBefore": 3777.956296234867,
+    "actualModelPowerAfter": 3571.281689478653,
+    "actualModelChangePct": -5.470539904397176,
+    "recoveryFeasible": true
+  }
+]

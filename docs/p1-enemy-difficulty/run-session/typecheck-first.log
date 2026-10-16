@@ -1,0 +1,1 @@
+tools/run-simulation.ts(77,11): error TS2367: This comparison appears to be unintentional because the types '"prepare" | "battle" | "settlement"' and '"ended"' have no overlap.

@@ -1,0 +1,19 @@
+
+> report-equipment
+> node --require tsx/cjs tools/report-equipment.ts --output docs/p3-equipment/final-v2-seed12345-repeat
+
+{
+  "output": "docs\\p3-equipment\\final-v2-seed12345-repeat",
+  "waveCount": 968,
+  "maxDeviationPct": 4.9799648911365875,
+  "rewardSha256": "0a18a5f99981a50ee75e199ae8b83258865e4904a14d5564728df3ad659449df",
+  "generation": {
+    "mean": 1.0492177202072526,
+    "p95": 3.9893999999999323,
+    "max": 51.072599999999966
+  },
+  "candidates": [
+    48,
+    228
+  ]
+}

@@ -1,0 +1,72 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1 --seed-count 20 --stages 99 --workers 2 --partition baseline --output docs/p4-balance/baseline/endless-20
+
+Balance baseline: 60 runs, 99 campaign stages, 2 worker processes; no difficulty values are changed
+progress 10/60
+progress 20/60
+progress 30/60
+progress 40/60
+progress 50/60
+progress 50/60
+progress 60/60
+progress 60/60
+{
+  "output": "docs/p4-balance/baseline/endless-20",
+  "runs": 60,
+  "battles": 49253,
+  "seconds": 241.49212169999998,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 20,
+        "total": 20,
+        "rate": 1,
+        "low": 0.8388748419471806,
+        "high": 1
+      },
+      "failedActions": 0
+    }
+  }
+}

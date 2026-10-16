@@ -1,0 +1,6993 @@
+{
+  "schema": "bot-economy-audit-v2",
+  "runs": 200,
+  "battles": 19600,
+  "definitions": {
+    "unusedGold": "gold at battle; reserve and spendable are separate",
+    "populationOpportunity": "per-wave: marginal-value/affordability opportunity or real XP purchase; missed means still worthwhile and affordable at preparation end",
+    "ignoredOffers": "useful legal public offers discarded at refresh or left at preparation end",
+    "benchPowerProxy": "rough public attributes, not calibrated power"
+  },
+  "stages": {
+    "1": {
+      "waves": 600,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 4,
+        "p75": 4
+      },
+      "shoppingEndGold": {
+        "observed": 600,
+        "total": 600,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanShoppingEndGold": 0.043333333333333335,
+      "meanGoldBeforePreparation": 2.335,
+      "meanGoldAtBattle": 0.043333333333333335,
+      "goldPeak": {
+        "observed": 600,
+        "total": 600,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 3,
+        "p75": 4
+      },
+      "unusedGold": {
+        "observed": 600,
+        "total": 600,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanLevel": 2,
+      "meanPopulation": 1.9966666666666666,
+      "meanBench": 0.9516666666666667,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.043333333333333335,
+      "unitSpending": 1375,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 2.2916666666666665,
+      "combatConversionGold": 1375,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.2916666666666665,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "2": {
+      "waves": 1000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 4,
+        "p75": 4
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 8,
+        "median": 9,
+        "p75": 9
+      },
+      "shoppingEndGold": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 2
+      },
+      "meanShoppingEndGold": 0.955,
+      "meanGoldBeforePreparation": 7.613,
+      "meanGoldAtBattle": 0.955,
+      "goldPeak": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 7,
+        "median": 8,
+        "p75": 9
+      },
+      "unusedGold": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 2
+      },
+      "meanLevel": 4.043,
+      "meanPopulation": 4.043,
+      "meanBench": 3.44,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.955,
+      "unitSpending": 4202,
+      "refreshSpending": 1036,
+      "xpSpending": 1448,
+      "interestIncome": 3,
+      "meanCombatConversionGold": 6.686,
+      "combatConversionGold": 6686,
+      "meanXpSpending": 1.448,
+      "meanRefreshSpending": 1.036,
+      "meanUnitSpending": 4.202,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 694,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "3": {
+      "waves": 1200,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 8,
+        "median": 9,
+        "p75": 9
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 33,
+        "median": 33,
+        "p75": 34
+      },
+      "shoppingEndGold": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 18,
+        "median": 21,
+        "p75": 21
+      },
+      "meanShoppingEndGold": 18.25583333333333,
+      "meanGoldBeforePreparation": 25.696666666666665,
+      "meanGoldAtBattle": 18.25583333333333,
+      "goldPeak": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 18,
+        "median": 30,
+        "p75": 33
+      },
+      "unusedGold": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 18,
+        "median": 21,
+        "p75": 21
+      },
+      "meanLevel": 5.324166666666667,
+      "meanPopulation": 5.324166666666667,
+      "meanBench": 3.966666666666667,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 0.74,
+      "unitSpending": 3809,
+      "refreshSpending": 3432,
+      "xpSpending": 1720,
+      "interestIncome": 1773,
+      "meanCombatConversionGold": 7.4675,
+      "combatConversionGold": 8961,
+      "meanXpSpending": 1.4333333333333333,
+      "meanRefreshSpending": 2.86,
+      "meanUnitSpending": 3.174166666666667,
+      "ignoredUsefulOffers": 315,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 258,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "4": {
+      "waves": 1400,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 33,
+        "median": 33,
+        "p75": 34
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 35,
+        "median": 35,
+        "p75": 36
+      },
+      "shoppingEndGold": {
+        "observed": 1400,
+        "total": 1400,
+        "unobserved": 0,
+        "p25": 30,
+        "median": 31,
+        "p75": 32
+      },
+      "meanShoppingEndGold": 29.649285714285714,
+      "meanGoldBeforePreparation": 44.15571428571429,
+      "meanGoldAtBattle": 29.649285714285714,
+      "goldPeak": {
+        "observed": 1400,
+        "total": 1400,
+        "unobserved": 0,
+        "p25": 45,
+        "median": 46,
+        "p75": 47
+      },
+      "unusedGold": {
+        "observed": 1400,
+        "total": 1400,
+        "unobserved": 0,
+        "p25": 30,
+        "median": 31,
+        "p75": 32
+      },
+      "meanLevel": 6.119285714285715,
+      "meanPopulation": 6.119285714285715,
+      "meanBench": 5.069285714285714,
+      "meanReserveGold": 28.571428571428573,
+      "meanSpendableGold": 1.1807142857142856,
+      "unitSpending": 5988,
+      "refreshSpending": 11094,
+      "xpSpending": 3856,
+      "interestIncome": 3915,
+      "meanCombatConversionGold": 14.955714285714286,
+      "combatConversionGold": 20938,
+      "meanXpSpending": 2.7542857142857144,
+      "meanRefreshSpending": 7.924285714285714,
+      "meanUnitSpending": 4.277142857142858,
+      "ignoredUsefulOffers": 1013,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 14,
+      "populationOpportunitySeen": 224,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "5": {
+      "waves": 1600,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 35,
+        "median": 35,
+        "p75": 36
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 38,
+        "p75": 56
+      },
+      "shoppingEndGold": {
+        "observed": 1600,
+        "total": 1600,
+        "unobserved": 0,
+        "p25": 36,
+        "median": 41,
+        "p75": 42
+      },
+      "meanShoppingEndGold": 39.561875,
+      "meanGoldBeforePreparation": 55.6225,
+      "meanGoldAtBattle": 39.561875,
+      "goldPeak": {
+        "observed": 1600,
+        "total": 1600,
+        "unobserved": 0,
+        "p25": 52,
+        "median": 59,
+        "p75": 60
+      },
+      "unusedGold": {
+        "observed": 1600,
+        "total": 1600,
+        "unobserved": 0,
+        "p25": 36,
+        "median": 41,
+        "p75": 42
+      },
+      "meanLevel": 7.0425,
+      "meanPopulation": 7.0425,
+      "meanBench": 4.4125,
+      "meanReserveGold": 36.25,
+      "meanSpendableGold": 4.014375,
+      "unitSpending": 3601,
+      "refreshSpending": 19244,
+      "xpSpending": 2960,
+      "interestIncome": 5849,
+      "meanCombatConversionGold": 16.128125,
+      "combatConversionGold": 25805,
+      "meanXpSpending": 1.85,
+      "meanRefreshSpending": 12.0275,
+      "meanUnitSpending": 2.250625,
+      "ignoredUsefulOffers": 63,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 73,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "6": {
+      "waves": 1800,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 38,
+        "p75": 56
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 38,
+        "median": 49,
+        "p75": 50
+      },
+      "shoppingEndGold": {
+        "observed": 1800,
+        "total": 1800,
+        "unobserved": 0,
+        "p25": 43,
+        "median": 52,
+        "p75": 67
+      },
+      "meanShoppingEndGold": 56.25944444444445,
+      "meanGoldBeforePreparation": 74.39944444444444,
+      "meanGoldAtBattle": 56.25944444444445,
+      "goldPeak": {
+        "observed": 1800,
+        "total": 1800,
+        "unobserved": 0,
+        "p25": 65,
+        "median": 71,
+        "p75": 86
+      },
+      "unusedGold": {
+        "observed": 1800,
+        "total": 1800,
+        "unobserved": 0,
+        "p25": 43,
+        "median": 52,
+        "p75": 67
+      },
+      "meanLevel": 8.000555555555556,
+      "meanPopulation": 8.000555555555556,
+      "meanBench": 3.8044444444444445,
+      "meanReserveGold": 44.44444444444444,
+      "meanSpendableGold": 12.71888888888889,
+      "unitSpending": 819,
+      "refreshSpending": 17716,
+      "xpSpending": 14168,
+      "interestIncome": 8120,
+      "meanCombatConversionGold": 18.168333333333333,
+      "combatConversionGold": 32703,
+      "meanXpSpending": 7.871111111111111,
+      "meanRefreshSpending": 9.842222222222222,
+      "meanUnitSpending": 0.455,
+      "ignoredUsefulOffers": 17,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 302,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "7": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 38,
+        "median": 49,
+        "p75": 50
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 49,
+        "p75": 50
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 50,
+        "median": 51,
+        "p75": 52
+      },
+      "meanShoppingEndGold": 50.081,
+      "meanGoldBeforePreparation": 69.018,
+      "meanGoldAtBattle": 50.081,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 69,
+        "median": 70,
+        "p75": 71
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 50,
+        "median": 51,
+        "p75": 52
+      },
+      "meanLevel": 9.05,
+      "meanPopulation": 9.05,
+      "meanBench": 2.666,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 5.4885,
+      "unitSpending": 90,
+      "refreshSpending": 33088,
+      "xpSpending": 4756,
+      "interestIncome": 9133,
+      "meanCombatConversionGold": 18.967,
+      "combatConversionGold": 37934,
+      "meanXpSpending": 2.378,
+      "meanRefreshSpending": 16.544,
+      "meanUnitSpending": 0.045,
+      "ignoredUsefulOffers": 24,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 3,
+      "populationOpportunitySeen": 101,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "8": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 49,
+        "p75": 50
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 37,
+        "p75": 97
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 52,
+        "p75": 77
+      },
+      "meanShoppingEndGold": 57.241,
+      "meanGoldBeforePreparation": 74.7775,
+      "meanGoldAtBattle": 57.241,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 69,
+        "median": 70,
+        "p75": 92
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 52,
+        "p75": 77
+      },
+      "meanLevel": 9.474,
+      "meanPopulation": 9.474,
+      "meanBench": 2.2415,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 12.677,
+      "unitSpending": 55,
+      "refreshSpending": 31322,
+      "xpSpending": 3736,
+      "interestIncome": 9153,
+      "meanCombatConversionGold": 17.5565,
+      "combatConversionGold": 35113,
+      "meanXpSpending": 1.868,
+      "meanRefreshSpending": 15.661,
+      "meanUnitSpending": 0.0275,
+      "ignoredUsefulOffers": 31,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 129,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "9": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 37,
+        "median": 37,
+        "p75": 97
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 87,
+        "median": 97,
+        "p75": 97
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 77,
+        "median": 82,
+        "p75": 91
+      },
+      "meanShoppingEndGold": 79.3175,
+      "meanGoldBeforePreparation": 94.6485,
+      "meanGoldAtBattle": 79.3175,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 92,
+        "median": 101,
+        "p75": 110
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 77,
+        "median": 82,
+        "p75": 91
+      },
+      "meanLevel": 9.994,
+      "meanPopulation": 9.994,
+      "meanBench": 1.716,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 35.15,
+      "unitSpending": 0,
+      "refreshSpending": 30582,
+      "xpSpending": 80,
+      "interestIncome": 9738,
+      "meanCombatConversionGold": 15.331,
+      "combatConversionGold": 30662,
+      "meanXpSpending": 0.04,
+      "meanRefreshSpending": 15.291,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 2,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "10": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 87,
+        "median": 97,
+        "p75": 97
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 87,
+        "median": 87,
+        "p75": 101
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 92
+      },
+      "meanShoppingEndGold": 85.874,
+      "meanGoldBeforePreparation": 105.058,
+      "meanGoldAtBattle": 85.874,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 97,
+        "median": 105,
+        "p75": 111
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 92
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 40.8805,
+      "unitSpending": 0,
+      "refreshSpending": 38368,
+      "xpSpending": 0,
+      "interestIncome": 9998,
+      "meanCombatConversionGold": 19.184,
+      "combatConversionGold": 38368,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 19.184,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "11": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 87,
+        "median": 87,
+        "p75": 101
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 101,
+        "p75": 101
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 91
+      },
+      "meanShoppingEndGold": 87.057,
+      "meanGoldBeforePreparation": 105.485,
+      "meanGoldAtBattle": 87.057,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 100,
+        "median": 105,
+        "p75": 110
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 91
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 42.057,
+      "unitSpending": 0,
+      "refreshSpending": 36856,
+      "xpSpending": 0,
+      "interestIncome": 10000,
+      "meanCombatConversionGold": 18.428,
+      "combatConversionGold": 36856,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 18.428,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12": {
+      "waves": 2000,
+      "enteringGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 101,
+        "p75": 101
+      },
+      "leavingGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 91,
+        "p75": 91
+      },
+      "shoppingEndGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 95
+      },
+      "meanShoppingEndGold": 85.979,
+      "meanGoldBeforePreparation": 105.895,
+      "meanGoldAtBattle": 85.979,
+      "goldPeak": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 100,
+        "median": 105,
+        "p75": 114
+      },
+      "unusedGold": {
+        "observed": 2000,
+        "total": 2000,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 95
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 45,
+      "meanSpendableGold": 40.979,
+      "unitSpending": 0,
+      "refreshSpending": 39832,
+      "xpSpending": 0,
+      "interestIncome": 10000,
+      "meanCombatConversionGold": 19.916,
+      "combatConversionGold": 39832,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 19.916,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "bosses": {
+    "2": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanShoppingEndGold": 0.85,
+      "meanGoldBeforePreparation": 8.925,
+      "meanGoldAtBattle": 0.85,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 9,
+        "median": 9,
+        "p75": 10
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanLevel": 4.865,
+      "meanPopulation": 4.865,
+      "meanBench": 4.41,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.85,
+      "unitSpending": 1005,
+      "refreshSpending": 352,
+      "xpSpending": 272,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 8.145,
+      "combatConversionGold": 1629,
+      "meanXpSpending": 1.36,
+      "meanRefreshSpending": 1.76,
+      "meanUnitSpending": 5.025,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 68,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "3": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanShoppingEndGold": 21.13,
+      "meanGoldBeforePreparation": 32.88,
+      "meanGoldAtBattle": 21.13,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 33,
+        "median": 34,
+        "p75": 34
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanLevel": 5.88,
+      "meanPopulation": 5.88,
+      "meanBench": 4.12,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 1.205,
+      "unitSpending": 926,
+      "refreshSpending": 1398,
+      "xpSpending": 36,
+      "interestIncome": 388,
+      "meanCombatConversionGold": 11.8,
+      "combatConversionGold": 2360,
+      "meanXpSpending": 0.18,
+      "meanRefreshSpending": 6.99,
+      "meanUnitSpending": 4.63,
+      "ignoredUsefulOffers": 1,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 3,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "4": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanShoppingEndGold": 21.17,
+      "meanGoldBeforePreparation": 46.27,
+      "meanGoldAtBattle": 21.17,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 46,
+        "median": 46,
+        "p75": 47
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanLevel": 6.965,
+      "meanPopulation": 6.965,
+      "meanBench": 4.045,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 1.305,
+      "unitSpending": 372,
+      "refreshSpending": 1116,
+      "xpSpending": 3544,
+      "interestIncome": 386,
+      "meanCombatConversionGold": 25.16,
+      "combatConversionGold": 5032,
+      "meanXpSpending": 17.72,
+      "meanRefreshSpending": 5.58,
+      "meanUnitSpending": 1.86,
+      "ignoredUsefulOffers": 10,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 194,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "5": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 22,
+        "p75": 39
+      },
+      "meanShoppingEndGold": 31.145,
+      "meanGoldBeforePreparation": 56.335,
+      "meanGoldAtBattle": 31.145,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 48,
+        "median": 49,
+        "p75": 70
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 22,
+        "p75": 39
+      },
+      "meanLevel": 7.33,
+      "meanPopulation": 7.33,
+      "meanBench": 4.535,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 11.21,
+      "unitSpending": 347,
+      "refreshSpending": 2744,
+      "xpSpending": 1960,
+      "interestIncome": 543,
+      "meanCombatConversionGold": 25.255,
+      "combatConversionGold": 5051,
+      "meanXpSpending": 9.8,
+      "meanRefreshSpending": 13.72,
+      "meanUnitSpending": 1.735,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 46,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "6": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 22,
+        "median": 32,
+        "p75": 33
+      },
+      "meanShoppingEndGold": 34.235,
+      "meanGoldBeforePreparation": 64.175,
+      "meanGoldAtBattle": 34.235,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 60,
+        "median": 61,
+        "p75": 70
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 22,
+        "median": 32,
+        "p75": 33
+      },
+      "meanLevel": 8.84,
+      "meanPopulation": 8.84,
+      "meanBench": 2.875,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 14.265,
+      "unitSpending": 68,
+      "refreshSpending": 4228,
+      "xpSpending": 1692,
+      "interestIncome": 593,
+      "meanCombatConversionGold": 29.94,
+      "combatConversionGold": 5988,
+      "meanXpSpending": 8.46,
+      "meanRefreshSpending": 21.14,
+      "meanUnitSpending": 0.34,
+      "ignoredUsefulOffers": 2,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 26,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "7": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 32,
+        "p75": 33
+      },
+      "meanShoppingEndGold": 30.71,
+      "meanGoldBeforePreparation": 58.235,
+      "meanGoldAtBattle": 30.71,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 49,
+        "median": 60,
+        "p75": 61
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 32,
+        "p75": 33
+      },
+      "meanLevel": 9.345,
+      "meanPopulation": 9.345,
+      "meanBench": 2.37,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 10.71,
+      "unitSpending": 15,
+      "refreshSpending": 5510,
+      "xpSpending": 0,
+      "interestIncome": 557,
+      "meanCombatConversionGold": 27.625,
+      "combatConversionGold": 5525,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 27.55,
+      "meanUnitSpending": 0.075,
+      "ignoredUsefulOffers": 3,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "8": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 78
+      },
+      "meanShoppingEndGold": 40.835,
+      "meanGoldBeforePreparation": 68.715,
+      "meanGoldAtBattle": 40.835,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 49,
+        "median": 49,
+        "p75": 106
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 78
+      },
+      "meanLevel": 9.99,
+      "meanPopulation": 9.99,
+      "meanBench": 1.72,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 20.835,
+      "unitSpending": 20,
+      "refreshSpending": 5566,
+      "xpSpending": 0,
+      "interestIncome": 612,
+      "meanCombatConversionGold": 27.93,
+      "combatConversionGold": 5586,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 27.83,
+      "meanUnitSpending": 0.1,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "9": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 78,
+        "p75": 78
+      },
+      "meanShoppingEndGold": 74.29,
+      "meanGoldBeforePreparation": 102.29,
+      "meanGoldAtBattle": 74.29,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 106,
+        "p75": 106
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 78,
+        "p75": 78
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 54.29,
+      "unitSpending": 0,
+      "refreshSpending": 5600,
+      "xpSpending": 0,
+      "interestIncome": 997,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 5600,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "10": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 68,
+        "p75": 82
+      },
+      "meanShoppingEndGold": 72.425,
+      "meanGoldBeforePreparation": 100.425,
+      "meanGoldAtBattle": 72.425,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 96,
+        "p75": 110
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 68,
+        "p75": 82
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 52.425,
+      "unitSpending": 0,
+      "refreshSpending": 5600,
+      "xpSpending": 0,
+      "interestIncome": 1000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 5600,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "11": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 72,
+        "median": 82,
+        "p75": 82
+      },
+      "meanShoppingEndGold": 78.145,
+      "meanGoldBeforePreparation": 106.145,
+      "meanGoldAtBattle": 78.145,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 100,
+        "median": 110,
+        "p75": 110
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 72,
+        "median": 82,
+        "p75": 82
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 58.145,
+      "unitSpending": 0,
+      "refreshSpending": 5600,
+      "xpSpending": 0,
+      "interestIncome": 1000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 5600,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 62,
+        "median": 72,
+        "p75": 72
+      },
+      "meanShoppingEndGold": 68.92,
+      "meanGoldBeforePreparation": 96.92,
+      "meanGoldAtBattle": 68.92,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 90,
+        "median": 100,
+        "p75": 100
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 62,
+        "median": 72,
+        "p75": 72
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 48.92,
+      "unitSpending": 0,
+      "refreshSpending": 5600,
+      "xpSpending": 0,
+      "interestIncome": 1000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 5600,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "modes": {
+    "1:save": {
+      "waves": 200,
+      "shoppingEndGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanShoppingEndGold": 0,
+      "meanGoldBeforePreparation": 0,
+      "meanGoldAtBattle": 0,
+      "goldPeak": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "unusedGold": {
+        "observed": 200,
+        "total": 200,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanLevel": 1,
+      "meanPopulation": 1,
+      "meanBench": 0,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "1:develop": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanShoppingEndGold": 0.065,
+      "meanGoldBeforePreparation": 3.5025,
+      "meanGoldAtBattle": 0.065,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 3,
+        "median": 3.5,
+        "p75": 4
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanLevel": 2.5,
+      "meanPopulation": 2.495,
+      "meanBench": 1.4275,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.065,
+      "unitSpending": 1375,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 3.4375,
+      "combatConversionGold": 1375,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 3.4375,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "2:develop": {
+      "waves": 556,
+      "shoppingEndGold": {
+        "observed": 556,
+        "total": 556,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanShoppingEndGold": 0.8111510791366906,
+      "meanGoldBeforePreparation": 6.694244604316546,
+      "meanGoldAtBattle": 0.8111510791366906,
+      "goldPeak": {
+        "observed": 556,
+        "total": 556,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 7,
+        "p75": 8
+      },
+      "unusedGold": {
+        "observed": 556,
+        "total": 556,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanLevel": 3.573741007194245,
+      "meanPopulation": 3.573741007194245,
+      "meanBench": 3.1654676258992804,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.8111510791366906,
+      "unitSpending": 2267,
+      "refreshSpending": 424,
+      "xpSpending": 584,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 5.890287769784172,
+      "combatConversionGold": 3275,
+      "meanXpSpending": 1.0503597122302157,
+      "meanRefreshSpending": 0.762589928057554,
+      "meanUnitSpending": 4.077338129496403,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 434,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "2:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanShoppingEndGold": 0.8875,
+      "meanGoldBeforePreparation": 9.015,
+      "meanGoldAtBattle": 0.8875,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 9,
+        "median": 9,
+        "p75": 10
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 1,
+        "p75": 1
+      },
+      "meanLevel": 4.7625,
+      "meanPopulation": 4.7625,
+      "meanBench": 4.07,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.8875,
+      "unitSpending": 1831,
+      "refreshSpending": 612,
+      "xpSpending": 832,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 8.1875,
+      "combatConversionGold": 3275,
+      "meanXpSpending": 2.08,
+      "meanRefreshSpending": 1.53,
+      "meanUnitSpending": 4.5775,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 254,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "3:develop": {
+      "waves": 800,
+      "shoppingEndGold": {
+        "observed": 800,
+        "total": 800,
+        "unobserved": 0,
+        "p25": 10.75,
+        "median": 19,
+        "p75": 21
+      },
+      "meanShoppingEndGold": 16.85625,
+      "meanGoldBeforePreparation": 22.1025,
+      "meanGoldAtBattle": 16.85625,
+      "goldPeak": {
+        "observed": 800,
+        "total": 800,
+        "unobserved": 0,
+        "p25": 12.5,
+        "median": 21.5,
+        "p75": 30
+      },
+      "unusedGold": {
+        "observed": 800,
+        "total": 800,
+        "unobserved": 0,
+        "p25": 10.75,
+        "median": 19,
+        "p75": 21
+      },
+      "meanLevel": 5.05,
+      "meanPopulation": 5.05,
+      "meanBench": 3.98,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 0.52125,
+      "unitSpending": 2013,
+      "refreshSpending": 1200,
+      "xpSpending": 1000,
+      "interestIncome": 1005,
+      "meanCombatConversionGold": 5.26625,
+      "combatConversionGold": 4213,
+      "meanXpSpending": 1.25,
+      "meanRefreshSpending": 1.5,
+      "meanUnitSpending": 2.51625,
+      "ignoredUsefulOffers": 310,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 169,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "3:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanShoppingEndGold": 21.055,
+      "meanGoldBeforePreparation": 32.885,
+      "meanGoldAtBattle": 21.055,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 33,
+        "median": 33,
+        "p75": 34
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 21,
+        "p75": 22
+      },
+      "meanLevel": 5.8725,
+      "meanPopulation": 5.8725,
+      "meanBench": 3.94,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 1.1775,
+      "unitSpending": 1796,
+      "refreshSpending": 2232,
+      "xpSpending": 720,
+      "interestIncome": 768,
+      "meanCombatConversionGold": 11.87,
+      "combatConversionGold": 4748,
+      "meanXpSpending": 1.8,
+      "meanRefreshSpending": 5.58,
+      "meanUnitSpending": 4.49,
+      "ignoredUsefulOffers": 5,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 89,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "4:develop": {
+      "waves": 1000,
+      "shoppingEndGold": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 31,
+        "median": 31,
+        "p75": 32
+      },
+      "meanShoppingEndGold": 31.015,
+      "meanGoldBeforePreparation": 43.33,
+      "meanGoldAtBattle": 31.015,
+      "goldPeak": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 43,
+        "median": 46,
+        "p75": 47
+      },
+      "unusedGold": {
+        "observed": 1000,
+        "total": 1000,
+        "unobserved": 0,
+        "p25": 31,
+        "median": 31,
+        "p75": 32
+      },
+      "meanLevel": 5.972,
+      "meanPopulation": 5.972,
+      "meanBench": 5.286,
+      "meanReserveGold": 30,
+      "meanSpendableGold": 1.122,
+      "unitSpending": 5002,
+      "refreshSpending": 7600,
+      "xpSpending": 272,
+      "interestIncome": 2935,
+      "meanCombatConversionGold": 12.874,
+      "combatConversionGold": 12874,
+      "meanXpSpending": 0.272,
+      "meanRefreshSpending": 7.6,
+      "meanUnitSpending": 5.002,
+      "ignoredUsefulOffers": 977,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 12,
+      "populationOpportunitySeen": 28,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "4:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 24.5,
+        "p75": 31
+      },
+      "meanShoppingEndGold": 26.235,
+      "meanGoldBeforePreparation": 46.22,
+      "meanGoldAtBattle": 26.235,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 46,
+        "median": 47,
+        "p75": 47
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 24.5,
+        "p75": 31
+      },
+      "meanLevel": 6.4875,
+      "meanPopulation": 6.4875,
+      "meanBench": 4.5275,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 1.3275,
+      "unitSpending": 986,
+      "refreshSpending": 3494,
+      "xpSpending": 3584,
+      "interestIncome": 980,
+      "meanCombatConversionGold": 20.16,
+      "combatConversionGold": 8064,
+      "meanXpSpending": 8.96,
+      "meanRefreshSpending": 8.735,
+      "meanUnitSpending": 2.465,
+      "ignoredUsefulOffers": 36,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 196,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "5:develop": {
+      "waves": 1200,
+      "shoppingEndGold": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 41,
+        "median": 41,
+        "p75": 42
+      },
+      "meanShoppingEndGold": 41.08416666666667,
+      "meanGoldBeforePreparation": 54.375,
+      "meanGoldAtBattle": 41.08416666666667,
+      "goldPeak": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 52,
+        "median": 59,
+        "p75": 60
+      },
+      "unusedGold": {
+        "observed": 1200,
+        "total": 1200,
+        "unobserved": 0,
+        "p25": 41,
+        "median": 41,
+        "p75": 42
+      },
+      "meanLevel": 6.985,
+      "meanPopulation": 6.985,
+      "meanBench": 4.344166666666666,
+      "meanReserveGold": 40,
+      "meanSpendableGold": 2.0033333333333334,
+      "unitSpending": 2724,
+      "refreshSpending": 12922,
+      "xpSpending": 384,
+      "interestIncome": 4608,
+      "meanCombatConversionGold": 13.358333333333333,
+      "combatConversionGold": 16030,
+      "meanXpSpending": 0.32,
+      "meanRefreshSpending": 10.768333333333333,
+      "meanUnitSpending": 2.27,
+      "ignoredUsefulOffers": 63,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 13,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "5:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 22,
+        "median": 31,
+        "p75": 42.25
+      },
+      "meanShoppingEndGold": 34.995,
+      "meanGoldBeforePreparation": 59.365,
+      "meanGoldAtBattle": 34.995,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 49,
+        "median": 59,
+        "p75": 65
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 22,
+        "median": 31,
+        "p75": 42.25
+      },
+      "meanLevel": 7.215,
+      "meanPopulation": 7.215,
+      "meanBench": 4.6175,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 10.0475,
+      "unitSpending": 877,
+      "refreshSpending": 6322,
+      "xpSpending": 2576,
+      "interestIncome": 1241,
+      "meanCombatConversionGold": 24.4375,
+      "combatConversionGold": 9775,
+      "meanXpSpending": 6.44,
+      "meanRefreshSpending": 15.805,
+      "meanUnitSpending": 2.1925,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 60,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "6:develop": {
+      "waves": 1397,
+      "shoppingEndGold": {
+        "observed": 1397,
+        "total": 1397,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 52,
+        "p75": 70
+      },
+      "meanShoppingEndGold": 60.808160343593414,
+      "meanGoldBeforePreparation": 74.7780959198282,
+      "meanGoldAtBattle": 60.808160343593414,
+      "goldPeak": {
+        "observed": 1397,
+        "total": 1397,
+        "unobserved": 0,
+        "p25": 70,
+        "median": 71,
+        "p75": 86
+      },
+      "unusedGold": {
+        "observed": 1397,
+        "total": 1397,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 52,
+        "p75": 70
+      },
+      "meanLevel": 7.774516821760916,
+      "meanPopulation": 7.774516821760916,
+      "meanBench": 4.0529706513958486,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 11.960629921259843,
+      "unitSpending": 667,
+      "refreshSpending": 9848,
+      "xpSpending": 9052,
+      "interestIncome": 6721,
+      "meanCombatConversionGold": 14.006442376521116,
+      "combatConversionGold": 19567,
+      "meanXpSpending": 6.479599141016464,
+      "meanRefreshSpending": 7.049391553328562,
+      "meanUnitSpending": 0.47745168217609163,
+      "ignoredUsefulOffers": 13,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 195,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "6:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 32,
+        "median": 33,
+        "p75": 43
+      },
+      "meanShoppingEndGold": 40.2275,
+      "meanGoldBeforePreparation": 73.0675,
+      "meanGoldAtBattle": 40.2275,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 61,
+        "median": 70,
+        "p75": 88
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 32,
+        "median": 33,
+        "p75": 43
+      },
+      "meanLevel": 8.775,
+      "meanPopulation": 8.775,
+      "meanBench": 2.95,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 15.27,
+      "unitSpending": 152,
+      "refreshSpending": 7868,
+      "xpSpending": 5116,
+      "interestIncome": 1384,
+      "meanCombatConversionGold": 32.84,
+      "combatConversionGold": 13136,
+      "meanXpSpending": 12.79,
+      "meanRefreshSpending": 19.67,
+      "meanUnitSpending": 0.38,
+      "ignoredUsefulOffers": 4,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 107,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "7:develop": {
+      "waves": 1570,
+      "shoppingEndGold": {
+        "observed": 1570,
+        "total": 1570,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 51,
+        "p75": 52
+      },
+      "meanShoppingEndGold": 53.232484076433124,
+      "meanGoldBeforePreparation": 69.83375796178343,
+      "meanGoldAtBattle": 53.232484076433124,
+      "goldPeak": {
+        "observed": 1570,
+        "total": 1570,
+        "unobserved": 0,
+        "p25": 70,
+        "median": 70,
+        "p75": 71
+      },
+      "unusedGold": {
+        "observed": 1570,
+        "total": 1570,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 51,
+        "p75": 52
+      },
+      "meanLevel": 8.956687898089172,
+      "meanPopulation": 8.956687898089172,
+      "meanBench": 2.7394904458598726,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 3.727388535031847,
+      "unitSpending": 55,
+      "refreshSpending": 23638,
+      "xpSpending": 2396,
+      "interestIncome": 7685,
+      "meanCombatConversionGold": 16.6171974522293,
+      "combatConversionGold": 26089,
+      "meanXpSpending": 1.5261146496815288,
+      "meanRefreshSpending": 15.056050955414014,
+      "meanUnitSpending": 0.03503184713375796,
+      "ignoredUsefulOffers": 17,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 40,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "7:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 30,
+        "median": 32.5,
+        "p75": 42
+      },
+      "meanShoppingEndGold": 35.605,
+      "meanGoldBeforePreparation": 65.13,
+      "meanGoldAtBattle": 35.605,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 60,
+        "median": 70,
+        "p75": 70
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 30,
+        "median": 32.5,
+        "p75": 42
+      },
+      "meanLevel": 9.345,
+      "meanPopulation": 9.345,
+      "meanBench": 2.3725,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 10.605,
+      "unitSpending": 35,
+      "refreshSpending": 9450,
+      "xpSpending": 2360,
+      "interestIncome": 1304,
+      "meanCombatConversionGold": 29.6125,
+      "combatConversionGold": 11845,
+      "meanXpSpending": 5.9,
+      "meanRefreshSpending": 23.625,
+      "meanUnitSpending": 0.0875,
+      "ignoredUsefulOffers": 7,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 61,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "8:develop": {
+      "waves": 1273,
+      "shoppingEndGold": {
+        "observed": 1273,
+        "total": 1273,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 51,
+        "p75": 52
+      },
+      "meanShoppingEndGold": 56.988216810683426,
+      "meanGoldBeforePreparation": 74.73684210526316,
+      "meanGoldAtBattle": 56.988216810683426,
+      "goldPeak": {
+        "observed": 1273,
+        "total": 1273,
+        "unobserved": 0,
+        "p25": 70,
+        "median": 70,
+        "p75": 71
+      },
+      "unusedGold": {
+        "observed": 1273,
+        "total": 1273,
+        "unobserved": 0,
+        "p25": 51,
+        "median": 51,
+        "p75": 52
+      },
+      "meanLevel": 9.176747839748625,
+      "meanPopulation": 9.176747839748625,
+      "meanBench": 2.525530243519246,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 7.050274941084053,
+      "unitSpending": 25,
+      "refreshSpending": 22594,
+      "xpSpending": 0,
+      "interestIncome": 6287,
+      "meanCombatConversionGold": 17.76826394344069,
+      "combatConversionGold": 22619,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 17.748625294579732,
+      "meanUnitSpending": 0.019638648860958365,
+      "ignoredUsefulOffers": 30,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "8:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 32,
+        "p75": 78
+      },
+      "meanShoppingEndGold": 45.9225,
+      "meanGoldBeforePreparation": 77.12,
+      "meanGoldAtBattle": 45.9225,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 49,
+        "median": 70,
+        "p75": 106
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 21,
+        "median": 32,
+        "p75": 78
+      },
+      "meanLevel": 9.99,
+      "meanPopulation": 9.99,
+      "meanBench": 1.725,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 20.9225,
+      "unitSpending": 30,
+      "refreshSpending": 8728,
+      "xpSpending": 3736,
+      "interestIncome": 1353,
+      "meanCombatConversionGold": 31.235,
+      "combatConversionGold": 12494,
+      "meanXpSpending": 9.34,
+      "meanRefreshSpending": 21.82,
+      "meanUnitSpending": 0.075,
+      "ignoredUsefulOffers": 1,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 129,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "9:save": {
+      "waves": 785,
+      "shoppingEndGold": {
+        "observed": 785,
+        "total": 785,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 92,
+        "p75": 96
+      },
+      "meanShoppingEndGold": 75.14904458598726,
+      "meanGoldBeforePreparation": 75.14904458598726,
+      "meanGoldAtBattle": 75.14904458598726,
+      "goldPeak": {
+        "observed": 785,
+        "total": 785,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 92,
+        "p75": 96
+      },
+      "unusedGold": {
+        "observed": 785,
+        "total": 785,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 92,
+        "p75": 96
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.670063694267516,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 27.268789808917198,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 3669,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "9:develop": {
+      "waves": 815,
+      "shoppingEndGold": {
+        "observed": 815,
+        "total": 815,
+        "unobserved": 0,
+        "p25": 78,
+        "median": 83,
+        "p75": 87
+      },
+      "meanShoppingEndGold": 83.58895705521472,
+      "meanGoldBeforePreparation": 107.4564417177914,
+      "meanGoldAtBattle": 83.58895705521472,
+      "goldPeak": {
+        "observed": 815,
+        "total": 815,
+        "unobserved": 0,
+        "p25": 102,
+        "median": 107,
+        "p75": 111
+      },
+      "unusedGold": {
+        "observed": 815,
+        "total": 815,
+        "unobserved": 0,
+        "p25": 78,
+        "median": 83,
+        "p75": 87
+      },
+      "meanLevel": 9.985276073619632,
+      "meanPopulation": 9.985276073619632,
+      "meanBench": 1.7631901840490798,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 33.59018404907975,
+      "unitSpending": 0,
+      "refreshSpending": 19396,
+      "xpSpending": 56,
+      "interestIncome": 4074,
+      "meanCombatConversionGold": 23.867484662576686,
+      "combatConversionGold": 19452,
+      "meanXpSpending": 0.0687116564417178,
+      "meanRefreshSpending": 23.79877300613497,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 1,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "9:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 77,
+        "median": 78,
+        "p75": 87
+      },
+      "meanShoppingEndGold": 78.795,
+      "meanGoldBeforePreparation": 106.82,
+      "meanGoldAtBattle": 78.795,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 105,
+        "median": 106,
+        "p75": 115
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 77,
+        "median": 78,
+        "p75": 87
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 53.795,
+      "unitSpending": 0,
+      "refreshSpending": 11186,
+      "xpSpending": 24,
+      "interestIncome": 1995,
+      "meanCombatConversionGold": 28.025,
+      "combatConversionGold": 11210,
+      "meanXpSpending": 0.06,
+      "meanRefreshSpending": 27.965,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 1,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "10:save": {
+      "waves": 468,
+      "shoppingEndGold": {
+        "observed": 468,
+        "total": 468,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 96,
+        "p75": 97
+      },
+      "meanShoppingEndGold": 95.25213675213675,
+      "meanGoldBeforePreparation": 95.25213675213675,
+      "meanGoldAtBattle": 95.25213675213675,
+      "goldPeak": {
+        "observed": 468,
+        "total": 468,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 96,
+        "p75": 97
+      },
+      "unusedGold": {
+        "observed": 468,
+        "total": 468,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 96,
+        "p75": 97
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.7200854700854702,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 45.27991452991453,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2338,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "10:develop": {
+      "waves": 1132,
+      "shoppingEndGold": {
+        "observed": 1132,
+        "total": 1132,
+        "unobserved": 0,
+        "p25": 82,
+        "median": 86,
+        "p75": 91
+      },
+      "meanShoppingEndGold": 85.15901060070671,
+      "meanGoldBeforePreparation": 109.15901060070671,
+      "meanGoldAtBattle": 85.15901060070671,
+      "goldPeak": {
+        "observed": 1132,
+        "total": 1132,
+        "unobserved": 0,
+        "p25": 106,
+        "median": 110,
+        "p75": 115
+      },
+      "unusedGold": {
+        "observed": 1132,
+        "total": 1132,
+        "unobserved": 0,
+        "p25": 82,
+        "median": 86,
+        "p75": 91
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.7058303886925794,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 35.159010600706715,
+      "unitSpending": 0,
+      "refreshSpending": 27168,
+      "xpSpending": 0,
+      "interestIncome": 5660,
+      "meanCombatConversionGold": 24,
+      "combatConversionGold": 27168,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 24,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "10:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 77,
+        "p75": 82
+      },
+      "meanShoppingEndGold": 76.925,
+      "meanGoldBeforePreparation": 104.925,
+      "meanGoldAtBattle": 76.925,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 105,
+        "p75": 110
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 68,
+        "median": 77,
+        "p75": 82
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 51.925,
+      "unitSpending": 0,
+      "refreshSpending": 11200,
+      "xpSpending": 0,
+      "interestIncome": 2000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 11200,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "11:save": {
+      "waves": 531,
+      "shoppingEndGold": {
+        "observed": 531,
+        "total": 531,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 96,
+        "p75": 100
+      },
+      "meanShoppingEndGold": 95.17325800376648,
+      "meanGoldBeforePreparation": 95.17325800376648,
+      "meanGoldAtBattle": 95.17325800376648,
+      "goldPeak": {
+        "observed": 531,
+        "total": 531,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 96,
+        "p75": 100
+      },
+      "unusedGold": {
+        "observed": 531,
+        "total": 531,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 96,
+        "p75": 100
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.6930320150659133,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 45.17325800376648,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2655,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "11:develop": {
+      "waves": 1069,
+      "shoppingEndGold": {
+        "observed": 1069,
+        "total": 1069,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 90
+      },
+      "meanShoppingEndGold": 84.67633302151543,
+      "meanGoldBeforePreparation": 108.67633302151543,
+      "meanGoldAtBattle": 84.67633302151543,
+      "goldPeak": {
+        "observed": 1069,
+        "total": 1069,
+        "unobserved": 0,
+        "p25": 105,
+        "median": 110,
+        "p75": 114
+      },
+      "unusedGold": {
+        "observed": 1069,
+        "total": 1069,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 90
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.7184284377923293,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 34.67633302151543,
+      "unitSpending": 0,
+      "refreshSpending": 25656,
+      "xpSpending": 0,
+      "interestIncome": 5345,
+      "meanCombatConversionGold": 24,
+      "combatConversionGold": 25656,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 24,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "11:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 82,
+        "p75": 91
+      },
+      "meanShoppingEndGold": 82.645,
+      "meanGoldBeforePreparation": 110.645,
+      "meanGoldAtBattle": 82.645,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 109,
+        "median": 110,
+        "p75": 119
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 82,
+        "p75": 91
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 57.645,
+      "unitSpending": 0,
+      "refreshSpending": 11200,
+      "xpSpending": 0,
+      "interestIncome": 2000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 11200,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12:develop": {
+      "waves": 1193,
+      "shoppingEndGold": {
+        "observed": 1193,
+        "total": 1193,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 91
+      },
+      "meanShoppingEndGold": 86.45096395641241,
+      "meanGoldBeforePreparation": 110.45096395641241,
+      "meanGoldAtBattle": 86.45096395641241,
+      "goldPeak": {
+        "observed": 1193,
+        "total": 1193,
+        "unobserved": 0,
+        "p25": 105,
+        "median": 110,
+        "p75": 115
+      },
+      "unusedGold": {
+        "observed": 1193,
+        "total": 1193,
+        "unobserved": 0,
+        "p25": 81,
+        "median": 86,
+        "p75": 91
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.704945515507125,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 36.45096395641241,
+      "unitSpending": 0,
+      "refreshSpending": 28632,
+      "xpSpending": 0,
+      "interestIncome": 5965,
+      "meanCombatConversionGold": 24,
+      "combatConversionGold": 28632,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 24,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12:save": {
+      "waves": 407,
+      "shoppingEndGold": {
+        "observed": 407,
+        "total": 407,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 97,
+        "p75": 100
+      },
+      "meanShoppingEndGold": 96.93857493857494,
+      "meanGoldBeforePreparation": 96.93857493857494,
+      "meanGoldAtBattle": 96.93857493857494,
+      "goldPeak": {
+        "observed": 407,
+        "total": 407,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 97,
+        "p75": 100
+      },
+      "unusedGold": {
+        "observed": 407,
+        "total": 407,
+        "unobserved": 0,
+        "p25": 96,
+        "median": 97,
+        "p75": 100
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.7248157248157248,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 46.93857493857494,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2035,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12:stabilize": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 71,
+        "median": 72,
+        "p75": 81
+      },
+      "meanShoppingEndGold": 73.42,
+      "meanGoldBeforePreparation": 101.42,
+      "meanGoldAtBattle": 73.42,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 99,
+        "median": 100,
+        "p75": 109
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 71,
+        "median": 72,
+        "p75": 81
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.71,
+      "meanReserveGold": 25,
+      "meanSpendableGold": 48.42,
+      "unitSpending": 0,
+      "refreshSpending": 11200,
+      "xpSpending": 0,
+      "interestIncome": 2000,
+      "meanCombatConversionGold": 28,
+      "combatConversionGold": 11200,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 28,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "8:save": {
+      "waves": 327,
+      "shoppingEndGold": {
+        "observed": 327,
+        "total": 327,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 73,
+        "p75": 92
+      },
+      "meanShoppingEndGold": 72.07033639143731,
+      "meanGoldBeforePreparation": 72.07033639143731,
+      "meanGoldAtBattle": 72.07033639143731,
+      "goldPeak": {
+        "observed": 327,
+        "total": 327,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 73,
+        "p75": 92
+      },
+      "unusedGold": {
+        "observed": 327,
+        "total": 327,
+        "unobserved": 0,
+        "p25": 54,
+        "median": 73,
+        "p75": 92
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.7675840978593271,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 24.495412844036696,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 1513,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "7:save": {
+      "waves": 30,
+      "shoppingEndGold": {
+        "observed": 30,
+        "total": 30,
+        "unobserved": 0,
+        "p25": 70.25,
+        "median": 89,
+        "p75": 92.75
+      },
+      "meanShoppingEndGold": 78.16666666666667,
+      "meanGoldBeforePreparation": 78.16666666666667,
+      "meanGoldAtBattle": 78.16666666666667,
+      "goldPeak": {
+        "observed": 30,
+        "total": 30,
+        "unobserved": 0,
+        "p25": 70.25,
+        "median": 89,
+        "p75": 92.75
+      },
+      "unusedGold": {
+        "observed": 30,
+        "total": 30,
+        "unobserved": 0,
+        "p25": 70.25,
+        "median": 89,
+        "p75": 92.75
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 2.7333333333333334,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 29.433333333333334,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 144,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "2:save": {
+      "waves": 44,
+      "shoppingEndGold": {
+        "observed": 44,
+        "total": 44,
+        "unobserved": 0,
+        "p25": 1.75,
+        "median": 3,
+        "p75": 4
+      },
+      "meanShoppingEndGold": 3.3863636363636362,
+      "meanGoldBeforePreparation": 6.4772727272727275,
+      "meanGoldAtBattle": 3.3863636363636362,
+      "goldPeak": {
+        "observed": 44,
+        "total": 44,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 5,
+        "p75": 8
+      },
+      "unusedGold": {
+        "observed": 44,
+        "total": 44,
+        "unobserved": 0,
+        "p25": 1.75,
+        "median": 3,
+        "p75": 4
+      },
+      "meanLevel": 3.4318181818181817,
+      "meanPopulation": 3.4318181818181817,
+      "meanBench": 1.1818181818181819,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 3.3863636363636362,
+      "unitSpending": 104,
+      "refreshSpending": 0,
+      "xpSpending": 32,
+      "interestIncome": 3,
+      "meanCombatConversionGold": 3.090909090909091,
+      "combatConversionGold": 136,
+      "meanXpSpending": 0.7272727272727273,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.3636363636363638,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 6,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": 0
+    },
+    "6:save": {
+      "waves": 3,
+      "shoppingEndGold": {
+        "observed": 3,
+        "total": 3,
+        "unobserved": 0,
+        "p25": 69.5,
+        "median": 70,
+        "p75": 79
+      },
+      "meanShoppingEndGold": 75.66666666666667,
+      "meanGoldBeforePreparation": 75.66666666666667,
+      "meanGoldAtBattle": 75.66666666666667,
+      "goldPeak": {
+        "observed": 3,
+        "total": 3,
+        "unobserved": 0,
+        "p25": 69.5,
+        "median": 70,
+        "p75": 79
+      },
+      "unusedGold": {
+        "observed": 3,
+        "total": 3,
+        "unobserved": 0,
+        "p25": 69.5,
+        "median": 70,
+        "p75": 79
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 2,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 25.666666666666668,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 15,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "deaths": [],
+  "deathGold": {
+    "observed": 0,
+    "total": 0,
+    "unobserved": 0,
+    "p25": null,
+    "median": null,
+    "p75": null
+  },
+  "death100Plus": {
+    "wins": 0,
+    "total": 0,
+    "rate": null,
+    "low": null,
+    "high": null
+  },
+  "stage6Deaths": [],
+  "reasonCounts": {
+    "INTEREST_RESERVE": 2820,
+    "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE": 7829,
+    "NO_USEFUL_SHOP_OPTION": 16780,
+    "ROLL_LIMIT": 9349,
+    "CORE_ALREADY_STABLE": 1008,
+    "MAX_LEVEL": 8913,
+    "NO_BENCH_UPGRADE": 38,
+    "BENCH_FULL": 14
+  },
+  "highGoldExamples": [
+    {
+      "seed": 2002,
+      "stage": 6,
+      "round": 3,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2014,
+      "stage": 7,
+      "round": 3,
+      "gold": 107,
+      "reserve": 50,
+      "spendable": 57,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2015,
+      "stage": 6,
+      "round": 6,
+      "gold": 107,
+      "reserve": 50,
+      "spendable": 57,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2016,
+      "stage": 6,
+      "round": 4,
+      "gold": 104,
+      "reserve": 50,
+      "spendable": 54,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2021,
+      "stage": 6,
+      "round": 6,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2022,
+      "stage": 6,
+      "round": 5,
+      "gold": 107,
+      "reserve": 50,
+      "spendable": 57,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2025,
+      "stage": 6,
+      "round": 3,
+      "gold": 108,
+      "reserve": 50,
+      "spendable": 58,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2026,
+      "stage": 6,
+      "round": 3,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 1,
+            "candidateUnitId": "warrior",
+            "nextPopulationValue": 136.37124999999997,
+            "relativeValue": 0.5957819552834507,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 1,
+            "candidateUnitId": "warrior",
+            "nextPopulationValue": 136.37124999999997,
+            "relativeValue": 0.5957819552834507,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2027,
+      "stage": 6,
+      "round": 5,
+      "gold": 110,
+      "reserve": 50,
+      "spendable": 60,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2031,
+      "stage": 6,
+      "round": 7,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "duelist",
+            "nextPopulationValue": 170.97875,
+            "relativeValue": 0.7373258723715184,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "duelist",
+            "nextPopulationValue": 170.97875,
+            "relativeValue": 0.7373258723715184,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2031,
+      "stage": 7,
+      "round": 1,
+      "gold": 106,
+      "reserve": 50,
+      "spendable": 56,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6479453275169087,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6479453275169087,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2032,
+      "stage": 6,
+      "round": 4,
+      "gold": 107,
+      "reserve": 50,
+      "spendable": 57,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2033,
+      "stage": 6,
+      "round": 7,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2037,
+      "stage": 6,
+      "round": 6,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2038,
+      "stage": 6,
+      "round": 5,
+      "gold": 110,
+      "reserve": 50,
+      "spendable": 60,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 13,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 13,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2039,
+      "stage": 7,
+      "round": 1,
+      "gold": 106,
+      "reserve": 50,
+      "spendable": 56,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2045,
+      "stage": 6,
+      "round": 5,
+      "gold": 106,
+      "reserve": 50,
+      "spendable": 56,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2046,
+      "stage": 6,
+      "round": 5,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2051,
+      "stage": 6,
+      "round": 7,
+      "gold": 111,
+      "reserve": 50,
+      "spendable": 61,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2053,
+      "stage": 6,
+      "round": 6,
+      "gold": 106,
+      "reserve": 50,
+      "spendable": 56,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 56,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2054,
+      "stage": 6,
+      "round": 3,
+      "gold": 101,
+      "reserve": 50,
+      "spendable": 51,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2057,
+      "stage": 6,
+      "round": 3,
+      "gold": 101,
+      "reserve": 50,
+      "spendable": 51,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2062,
+      "stage": 6,
+      "round": 7,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2067,
+      "stage": 6,
+      "round": 7,
+      "gold": 113,
+      "reserve": 50,
+      "spendable": 63,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 63,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 63,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2071,
+      "stage": 6,
+      "round": 2,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2075,
+      "stage": 6,
+      "round": 5,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 16,
+            "candidateUnitId": "itachi",
+            "nextPopulationValue": 151.02280000000002,
+            "relativeValue": 0.6597919948404194,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 16,
+            "candidateUnitId": "itachi",
+            "nextPopulationValue": 151.02280000000002,
+            "relativeValue": 0.6597919948404194,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2082,
+      "stage": 7,
+      "round": 1,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2084,
+      "stage": 7,
+      "round": 5,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 10,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 56,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 10,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 56,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2087,
+      "stage": 6,
+      "round": 6,
+      "gold": 104,
+      "reserve": 50,
+      "spendable": 54,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2088,
+      "stage": 6,
+      "round": 7,
+      "gold": 111,
+      "reserve": 50,
+      "spendable": 61,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2093,
+      "stage": 6,
+      "round": 3,
+      "gold": 107,
+      "reserve": 50,
+      "spendable": 57,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 57,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2095,
+      "stage": 7,
+      "round": 2,
+      "gold": 110,
+      "reserve": 50,
+      "spendable": 60,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 60,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2098,
+      "stage": 7,
+      "round": 5,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 56,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 56,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2099,
+      "stage": 6,
+      "round": 3,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2100,
+      "stage": 6,
+      "round": 3,
+      "gold": 109,
+      "reserve": 50,
+      "spendable": 59,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 59,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2101,
+      "stage": 6,
+      "round": 4,
+      "gold": 108,
+      "reserve": 50,
+      "spendable": 58,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2103,
+      "stage": 6,
+      "round": 7,
+      "gold": 111,
+      "reserve": 50,
+      "spendable": 61,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2108,
+      "stage": 6,
+      "round": 5,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 16,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 16,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2109,
+      "stage": 6,
+      "round": 7,
+      "gold": 111,
+      "reserve": 50,
+      "spendable": 61,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 10,
+            "candidateUnitId": "duelist",
+            "nextPopulationValue": 170.97875,
+            "relativeValue": 0.7373258723715184,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 10,
+            "candidateUnitId": "duelist",
+            "nextPopulationValue": 170.97875,
+            "relativeValue": 0.7373258723715184,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2111,
+      "stage": 6,
+      "round": 7,
+      "gold": 113,
+      "reserve": 50,
+      "spendable": 63,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 63,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 63,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 6,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2114,
+      "stage": 6,
+      "round": 4,
+      "gold": 108,
+      "reserve": 50,
+      "spendable": 58,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 3,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2116,
+      "stage": 6,
+      "round": 5,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 1,
+            "candidateUnitId": "warrior",
+            "nextPopulationValue": 136.37124999999997,
+            "relativeValue": 0.5957819552834507,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 1,
+            "candidateUnitId": "warrior",
+            "nextPopulationValue": 136.37124999999997,
+            "relativeValue": 0.5957819552834507,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2117,
+      "stage": 6,
+      "round": 4,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2127,
+      "stage": 6,
+      "round": 7,
+      "gold": 104,
+      "reserve": 50,
+      "spendable": 54,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 8,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 54,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 8,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2128,
+      "stage": 7,
+      "round": 2,
+      "gold": 108,
+      "reserve": 50,
+      "spendable": 58,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 58,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 7,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2135,
+      "stage": 7,
+      "round": 2,
+      "gold": 112,
+      "reserve": 50,
+      "spendable": 62,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 62,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 8,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 62,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 8,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2136,
+      "stage": 6,
+      "round": 7,
+      "gold": 111,
+      "reserve": 50,
+      "spendable": 61,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 61,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 2,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2137,
+      "stage": 7,
+      "round": 1,
+      "gold": 101,
+      "reserve": 50,
+      "spendable": 51,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 51,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 4,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2138,
+      "stage": 6,
+      "round": 2,
+      "gold": 105,
+      "reserve": 50,
+      "spendable": 55,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 55,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 60,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    },
+    {
+      "seed": 2139,
+      "stage": 7,
+      "round": 1,
+      "gold": 102,
+      "reserve": 50,
+      "spendable": 52,
+      "reasons": [
+        "LEVEL_UP_NOT_AFFORDABLE_WITH_RESERVE",
+        "CORE_ALREADY_STABLE",
+        "NO_USEFUL_SHOP_OPTION"
+      ],
+      "policy": {
+        "initial": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "final": {
+          "mode": "develop",
+          "reserveGold": 50,
+          "spendableGold": 52,
+          "minGold": 0,
+          "maxRolls": 12,
+          "cores": {
+            "tank": "iron_golem",
+            "carry": "ranger",
+            "secondaryCarry": "enderman",
+            "ready": true
+          },
+          "coreIds": [
+            "ranger"
+          ],
+          "population": {
+            "candidateUid": 9,
+            "candidateUnitId": "guardian",
+            "nextPopulationValue": 145.86699999999996,
+            "relativeValue": 0.6372672133703482,
+            "gold": 64,
+            "worthwhile": true
+          },
+          "weakSlot": false,
+          "pairs": 0,
+          "coreChase": false,
+          "catalogUpgrade": false,
+          "wantsRoll": false,
+          "lossStreak": 0,
+          "levelUpAllowed": false
+        },
+        "xpBuys": 0,
+        "rolls": 0,
+        "rollLimit": 12
+      }
+    }
+  ],
+  "ironGolem": {
+    "purchases": 622,
+    "boardPresenceWaves": 16331,
+    "tankRoleWaves": 16331
+  }
+}

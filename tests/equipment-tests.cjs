@@ -38,3 +38,4 @@ assert.deepEqual(migrateSaveV2({owned:[{unitId:'test'}]}).owned[0].equipment,[])
 const uid=o.all()[0].uid;assert.equal(o.equip(uid,'guinsoo'),false);assert.equal(o.unequip(uid,3),false);
 o.remove(uid);assert.equal(o.equipmentReserve.length,6);
 console.log('PASS equipment: three slots, stats, attack stacks, skill bonus isolation, cap, new battle reset, deterministic replay, merge overflow, sale return and save');
+require('./advanced-equipment-tests.cjs');

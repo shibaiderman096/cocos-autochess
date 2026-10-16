@@ -1,0 +1,617 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/determinism/single-50",
+    "bot": "all",
+    "seedStart": 1,
+    "seedCount": 50,
+    "stages": 12,
+    "workers": 1,
+    "partition": "training",
+    "audit": true,
+    "config": "docs/p4-balance/freeze/candidate.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1
+    },
+    {
+      "bot": "weak",
+      "seed": 2
+    },
+    {
+      "bot": "weak",
+      "seed": 3
+    },
+    {
+      "bot": "weak",
+      "seed": 4
+    },
+    {
+      "bot": "weak",
+      "seed": 5
+    },
+    {
+      "bot": "weak",
+      "seed": 6
+    },
+    {
+      "bot": "weak",
+      "seed": 7
+    },
+    {
+      "bot": "weak",
+      "seed": 8
+    },
+    {
+      "bot": "weak",
+      "seed": 9
+    },
+    {
+      "bot": "weak",
+      "seed": 10
+    },
+    {
+      "bot": "weak",
+      "seed": 11
+    },
+    {
+      "bot": "weak",
+      "seed": 12
+    },
+    {
+      "bot": "weak",
+      "seed": 13
+    },
+    {
+      "bot": "weak",
+      "seed": 14
+    },
+    {
+      "bot": "weak",
+      "seed": 15
+    },
+    {
+      "bot": "weak",
+      "seed": 16
+    },
+    {
+      "bot": "weak",
+      "seed": 17
+    },
+    {
+      "bot": "weak",
+      "seed": 18
+    },
+    {
+      "bot": "weak",
+      "seed": 19
+    },
+    {
+      "bot": "weak",
+      "seed": 20
+    },
+    {
+      "bot": "weak",
+      "seed": 21
+    },
+    {
+      "bot": "weak",
+      "seed": 22
+    },
+    {
+      "bot": "weak",
+      "seed": 23
+    },
+    {
+      "bot": "weak",
+      "seed": 24
+    },
+    {
+      "bot": "weak",
+      "seed": 25
+    },
+    {
+      "bot": "weak",
+      "seed": 26
+    },
+    {
+      "bot": "weak",
+      "seed": 27
+    },
+    {
+      "bot": "weak",
+      "seed": 28
+    },
+    {
+      "bot": "weak",
+      "seed": 29
+    },
+    {
+      "bot": "weak",
+      "seed": 30
+    },
+    {
+      "bot": "weak",
+      "seed": 31
+    },
+    {
+      "bot": "weak",
+      "seed": 32
+    },
+    {
+      "bot": "weak",
+      "seed": 33
+    },
+    {
+      "bot": "weak",
+      "seed": 34
+    },
+    {
+      "bot": "weak",
+      "seed": 35
+    },
+    {
+      "bot": "weak",
+      "seed": 36
+    },
+    {
+      "bot": "weak",
+      "seed": 37
+    },
+    {
+      "bot": "weak",
+      "seed": 38
+    },
+    {
+      "bot": "weak",
+      "seed": 39
+    },
+    {
+      "bot": "weak",
+      "seed": 40
+    },
+    {
+      "bot": "weak",
+      "seed": 41
+    },
+    {
+      "bot": "weak",
+      "seed": 42
+    },
+    {
+      "bot": "weak",
+      "seed": 43
+    },
+    {
+      "bot": "weak",
+      "seed": 44
+    },
+    {
+      "bot": "weak",
+      "seed": 45
+    },
+    {
+      "bot": "weak",
+      "seed": 46
+    },
+    {
+      "bot": "weak",
+      "seed": 47
+    },
+    {
+      "bot": "weak",
+      "seed": 48
+    },
+    {
+      "bot": "weak",
+      "seed": 49
+    },
+    {
+      "bot": "weak",
+      "seed": 50
+    },
+    {
+      "bot": "medium",
+      "seed": 1
+    },
+    {
+      "bot": "medium",
+      "seed": 2
+    },
+    {
+      "bot": "medium",
+      "seed": 3
+    },
+    {
+      "bot": "medium",
+      "seed": 4
+    },
+    {
+      "bot": "medium",
+      "seed": 5
+    },
+    {
+      "bot": "medium",
+      "seed": 6
+    },
+    {
+      "bot": "medium",
+      "seed": 7
+    },
+    {
+      "bot": "medium",
+      "seed": 8
+    },
+    {
+      "bot": "medium",
+      "seed": 9
+    },
+    {
+      "bot": "medium",
+      "seed": 10
+    },
+    {
+      "bot": "medium",
+      "seed": 11
+    },
+    {
+      "bot": "medium",
+      "seed": 12
+    },
+    {
+      "bot": "medium",
+      "seed": 13
+    },
+    {
+      "bot": "medium",
+      "seed": 14
+    },
+    {
+      "bot": "medium",
+      "seed": 15
+    },
+    {
+      "bot": "medium",
+      "seed": 16
+    },
+    {
+      "bot": "medium",
+      "seed": 17
+    },
+    {
+      "bot": "medium",
+      "seed": 18
+    },
+    {
+      "bot": "medium",
+      "seed": 19
+    },
+    {
+      "bot": "medium",
+      "seed": 20
+    },
+    {
+      "bot": "medium",
+      "seed": 21
+    },
+    {
+      "bot": "medium",
+      "seed": 22
+    },
+    {
+      "bot": "medium",
+      "seed": 23
+    },
+    {
+      "bot": "medium",
+      "seed": 24
+    },
+    {
+      "bot": "medium",
+      "seed": 25
+    },
+    {
+      "bot": "medium",
+      "seed": 26
+    },
+    {
+      "bot": "medium",
+      "seed": 27
+    },
+    {
+      "bot": "medium",
+      "seed": 28
+    },
+    {
+      "bot": "medium",
+      "seed": 29
+    },
+    {
+      "bot": "medium",
+      "seed": 30
+    },
+    {
+      "bot": "medium",
+      "seed": 31
+    },
+    {
+      "bot": "medium",
+      "seed": 32
+    },
+    {
+      "bot": "medium",
+      "seed": 33
+    },
+    {
+      "bot": "medium",
+      "seed": 34
+    },
+    {
+      "bot": "medium",
+      "seed": 35
+    },
+    {
+      "bot": "medium",
+      "seed": 36
+    },
+    {
+      "bot": "medium",
+      "seed": 37
+    },
+    {
+      "bot": "medium",
+      "seed": 38
+    },
+    {
+      "bot": "medium",
+      "seed": 39
+    },
+    {
+      "bot": "medium",
+      "seed": 40
+    },
+    {
+      "bot": "medium",
+      "seed": 41
+    },
+    {
+      "bot": "medium",
+      "seed": 42
+    },
+    {
+      "bot": "medium",
+      "seed": 43
+    },
+    {
+      "bot": "medium",
+      "seed": 44
+    },
+    {
+      "bot": "medium",
+      "seed": 45
+    },
+    {
+      "bot": "medium",
+      "seed": 46
+    },
+    {
+      "bot": "medium",
+      "seed": 47
+    },
+    {
+      "bot": "medium",
+      "seed": 48
+    },
+    {
+      "bot": "medium",
+      "seed": 49
+    },
+    {
+      "bot": "medium",
+      "seed": 50
+    },
+    {
+      "bot": "strong",
+      "seed": 1
+    },
+    {
+      "bot": "strong",
+      "seed": 2
+    },
+    {
+      "bot": "strong",
+      "seed": 3
+    },
+    {
+      "bot": "strong",
+      "seed": 4
+    },
+    {
+      "bot": "strong",
+      "seed": 5
+    },
+    {
+      "bot": "strong",
+      "seed": 6
+    },
+    {
+      "bot": "strong",
+      "seed": 7
+    },
+    {
+      "bot": "strong",
+      "seed": 8
+    },
+    {
+      "bot": "strong",
+      "seed": 9
+    },
+    {
+      "bot": "strong",
+      "seed": 10
+    },
+    {
+      "bot": "strong",
+      "seed": 11
+    },
+    {
+      "bot": "strong",
+      "seed": 12
+    },
+    {
+      "bot": "strong",
+      "seed": 13
+    },
+    {
+      "bot": "strong",
+      "seed": 14
+    },
+    {
+      "bot": "strong",
+      "seed": 15
+    },
+    {
+      "bot": "strong",
+      "seed": 16
+    },
+    {
+      "bot": "strong",
+      "seed": 17
+    },
+    {
+      "bot": "strong",
+      "seed": 18
+    },
+    {
+      "bot": "strong",
+      "seed": 19
+    },
+    {
+      "bot": "strong",
+      "seed": 20
+    },
+    {
+      "bot": "strong",
+      "seed": 21
+    },
+    {
+      "bot": "strong",
+      "seed": 22
+    },
+    {
+      "bot": "strong",
+      "seed": 23
+    },
+    {
+      "bot": "strong",
+      "seed": 24
+    },
+    {
+      "bot": "strong",
+      "seed": 25
+    },
+    {
+      "bot": "strong",
+      "seed": 26
+    },
+    {
+      "bot": "strong",
+      "seed": 27
+    },
+    {
+      "bot": "strong",
+      "seed": 28
+    },
+    {
+      "bot": "strong",
+      "seed": 29
+    },
+    {
+      "bot": "strong",
+      "seed": 30
+    },
+    {
+      "bot": "strong",
+      "seed": 31
+    },
+    {
+      "bot": "strong",
+      "seed": 32
+    },
+    {
+      "bot": "strong",
+      "seed": 33
+    },
+    {
+      "bot": "strong",
+      "seed": 34
+    },
+    {
+      "bot": "strong",
+      "seed": 35
+    },
+    {
+      "bot": "strong",
+      "seed": 36
+    },
+    {
+      "bot": "strong",
+      "seed": 37
+    },
+    {
+      "bot": "strong",
+      "seed": 38
+    },
+    {
+      "bot": "strong",
+      "seed": 39
+    },
+    {
+      "bot": "strong",
+      "seed": 40
+    },
+    {
+      "bot": "strong",
+      "seed": 41
+    },
+    {
+      "bot": "strong",
+      "seed": 42
+    },
+    {
+      "bot": "strong",
+      "seed": 43
+    },
+    {
+      "bot": "strong",
+      "seed": 44
+    },
+    {
+      "bot": "strong",
+      "seed": 45
+    },
+    {
+      "bot": "strong",
+      "seed": 46
+    },
+    {
+      "bot": "strong",
+      "seed": 47
+    },
+    {
+      "bot": "strong",
+      "seed": 48
+    },
+    {
+      "bot": "strong",
+      "seed": 49
+    },
+    {
+      "bot": "strong",
+      "seed": 50
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\determinism\\single-50\\parts\\part-0.jsonl"
+}

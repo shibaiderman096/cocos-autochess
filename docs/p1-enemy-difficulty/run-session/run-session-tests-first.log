@@ -1,0 +1,13 @@
+PASS new session uses real starter, shop reservations and read-only bot observations
+PASS actions reject unpaid purchases, illegal cells, over-cap deployments and phase violations
+PASS shop, combat and preview RNG are isolated from enemy and bot streams (C/D/E)
+PASS save/load keeps shop refresh indices, UID allocation and deterministic continuation
+PASS old saves migrate deterministically without rerolling offers or granting duplicate starter
+PASS legal swaps, full bench merge, sale/equipment return and combat shopping share existing rules
+PASS locked shops persist across wave boundaries and paid rolls resume exactly
+  seed12345 SHA256 0912e53724b7eef0b77fb24b7e0bb8417559489d9b2abe31744ac6fd008d52bb
+PASS same seed full run report is byte-identical, another seed changes shops/actions (A/B)
+PASS 3/6/99 sampling cutoffs and actual campaign sizes keep full wave prefixes identical
+PASS terminal reasons include elimination, completion, sampling cutoff and simulation errors
+PASS minimal bot keeps legal positions, pool conservation and nonnegative gold across complete runs
+RunSession: 11 passed, 0 failed

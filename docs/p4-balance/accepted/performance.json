@@ -1,0 +1,323 @@
+{
+  "total": {
+    "runs": 8770,
+    "battles": 1593883,
+    "sumBatchWallSeconds": 4489.574868899999,
+    "standaloneReplayRuns": 1,
+    "standaloneReplayBattles": 38,
+    "recordedRuns": 8771,
+    "recordedBattles": 1593921
+  },
+  "batches": [
+    {
+      "report": "baseline/endless-20",
+      "runs": 60,
+      "battles": 49253,
+      "workers": 2,
+      "wallMilliseconds": 241492.1217,
+      "runsPerSecond": 0.24845531016757805,
+      "wavesPerSecond": 203.9528231947287
+    },
+    {
+      "report": "baseline/runs-500",
+      "runs": 1500,
+      "battles": 143987,
+      "workers": 4,
+      "wallMilliseconds": 315985.8475,
+      "runsPerSecond": 4.7470480461945375,
+      "wavesPerSecond": 455.67547135160856
+    },
+    {
+      "report": "determinism/parallel-50",
+      "runs": 150,
+      "battles": 9646,
+      "workers": 2,
+      "wallMilliseconds": 57920.6881,
+      "simulationWallMilliseconds": 57175.7083,
+      "runsPerSecond": 2.5897482388507744,
+      "wavesPerSecond": 166.5380767463638
+    },
+    {
+      "report": "determinism/single-50",
+      "runs": 150,
+      "battles": 9646,
+      "workers": 1,
+      "wallMilliseconds": 103864.7454,
+      "simulationWallMilliseconds": 103094.98969999999,
+      "runsPerSecond": 1.4441858921651003,
+      "wavesPerSecond": 92.87078077216371
+    },
+    {
+      "report": "development-200",
+      "runs": 600,
+      "battles": 57597,
+      "workers": 4,
+      "wallMilliseconds": 132883.0998,
+      "runsPerSecond": 4.515246866629762,
+      "wavesPerSecond": 433.44112296212404
+    },
+    {
+      "report": "formation/L0",
+      "runs": 200,
+      "battles": 16130,
+      "workers": 2,
+      "wallMilliseconds": 78537.6017,
+      "runsPerSecond": 2.546550896269602,
+      "wavesPerSecond": 205.37932978414338
+    },
+    {
+      "report": "formation/L1",
+      "runs": 50,
+      "battles": 3206,
+      "workers": 2,
+      "wallMilliseconds": 18509.915500000003,
+      "runsPerSecond": 2.70125490308154,
+      "wavesPerSecond": 173.20446438558835
+    },
+    {
+      "report": "formation/L2",
+      "runs": 50,
+      "battles": 3222,
+      "workers": 2,
+      "wallMilliseconds": 18356.2864,
+      "runsPerSecond": 2.7238624910537457,
+      "wavesPerSecond": 175.52569892350337
+    },
+    {
+      "report": "formation/L3",
+      "runs": 50,
+      "battles": 3310,
+      "workers": 2,
+      "wallMilliseconds": 18645.6959,
+      "runsPerSecond": 2.6815840110317364,
+      "wavesPerSecond": 177.52086153030095
+    },
+    {
+      "report": "holdout/runs-250",
+      "runs": 750,
+      "battles": 365506,
+      "workers": 12,
+      "wallMilliseconds": 655341.0554000001,
+      "simulationWallMilliseconds": 613487.5662,
+      "runsPerSecond": 1.1444422622694117,
+      "wavesPerSecond": 557.7340180173915
+    },
+    {
+      "report": "smoke-50",
+      "runs": 150,
+      "battles": 14435,
+      "workers": 4,
+      "wallMilliseconds": 31430.1347,
+      "runsPerSecond": 4.772489886910984,
+      "wavesPerSecond": 459.272610117067
+    },
+    {
+      "report": "training/confirmation-500",
+      "runs": 1500,
+      "battles": 94097,
+      "workers": 4,
+      "wallMilliseconds": 259449.0289,
+      "runsPerSecond": 5.7814824220373096,
+      "wavesPerSecond": 362.68010097762976
+    },
+    {
+      "report": "training/endless-20",
+      "runs": 60,
+      "battles": 29963,
+      "workers": 2,
+      "wallMilliseconds": 162424.672,
+      "runsPerSecond": 0.36940200808901746,
+      "wavesPerSecond": 184.4732061395205
+    },
+    {
+      "report": "training/search-v1/iteration-01",
+      "runs": 100,
+      "battles": 3800,
+      "workers": 4,
+      "wallMilliseconds": 5456.2314,
+      "runsPerSecond": 18.327668434296978,
+      "wavesPerSecond": 696.4514005032851
+    },
+    {
+      "report": "training/search-v1/iteration-02",
+      "runs": 100,
+      "battles": 3800,
+      "workers": 4,
+      "wallMilliseconds": 5739.4762,
+      "runsPerSecond": 17.423192729678014,
+      "wavesPerSecond": 662.0813237277645
+    },
+    {
+      "report": "training/search-v1/iteration-03",
+      "runs": 100,
+      "battles": 3779,
+      "workers": 4,
+      "wallMilliseconds": 6867.3119,
+      "runsPerSecond": 14.561738487515035,
+      "wavesPerSecond": 550.2880974431932
+    },
+    {
+      "report": "training/search-v1/iteration-04",
+      "runs": 100,
+      "battles": 3251,
+      "workers": 4,
+      "wallMilliseconds": 8629.6273,
+      "runsPerSecond": 11.587985960876898,
+      "wavesPerSecond": 376.72542358810796
+    },
+    {
+      "report": "training/search-v1/iteration-05",
+      "runs": 100,
+      "battles": 3800,
+      "workers": 4,
+      "wallMilliseconds": 5850.363600000001,
+      "runsPerSecond": 17.092954701140282,
+      "wavesPerSecond": 649.5322786433308
+    },
+    {
+      "report": "training/search-v1/iteration-06",
+      "runs": 100,
+      "battles": 3800,
+      "workers": 4,
+      "wallMilliseconds": 5800.0621,
+      "runsPerSecond": 17.241194710656632,
+      "wavesPerSecond": 655.1653990049521
+    },
+    {
+      "report": "training/search-v1/iteration-07",
+      "runs": 100,
+      "battles": 3800,
+      "workers": 4,
+      "wallMilliseconds": 5763.5002,
+      "runsPerSecond": 17.350567629025154,
+      "wavesPerSecond": 659.3215699029558
+    },
+    {
+      "report": "training/search-v1/iteration-08",
+      "runs": 100,
+      "battles": 3798,
+      "workers": 4,
+      "wallMilliseconds": 5698.6288,
+      "runsPerSecond": 17.548081040126704,
+      "wavesPerSecond": 666.4761179040122
+    },
+    {
+      "report": "training/search-v1/iteration-09",
+      "runs": 100,
+      "battles": 3679,
+      "workers": 4,
+      "wallMilliseconds": 7386.3768,
+      "runsPerSecond": 13.538437410883237,
+      "wavesPerSecond": 498.07911234639425
+    },
+    {
+      "report": "training/search-v1/iteration-10",
+      "runs": 100,
+      "battles": 3540,
+      "workers": 4,
+      "wallMilliseconds": 8142.094399999999,
+      "runsPerSecond": 12.281852197636029,
+      "wavesPerSecond": 434.77756779631545
+    },
+    {
+      "report": "training/search-v1/iteration-11",
+      "runs": 100,
+      "battles": 3009,
+      "workers": 4,
+      "wallMilliseconds": 7878.1582,
+      "runsPerSecond": 12.693322152378204,
+      "wavesPerSecond": 381.9420635650602
+    },
+    {
+      "report": "training/search-v1/iteration-12",
+      "runs": 100,
+      "battles": 2846,
+      "workers": 4,
+      "wallMilliseconds": 7810.5608999999995,
+      "runsPerSecond": 12.803177810187742,
+      "wavesPerSecond": 364.3784404779432
+    },
+    {
+      "report": "training/search-v1/iteration-13",
+      "runs": 100,
+      "battles": 3753,
+      "workers": 4,
+      "wallMilliseconds": 7222.764099999999,
+      "runsPerSecond": 13.845115057821149,
+      "wavesPerSecond": 519.6071681200277
+    },
+    {
+      "report": "training/search-v1/iteration-14",
+      "runs": 100,
+      "battles": 3707,
+      "workers": 4,
+      "wallMilliseconds": 7024.5558,
+      "runsPerSecond": 14.235775591675136,
+      "wavesPerSecond": 527.7202011833973
+    },
+    {
+      "report": "training/search-v1/iteration-15",
+      "runs": 100,
+      "battles": 3633,
+      "workers": 4,
+      "wallMilliseconds": 7708.6661,
+      "runsPerSecond": 12.972412957411658,
+      "wavesPerSecond": 471.28776274276555
+    },
+    {
+      "report": "training/search-v1/iteration-16",
+      "runs": 100,
+      "battles": 3514,
+      "workers": 4,
+      "wallMilliseconds": 8083.069300000001,
+      "runsPerSecond": 12.371538123519487,
+      "wavesPerSecond": 434.7358496604748
+    },
+    {
+      "report": "training/search-v1/iteration-17",
+      "runs": 100,
+      "battles": 3733,
+      "workers": 4,
+      "wallMilliseconds": 6140.962100000001,
+      "runsPerSecond": 16.284093334495584,
+      "wavesPerSecond": 607.8852041767201
+    },
+    {
+      "report": "training/search-v1/iteration-18",
+      "runs": 100,
+      "battles": 3737,
+      "workers": 4,
+      "wallMilliseconds": 5991.8752,
+      "runsPerSecond": 16.689266158280464,
+      "wavesPerSecond": 623.677876334941
+    },
+    {
+      "report": "training/search-v1/iteration-19",
+      "runs": 100,
+      "battles": 3696,
+      "workers": 4,
+      "wallMilliseconds": 6449.0072,
+      "runsPerSecond": 15.506262731417017,
+      "wavesPerSecond": 573.1114705531729
+    },
+    {
+      "report": "training/search-v1/iteration-20",
+      "runs": 100,
+      "battles": 3330,
+      "workers": 4,
+      "wallMilliseconds": 7872.7515,
+      "runsPerSecond": 12.702039433100358,
+      "wavesPerSecond": 422.97791312224194
+    },
+    {
+      "report": "validation/runs-500",
+      "runs": 1500,
+      "battles": 721880,
+      "workers": 4,
+      "wallMilliseconds": 2257217.9328,
+      "simulationWallMilliseconds": 2154437.3982,
+      "runsPerSecond": 0.6645348586874384,
+      "wavesPerSecond": 319.80961585952537
+    }
+  ]
+}

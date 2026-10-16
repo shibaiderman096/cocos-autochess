@@ -1,0 +1,726 @@
+{
+  "version": "enemy-power-v1",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "sourceHash": "c17d68540ce0515a0c43e08ad863a83df913ac10d2ebd8b8d29fe22d2d75c1e7",
+  "configHash": "ebee0b52f8891023b3f9d7e02430e7ddd6d6e5ca414d3eb9a668eafe31dd0d4b",
+  "note": "Coverage and residual reliability; not a posterior confidence interval. Support cases are counted once per derived value. Environment point metadata remains in enemy-power.json.",
+  "costBaseline": {
+    "1": {
+      "sampleCount": 182400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cost-tier median of measured identities; support counts distinct direct training matchups"
+      ],
+      "residualRmse": 0.03182051850136352,
+      "censoredFraction": 0
+    },
+    "2": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cost-tier median of measured identities; support counts distinct direct training matchups"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "3": {
+      "sampleCount": 139200,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cost-tier median of measured identities; support counts distinct direct training matchups"
+      ],
+      "residualRmse": 0.04951041072434209,
+      "censoredFraction": 0
+    },
+    "4": {
+      "sampleCount": 94400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cost-tier median of measured identities; support counts distinct direct training matchups"
+      ],
+      "residualRmse": 0.031152144116089853,
+      "censoredFraction": 0
+    },
+    "5": {
+      "sampleCount": 48000,
+      "independentSeeds": 400,
+      "reliability": "low",
+      "reasons": [
+        "cost-tier median of measured identities; support counts distinct direct training matchups",
+        "only one identity in cost tier"
+      ],
+      "residualRmse": 0.027690980673452666,
+      "censoredFraction": 0
+    }
+  },
+  "globalStarFactors": {
+    "1": {
+      "sampleCount": 552000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cross-unit median ratio; not an exact universal star multiplier"
+      ],
+      "residualRmse": 0.034932088548616576,
+      "censoredFraction": 0
+    },
+    "2": {
+      "sampleCount": 1080000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "cross-unit median ratio; not an exact universal star multiplier"
+      ],
+      "residualRmse": 0.0348636029272822,
+      "censoredFraction": 0
+    },
+    "3": {
+      "sampleCount": 672000,
+      "independentSeeds": 400,
+      "reliability": "low",
+      "reasons": [
+        "cross-unit median ratio; not an exact universal star multiplier"
+      ],
+      "residualRmse": 0.030077501765952443,
+      "censoredFraction": 0
+    }
+  },
+  "unitFactors": {
+    "warrior": {
+      "sampleCount": 182400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.03182051850136352,
+      "censoredFraction": 0
+    },
+    "archer": {
+      "sampleCount": 182400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.03182051850136352,
+      "censoredFraction": 0
+    },
+    "mage": {
+      "sampleCount": 139200,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.04951041072434209,
+      "censoredFraction": 0
+    },
+    "scout": {
+      "sampleCount": 182400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.03182051850136352,
+      "censoredFraction": 0
+    },
+    "guardian": {
+      "sampleCount": 182400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.03182051850136352,
+      "censoredFraction": 0
+    },
+    "duelist": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "ranger": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "shaman": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "sorcerer": {
+      "sampleCount": 139200,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.04951041072434209,
+      "censoredFraction": 0
+    },
+    "champion": {
+      "sampleCount": 139200,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.04951041072434209,
+      "censoredFraction": 0
+    },
+    "enderman": {
+      "sampleCount": 48000,
+      "independentSeeds": 400,
+      "reliability": "low",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.027690980673452666,
+      "censoredFraction": 0
+    },
+    "sasuke": {
+      "sampleCount": 94400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.031152144116089853,
+      "censoredFraction": 0
+    },
+    "sakura": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "young_sasuke": {
+      "sampleCount": 224000,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.028955260930433463,
+      "censoredFraction": 0
+    },
+    "itachi": {
+      "sampleCount": 94400,
+      "independentSeeds": 400,
+      "reliability": "medium",
+      "reasons": [
+        "ratio to a cost-tier median; constituent dependencies are shared"
+      ],
+      "residualRmse": 0.031152144116089853,
+      "censoredFraction": 0
+    }
+  },
+  "starFactors": {
+    "warrior": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03608667280706096,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.036560074763581,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.02558793161654548,
+        "censoredFraction": 0
+      }
+    },
+    "archer": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03405045856378204,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03138704871572845,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.024207695940881527,
+        "censoredFraction": 0
+      }
+    },
+    "mage": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.07400073149076725,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.07347182683355812,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.05839275719824145,
+        "censoredFraction": 0
+      }
+    },
+    "scout": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03026399171335715,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03107840233835124,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.024260201790013227,
+        "censoredFraction": 0
+      }
+    },
+    "guardian": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.025934353928112636,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.024328797999764392,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.01995985460548373,
+        "censoredFraction": 0
+      }
+    },
+    "duelist": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.019603932898640118,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.018950505406955344,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.01458345322557994,
+        "censoredFraction": 0
+      }
+    },
+    "ranger": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.029097631579356617,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.028161574833207463,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.024147045939863866,
+        "censoredFraction": 0
+      }
+    },
+    "shaman": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.0398325596562609,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.040785801209435035,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.028709194869181234,
+        "censoredFraction": 0
+      }
+    },
+    "sorcerer": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03781301274590256,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.037933729438650525,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03778733104790847,
+        "censoredFraction": 0
+      }
+    },
+    "champion": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.021163887076544412,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.020909787066088346,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.015141819787203513,
+        "censoredFraction": 0
+      }
+    },
+    "enderman": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.027690980673452666,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.0315194448292467,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.044986677619690156,
+        "censoredFraction": 0
+      }
+    },
+    "sasuke": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.023137634401955386,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.022500558489003803,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.016977325619136608,
+        "censoredFraction": 0
+      }
+    },
+    "sakura": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.031667893214862256,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03133402644411356,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.022852702232070476,
+        "censoredFraction": 0
+      }
+    },
+    "young_sasuke": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.019275919165829006,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.020739664800265463,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.02151616820419599,
+        "censoredFraction": 0
+      }
+    },
+    "itachi": {
+      "1": {
+        "sampleCount": 48000,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03749082608239933,
+        "censoredFraction": 0
+      },
+      "2": {
+        "sampleCount": 94400,
+        "independentSeeds": 400,
+        "reliability": "high",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03675376714384678,
+        "censoredFraction": 0
+      },
+      "3": {
+        "sampleCount": 56000,
+        "independentSeeds": 400,
+        "reliability": "low",
+        "reasons": [
+          "ratio of correlated measured points; support is not an independent posterior interval"
+        ],
+        "residualRmse": 0.03685193995284765,
+        "censoredFraction": 0
+      }
+    }
+  }
+}

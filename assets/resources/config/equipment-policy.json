@@ -1,0 +1,132 @@
+{
+  "enemyVersion": "equipment-policy-v1",
+  "rewardVersion": "equipment-reward-v1",
+  "tiers": {
+    "guinsoo": "advanced",
+    "totem_of_undying": "special",
+    "jeweled_gauntlet": "advanced",
+    "infinity_edge": "advanced",
+    "arcane_sovereignty": "advanced",
+    "crimson_bloodclaw": "advanced",
+    "abyssal_plate": "advanced",
+    "divine_judgment": "advanced",
+    "arcane_veil": "advanced",
+    "forest_sanctuary": "special"
+  },
+  "enemy": {
+    "calibratedItems": [
+      "guinsoo",
+      "infinity_edge",
+      "jeweled_gauntlet",
+      "totem_of_undying"
+    ],
+    "tierUnlock": {
+      "basic": 1,
+      "advanced": 3,
+      "special": 8
+    },
+    "maxEquipmentCandidatesPerUnit": 12,
+    "topKSingle": 2,
+    "topKCombination": 2,
+    "quotas": {
+      "normal": [
+        {
+          "stage": 1,
+          "maxEquippedUnits": 0,
+          "maxItemsPerUnit": 0,
+          "targetItems": 0
+        }
+      ],
+      "elite": [
+        {
+          "stage": 1,
+          "maxEquippedUnits": 0,
+          "maxItemsPerUnit": 0,
+          "targetItems": 0
+        },
+        {
+          "stage": 3,
+          "maxEquippedUnits": 1,
+          "maxItemsPerUnit": 1,
+          "targetItems": 1
+        },
+        {
+          "stage": 6,
+          "maxEquippedUnits": 2,
+          "maxItemsPerUnit": 1,
+          "targetItems": 2
+        }
+      ],
+      "boss": [
+        {
+          "stage": 1,
+          "maxEquippedUnits": 0,
+          "maxItemsPerUnit": 0,
+          "targetItems": 0
+        },
+        {
+          "stage": 3,
+          "maxEquippedUnits": 1,
+          "maxItemsPerUnit": 1,
+          "targetItems": 1
+        },
+        {
+          "stage": 6,
+          "maxEquippedUnits": 1,
+          "maxItemsPerUnit": 2,
+          "targetItems": 2
+        },
+        {
+          "stage": 10,
+          "maxEquippedUnits": 2,
+          "maxItemsPerUnit": 3,
+          "targetItems": 3
+        }
+      ]
+    },
+    "rolePreferences": {
+      "tank": [
+        "totem_of_undying",
+        "guinsoo"
+      ],
+      "melee_dps": [
+        "infinity_edge",
+        "guinsoo"
+      ],
+      "ranged_dps": [
+        "guinsoo",
+        "infinity_edge"
+      ],
+      "mage": [
+        "jeweled_gauntlet",
+        "guinsoo"
+      ],
+      "assassin": [
+        "guinsoo",
+        "infinity_edge"
+      ],
+      "support": [
+        "totem_of_undying",
+        "jeweled_gauntlet"
+      ]
+    },
+    "targetPenalty": 0.04,
+    "corePenalty": 0.01
+  },
+  "reward": {
+    "tierUnlock": {
+      "basic": 1,
+      "advanced": 4,
+      "special": 8
+    },
+    "eliteChance": 0.5,
+    "bossChance": 1,
+    "choices": 3,
+    "emptyBasicFallbackIds": [
+      "guinsoo",
+      "jeweled_gauntlet"
+    ],
+    "insufficientPool": "fewer-choices",
+    "guarantee": "last-eligible-victory"
+  }
+}

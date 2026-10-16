@@ -27,12 +27,15 @@ export class OwnedUnits {
   private nextUid = 1;
   equipmentReserve: string[] = [];
 
-  constructor(initial?: OwnedUnit[]) {
+  constructor(initial?: OwnedUnit[], nextUid?: number) {
     if (initial) {
       for (const u of initial) this.list.push({ ...u, equipment: [...(u.equipment ?? [])].slice(0, MAX_EQUIPMENT) });
       this.nextUid = this.list.reduce((m, u) => Math.max(m, u.uid), 0) + 1;
     }
+    if (Number.isSafeInteger(nextUid) && nextUid! >= this.nextUid) this.nextUid = nextUid!;
   }
+
+  get nextUnitUid(): number { return this.nextUid; }
 
   equip(uid: number, id: string): boolean {
     const unit = this.get(uid); if (!unit || (unit.equipment?.length ?? 0) >= MAX_EQUIPMENT) return false;

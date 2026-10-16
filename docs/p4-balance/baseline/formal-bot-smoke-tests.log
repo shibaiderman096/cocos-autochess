@@ -1,0 +1,9 @@
+PASS P4 observation is current public information, detached/frozen and has no future/RNG/model or privileged core references
+PASS formal policy modules cannot import battle simulation, calibrated model, orchestration or privileged mutation APIs
+PASS all three bots run real public actions, conserve cards/equipment/gold, and repeat complete decisions and battles
+PASS all bot purchase/reward/formation/equipment histories preserve 3/6/99 common prefixes
+PASS economy policies use true interest rules and spend reserves under low HP without changing game rules
+PASS Strong responds to current visible enemy flank, while basic rows do not read future information
+PASS metrics have Wilson 95% intervals, explicit zero denominators and censored star timing coverage
+PASS all P0-P3 evidence, calibrated model, unit/skill/equipment values and economy/shop rules remain protected
+Formal bots: 8 passed, 0 failed

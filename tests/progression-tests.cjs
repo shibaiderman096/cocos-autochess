@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 15);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,2,1]);
-assert.equal(cfg.allUnits().length,15,'monsters must stay out of shop inventory');
+assert.equal(units.length, 16);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,3,1]);
+assert.equal(cfg.allUnits().length,16,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -26,7 +26,7 @@ assert.deepEqual([1,2,3,4,5,6,7,8,99].map(s=>longWaves.filter(w=>w.stage===s).le
 assert.equal(runRoundCount(99,runConfig),longWaves.length);
 const expandedRoster=[...units,{...units[0],id:'cost4',cost:4},{...units[0],id:'cost5',cost:5}];
 const expandedWaves=buildRunWaves(10,runConfig,templates,expandedRoster);
-assert.ok(expandedWaves.filter(w=>w.stage===8||w.stage===9).every(w=>w.enemies.every(e=>expandedRoster.find(u=>u.id===e.unitId).cost===5)), 'new implemented higher costs are selected without changing base stats');
+assert.ok(expandedWaves.filter(w=>(w.stage===8||w.stage===9)&&w.encounterKind!=='monster').every(w=>w.enemies.every(e=>expandedRoster.find(u=>u.id===e.unitId).cost===5)), 'new implemented higher costs are selected without changing base stats');
 for(const v of [-9,0,2,NaN,Infinity,undefined]) assert.equal(normalizeStageCount(v),3);
 assert.equal(normalizeStageCount(4.9),4);
 assert.deepEqual(build(3),waves,'generation is deterministic');
@@ -37,8 +37,11 @@ for(const count of [4,6,99]) {
 for(const invalid of [NaN,Infinity,-1,0]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationEveryRounds:invalid}}),/Invalid run configuration/);
 let completed=0;
 for(const wave of longWaves.filter(w=>w.stage>=2)) {
-  assert.equal(wave.enemies.length,Math.min(10,1+Math.floor(completed/3)));
+  assert.equal(wave.enemies.length,wave.encounterKind==='specialShop'?0:Math.min(10,1+Math.floor(completed/3)));
   completed++;
+  if(wave.encounterKind==='monster'){
+    assert.ok(wave.enemies.every(e=>e.star===1&&e.statMultiplier===1+(wave.stage-1)*runConfig.stageEncounters.monsterStatGrowth));continue;
+  }
   const expectedCost=wave.stage<4?1:wave.stage<6?2:wave.stage<8?3:5;
   const expectedStar=wave.stage<6?1:wave.stage<10?2:3;
   for(const e of wave.enemies) {
@@ -65,15 +68,16 @@ for (const u of units) { assert.ok(u.artId); if (u.skillId) assert.ok(skills[u.s
 for(const wave of waves.filter(w=>w.stage===1)) {
   const enemies=wave.enemies.map(e=>({cfg:cfg.getUnit(e.unitId),side:1,...e}));
   for(const e of enemies) assert.equal(e.cfg.atkSpeed,.75,'monster attack speed stays fixed');
-  for(const e of enemies) for(const key of ['hp','atk','armor','mr','spellPower']) {
-    assert.equal(e.cfg[key],cfg.getUnit(runConfig.starterUnitId)[key]*.25,`monster quarter ${key}`);
+  for(const e of enemies) for(const key of ['hp','atk','armor','mr']) {
+    assert.equal(e.cfg[key],runConfig.monsterTemplate[key],`independent monster template ${key}`);
   }
   const sim=new BattleSim(cfg,[...enemies,{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
   sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
   for(const enemy of sim.units.filter(u=>u.side===1)) {
     const hits=sim.events.filter(e=>e.t==='hit'&&e.id===enemy.id);
-    assert.ok(hits.length>=3,`${enemy.cfg.id} must survive at least two starter attacks with crits`);
-    assert.ok(hits[0].dmg<enemy.cfg.hp,'the first hit cannot kill a full-health monster');
+    assert.ok(hits.length>0,`${enemy.cfg.id} must take damage`);
+    const basics=hits.filter(hit=>sim.events.some(e=>e.t==='attack'&&e.id===hit.source&&e.target===enemy.id&&e.tick===hit.tick));
+    assert.ok(basics.every(hit=>hit.dmg<enemy.cfg.hp),'ordinary attacks cannot one-shot full-health monsters; caster skills may');
   }
 }
 const flow = new RoundFlow(waves, rules);
@@ -104,15 +108,17 @@ for (let i = 0; i < waves.length; i++) {
 assert.equal(run.result, 'victory'); assert.equal(run.phase, 'ended'); assert.equal(run.health, 20);
 // Exercise every configured skill through the shared pipeline, including low-HP targeting.
 for (const [id, skill] of Object.entries(skills)) {
-  const caster = {...cfg.getUnit('mage'), skillId:id, range:4, startMana:80};
-  const target = {...cfg.getUnit('warrior'), hp:10000};
+  const caster = {...cfg.getUnit('mage'), skillId:id, range:4, maxMana:100, startMana:100};
+  const target = {...cfg.getUnit('warrior'), hp:10000, skillId:undefined, maxMana:0, startMana:0};
   const sim = new BattleSim(cfg,[{cfg:caster,side:0,x:3,y:3},
     {cfg:target,side:1,x:3,y:4},{cfg:target,side:1,x:3,y:5}],{seed:42,w:7,h:8});
   sim.units[2].hp=500;
+  sim.units[0].hp=Math.round(sim.units[0].cfg.hp*.5);
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
-  assert.equal(cast.target,skill.effect==='healChannel'?1:skill.targeting==='lowestHp'?3:2,id);
-  if (skill.effect === 'teleportEmpower' || skill.effect === 'damageBurn' || skill.effect === 'healChannel' || skill.effect === 'damageStun') {
+  assert.ok(cast,`${id} must start casting with full mana`);
+  assert.equal(cast.target,['healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  if (skill.effect === 'teleportEmpower' || cast.duration > 0) {
     assert.equal(sim.events.filter(e=>e.t==='hit' && e.id!==1).length,0,'empower cast does not deal immediate damage');
     continue; // Delayed attack effects are covered by enderman-tests.cjs.
   }
@@ -124,4 +130,4 @@ for (const [id, skill] of Object.entries(skills)) {
 const owned = new OwnedUnits();
 for(let i=0;i<9;i++) owned.addToBench('warrior',9);
 assert.equal(owned.all().length,1); assert.equal(owned.all()[0].star,3);
-console.log('Shared stats, cost/star progression, capped population and late bonuses, quarter-strength monsters, real battles, save resume and skills passed');
+console.log('Shared stats, cost/star progression, special encounters, capped population and late bonuses, independent monsters, real battles, save resume and skills passed');

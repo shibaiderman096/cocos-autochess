@@ -1,0 +1,6 @@
+[
+  {
+    "key": "stageEncounterAtlas",
+    "prompt": "Use case: stylized-concept. Asset type: one production encounter icon sprite atlas for a floating-island fantasy autochess game, square 1024 by 1024 with an exact 2 by 2 grid of four equal square cells. True transparent background, generous padding, strictly no overlap across cells. Top-left: a menacing luminous green claw emerging from broken stone, emblem for monster battle. Top-right: crossed ornate silver swords over a purple crystal shield, emblem for elite battle. Bottom-left: a small inviting traveling merchant stall with teal awning, warm lantern, and a pile of golden coins, emblem for special shop. Bottom-right: a dark horned dragon crown and crimson gem above an open gilded treasure chest, emblem for boss treasure. Cohesive premium hand-painted anime fantasy icon style with dark teal shadows, aged gold trims, jewel tones and crisp readable shapes. No text, typography, borders, UI panels, characters, scenery, checkerboard or black background. One centered emblem per equal cell."
+  }
+]

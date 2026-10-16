@@ -1,0 +1,278 @@
+{
+  "partitions": {
+    "historicalOnly": [
+      1,
+      1250
+    ],
+    "smoke": [
+      1951,
+      2000
+    ],
+    "development": [
+      2001,
+      2200
+    ],
+    "qualification": [
+      2201,
+      2700
+    ],
+    "longTail": [
+      2701,
+      2750
+    ],
+    "reservedR2": {
+      "training": [
+        3001,
+        3500
+      ],
+      "validation": [
+        4001,
+        4500
+      ],
+      "holdout": [
+        5001,
+        5250
+      ]
+    }
+  },
+  "previouslyUsed": [
+    {
+      "file": "docs/p4-balance/baseline/endless-20/provenance.json",
+      "range": [
+        1,
+        20
+      ]
+    },
+    {
+      "file": "docs/p4-balance/baseline/runs-500/provenance.json",
+      "range": [
+        1,
+        500
+      ]
+    },
+    {
+      "file": "docs/p4-balance/determinism/parallel-50/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/determinism/single-50/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/development-200/provenance.json",
+      "range": [
+        1,
+        200
+      ]
+    },
+    {
+      "file": "docs/p4-balance/formation/L0/provenance.json",
+      "range": [
+        1,
+        200
+      ]
+    },
+    {
+      "file": "docs/p4-balance/formation/L1/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/formation/L2/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/formation/L3/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/holdout/runs-250/provenance.json",
+      "range": [
+        1001,
+        1250
+      ]
+    },
+    {
+      "file": "docs/p4-balance/smoke-50/provenance.json",
+      "range": [
+        1,
+        50
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/confirmation-500/provenance.json",
+      "range": [
+        1,
+        500
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/endless-20/provenance.json",
+      "range": [
+        1,
+        20
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-01/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-02/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-03/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-04/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-05/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-06/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-07/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-08/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-09/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-10/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-11/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-12/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-13/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-14/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-15/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-16/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-17/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-18/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-19/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/training/search-v1/iteration-20/provenance.json",
+      "range": [
+        1,
+        100
+      ]
+    },
+    {
+      "file": "docs/p4-balance/validation/runs-500/provenance.json",
+      "range": [
+        501,
+        1000
+      ]
+    }
+  ]
+}

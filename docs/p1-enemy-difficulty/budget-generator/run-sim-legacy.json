@@ -1,0 +1,9403 @@
+{
+  "schemaVersion": 1,
+  "runSeed": 12345,
+  "rulesVersion": 1,
+  "bot": "MinimalBaselineBot",
+  "enemyGenerationMode": "legacy",
+  "stageCount": 10,
+  "maxStage": 10,
+  "maxWaves": null,
+  "configHash": "d1c871087e0dd8d79c6886a38b2e24a498f6dfecd561633707e808f2a5203067",
+  "result": "PLAYER_DEAD",
+  "gameResult": "defeat",
+  "endState": {
+    "runSeed": 12345,
+    "rulesVersion": 1,
+    "stage": 6,
+    "round": 2,
+    "waveId": 31,
+    "playerHp": 0,
+    "gold": 391,
+    "level": 6,
+    "xp": 22,
+    "phase": "ended",
+    "result": "defeat"
+  },
+  "waves": [
+    {
+      "globalWaveId": 1,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "intro",
+      "enemyBudget": null,
+      "waveId": 1,
+      "stage": 1,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 0,
+      "goldAtBattle": 0,
+      "goldAfter": 3,
+      "levelAtBattle": 1,
+      "xpAtBattle": 0,
+      "level": 2,
+      "xp": 0,
+      "shop": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "warrior"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "warrior"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [],
+      "enemies": [
+        {
+          "unitId": "zombie",
+          "x": 3,
+          "y": 4,
+          "star": 1,
+          "statMultiplier": 1
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        }
+      ],
+      "battle": {
+        "seed": 3833654595,
+        "result": 0,
+        "ticks": 59,
+        "duration": 2.95,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 2,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 0,
+          "total": 3,
+          "goldBefore": 0,
+          "goldAfter": 3,
+          "winStreak": 1,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 1
+      }
+    },
+    {
+      "globalWaveId": 2,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "intro",
+      "enemyBudget": null,
+      "waveId": 2,
+      "stage": 1,
+      "round": 2,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 3,
+      "goldAtBattle": 0,
+      "goldAfter": 4,
+      "levelAtBattle": 2,
+      "xpAtBattle": 0,
+      "level": 3,
+      "xp": 0,
+      "shop": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "silverfish",
+          "x": 2,
+          "y": 4,
+          "star": 1,
+          "statMultiplier": 1
+        },
+        {
+          "unitId": "silverfish",
+          "x": 4,
+          "y": 4,
+          "star": 1,
+          "statMultiplier": 1
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 2
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 3
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "uid": 4
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2764043685,
+        "result": 0,
+        "ticks": 88,
+        "duration": 4.4,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 2,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 1,
+          "total": 4,
+          "goldBefore": 0,
+          "goldAfter": 4,
+          "winStreak": 2,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 1
+      }
+    },
+    {
+      "globalWaveId": 3,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "intro",
+      "enemyBudget": null,
+      "waveId": 3,
+      "stage": 1,
+      "round": 3,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 4,
+      "goldAtBattle": 0,
+      "goldAfter": 4,
+      "levelAtBattle": 3,
+      "xpAtBattle": 0,
+      "level": 3,
+      "xp": 2,
+      "shop": [
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "young_sasuke"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "young_sasuke"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 5,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 7,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "red_eye_spider",
+          "x": 2,
+          "y": 4,
+          "star": 1,
+          "statMultiplier": 1
+        },
+        {
+          "unitId": "skeleton_archer",
+          "x": 3,
+          "y": 5,
+          "star": 1,
+          "statMultiplier": 1
+        },
+        {
+          "unitId": "red_eye_spider",
+          "x": 4,
+          "y": 4,
+          "star": 1,
+          "statMultiplier": 1
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "move",
+            "uid": 3,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 5
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 6
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 6,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "uid": 7
+          }
+        }
+      ],
+      "battle": {
+        "seed": 3624210737,
+        "result": 0,
+        "ticks": 88,
+        "duration": 4.4,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 2,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 1,
+          "total": 4,
+          "goldBefore": 0,
+          "goldAfter": 4,
+          "winStreak": 3,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 4,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 4,
+      "stage": 2,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 4,
+      "goldAtBattle": 0,
+      "goldAfter": 7,
+      "levelAtBattle": 3,
+      "xpAtBattle": 2,
+      "level": 3,
+      "xp": 4,
+      "shop": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "archer"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "archer"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 5,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 8
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 9
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 6,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "uid": 10
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 6,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 11
+          }
+        }
+      ],
+      "battle": {
+        "seed": 314111486,
+        "result": 0,
+        "ticks": 67,
+        "duration": 3.35,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 4,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 2,
+          "total": 7,
+          "goldBefore": 0,
+          "goldAfter": 7,
+          "winStreak": 4,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 5,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 5,
+      "stage": 2,
+      "round": 2,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 7,
+      "goldAtBattle": 1,
+      "goldAfter": 8,
+      "levelAtBattle": 3,
+      "xpAtBattle": 4,
+      "level": 4,
+      "xp": 0,
+      "shop": [
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 5,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 12,
+          "unitId": "archer",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 16,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 12
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 13
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "uid": 14
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 15
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": true,
+            "uid": 16
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1723894318,
+        "result": 0,
+        "ticks": 67,
+        "duration": 3.35,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 4,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 2,
+          "total": 7,
+          "goldBefore": 1,
+          "goldAfter": 8,
+          "winStreak": 5,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 1
+      }
+    },
+    {
+      "globalWaveId": 6,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 6,
+      "stage": 2,
+      "round": 3,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 8,
+      "goldAtBattle": 1,
+      "goldAfter": 9,
+      "levelAtBattle": 4,
+      "xpAtBattle": 0,
+      "level": 4,
+      "xp": 2,
+      "shop": [
+        {
+          "unitId": "young_sasuke"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "warrior"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 5,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 16,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 20,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "move",
+            "uid": 6,
+            "to": {
+              "location": "board",
+              "x": 1,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 17
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 18
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 11,
+            "to": {
+              "location": "board",
+              "x": 1,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "uid": 19
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 20
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": true,
+            "uid": 21
+          }
+        }
+      ],
+      "battle": {
+        "seed": 746024572,
+        "result": 0,
+        "ticks": 45,
+        "duration": 2.25,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 4,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 3,
+          "total": 8,
+          "goldBefore": 1,
+          "goldAfter": 9,
+          "winStreak": 6,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 7,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 7,
+      "stage": 2,
+      "round": 4,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 9,
+      "goldAtBattle": 8,
+      "goldAfter": 16,
+      "levelAtBattle": 4,
+      "xpAtBattle": 2,
+      "level": 4,
+      "xp": 4,
+      "shop": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "guardian"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": null
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 5,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 16,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": true,
+            "mergedUid": 15
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1979539111,
+        "result": 0,
+        "ticks": 67,
+        "duration": 3.35,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 4,
+          "winBonus": 1,
+          "interest": 0,
+          "streakBonus": 3,
+          "total": 8,
+          "goldBefore": 8,
+          "goldAfter": 16,
+          "winStreak": 7,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 8,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 8,
+      "stage": 2,
+      "round": 5,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 16,
+      "goldAtBattle": 13,
+      "goldAfter": 22,
+      "levelAtBattle": 4,
+      "xpAtBattle": 4,
+      "level": 4,
+      "xp": 6,
+      "shop": [
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "mage"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "mage"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 16,
+          "unitId": "ranger",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 23,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 23
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "mergedUid": 3
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 3,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 1,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 25
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 239579714,
+        "result": 0,
+        "ticks": 73,
+        "duration": 3.65,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 4,
+          "winBonus": 1,
+          "interest": 1,
+          "streakBonus": 3,
+          "total": 9,
+          "goldBefore": 13,
+          "goldAfter": 22,
+          "winStreak": 8,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 9,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 9,
+      "stage": 3,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 22,
+      "goldAtBattle": 19,
+      "goldAfter": 30,
+      "levelAtBattle": 4,
+      "xpAtBattle": 6,
+      "level": 4,
+      "xp": 8,
+      "shop": [
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "archer"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "archer"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 23,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "mergedUid": 6
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 6,
+            "to": {
+              "location": "board",
+              "x": 3,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 3,
+            "to": {
+              "location": "board",
+              "x": 1,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": true,
+            "uid": 27
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 574613853,
+        "result": 0,
+        "ticks": 73,
+        "duration": 3.65,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 1,
+          "streakBonus": 3,
+          "total": 11,
+          "goldBefore": 19,
+          "goldAfter": 30,
+          "winStreak": 9,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 10,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 10,
+      "stage": 3,
+      "round": 2,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 30,
+      "goldAtBattle": 28,
+      "goldAfter": 40,
+      "levelAtBattle": 4,
+      "xpAtBattle": 8,
+      "level": 5,
+      "xp": 0,
+      "shop": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "mergedUid": 21
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 29
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 539903935,
+        "result": 0,
+        "ticks": 91,
+        "duration": 4.55,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 2,
+          "streakBonus": 3,
+          "total": 12,
+          "goldBefore": 28,
+          "goldAfter": 40,
+          "winStreak": 10,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 1
+      }
+    },
+    {
+      "globalWaveId": 11,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 11,
+      "stage": 3,
+      "round": 3,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 40,
+      "goldAtBattle": 37,
+      "goldAfter": 50,
+      "levelAtBattle": 5,
+      "xpAtBattle": 0,
+      "level": 5,
+      "xp": 2,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 5,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 30
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1971267187,
+        "result": 0,
+        "ticks": 73,
+        "duration": 3.65,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 3,
+          "streakBonus": 3,
+          "total": 13,
+          "goldBefore": 37,
+          "goldAfter": 50,
+          "winStreak": 11,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 12,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 12,
+      "stage": 3,
+      "round": 4,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 50,
+      "goldAtBattle": 50,
+      "goldAfter": 65,
+      "levelAtBattle": 5,
+      "xpAtBattle": 2,
+      "level": 5,
+      "xp": 4,
+      "shop": [
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "shaman"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "shaman"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 895236132,
+        "result": 0,
+        "ticks": 73,
+        "duration": 3.65,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 15,
+          "goldBefore": 50,
+          "goldAfter": 65,
+          "winStreak": 12,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 13,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 13,
+      "stage": 3,
+      "round": 5,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 65,
+      "goldAtBattle": 65,
+      "goldAfter": 80,
+      "levelAtBattle": 5,
+      "xpAtBattle": 4,
+      "level": 5,
+      "xp": 6,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 150176021,
+        "result": 0,
+        "ticks": 117,
+        "duration": 5.85,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 15,
+          "goldBefore": 65,
+          "goldAfter": 80,
+          "winStreak": 13,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 14,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 14,
+      "stage": 3,
+      "round": 6,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 80,
+      "goldAtBattle": 80,
+      "goldAfter": 95,
+      "levelAtBattle": 5,
+      "xpAtBattle": 6,
+      "level": 5,
+      "xp": 8,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "warrior",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "archer",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "scout",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "guardian",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2717145401,
+        "result": 0,
+        "ticks": 121,
+        "duration": 6.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 6,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 15,
+          "goldBefore": 80,
+          "goldAfter": 95,
+          "winStreak": 14,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 15,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 15,
+      "stage": 4,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 95,
+      "goldAtBattle": 95,
+      "goldAfter": 112,
+      "levelAtBattle": 5,
+      "xpAtBattle": 8,
+      "level": 5,
+      "xp": 10,
+      "shop": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "mage"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "mage"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 3430908460,
+        "result": 0,
+        "ticks": 133,
+        "duration": 6.65,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 95,
+          "goldAfter": 112,
+          "winStreak": 15,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 16,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 16,
+      "stage": 4,
+      "round": 2,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 112,
+      "goldAtBattle": 112,
+      "goldAfter": 129,
+      "levelAtBattle": 5,
+      "xpAtBattle": 10,
+      "level": 5,
+      "xp": 12,
+      "shop": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2923943878,
+        "result": 0,
+        "ticks": 181,
+        "duration": 9.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 112,
+          "goldAfter": 129,
+          "winStreak": 16,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 17,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 17,
+      "stage": 4,
+      "round": 3,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 129,
+      "goldAtBattle": 129,
+      "goldAfter": 146,
+      "levelAtBattle": 5,
+      "xpAtBattle": 12,
+      "level": 5,
+      "xp": 14,
+      "shop": [
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "warrior"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "warrior"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 3284866699,
+        "result": 0,
+        "ticks": 177,
+        "duration": 8.85,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 129,
+          "goldAfter": 146,
+          "winStreak": 17,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 18,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 18,
+      "stage": 4,
+      "round": 4,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 146,
+      "goldAtBattle": 146,
+      "goldAfter": 163,
+      "levelAtBattle": 5,
+      "xpAtBattle": 14,
+      "level": 5,
+      "xp": 16,
+      "shop": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 278913386,
+        "result": 0,
+        "ticks": 177,
+        "duration": 8.85,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 146,
+          "goldAfter": 163,
+          "winStreak": 18,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 19,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 19,
+      "stage": 4,
+      "round": 5,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 163,
+      "goldAtBattle": 163,
+      "goldAfter": 180,
+      "levelAtBattle": 5,
+      "xpAtBattle": 16,
+      "level": 5,
+      "xp": 18,
+      "shop": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "young_sasuke"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "young_sasuke"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1995464648,
+        "result": 0,
+        "ticks": 221,
+        "duration": 11.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 163,
+          "goldAfter": 180,
+          "winStreak": 19,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 20,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 20,
+      "stage": 4,
+      "round": 6,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 180,
+      "goldAtBattle": 180,
+      "goldAfter": 197,
+      "levelAtBattle": 5,
+      "xpAtBattle": 18,
+      "level": 6,
+      "xp": 0,
+      "shop": [
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "guardian"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "guardian"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2282937091,
+        "result": 0,
+        "ticks": 261,
+        "duration": 13.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 180,
+          "goldAfter": 197,
+          "winStreak": 20,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 1
+      }
+    },
+    {
+      "globalWaveId": 21,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 21,
+      "stage": 4,
+      "round": 7,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 197,
+      "goldAtBattle": 195,
+      "goldAfter": 212,
+      "levelAtBattle": 6,
+      "xpAtBattle": 0,
+      "level": 6,
+      "xp": 2,
+      "shop": [
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "itachi"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "itachi"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "scout"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 31,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "move",
+            "uid": 11,
+            "to": {
+              "location": "board",
+              "x": 0,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": true,
+            "uid": 31
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2386717019,
+        "result": 0,
+        "ticks": 196,
+        "duration": 9.8,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 8,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 17,
+          "goldBefore": 195,
+          "goldAfter": 212,
+          "winStreak": 21,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 22,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 22,
+      "stage": 5,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 212,
+      "goldAtBattle": 212,
+      "goldAfter": 231,
+      "levelAtBattle": 6,
+      "xpAtBattle": 2,
+      "level": 6,
+      "xp": 4,
+      "shop": [
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "sorcerer"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "mage"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "ranger"
+        },
+        {
+          "unitId": "sorcerer"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 31,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2729285232,
+        "result": 0,
+        "ticks": 221,
+        "duration": 11.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 212,
+          "goldAfter": 231,
+          "winStreak": 22,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 23,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 23,
+      "stage": 5,
+      "round": 2,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 231,
+      "goldAtBattle": 227,
+      "goldAfter": 246,
+      "levelAtBattle": 6,
+      "xpAtBattle": 4,
+      "level": 6,
+      "xp": 6,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": null
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": true,
+            "mergedUid": 19
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 19,
+            "to": {
+              "location": "board",
+              "x": 2,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 1,
+            "to": {
+              "location": "board",
+              "x": 4,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 2,
+            "to": {
+              "location": "board",
+              "x": 1,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 3,
+            "to": {
+              "location": "board",
+              "x": 5,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "move",
+            "uid": 4,
+            "to": {
+              "location": "board",
+              "x": 0,
+              "y": 3
+            }
+          },
+          "result": {
+            "ok": true
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": true,
+            "uid": 33
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2748660152,
+        "result": 0,
+        "ticks": 221,
+        "duration": 11.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 227,
+          "goldAfter": 246,
+          "winStreak": 23,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 24,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 24,
+      "stage": 5,
+      "round": 3,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 246,
+      "goldAtBattle": 246,
+      "goldAfter": 265,
+      "levelAtBattle": 6,
+      "xpAtBattle": 6,
+      "level": 6,
+      "xp": 8,
+      "shop": [
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2901694223,
+        "result": 0,
+        "ticks": 221,
+        "duration": 11.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 246,
+          "goldAfter": 265,
+          "winStreak": 24,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 25,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 25,
+      "stage": 5,
+      "round": 4,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 265,
+      "goldAtBattle": 265,
+      "goldAfter": 284,
+      "levelAtBattle": 6,
+      "xpAtBattle": 8,
+      "level": 6,
+      "xp": 10,
+      "shop": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2276691539,
+        "result": 0,
+        "ticks": 261,
+        "duration": 13.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 265,
+          "goldAfter": 284,
+          "winStreak": 25,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 26,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 26,
+      "stage": 5,
+      "round": 5,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 284,
+      "goldAtBattle": 284,
+      "goldAfter": 303,
+      "levelAtBattle": 6,
+      "xpAtBattle": 10,
+      "level": 6,
+      "xp": 12,
+      "shop": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "sorcerer"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "sorcerer"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 895797802,
+        "result": 0,
+        "ticks": 281,
+        "duration": 14.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 284,
+          "goldAfter": 303,
+          "winStreak": 26,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 27,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 27,
+      "stage": 5,
+      "round": 6,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 303,
+      "goldAtBattle": 303,
+      "goldAfter": 322,
+      "levelAtBattle": 6,
+      "xpAtBattle": 12,
+      "level": 6,
+      "xp": 14,
+      "shop": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "sasuke"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "sakura"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "sasuke"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "sakura"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 791441283,
+        "result": 0,
+        "ticks": 331,
+        "duration": 16.55,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 303,
+          "goldAfter": 322,
+          "winStreak": 27,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 28,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 28,
+      "stage": 5,
+      "round": 7,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 322,
+      "goldAtBattle": 322,
+      "goldAfter": 341,
+      "levelAtBattle": 6,
+      "xpAtBattle": 14,
+      "level": 6,
+      "xp": 16,
+      "shop": [
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "shaman"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "scout"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "shaman"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1251742574,
+        "result": 0,
+        "ticks": 341,
+        "duration": 17.05,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 322,
+          "goldAfter": 341,
+          "winStreak": 28,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 29,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 29,
+      "stage": 5,
+      "round": 8,
+      "hpBefore": 20,
+      "hpAfter": 20,
+      "goldBefore": 341,
+      "goldAtBattle": 341,
+      "goldAfter": 360,
+      "levelAtBattle": 6,
+      "xpAtBattle": 16,
+      "level": 6,
+      "xp": 18,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "young_sasuke"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "warrior"
+        },
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "duelist"
+        },
+        {
+          "unitId": "young_sasuke"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "young_sasuke",
+          "star": 1,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "duelist",
+          "star": 1,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "ranger",
+          "star": 1,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "shaman",
+          "star": 1,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sakura",
+          "star": 1,
+          "y": 5,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 1577854175,
+        "result": 0,
+        "ticks": 331,
+        "duration": 16.55,
+        "damageTaken": 0
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 1,
+          "interest": 5,
+          "streakBonus": 3,
+          "total": 19,
+          "goldBefore": 341,
+          "goldAfter": 360,
+          "winStreak": 29,
+          "loseStreak": 0
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 30,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 30,
+      "stage": 6,
+      "round": 1,
+      "hpBefore": 20,
+      "hpAfter": 6,
+      "goldBefore": 360,
+      "goldAtBattle": 360,
+      "goldAfter": 375,
+      "levelAtBattle": 6,
+      "xpAtBattle": 18,
+      "level": 6,
+      "xp": 20,
+      "shop": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "champion"
+        },
+        {
+          "unitId": "guardian"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "sorcerer"
+        },
+        {
+          "unitId": "ranger"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 5,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 74709357,
+        "result": 1,
+        "ticks": 201,
+        "duration": 10.05,
+        "damageTaken": 14
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 0,
+          "interest": 5,
+          "streakBonus": 0,
+          "total": 15,
+          "goldBefore": 360,
+          "goldAfter": 375,
+          "winStreak": 0,
+          "loseStreak": 1
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    },
+    {
+      "globalWaveId": 31,
+      "budgetWaveIndex": 0,
+      "enemyGenerationMode": "legacy",
+      "waveKind": "normal",
+      "enemyBudget": null,
+      "waveId": 31,
+      "stage": 6,
+      "round": 2,
+      "hpBefore": 6,
+      "hpAfter": 0,
+      "goldBefore": 375,
+      "goldAtBattle": 375,
+      "goldAfter": 391,
+      "levelAtBattle": 6,
+      "xpAtBattle": 20,
+      "level": 6,
+      "xp": 22,
+      "shop": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "young_sasuke"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "shopAtBattle": [
+        {
+          "unitId": "shaman"
+        },
+        {
+          "unitId": "archer"
+        },
+        {
+          "unitId": "sakura"
+        },
+        {
+          "unitId": "young_sasuke"
+        },
+        {
+          "unitId": "duelist"
+        }
+      ],
+      "playerUnits": [
+        {
+          "uid": 1,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "board",
+          "x": 4,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 2,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "board",
+          "x": 1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 3,
+          "unitId": "scout",
+          "star": 2,
+          "location": "board",
+          "x": 5,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 4,
+          "unitId": "archer",
+          "star": 2,
+          "location": "board",
+          "x": 0,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 6,
+          "unitId": "ranger",
+          "star": 2,
+          "location": "board",
+          "x": 3,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 19,
+          "unitId": "sakura",
+          "star": 2,
+          "location": "board",
+          "x": 2,
+          "y": 3,
+          "equipment": []
+        }
+      ],
+      "benchUnits": [
+        {
+          "uid": 11,
+          "unitId": "archer",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 4,
+          "equipment": []
+        },
+        {
+          "uid": 15,
+          "unitId": "guardian",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 5,
+          "equipment": []
+        },
+        {
+          "uid": 17,
+          "unitId": "young_sasuke",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 1,
+          "equipment": []
+        },
+        {
+          "uid": 21,
+          "unitId": "warrior",
+          "star": 2,
+          "location": "bench",
+          "x": -1,
+          "y": 8,
+          "equipment": []
+        },
+        {
+          "uid": 25,
+          "unitId": "guardian",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 0,
+          "equipment": []
+        },
+        {
+          "uid": 27,
+          "unitId": "scout",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 6,
+          "equipment": []
+        },
+        {
+          "uid": 29,
+          "unitId": "warrior",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 7,
+          "equipment": []
+        },
+        {
+          "uid": 30,
+          "unitId": "champion",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 3,
+          "equipment": []
+        },
+        {
+          "uid": 33,
+          "unitId": "sakura",
+          "star": 1,
+          "location": "bench",
+          "x": -1,
+          "y": 2,
+          "equipment": []
+        }
+      ],
+      "enemies": [
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 4,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 4,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 4,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 4,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 5,
+          "x": 3,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 2,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "sorcerer",
+          "star": 2,
+          "y": 5,
+          "x": 4,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "champion",
+          "star": 2,
+          "y": 5,
+          "x": 1,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "unitId": "mage",
+          "star": 2,
+          "y": 5,
+          "x": 5,
+          "statMultiplier": 1,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "actions": [
+        {
+          "action": {
+            "type": "buy",
+            "index": 0
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 1
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 2
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 3
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        },
+        {
+          "action": {
+            "type": "buy",
+            "index": 4
+          },
+          "result": {
+            "ok": false,
+            "error": "bench_full"
+          }
+        }
+      ],
+      "battle": {
+        "seed": 2733862436,
+        "result": 1,
+        "ticks": 201,
+        "duration": 10.05,
+        "damageTaken": 6
+      },
+      "reward": {
+        "breakdown": {
+          "floorIncome": 10,
+          "winBonus": 0,
+          "interest": 5,
+          "streakBonus": 1,
+          "total": 16,
+          "goldBefore": 375,
+          "goldAfter": 391,
+          "winStreak": 0,
+          "loseStreak": 2
+        },
+        "expGained": 2,
+        "levelUps": 0
+      }
+    }
+  ],
+  "enemyGenerationVersion": "legacy",
+  "powerModelVersion": "none",
+  "powerModelCalibrationHash": "none",
+  "difficultyConfigVersion": "none"
+}

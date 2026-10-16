@@ -1,0 +1,2637 @@
+{
+  "schema": "bot-economy-audit-v2",
+  "runs": 50,
+  "battles": 4900,
+  "definitions": {
+    "unusedGold": "gold at battle; reserve and spendable are separate",
+    "populationOpportunity": "per-wave: marginal-value/affordability opportunity or real XP purchase; missed means still worthwhile and affordable at preparation end",
+    "ignoredOffers": "useful legal public offers discarded at refresh or left at preparation end",
+    "benchPowerProxy": "rough public attributes, not calibrated power"
+  },
+  "stages": {
+    "1": {
+      "waves": 150,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 4,
+        "p75": 4
+      },
+      "shoppingEndGold": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanShoppingEndGold": 0.08,
+      "meanGoldBeforePreparation": 2.3333333333333335,
+      "meanGoldAtBattle": 0.08,
+      "goldPeak": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 3,
+        "p75": 4
+      },
+      "unusedGold": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanLevel": 2,
+      "meanPopulation": 1.9866666666666666,
+      "meanBench": 0.8666666666666667,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.08,
+      "unitSpending": 338,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 2.2533333333333334,
+      "combatConversionGold": 338,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.2533333333333334,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "2": {
+      "waves": 250,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 4,
+        "median": 4,
+        "p75": 4
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 17,
+        "median": 23,
+        "p75": 27
+      },
+      "shoppingEndGold": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 1,
+        "median": 3,
+        "p75": 9
+      },
+      "meanShoppingEndGold": 5.5,
+      "meanGoldBeforePreparation": 9.896,
+      "meanGoldAtBattle": 5.5,
+      "goldPeak": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 7,
+        "median": 9,
+        "p75": 14.75
+      },
+      "unusedGold": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 1,
+        "median": 3,
+        "p75": 9
+      },
+      "meanLevel": 3.756,
+      "meanPopulation": 3.756,
+      "meanBench": 3.104,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 5.5,
+      "unitSpending": 837,
+      "refreshSpending": 110,
+      "xpSpending": 152,
+      "interestIncome": 66,
+      "meanCombatConversionGold": 4.396,
+      "combatConversionGold": 1099,
+      "meanXpSpending": 0.608,
+      "meanRefreshSpending": 0.44,
+      "meanUnitSpending": 3.348,
+      "ignoredUsefulOffers": 4,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 211,
+      "populationOpportunityMissed": 85,
+      "populationOpportunityMissedRate": 0.4028436018957346
+    },
+    "3": {
+      "waves": 300,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 17,
+        "median": 23,
+        "p75": 27
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 73,
+        "median": 80,
+        "p75": 89
+      },
+      "shoppingEndGold": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 23,
+        "median": 35,
+        "p75": 52
+      },
+      "meanShoppingEndGold": 37.95333333333333,
+      "meanGoldBeforePreparation": 41.31666666666667,
+      "meanGoldAtBattle": 37.95333333333333,
+      "goldPeak": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 27,
+        "median": 38.5,
+        "p75": 61
+      },
+      "unusedGold": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 23,
+        "median": 35,
+        "p75": 52
+      },
+      "meanLevel": 5,
+      "meanPopulation": 5,
+      "meanBench": 3.9966666666666666,
+      "meanReserveGold": 9.666666666666666,
+      "meanSpendableGold": 28.286666666666665,
+      "unitSpending": 815,
+      "refreshSpending": 146,
+      "xpSpending": 48,
+      "interestIncome": 938,
+      "meanCombatConversionGold": 3.3633333333333333,
+      "combatConversionGold": 1009,
+      "meanXpSpending": 0.16,
+      "meanRefreshSpending": 0.4866666666666667,
+      "meanUnitSpending": 2.716666666666667,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 279,
+      "populationOpportunityMissed": 251,
+      "populationOpportunityMissedRate": 0.899641577060932
+    },
+    "4": {
+      "waves": 350,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 73,
+        "median": 80,
+        "p75": 89
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 167.25,
+        "median": 172.5,
+        "p75": 181.75
+      },
+      "shoppingEndGold": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 86,
+        "median": 111,
+        "p75": 137
+      },
+      "meanShoppingEndGold": 111.47714285714285,
+      "meanGoldBeforePreparation": 115.28857142857143,
+      "meanGoldAtBattle": 111.47714285714285,
+      "goldPeak": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 113,
+        "p75": 143.75
+      },
+      "unusedGold": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 86,
+        "median": 111,
+        "p75": 137
+      },
+      "meanLevel": 6,
+      "meanPopulation": 6,
+      "meanBench": 4.274285714285714,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 91.47714285714285,
+      "unitSpending": 828,
+      "refreshSpending": 112,
+      "xpSpending": 400,
+      "interestIncome": 1748,
+      "meanCombatConversionGold": 3.8285714285714287,
+      "combatConversionGold": 1340,
+      "meanXpSpending": 1.1428571428571428,
+      "meanRefreshSpending": 0.32,
+      "meanUnitSpending": 2.3657142857142857,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 350,
+      "populationOpportunityMissed": 350,
+      "populationOpportunityMissedRate": 1
+    },
+    "5": {
+      "waves": 400,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 167.25,
+        "median": 172.5,
+        "p75": 181.75
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 282.25,
+        "median": 289,
+        "p75": 295.5
+      },
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 176,
+        "median": 209,
+        "p75": 242.25
+      },
+      "meanShoppingEndGold": 210.3,
+      "meanGoldBeforePreparation": 214.815,
+      "meanGoldAtBattle": 210.3,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 185,
+        "median": 211,
+        "p75": 246
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 176,
+        "median": 209,
+        "p75": 242.25
+      },
+      "meanLevel": 6.875,
+      "meanPopulation": 6.875,
+      "meanBench": 4.495,
+      "meanReserveGold": 30,
+      "meanSpendableGold": 180.3,
+      "unitSpending": 831,
+      "refreshSpending": 0,
+      "xpSpending": 1000,
+      "interestIncome": 2000,
+      "meanCombatConversionGold": 4.5775,
+      "combatConversionGold": 1831,
+      "meanXpSpending": 2.5,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.0775,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 4,
+      "populationOpportunitySeen": 400,
+      "populationOpportunityMissed": 399,
+      "populationOpportunityMissedRate": 0.9975
+    },
+    "6": {
+      "waves": 450,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 282.25,
+        "median": 289,
+        "p75": 295.5
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 441,
+        "median": 451,
+        "p75": 458
+      },
+      "shoppingEndGold": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 318,
+        "median": 359.5,
+        "p75": 398
+      },
+      "meanShoppingEndGold": 358.32666666666665,
+      "meanGoldBeforePreparation": 359.41555555555556,
+      "meanGoldAtBattle": 358.32666666666665,
+      "goldPeak": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 319,
+        "median": 360,
+        "p75": 399.75
+      },
+      "unusedGold": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 318,
+        "median": 359.5,
+        "p75": 398
+      },
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanBench": 4.7555555555555555,
+      "meanReserveGold": 40,
+      "meanSpendableGold": 318.32666666666665,
+      "unitSpending": 519,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2250,
+      "meanCombatConversionGold": 1.1533333333333333,
+      "combatConversionGold": 519,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.1533333333333333,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 7,
+      "populationOpportunitySeen": 450,
+      "populationOpportunityMissed": 450,
+      "populationOpportunityMissedRate": 1
+    },
+    "7": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 441,
+        "median": 451,
+        "p75": 458
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 597.25,
+        "median": 603.5,
+        "p75": 610
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 460,
+        "median": 504.5,
+        "p75": 548
+      },
+      "meanShoppingEndGold": 505.622,
+      "meanGoldBeforePreparation": 509.204,
+      "meanGoldAtBattle": 505.622,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 466,
+        "median": 505.5,
+        "p75": 550
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 460,
+        "median": 504.5,
+        "p75": 548
+      },
+      "meanLevel": 7.9,
+      "meanPopulation": 7.9,
+      "meanBench": 3.97,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 455.622,
+      "unitSpending": 609,
+      "refreshSpending": 0,
+      "xpSpending": 1200,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 3.618,
+      "combatConversionGold": 1809,
+      "meanXpSpending": 2.4,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.218,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "8": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 597.25,
+        "median": 603.5,
+        "p75": 610
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 779.25,
+        "median": 791,
+        "p75": 795
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 640,
+        "median": 684,
+        "p75": 733
+      },
+      "meanShoppingEndGold": 685.488,
+      "meanGoldBeforePreparation": 686.064,
+      "meanGoldAtBattle": 685.488,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 641,
+        "median": 685,
+        "p75": 734.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 640,
+        "median": 684,
+        "p75": 733
+      },
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanBench": 3.92,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 635.488,
+      "unitSpending": 304,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0.608,
+      "combatConversionGold": 304,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.608,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "9": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 779.25,
+        "median": 791,
+        "p75": 795
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 944.25,
+        "median": 952.5,
+        "p75": 959.75
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 799.75,
+        "median": 847,
+        "p75": 893.25
+      },
+      "meanShoppingEndGold": 848.432,
+      "meanGoldBeforePreparation": 851.106,
+      "meanGoldAtBattle": 848.432,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 806,
+        "median": 847,
+        "p75": 894.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 799.75,
+        "median": 847,
+        "p75": 893.25
+      },
+      "meanLevel": 8.8,
+      "meanPopulation": 8.8,
+      "meanBench": 2.918,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 798.432,
+      "unitSpending": 137,
+      "refreshSpending": 0,
+      "xpSpending": 1200,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 2.674,
+      "combatConversionGold": 1337,
+      "meanXpSpending": 2.4,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.274,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "10": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 944.25,
+        "median": 952.5,
+        "p75": 959.75
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1133.25,
+        "median": 1142.5,
+        "p75": 1149.75
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1083.25
+      },
+      "meanShoppingEndGold": 1036.64,
+      "meanGoldBeforePreparation": 1036.648,
+      "meanGoldAtBattle": 1036.64,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1084
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1083.25
+      },
+      "meanLevel": 9,
+      "meanPopulation": 9,
+      "meanBench": 2.666,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 986.64,
+      "unitSpending": 4,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0.008,
+      "combatConversionGold": 4,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.008,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "11": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1133.25,
+        "median": 1142.5,
+        "p75": 1149.75
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1295.25,
+        "median": 1304.5,
+        "p75": 1311.75
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1151.75,
+        "median": 1198.5,
+        "p75": 1245.25
+      },
+      "meanShoppingEndGold": 1200.62,
+      "meanGoldBeforePreparation": 1203.42,
+      "meanGoldAtBattle": 1200.62,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1158,
+        "median": 1198.5,
+        "p75": 1246.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1151.75,
+        "median": 1198.5,
+        "p75": 1245.25
+      },
+      "meanLevel": 9.8,
+      "meanPopulation": 9.8,
+      "meanBench": 1.86,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1150.62,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 1400,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 2.8,
+      "combatConversionGold": 1400,
+      "meanXpSpending": 2.8,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 150,
+      "populationOpportunityMissed": 100,
+      "populationOpportunityMissedRate": 0.6666666666666666
+    },
+    "12": {
+      "waves": 500,
+      "enteringGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1295.25,
+        "median": 1304.5,
+        "p75": 1311.75
+      },
+      "leavingGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1485.25,
+        "median": 1494.5,
+        "p75": 1501.75
+      },
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1435.25
+      },
+      "meanShoppingEndGold": 1388.62,
+      "meanGoldBeforePreparation": 1388.62,
+      "meanGoldAtBattle": 1388.62,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1436.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1435.25
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1338.62,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "bosses": {
+    "2": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 9,
+        "median": 14,
+        "p75": 18
+      },
+      "meanShoppingEndGold": 12.76,
+      "meanGoldBeforePreparation": 17.04,
+      "meanGoldAtBattle": 12.76,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 17.5,
+        "median": 23,
+        "p75": 27
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 9,
+        "median": 14,
+        "p75": 18
+      },
+      "meanLevel": 4,
+      "meanPopulation": 4,
+      "meanBench": 4.4,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 12.76,
+      "unitSpending": 186,
+      "refreshSpending": 28,
+      "xpSpending": 0,
+      "interestIncome": 41,
+      "meanCombatConversionGold": 4.28,
+      "combatConversionGold": 214,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0.56,
+      "meanUnitSpending": 3.72,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 42,
+      "populationOpportunityMissedRate": 0.84
+    },
+    "3": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 58,
+        "median": 65,
+        "p75": 74
+      },
+      "meanShoppingEndGold": 65.2,
+      "meanGoldBeforePreparation": 66.62,
+      "meanGoldAtBattle": 65.2,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 73,
+        "median": 80,
+        "p75": 89
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 58,
+        "median": 65,
+        "p75": 74
+      },
+      "meanLevel": 5,
+      "meanPopulation": 5,
+      "meanBench": 3.86,
+      "meanReserveGold": 10,
+      "meanSpendableGold": 55.2,
+      "unitSpending": 67,
+      "refreshSpending": 4,
+      "xpSpending": 0,
+      "interestIncome": 248,
+      "meanCombatConversionGold": 1.42,
+      "combatConversionGold": 71,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0.08,
+      "meanUnitSpending": 1.34,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "4": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 150.25,
+        "median": 155.5,
+        "p75": 164.75
+      },
+      "meanShoppingEndGold": 155.44,
+      "meanGoldBeforePreparation": 157.84,
+      "meanGoldAtBattle": 155.44,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 167.25,
+        "median": 172.5,
+        "p75": 181.75
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 150.25,
+        "median": 155.5,
+        "p75": 164.75
+      },
+      "meanLevel": 6,
+      "meanPopulation": 6,
+      "meanBench": 5.12,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 135.44,
+      "unitSpending": 120,
+      "refreshSpending": 4,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 2.48,
+      "combatConversionGold": 124,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0.08,
+      "meanUnitSpending": 2.4,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "5": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 263.25,
+        "median": 270,
+        "p75": 276.5
+      },
+      "meanShoppingEndGold": 269.32,
+      "meanGoldBeforePreparation": 270.54,
+      "meanGoldAtBattle": 269.32,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 282.25,
+        "median": 289,
+        "p75": 295.5
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 263.25,
+        "median": 270,
+        "p75": 276.5
+      },
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanBench": 4.34,
+      "meanReserveGold": 30,
+      "meanSpendableGold": 239.32,
+      "unitSpending": 70,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 1.4,
+      "combatConversionGold": 70,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.4,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "6": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 422,
+        "median": 432,
+        "p75": 439
+      },
+      "meanShoppingEndGold": 430.52,
+      "meanGoldBeforePreparation": 431.12,
+      "meanGoldAtBattle": 430.52,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 441,
+        "median": 451,
+        "p75": 458
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 422,
+        "median": 432,
+        "p75": 439
+      },
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanBench": 4.88,
+      "meanReserveGold": 40,
+      "meanSpendableGold": 390.52,
+      "unitSpending": 35,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0.7,
+      "combatConversionGold": 35,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.7,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "7": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 578.25,
+        "median": 584.5,
+        "p75": 591
+      },
+      "meanShoppingEndGold": 584.7,
+      "meanGoldBeforePreparation": 585.78,
+      "meanGoldAtBattle": 584.7,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 597.25,
+        "median": 603.5,
+        "p75": 610
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 578.25,
+        "median": 584.5,
+        "p75": 591
+      },
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanBench": 3.98,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 534.7,
+      "unitSpending": 54,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 1.08,
+      "combatConversionGold": 54,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.08,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "8": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 760.25,
+        "median": 772,
+        "p75": 776
+      },
+      "meanShoppingEndGold": 768.94,
+      "meanGoldBeforePreparation": 769.24,
+      "meanGoldAtBattle": 768.94,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 779.25,
+        "median": 791,
+        "p75": 795
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 760.25,
+        "median": 772,
+        "p75": 776
+      },
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanBench": 3.94,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 718.94,
+      "unitSpending": 15,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0.3,
+      "combatConversionGold": 15,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.3,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "9": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 925.25,
+        "median": 933.5,
+        "p75": 940.75
+      },
+      "meanShoppingEndGold": 932.2,
+      "meanGoldBeforePreparation": 932.2,
+      "meanGoldAtBattle": 932.2,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 944.25,
+        "median": 952.5,
+        "p75": 959.75
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 925.25,
+        "median": 933.5,
+        "p75": 940.75
+      },
+      "meanLevel": 9,
+      "meanPopulation": 9,
+      "meanBench": 2.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 882.2,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "10": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1114.25,
+        "median": 1123.5,
+        "p75": 1130.75
+      },
+      "meanShoppingEndGold": 1122.12,
+      "meanGoldBeforePreparation": 1122.12,
+      "meanGoldAtBattle": 1122.12,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1133.25,
+        "median": 1142.5,
+        "p75": 1149.75
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1114.25,
+        "median": 1123.5,
+        "p75": 1130.75
+      },
+      "meanLevel": 9,
+      "meanPopulation": 9,
+      "meanBench": 2.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1072.12,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 50,
+      "populationOpportunityMissed": 50,
+      "populationOpportunityMissedRate": 1
+    },
+    "11": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1276.25,
+        "median": 1285.5,
+        "p75": 1292.75
+      },
+      "meanShoppingEndGold": 1284.12,
+      "meanGoldBeforePreparation": 1284.12,
+      "meanGoldAtBattle": 1284.12,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1295.25,
+        "median": 1304.5,
+        "p75": 1311.75
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1276.25,
+        "median": 1285.5,
+        "p75": 1292.75
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1234.12,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "12": {
+      "waves": 50,
+      "shoppingEndGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1466.25,
+        "median": 1475.5,
+        "p75": 1482.75
+      },
+      "meanShoppingEndGold": 1474.12,
+      "meanGoldBeforePreparation": 1474.12,
+      "meanGoldAtBattle": 1474.12,
+      "goldPeak": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1485.25,
+        "median": 1494.5,
+        "p75": 1501.75
+      },
+      "unusedGold": {
+        "observed": 50,
+        "total": 50,
+        "unobserved": 0,
+        "p25": 1466.25,
+        "median": 1475.5,
+        "p75": 1482.75
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1424.12,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 250,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "modes": {
+    "1:legacy": {
+      "waves": 150,
+      "shoppingEndGold": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanShoppingEndGold": 0.08,
+      "meanGoldBeforePreparation": 2.3333333333333335,
+      "meanGoldAtBattle": 0.08,
+      "goldPeak": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 3,
+        "p75": 4
+      },
+      "unusedGold": {
+        "observed": 150,
+        "total": 150,
+        "unobserved": 0,
+        "p25": 0,
+        "median": 0,
+        "p75": 0
+      },
+      "meanLevel": 2,
+      "meanPopulation": 1.9866666666666666,
+      "meanBench": 0.8666666666666667,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 0.08,
+      "unitSpending": 338,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 0,
+      "meanCombatConversionGold": 2.2533333333333334,
+      "combatConversionGold": 338,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.2533333333333334,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    },
+    "2:legacy": {
+      "waves": 250,
+      "shoppingEndGold": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 1,
+        "median": 3,
+        "p75": 9
+      },
+      "meanShoppingEndGold": 5.5,
+      "meanGoldBeforePreparation": 9.896,
+      "meanGoldAtBattle": 5.5,
+      "goldPeak": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 7,
+        "median": 9,
+        "p75": 14.75
+      },
+      "unusedGold": {
+        "observed": 250,
+        "total": 250,
+        "unobserved": 0,
+        "p25": 1,
+        "median": 3,
+        "p75": 9
+      },
+      "meanLevel": 3.756,
+      "meanPopulation": 3.756,
+      "meanBench": 3.104,
+      "meanReserveGold": 0,
+      "meanSpendableGold": 5.5,
+      "unitSpending": 837,
+      "refreshSpending": 110,
+      "xpSpending": 152,
+      "interestIncome": 66,
+      "meanCombatConversionGold": 4.396,
+      "combatConversionGold": 1099,
+      "meanXpSpending": 0.608,
+      "meanRefreshSpending": 0.44,
+      "meanUnitSpending": 3.348,
+      "ignoredUsefulOffers": 4,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 211,
+      "populationOpportunityMissed": 85,
+      "populationOpportunityMissedRate": 0.4028436018957346
+    },
+    "3:legacy": {
+      "waves": 300,
+      "shoppingEndGold": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 23,
+        "median": 35,
+        "p75": 52
+      },
+      "meanShoppingEndGold": 37.95333333333333,
+      "meanGoldBeforePreparation": 41.31666666666667,
+      "meanGoldAtBattle": 37.95333333333333,
+      "goldPeak": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 27,
+        "median": 38.5,
+        "p75": 61
+      },
+      "unusedGold": {
+        "observed": 300,
+        "total": 300,
+        "unobserved": 0,
+        "p25": 23,
+        "median": 35,
+        "p75": 52
+      },
+      "meanLevel": 5,
+      "meanPopulation": 5,
+      "meanBench": 3.9966666666666666,
+      "meanReserveGold": 9.666666666666666,
+      "meanSpendableGold": 28.286666666666665,
+      "unitSpending": 815,
+      "refreshSpending": 146,
+      "xpSpending": 48,
+      "interestIncome": 938,
+      "meanCombatConversionGold": 3.3633333333333333,
+      "combatConversionGold": 1009,
+      "meanXpSpending": 0.16,
+      "meanRefreshSpending": 0.4866666666666667,
+      "meanUnitSpending": 2.716666666666667,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 279,
+      "populationOpportunityMissed": 251,
+      "populationOpportunityMissedRate": 0.899641577060932
+    },
+    "4:legacy": {
+      "waves": 350,
+      "shoppingEndGold": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 86,
+        "median": 111,
+        "p75": 137
+      },
+      "meanShoppingEndGold": 111.47714285714285,
+      "meanGoldBeforePreparation": 115.28857142857143,
+      "meanGoldAtBattle": 111.47714285714285,
+      "goldPeak": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 91,
+        "median": 113,
+        "p75": 143.75
+      },
+      "unusedGold": {
+        "observed": 350,
+        "total": 350,
+        "unobserved": 0,
+        "p25": 86,
+        "median": 111,
+        "p75": 137
+      },
+      "meanLevel": 6,
+      "meanPopulation": 6,
+      "meanBench": 4.274285714285714,
+      "meanReserveGold": 20,
+      "meanSpendableGold": 91.47714285714285,
+      "unitSpending": 828,
+      "refreshSpending": 112,
+      "xpSpending": 400,
+      "interestIncome": 1748,
+      "meanCombatConversionGold": 3.8285714285714287,
+      "combatConversionGold": 1340,
+      "meanXpSpending": 1.1428571428571428,
+      "meanRefreshSpending": 0.32,
+      "meanUnitSpending": 2.3657142857142857,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 350,
+      "populationOpportunityMissed": 350,
+      "populationOpportunityMissedRate": 1
+    },
+    "5:legacy": {
+      "waves": 400,
+      "shoppingEndGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 176,
+        "median": 209,
+        "p75": 242.25
+      },
+      "meanShoppingEndGold": 210.3,
+      "meanGoldBeforePreparation": 214.815,
+      "meanGoldAtBattle": 210.3,
+      "goldPeak": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 185,
+        "median": 211,
+        "p75": 246
+      },
+      "unusedGold": {
+        "observed": 400,
+        "total": 400,
+        "unobserved": 0,
+        "p25": 176,
+        "median": 209,
+        "p75": 242.25
+      },
+      "meanLevel": 6.875,
+      "meanPopulation": 6.875,
+      "meanBench": 4.495,
+      "meanReserveGold": 30,
+      "meanSpendableGold": 180.3,
+      "unitSpending": 831,
+      "refreshSpending": 0,
+      "xpSpending": 1000,
+      "interestIncome": 2000,
+      "meanCombatConversionGold": 4.5775,
+      "combatConversionGold": 1831,
+      "meanXpSpending": 2.5,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 2.0775,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 4,
+      "populationOpportunitySeen": 400,
+      "populationOpportunityMissed": 399,
+      "populationOpportunityMissedRate": 0.9975
+    },
+    "6:legacy": {
+      "waves": 450,
+      "shoppingEndGold": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 318,
+        "median": 359.5,
+        "p75": 398
+      },
+      "meanShoppingEndGold": 358.32666666666665,
+      "meanGoldBeforePreparation": 359.41555555555556,
+      "meanGoldAtBattle": 358.32666666666665,
+      "goldPeak": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 319,
+        "median": 360,
+        "p75": 399.75
+      },
+      "unusedGold": {
+        "observed": 450,
+        "total": 450,
+        "unobserved": 0,
+        "p25": 318,
+        "median": 359.5,
+        "p75": 398
+      },
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanBench": 4.7555555555555555,
+      "meanReserveGold": 40,
+      "meanSpendableGold": 318.32666666666665,
+      "unitSpending": 519,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2250,
+      "meanCombatConversionGold": 1.1533333333333333,
+      "combatConversionGold": 519,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.1533333333333333,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 7,
+      "populationOpportunitySeen": 450,
+      "populationOpportunityMissed": 450,
+      "populationOpportunityMissedRate": 1
+    },
+    "7:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 460,
+        "median": 504.5,
+        "p75": 548
+      },
+      "meanShoppingEndGold": 505.622,
+      "meanGoldBeforePreparation": 509.204,
+      "meanGoldAtBattle": 505.622,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 466,
+        "median": 505.5,
+        "p75": 550
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 460,
+        "median": 504.5,
+        "p75": 548
+      },
+      "meanLevel": 7.9,
+      "meanPopulation": 7.9,
+      "meanBench": 3.97,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 455.622,
+      "unitSpending": 609,
+      "refreshSpending": 0,
+      "xpSpending": 1200,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 3.618,
+      "combatConversionGold": 1809,
+      "meanXpSpending": 2.4,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 1.218,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 2,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "8:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 640,
+        "median": 684,
+        "p75": 733
+      },
+      "meanShoppingEndGold": 685.488,
+      "meanGoldBeforePreparation": 686.064,
+      "meanGoldAtBattle": 685.488,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 641,
+        "median": 685,
+        "p75": 734.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 640,
+        "median": 684,
+        "p75": 733
+      },
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanBench": 3.92,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 635.488,
+      "unitSpending": 304,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0.608,
+      "combatConversionGold": 304,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.608,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 1,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "9:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 799.75,
+        "median": 847,
+        "p75": 893.25
+      },
+      "meanShoppingEndGold": 848.432,
+      "meanGoldBeforePreparation": 851.106,
+      "meanGoldAtBattle": 848.432,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 806,
+        "median": 847,
+        "p75": 894.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 799.75,
+        "median": 847,
+        "p75": 893.25
+      },
+      "meanLevel": 8.8,
+      "meanPopulation": 8.8,
+      "meanBench": 2.918,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 798.432,
+      "unitSpending": 137,
+      "refreshSpending": 0,
+      "xpSpending": 1200,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 2.674,
+      "combatConversionGold": 1337,
+      "meanXpSpending": 2.4,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.274,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "10:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1083.25
+      },
+      "meanShoppingEndGold": 1036.64,
+      "meanGoldBeforePreparation": 1036.648,
+      "meanGoldAtBattle": 1036.64,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1084
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 988.75,
+        "median": 1036.5,
+        "p75": 1083.25
+      },
+      "meanLevel": 9,
+      "meanPopulation": 9,
+      "meanBench": 2.666,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 986.64,
+      "unitSpending": 4,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0.008,
+      "combatConversionGold": 4,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0.008,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 500,
+      "populationOpportunityMissed": 500,
+      "populationOpportunityMissedRate": 1
+    },
+    "11:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1151.75,
+        "median": 1198.5,
+        "p75": 1245.25
+      },
+      "meanShoppingEndGold": 1200.62,
+      "meanGoldBeforePreparation": 1203.42,
+      "meanGoldAtBattle": 1200.62,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1158,
+        "median": 1198.5,
+        "p75": 1246.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1151.75,
+        "median": 1198.5,
+        "p75": 1245.25
+      },
+      "meanLevel": 9.8,
+      "meanPopulation": 9.8,
+      "meanBench": 1.86,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1150.62,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 1400,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 2.8,
+      "combatConversionGold": 1400,
+      "meanXpSpending": 2.8,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 150,
+      "populationOpportunityMissed": 100,
+      "populationOpportunityMissedRate": 0.6666666666666666
+    },
+    "12:legacy": {
+      "waves": 500,
+      "shoppingEndGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1435.25
+      },
+      "meanShoppingEndGold": 1388.62,
+      "meanGoldBeforePreparation": 1388.62,
+      "meanGoldAtBattle": 1388.62,
+      "goldPeak": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1436.25
+      },
+      "unusedGold": {
+        "observed": 500,
+        "total": 500,
+        "unobserved": 0,
+        "p25": 1340.75,
+        "median": 1388.5,
+        "p75": 1435.25
+      },
+      "meanLevel": 10,
+      "meanPopulation": 10,
+      "meanBench": 1.66,
+      "meanReserveGold": 50,
+      "meanSpendableGold": 1338.62,
+      "unitSpending": 0,
+      "refreshSpending": 0,
+      "xpSpending": 0,
+      "interestIncome": 2500,
+      "meanCombatConversionGold": 0,
+      "combatConversionGold": 0,
+      "meanXpSpending": 0,
+      "meanRefreshSpending": 0,
+      "meanUnitSpending": 0,
+      "ignoredUsefulOffers": 0,
+      "missedImmediate2Star": 0,
+      "benchFullEvents": 0,
+      "populationOpportunitySeen": 0,
+      "populationOpportunityMissed": 0,
+      "populationOpportunityMissedRate": null
+    }
+  },
+  "deaths": [],
+  "deathGold": {
+    "observed": 0,
+    "total": 0,
+    "unobserved": 0,
+    "p25": null,
+    "median": null,
+    "p75": null
+  },
+  "death100Plus": {
+    "wins": 0,
+    "total": 0,
+    "rate": null,
+    "low": null,
+    "high": null
+  },
+  "stage6Deaths": [],
+  "reasonCounts": {
+    "INTEREST_RESERVE": 191,
+    "NO_USEFUL_SHOP_OPTION": 4708,
+    "CORE_ALREADY_STABLE": 4628,
+    "NO_BENCH_UPGRADE": 125,
+    "LEGACY_LEVEL_TARGET": 4371
+  },
+  "highGoldExamples": [
+    {
+      "seed": 1951,
+      "stage": 4,
+      "round": 4,
+      "gold": 116,
+      "reserve": 20,
+      "spendable": 96,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 4,
+      "round": 5,
+      "gold": 131,
+      "reserve": 20,
+      "spendable": 111,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 4,
+      "round": 6,
+      "gold": 145,
+      "reserve": 20,
+      "spendable": 125,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 4,
+      "round": 7,
+      "gold": 159,
+      "reserve": 20,
+      "spendable": 139,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 1,
+      "gold": 160,
+      "reserve": 30,
+      "spendable": 130,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 2,
+      "gold": 171,
+      "reserve": 30,
+      "spendable": 141,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 3,
+      "gold": 187,
+      "reserve": 30,
+      "spendable": 157,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 4,
+      "gold": 206,
+      "reserve": 30,
+      "spendable": 176,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 5,
+      "gold": 221,
+      "reserve": 30,
+      "spendable": 191,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 6,
+      "gold": 240,
+      "reserve": 30,
+      "spendable": 210,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 7,
+      "gold": 257,
+      "reserve": 30,
+      "spendable": 227,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 5,
+      "round": 8,
+      "gold": 272,
+      "reserve": 30,
+      "spendable": 242,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 1,
+      "gold": 291,
+      "reserve": 40,
+      "spendable": 251,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 2,
+      "gold": 308,
+      "reserve": 40,
+      "spendable": 268,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 3,
+      "gold": 327,
+      "reserve": 40,
+      "spendable": 287,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 4,
+      "gold": 341,
+      "reserve": 40,
+      "spendable": 301,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 5,
+      "gold": 360,
+      "reserve": 40,
+      "spendable": 320,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 6,
+      "gold": 377,
+      "reserve": 40,
+      "spendable": 337,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 7,
+      "gold": 396,
+      "reserve": 40,
+      "spendable": 356,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 8,
+      "gold": 415,
+      "reserve": 40,
+      "spendable": 375,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 6,
+      "round": 9,
+      "gold": 434,
+      "reserve": 40,
+      "spendable": 394,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 1,
+      "gold": 441,
+      "reserve": 50,
+      "spendable": 391,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 2,
+      "gold": 448,
+      "reserve": 50,
+      "spendable": 398,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 3,
+      "gold": 463,
+      "reserve": 50,
+      "spendable": 413,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 4,
+      "gold": 482,
+      "reserve": 50,
+      "spendable": 432,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 5,
+      "gold": 501,
+      "reserve": 50,
+      "spendable": 451,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 6,
+      "gold": 520,
+      "reserve": 50,
+      "spendable": 470,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 7,
+      "gold": 539,
+      "reserve": 50,
+      "spendable": 489,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 8,
+      "gold": 558,
+      "reserve": 50,
+      "spendable": 508,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 9,
+      "gold": 577,
+      "reserve": 50,
+      "spendable": 527,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 7,
+      "round": 10,
+      "gold": 591,
+      "reserve": 50,
+      "spendable": 541,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 1,
+      "gold": 610,
+      "reserve": 50,
+      "spendable": 560,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 2,
+      "gold": 629,
+      "reserve": 50,
+      "spendable": 579,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 3,
+      "gold": 648,
+      "reserve": 50,
+      "spendable": 598,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 4,
+      "gold": 667,
+      "reserve": 50,
+      "spendable": 617,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 5,
+      "gold": 686,
+      "reserve": 50,
+      "spendable": 636,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 6,
+      "gold": 705,
+      "reserve": 50,
+      "spendable": 655,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 7,
+      "gold": 724,
+      "reserve": 50,
+      "spendable": 674,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 8,
+      "gold": 743,
+      "reserve": 50,
+      "spendable": 693,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 9,
+      "gold": 757,
+      "reserve": 50,
+      "spendable": 707,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1951,
+      "stage": 8,
+      "round": 10,
+      "gold": 776,
+      "reserve": 50,
+      "spendable": 726,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 4,
+      "round": 4,
+      "gold": 106,
+      "reserve": 20,
+      "spendable": 86,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 4,
+      "round": 5,
+      "gold": 120,
+      "reserve": 20,
+      "spendable": 100,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 4,
+      "round": 6,
+      "gold": 137,
+      "reserve": 20,
+      "spendable": 117,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 4,
+      "round": 7,
+      "gold": 154,
+      "reserve": 20,
+      "spendable": 134,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 5,
+      "round": 1,
+      "gold": 159,
+      "reserve": 30,
+      "spendable": 129,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 5,
+      "round": 2,
+      "gold": 162,
+      "reserve": 30,
+      "spendable": 132,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 5,
+      "round": 3,
+      "gold": 181,
+      "reserve": 30,
+      "spendable": 151,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 5,
+      "round": 4,
+      "gold": 200,
+      "reserve": 30,
+      "spendable": 170,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    },
+    {
+      "seed": 1952,
+      "stage": 5,
+      "round": 5,
+      "gold": 215,
+      "reserve": 30,
+      "spendable": 185,
+      "reasons": [
+        "NO_USEFUL_SHOP_OPTION",
+        "LEGACY_LEVEL_TARGET",
+        "CORE_ALREADY_STABLE"
+      ]
+    }
+  ],
+  "ironGolem": {
+    "purchases": 225,
+    "boardPresenceWaves": 3756,
+    "tankRoleWaves": 3756
+  }
+}

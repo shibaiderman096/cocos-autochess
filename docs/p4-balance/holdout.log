@@ -1,0 +1,148 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1001 --seed-count 250 --stages 99 --workers 12 --partition holdout --config docs/p4-balance/freeze/candidate.json --output docs/p4-balance/holdout/runs-250
+
+Balance holdout: 750 runs, 99 campaign stages, 12 worker processes; no difficulty values are changed
+progress 10/750
+progress 20/750
+progress 30/750
+progress 40/750
+progress 50/750
+progress 60/750
+progress 70/750
+progress 80/750
+progress 90/750
+progress 100/750
+progress 110/750
+progress 120/750
+progress 130/750
+progress 140/750
+progress 150/750
+progress 160/750
+progress 170/750
+progress 180/750
+progress 190/750
+progress 200/750
+progress 210/750
+progress 220/750
+progress 230/750
+progress 240/750
+progress 250/750
+progress 260/750
+progress 270/750
+progress 280/750
+progress 290/750
+progress 300/750
+progress 310/750
+progress 320/750
+progress 330/750
+progress 340/750
+progress 350/750
+progress 360/750
+progress 370/750
+progress 380/750
+progress 390/750
+progress 400/750
+progress 410/750
+progress 420/750
+progress 430/750
+progress 440/750
+progress 450/750
+progress 460/750
+progress 470/750
+progress 480/750
+progress 490/750
+progress 500/750
+progress 510/750
+progress 520/750
+progress 530/750
+progress 540/750
+progress 550/750
+progress 560/750
+progress 570/750
+progress 580/750
+progress 590/750
+progress 600/750
+progress 610/750
+progress 620/750
+progress 630/750
+progress 640/750
+progress 650/750
+progress 660/750
+progress 670/750
+progress 680/750
+progress 682/750
+progress 692/750
+progress 694/750
+progress 704/750
+progress 706/750
+progress 716/750
+progress 719/750
+progress 729/750
+progress 732/750
+progress 735/750
+progress 737/750
+progress 740/750
+progress 743/750
+progress 746/750
+progress 748/750
+progress 750/750
+{
+  "output": "docs/p4-balance/holdout/runs-250",
+  "runs": 750,
+  "battles": 365506,
+  "seconds": 655.3410554000001,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 250,
+        "total": 250,
+        "rate": 1,
+        "low": 0.9848667005045553,
+        "high": 0.9999999999999998
+      },
+      "stage6": {
+        "wins": 8,
+        "total": 250,
+        "rate": 0.032,
+        "low": 0.01630236549364963,
+        "high": 0.06186240283408649
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 250,
+        "total": 250,
+        "rate": 1,
+        "low": 0.9848667005045553,
+        "high": 0.9999999999999998
+      },
+      "stage6": {
+        "wins": 141,
+        "total": 250,
+        "rate": 0.564,
+        "low": 0.5020210030764015,
+        "high": 0.6240419345881815
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 250,
+        "total": 250,
+        "rate": 1,
+        "low": 0.9848667005045553,
+        "high": 0.9999999999999998
+      },
+      "stage6": {
+        "wins": 248,
+        "total": 250,
+        "rate": 0.992,
+        "low": 0.9713054704167919,
+        "high": 0.9978033628796906
+      },
+      "failedActions": 0
+    }
+  }
+}

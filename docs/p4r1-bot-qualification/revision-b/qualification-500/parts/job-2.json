@@ -1,0 +1,1518 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4r1-bot-qualification/revision-b/qualification-500",
+    "bot": "all",
+    "seedStart": 6001,
+    "seedCount": 500,
+    "stages": 12,
+    "workers": 4,
+    "partition": "qualification",
+    "audit": true,
+    "experiment": "bot-qualification-v2r1b",
+    "config": "docs/p4r1-bot-qualification/revision-b/freeze/bots-v2.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 6003
+    },
+    {
+      "bot": "weak",
+      "seed": 6007
+    },
+    {
+      "bot": "weak",
+      "seed": 6011
+    },
+    {
+      "bot": "weak",
+      "seed": 6015
+    },
+    {
+      "bot": "weak",
+      "seed": 6019
+    },
+    {
+      "bot": "weak",
+      "seed": 6023
+    },
+    {
+      "bot": "weak",
+      "seed": 6027
+    },
+    {
+      "bot": "weak",
+      "seed": 6031
+    },
+    {
+      "bot": "weak",
+      "seed": 6035
+    },
+    {
+      "bot": "weak",
+      "seed": 6039
+    },
+    {
+      "bot": "weak",
+      "seed": 6043
+    },
+    {
+      "bot": "weak",
+      "seed": 6047
+    },
+    {
+      "bot": "weak",
+      "seed": 6051
+    },
+    {
+      "bot": "weak",
+      "seed": 6055
+    },
+    {
+      "bot": "weak",
+      "seed": 6059
+    },
+    {
+      "bot": "weak",
+      "seed": 6063
+    },
+    {
+      "bot": "weak",
+      "seed": 6067
+    },
+    {
+      "bot": "weak",
+      "seed": 6071
+    },
+    {
+      "bot": "weak",
+      "seed": 6075
+    },
+    {
+      "bot": "weak",
+      "seed": 6079
+    },
+    {
+      "bot": "weak",
+      "seed": 6083
+    },
+    {
+      "bot": "weak",
+      "seed": 6087
+    },
+    {
+      "bot": "weak",
+      "seed": 6091
+    },
+    {
+      "bot": "weak",
+      "seed": 6095
+    },
+    {
+      "bot": "weak",
+      "seed": 6099
+    },
+    {
+      "bot": "weak",
+      "seed": 6103
+    },
+    {
+      "bot": "weak",
+      "seed": 6107
+    },
+    {
+      "bot": "weak",
+      "seed": 6111
+    },
+    {
+      "bot": "weak",
+      "seed": 6115
+    },
+    {
+      "bot": "weak",
+      "seed": 6119
+    },
+    {
+      "bot": "weak",
+      "seed": 6123
+    },
+    {
+      "bot": "weak",
+      "seed": 6127
+    },
+    {
+      "bot": "weak",
+      "seed": 6131
+    },
+    {
+      "bot": "weak",
+      "seed": 6135
+    },
+    {
+      "bot": "weak",
+      "seed": 6139
+    },
+    {
+      "bot": "weak",
+      "seed": 6143
+    },
+    {
+      "bot": "weak",
+      "seed": 6147
+    },
+    {
+      "bot": "weak",
+      "seed": 6151
+    },
+    {
+      "bot": "weak",
+      "seed": 6155
+    },
+    {
+      "bot": "weak",
+      "seed": 6159
+    },
+    {
+      "bot": "weak",
+      "seed": 6163
+    },
+    {
+      "bot": "weak",
+      "seed": 6167
+    },
+    {
+      "bot": "weak",
+      "seed": 6171
+    },
+    {
+      "bot": "weak",
+      "seed": 6175
+    },
+    {
+      "bot": "weak",
+      "seed": 6179
+    },
+    {
+      "bot": "weak",
+      "seed": 6183
+    },
+    {
+      "bot": "weak",
+      "seed": 6187
+    },
+    {
+      "bot": "weak",
+      "seed": 6191
+    },
+    {
+      "bot": "weak",
+      "seed": 6195
+    },
+    {
+      "bot": "weak",
+      "seed": 6199
+    },
+    {
+      "bot": "weak",
+      "seed": 6203
+    },
+    {
+      "bot": "weak",
+      "seed": 6207
+    },
+    {
+      "bot": "weak",
+      "seed": 6211
+    },
+    {
+      "bot": "weak",
+      "seed": 6215
+    },
+    {
+      "bot": "weak",
+      "seed": 6219
+    },
+    {
+      "bot": "weak",
+      "seed": 6223
+    },
+    {
+      "bot": "weak",
+      "seed": 6227
+    },
+    {
+      "bot": "weak",
+      "seed": 6231
+    },
+    {
+      "bot": "weak",
+      "seed": 6235
+    },
+    {
+      "bot": "weak",
+      "seed": 6239
+    },
+    {
+      "bot": "weak",
+      "seed": 6243
+    },
+    {
+      "bot": "weak",
+      "seed": 6247
+    },
+    {
+      "bot": "weak",
+      "seed": 6251
+    },
+    {
+      "bot": "weak",
+      "seed": 6255
+    },
+    {
+      "bot": "weak",
+      "seed": 6259
+    },
+    {
+      "bot": "weak",
+      "seed": 6263
+    },
+    {
+      "bot": "weak",
+      "seed": 6267
+    },
+    {
+      "bot": "weak",
+      "seed": 6271
+    },
+    {
+      "bot": "weak",
+      "seed": 6275
+    },
+    {
+      "bot": "weak",
+      "seed": 6279
+    },
+    {
+      "bot": "weak",
+      "seed": 6283
+    },
+    {
+      "bot": "weak",
+      "seed": 6287
+    },
+    {
+      "bot": "weak",
+      "seed": 6291
+    },
+    {
+      "bot": "weak",
+      "seed": 6295
+    },
+    {
+      "bot": "weak",
+      "seed": 6299
+    },
+    {
+      "bot": "weak",
+      "seed": 6303
+    },
+    {
+      "bot": "weak",
+      "seed": 6307
+    },
+    {
+      "bot": "weak",
+      "seed": 6311
+    },
+    {
+      "bot": "weak",
+      "seed": 6315
+    },
+    {
+      "bot": "weak",
+      "seed": 6319
+    },
+    {
+      "bot": "weak",
+      "seed": 6323
+    },
+    {
+      "bot": "weak",
+      "seed": 6327
+    },
+    {
+      "bot": "weak",
+      "seed": 6331
+    },
+    {
+      "bot": "weak",
+      "seed": 6335
+    },
+    {
+      "bot": "weak",
+      "seed": 6339
+    },
+    {
+      "bot": "weak",
+      "seed": 6343
+    },
+    {
+      "bot": "weak",
+      "seed": 6347
+    },
+    {
+      "bot": "weak",
+      "seed": 6351
+    },
+    {
+      "bot": "weak",
+      "seed": 6355
+    },
+    {
+      "bot": "weak",
+      "seed": 6359
+    },
+    {
+      "bot": "weak",
+      "seed": 6363
+    },
+    {
+      "bot": "weak",
+      "seed": 6367
+    },
+    {
+      "bot": "weak",
+      "seed": 6371
+    },
+    {
+      "bot": "weak",
+      "seed": 6375
+    },
+    {
+      "bot": "weak",
+      "seed": 6379
+    },
+    {
+      "bot": "weak",
+      "seed": 6383
+    },
+    {
+      "bot": "weak",
+      "seed": 6387
+    },
+    {
+      "bot": "weak",
+      "seed": 6391
+    },
+    {
+      "bot": "weak",
+      "seed": 6395
+    },
+    {
+      "bot": "weak",
+      "seed": 6399
+    },
+    {
+      "bot": "weak",
+      "seed": 6403
+    },
+    {
+      "bot": "weak",
+      "seed": 6407
+    },
+    {
+      "bot": "weak",
+      "seed": 6411
+    },
+    {
+      "bot": "weak",
+      "seed": 6415
+    },
+    {
+      "bot": "weak",
+      "seed": 6419
+    },
+    {
+      "bot": "weak",
+      "seed": 6423
+    },
+    {
+      "bot": "weak",
+      "seed": 6427
+    },
+    {
+      "bot": "weak",
+      "seed": 6431
+    },
+    {
+      "bot": "weak",
+      "seed": 6435
+    },
+    {
+      "bot": "weak",
+      "seed": 6439
+    },
+    {
+      "bot": "weak",
+      "seed": 6443
+    },
+    {
+      "bot": "weak",
+      "seed": 6447
+    },
+    {
+      "bot": "weak",
+      "seed": 6451
+    },
+    {
+      "bot": "weak",
+      "seed": 6455
+    },
+    {
+      "bot": "weak",
+      "seed": 6459
+    },
+    {
+      "bot": "weak",
+      "seed": 6463
+    },
+    {
+      "bot": "weak",
+      "seed": 6467
+    },
+    {
+      "bot": "weak",
+      "seed": 6471
+    },
+    {
+      "bot": "weak",
+      "seed": 6475
+    },
+    {
+      "bot": "weak",
+      "seed": 6479
+    },
+    {
+      "bot": "weak",
+      "seed": 6483
+    },
+    {
+      "bot": "weak",
+      "seed": 6487
+    },
+    {
+      "bot": "weak",
+      "seed": 6491
+    },
+    {
+      "bot": "weak",
+      "seed": 6495
+    },
+    {
+      "bot": "weak",
+      "seed": 6499
+    },
+    {
+      "bot": "medium",
+      "seed": 6003
+    },
+    {
+      "bot": "medium",
+      "seed": 6007
+    },
+    {
+      "bot": "medium",
+      "seed": 6011
+    },
+    {
+      "bot": "medium",
+      "seed": 6015
+    },
+    {
+      "bot": "medium",
+      "seed": 6019
+    },
+    {
+      "bot": "medium",
+      "seed": 6023
+    },
+    {
+      "bot": "medium",
+      "seed": 6027
+    },
+    {
+      "bot": "medium",
+      "seed": 6031
+    },
+    {
+      "bot": "medium",
+      "seed": 6035
+    },
+    {
+      "bot": "medium",
+      "seed": 6039
+    },
+    {
+      "bot": "medium",
+      "seed": 6043
+    },
+    {
+      "bot": "medium",
+      "seed": 6047
+    },
+    {
+      "bot": "medium",
+      "seed": 6051
+    },
+    {
+      "bot": "medium",
+      "seed": 6055
+    },
+    {
+      "bot": "medium",
+      "seed": 6059
+    },
+    {
+      "bot": "medium",
+      "seed": 6063
+    },
+    {
+      "bot": "medium",
+      "seed": 6067
+    },
+    {
+      "bot": "medium",
+      "seed": 6071
+    },
+    {
+      "bot": "medium",
+      "seed": 6075
+    },
+    {
+      "bot": "medium",
+      "seed": 6079
+    },
+    {
+      "bot": "medium",
+      "seed": 6083
+    },
+    {
+      "bot": "medium",
+      "seed": 6087
+    },
+    {
+      "bot": "medium",
+      "seed": 6091
+    },
+    {
+      "bot": "medium",
+      "seed": 6095
+    },
+    {
+      "bot": "medium",
+      "seed": 6099
+    },
+    {
+      "bot": "medium",
+      "seed": 6103
+    },
+    {
+      "bot": "medium",
+      "seed": 6107
+    },
+    {
+      "bot": "medium",
+      "seed": 6111
+    },
+    {
+      "bot": "medium",
+      "seed": 6115
+    },
+    {
+      "bot": "medium",
+      "seed": 6119
+    },
+    {
+      "bot": "medium",
+      "seed": 6123
+    },
+    {
+      "bot": "medium",
+      "seed": 6127
+    },
+    {
+      "bot": "medium",
+      "seed": 6131
+    },
+    {
+      "bot": "medium",
+      "seed": 6135
+    },
+    {
+      "bot": "medium",
+      "seed": 6139
+    },
+    {
+      "bot": "medium",
+      "seed": 6143
+    },
+    {
+      "bot": "medium",
+      "seed": 6147
+    },
+    {
+      "bot": "medium",
+      "seed": 6151
+    },
+    {
+      "bot": "medium",
+      "seed": 6155
+    },
+    {
+      "bot": "medium",
+      "seed": 6159
+    },
+    {
+      "bot": "medium",
+      "seed": 6163
+    },
+    {
+      "bot": "medium",
+      "seed": 6167
+    },
+    {
+      "bot": "medium",
+      "seed": 6171
+    },
+    {
+      "bot": "medium",
+      "seed": 6175
+    },
+    {
+      "bot": "medium",
+      "seed": 6179
+    },
+    {
+      "bot": "medium",
+      "seed": 6183
+    },
+    {
+      "bot": "medium",
+      "seed": 6187
+    },
+    {
+      "bot": "medium",
+      "seed": 6191
+    },
+    {
+      "bot": "medium",
+      "seed": 6195
+    },
+    {
+      "bot": "medium",
+      "seed": 6199
+    },
+    {
+      "bot": "medium",
+      "seed": 6203
+    },
+    {
+      "bot": "medium",
+      "seed": 6207
+    },
+    {
+      "bot": "medium",
+      "seed": 6211
+    },
+    {
+      "bot": "medium",
+      "seed": 6215
+    },
+    {
+      "bot": "medium",
+      "seed": 6219
+    },
+    {
+      "bot": "medium",
+      "seed": 6223
+    },
+    {
+      "bot": "medium",
+      "seed": 6227
+    },
+    {
+      "bot": "medium",
+      "seed": 6231
+    },
+    {
+      "bot": "medium",
+      "seed": 6235
+    },
+    {
+      "bot": "medium",
+      "seed": 6239
+    },
+    {
+      "bot": "medium",
+      "seed": 6243
+    },
+    {
+      "bot": "medium",
+      "seed": 6247
+    },
+    {
+      "bot": "medium",
+      "seed": 6251
+    },
+    {
+      "bot": "medium",
+      "seed": 6255
+    },
+    {
+      "bot": "medium",
+      "seed": 6259
+    },
+    {
+      "bot": "medium",
+      "seed": 6263
+    },
+    {
+      "bot": "medium",
+      "seed": 6267
+    },
+    {
+      "bot": "medium",
+      "seed": 6271
+    },
+    {
+      "bot": "medium",
+      "seed": 6275
+    },
+    {
+      "bot": "medium",
+      "seed": 6279
+    },
+    {
+      "bot": "medium",
+      "seed": 6283
+    },
+    {
+      "bot": "medium",
+      "seed": 6287
+    },
+    {
+      "bot": "medium",
+      "seed": 6291
+    },
+    {
+      "bot": "medium",
+      "seed": 6295
+    },
+    {
+      "bot": "medium",
+      "seed": 6299
+    },
+    {
+      "bot": "medium",
+      "seed": 6303
+    },
+    {
+      "bot": "medium",
+      "seed": 6307
+    },
+    {
+      "bot": "medium",
+      "seed": 6311
+    },
+    {
+      "bot": "medium",
+      "seed": 6315
+    },
+    {
+      "bot": "medium",
+      "seed": 6319
+    },
+    {
+      "bot": "medium",
+      "seed": 6323
+    },
+    {
+      "bot": "medium",
+      "seed": 6327
+    },
+    {
+      "bot": "medium",
+      "seed": 6331
+    },
+    {
+      "bot": "medium",
+      "seed": 6335
+    },
+    {
+      "bot": "medium",
+      "seed": 6339
+    },
+    {
+      "bot": "medium",
+      "seed": 6343
+    },
+    {
+      "bot": "medium",
+      "seed": 6347
+    },
+    {
+      "bot": "medium",
+      "seed": 6351
+    },
+    {
+      "bot": "medium",
+      "seed": 6355
+    },
+    {
+      "bot": "medium",
+      "seed": 6359
+    },
+    {
+      "bot": "medium",
+      "seed": 6363
+    },
+    {
+      "bot": "medium",
+      "seed": 6367
+    },
+    {
+      "bot": "medium",
+      "seed": 6371
+    },
+    {
+      "bot": "medium",
+      "seed": 6375
+    },
+    {
+      "bot": "medium",
+      "seed": 6379
+    },
+    {
+      "bot": "medium",
+      "seed": 6383
+    },
+    {
+      "bot": "medium",
+      "seed": 6387
+    },
+    {
+      "bot": "medium",
+      "seed": 6391
+    },
+    {
+      "bot": "medium",
+      "seed": 6395
+    },
+    {
+      "bot": "medium",
+      "seed": 6399
+    },
+    {
+      "bot": "medium",
+      "seed": 6403
+    },
+    {
+      "bot": "medium",
+      "seed": 6407
+    },
+    {
+      "bot": "medium",
+      "seed": 6411
+    },
+    {
+      "bot": "medium",
+      "seed": 6415
+    },
+    {
+      "bot": "medium",
+      "seed": 6419
+    },
+    {
+      "bot": "medium",
+      "seed": 6423
+    },
+    {
+      "bot": "medium",
+      "seed": 6427
+    },
+    {
+      "bot": "medium",
+      "seed": 6431
+    },
+    {
+      "bot": "medium",
+      "seed": 6435
+    },
+    {
+      "bot": "medium",
+      "seed": 6439
+    },
+    {
+      "bot": "medium",
+      "seed": 6443
+    },
+    {
+      "bot": "medium",
+      "seed": 6447
+    },
+    {
+      "bot": "medium",
+      "seed": 6451
+    },
+    {
+      "bot": "medium",
+      "seed": 6455
+    },
+    {
+      "bot": "medium",
+      "seed": 6459
+    },
+    {
+      "bot": "medium",
+      "seed": 6463
+    },
+    {
+      "bot": "medium",
+      "seed": 6467
+    },
+    {
+      "bot": "medium",
+      "seed": 6471
+    },
+    {
+      "bot": "medium",
+      "seed": 6475
+    },
+    {
+      "bot": "medium",
+      "seed": 6479
+    },
+    {
+      "bot": "medium",
+      "seed": 6483
+    },
+    {
+      "bot": "medium",
+      "seed": 6487
+    },
+    {
+      "bot": "medium",
+      "seed": 6491
+    },
+    {
+      "bot": "medium",
+      "seed": 6495
+    },
+    {
+      "bot": "medium",
+      "seed": 6499
+    },
+    {
+      "bot": "strong",
+      "seed": 6003
+    },
+    {
+      "bot": "strong",
+      "seed": 6007
+    },
+    {
+      "bot": "strong",
+      "seed": 6011
+    },
+    {
+      "bot": "strong",
+      "seed": 6015
+    },
+    {
+      "bot": "strong",
+      "seed": 6019
+    },
+    {
+      "bot": "strong",
+      "seed": 6023
+    },
+    {
+      "bot": "strong",
+      "seed": 6027
+    },
+    {
+      "bot": "strong",
+      "seed": 6031
+    },
+    {
+      "bot": "strong",
+      "seed": 6035
+    },
+    {
+      "bot": "strong",
+      "seed": 6039
+    },
+    {
+      "bot": "strong",
+      "seed": 6043
+    },
+    {
+      "bot": "strong",
+      "seed": 6047
+    },
+    {
+      "bot": "strong",
+      "seed": 6051
+    },
+    {
+      "bot": "strong",
+      "seed": 6055
+    },
+    {
+      "bot": "strong",
+      "seed": 6059
+    },
+    {
+      "bot": "strong",
+      "seed": 6063
+    },
+    {
+      "bot": "strong",
+      "seed": 6067
+    },
+    {
+      "bot": "strong",
+      "seed": 6071
+    },
+    {
+      "bot": "strong",
+      "seed": 6075
+    },
+    {
+      "bot": "strong",
+      "seed": 6079
+    },
+    {
+      "bot": "strong",
+      "seed": 6083
+    },
+    {
+      "bot": "strong",
+      "seed": 6087
+    },
+    {
+      "bot": "strong",
+      "seed": 6091
+    },
+    {
+      "bot": "strong",
+      "seed": 6095
+    },
+    {
+      "bot": "strong",
+      "seed": 6099
+    },
+    {
+      "bot": "strong",
+      "seed": 6103
+    },
+    {
+      "bot": "strong",
+      "seed": 6107
+    },
+    {
+      "bot": "strong",
+      "seed": 6111
+    },
+    {
+      "bot": "strong",
+      "seed": 6115
+    },
+    {
+      "bot": "strong",
+      "seed": 6119
+    },
+    {
+      "bot": "strong",
+      "seed": 6123
+    },
+    {
+      "bot": "strong",
+      "seed": 6127
+    },
+    {
+      "bot": "strong",
+      "seed": 6131
+    },
+    {
+      "bot": "strong",
+      "seed": 6135
+    },
+    {
+      "bot": "strong",
+      "seed": 6139
+    },
+    {
+      "bot": "strong",
+      "seed": 6143
+    },
+    {
+      "bot": "strong",
+      "seed": 6147
+    },
+    {
+      "bot": "strong",
+      "seed": 6151
+    },
+    {
+      "bot": "strong",
+      "seed": 6155
+    },
+    {
+      "bot": "strong",
+      "seed": 6159
+    },
+    {
+      "bot": "strong",
+      "seed": 6163
+    },
+    {
+      "bot": "strong",
+      "seed": 6167
+    },
+    {
+      "bot": "strong",
+      "seed": 6171
+    },
+    {
+      "bot": "strong",
+      "seed": 6175
+    },
+    {
+      "bot": "strong",
+      "seed": 6179
+    },
+    {
+      "bot": "strong",
+      "seed": 6183
+    },
+    {
+      "bot": "strong",
+      "seed": 6187
+    },
+    {
+      "bot": "strong",
+      "seed": 6191
+    },
+    {
+      "bot": "strong",
+      "seed": 6195
+    },
+    {
+      "bot": "strong",
+      "seed": 6199
+    },
+    {
+      "bot": "strong",
+      "seed": 6203
+    },
+    {
+      "bot": "strong",
+      "seed": 6207
+    },
+    {
+      "bot": "strong",
+      "seed": 6211
+    },
+    {
+      "bot": "strong",
+      "seed": 6215
+    },
+    {
+      "bot": "strong",
+      "seed": 6219
+    },
+    {
+      "bot": "strong",
+      "seed": 6223
+    },
+    {
+      "bot": "strong",
+      "seed": 6227
+    },
+    {
+      "bot": "strong",
+      "seed": 6231
+    },
+    {
+      "bot": "strong",
+      "seed": 6235
+    },
+    {
+      "bot": "strong",
+      "seed": 6239
+    },
+    {
+      "bot": "strong",
+      "seed": 6243
+    },
+    {
+      "bot": "strong",
+      "seed": 6247
+    },
+    {
+      "bot": "strong",
+      "seed": 6251
+    },
+    {
+      "bot": "strong",
+      "seed": 6255
+    },
+    {
+      "bot": "strong",
+      "seed": 6259
+    },
+    {
+      "bot": "strong",
+      "seed": 6263
+    },
+    {
+      "bot": "strong",
+      "seed": 6267
+    },
+    {
+      "bot": "strong",
+      "seed": 6271
+    },
+    {
+      "bot": "strong",
+      "seed": 6275
+    },
+    {
+      "bot": "strong",
+      "seed": 6279
+    },
+    {
+      "bot": "strong",
+      "seed": 6283
+    },
+    {
+      "bot": "strong",
+      "seed": 6287
+    },
+    {
+      "bot": "strong",
+      "seed": 6291
+    },
+    {
+      "bot": "strong",
+      "seed": 6295
+    },
+    {
+      "bot": "strong",
+      "seed": 6299
+    },
+    {
+      "bot": "strong",
+      "seed": 6303
+    },
+    {
+      "bot": "strong",
+      "seed": 6307
+    },
+    {
+      "bot": "strong",
+      "seed": 6311
+    },
+    {
+      "bot": "strong",
+      "seed": 6315
+    },
+    {
+      "bot": "strong",
+      "seed": 6319
+    },
+    {
+      "bot": "strong",
+      "seed": 6323
+    },
+    {
+      "bot": "strong",
+      "seed": 6327
+    },
+    {
+      "bot": "strong",
+      "seed": 6331
+    },
+    {
+      "bot": "strong",
+      "seed": 6335
+    },
+    {
+      "bot": "strong",
+      "seed": 6339
+    },
+    {
+      "bot": "strong",
+      "seed": 6343
+    },
+    {
+      "bot": "strong",
+      "seed": 6347
+    },
+    {
+      "bot": "strong",
+      "seed": 6351
+    },
+    {
+      "bot": "strong",
+      "seed": 6355
+    },
+    {
+      "bot": "strong",
+      "seed": 6359
+    },
+    {
+      "bot": "strong",
+      "seed": 6363
+    },
+    {
+      "bot": "strong",
+      "seed": 6367
+    },
+    {
+      "bot": "strong",
+      "seed": 6371
+    },
+    {
+      "bot": "strong",
+      "seed": 6375
+    },
+    {
+      "bot": "strong",
+      "seed": 6379
+    },
+    {
+      "bot": "strong",
+      "seed": 6383
+    },
+    {
+      "bot": "strong",
+      "seed": 6387
+    },
+    {
+      "bot": "strong",
+      "seed": 6391
+    },
+    {
+      "bot": "strong",
+      "seed": 6395
+    },
+    {
+      "bot": "strong",
+      "seed": 6399
+    },
+    {
+      "bot": "strong",
+      "seed": 6403
+    },
+    {
+      "bot": "strong",
+      "seed": 6407
+    },
+    {
+      "bot": "strong",
+      "seed": 6411
+    },
+    {
+      "bot": "strong",
+      "seed": 6415
+    },
+    {
+      "bot": "strong",
+      "seed": 6419
+    },
+    {
+      "bot": "strong",
+      "seed": 6423
+    },
+    {
+      "bot": "strong",
+      "seed": 6427
+    },
+    {
+      "bot": "strong",
+      "seed": 6431
+    },
+    {
+      "bot": "strong",
+      "seed": 6435
+    },
+    {
+      "bot": "strong",
+      "seed": 6439
+    },
+    {
+      "bot": "strong",
+      "seed": 6443
+    },
+    {
+      "bot": "strong",
+      "seed": 6447
+    },
+    {
+      "bot": "strong",
+      "seed": 6451
+    },
+    {
+      "bot": "strong",
+      "seed": 6455
+    },
+    {
+      "bot": "strong",
+      "seed": 6459
+    },
+    {
+      "bot": "strong",
+      "seed": 6463
+    },
+    {
+      "bot": "strong",
+      "seed": 6467
+    },
+    {
+      "bot": "strong",
+      "seed": 6471
+    },
+    {
+      "bot": "strong",
+      "seed": 6475
+    },
+    {
+      "bot": "strong",
+      "seed": 6479
+    },
+    {
+      "bot": "strong",
+      "seed": 6483
+    },
+    {
+      "bot": "strong",
+      "seed": 6487
+    },
+    {
+      "bot": "strong",
+      "seed": 6491
+    },
+    {
+      "bot": "strong",
+      "seed": 6495
+    },
+    {
+      "bot": "strong",
+      "seed": 6499
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\revision-b\\qualification-500\\parts\\part-2.jsonl"
+}

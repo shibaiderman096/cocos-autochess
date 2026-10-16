@@ -1,0 +1,216 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1 --seed-count 500 --stages 12 --workers 4 --partition training --config docs/p4-balance/training/search-v1/iteration-13-config.json --output docs/p4-balance/training/confirmation-500
+
+Balance training: 1500 runs, 12 campaign stages, 4 worker processes; no difficulty values are changed
+progress 10/1500
+progress 20/1500
+progress 30/1500
+progress 40/1500
+progress 50/1500
+progress 60/1500
+progress 70/1500
+progress 80/1500
+progress 90/1500
+progress 100/1500
+progress 110/1500
+progress 120/1500
+progress 130/1500
+progress 140/1500
+progress 150/1500
+progress 160/1500
+progress 170/1500
+progress 180/1500
+progress 190/1500
+progress 200/1500
+progress 210/1500
+progress 220/1500
+progress 230/1500
+progress 240/1500
+progress 250/1500
+progress 260/1500
+progress 270/1500
+progress 280/1500
+progress 290/1500
+progress 300/1500
+progress 310/1500
+progress 320/1500
+progress 330/1500
+progress 340/1500
+progress 350/1500
+progress 360/1500
+progress 370/1500
+progress 380/1500
+progress 390/1500
+progress 400/1500
+progress 410/1500
+progress 420/1500
+progress 430/1500
+progress 440/1500
+progress 450/1500
+progress 460/1500
+progress 470/1500
+progress 480/1500
+progress 490/1500
+progress 500/1500
+progress 510/1500
+progress 520/1500
+progress 530/1500
+progress 540/1500
+progress 550/1500
+progress 560/1500
+progress 570/1500
+progress 580/1500
+progress 590/1500
+progress 600/1500
+progress 610/1500
+progress 620/1500
+progress 630/1500
+progress 640/1500
+progress 650/1500
+progress 660/1500
+progress 670/1500
+progress 680/1500
+progress 690/1500
+progress 700/1500
+progress 710/1500
+progress 720/1500
+progress 730/1500
+progress 740/1500
+progress 750/1500
+progress 760/1500
+progress 770/1500
+progress 780/1500
+progress 790/1500
+progress 800/1500
+progress 810/1500
+progress 820/1500
+progress 830/1500
+progress 840/1500
+progress 850/1500
+progress 860/1500
+progress 870/1500
+progress 880/1500
+progress 890/1500
+progress 900/1500
+progress 910/1500
+progress 920/1500
+progress 930/1500
+progress 940/1500
+progress 950/1500
+progress 960/1500
+progress 970/1500
+progress 980/1500
+progress 990/1500
+progress 1000/1500
+progress 1010/1500
+progress 1020/1500
+progress 1030/1500
+progress 1040/1500
+progress 1050/1500
+progress 1060/1500
+progress 1070/1500
+progress 1080/1500
+progress 1090/1500
+progress 1100/1500
+progress 1110/1500
+progress 1120/1500
+progress 1130/1500
+progress 1140/1500
+progress 1150/1500
+progress 1160/1500
+progress 1170/1500
+progress 1180/1500
+progress 1190/1500
+progress 1200/1500
+progress 1210/1500
+progress 1220/1500
+progress 1230/1500
+progress 1240/1500
+progress 1250/1500
+progress 1260/1500
+progress 1270/1500
+progress 1280/1500
+progress 1290/1500
+progress 1300/1500
+progress 1310/1500
+progress 1320/1500
+progress 1330/1500
+progress 1340/1500
+progress 1350/1500
+progress 1360/1500
+progress 1370/1500
+progress 1380/1500
+progress 1390/1500
+progress 1400/1500
+progress 1410/1500
+progress 1420/1500
+progress 1430/1500
+progress 1440/1500
+progress 1450/1500
+progress 1460/1500
+progress 1470/1500
+progress 1475/1500
+progress 1485/1500
+progress 1490/1500
+progress 1495/1500
+progress 1500/1500
+{
+  "output": "docs/p4-balance/training/confirmation-500",
+  "runs": 1500,
+  "battles": 94097,
+  "seconds": 259.44902890000003,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 500,
+        "total": 500,
+        "rate": 1,
+        "low": 0.9923756595384479,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 12,
+        "total": 500,
+        "rate": 0.024,
+        "low": 0.013781314655496986,
+        "high": 0.041477057463900756
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 500,
+        "total": 500,
+        "rate": 1,
+        "low": 0.9923756595384479,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 269,
+        "total": 500,
+        "rate": 0.538,
+        "low": 0.494176845283715,
+        "high": 0.581243704841207
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 500,
+        "total": 500,
+        "rate": 1,
+        "low": 0.9923756595384479,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 493,
+        "total": 500,
+        "rate": 0.986,
+        "low": 0.9713869308622147,
+        "high": 0.9932022102091564
+      },
+      "failedActions": 0
+    }
+  }
+}

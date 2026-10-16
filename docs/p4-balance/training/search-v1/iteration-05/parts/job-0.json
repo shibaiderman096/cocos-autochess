@@ -1,0 +1,117 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-05",
+    "bot": "medium",
+    "seedStart": 1,
+    "seedCount": 100,
+    "stages": 6,
+    "workers": 4,
+    "partition": "training",
+    "audit": true,
+    "config": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-05-config.json"
+  },
+  "jobs": [
+    {
+      "bot": "medium",
+      "seed": 1
+    },
+    {
+      "bot": "medium",
+      "seed": 5
+    },
+    {
+      "bot": "medium",
+      "seed": 9
+    },
+    {
+      "bot": "medium",
+      "seed": 13
+    },
+    {
+      "bot": "medium",
+      "seed": 17
+    },
+    {
+      "bot": "medium",
+      "seed": 21
+    },
+    {
+      "bot": "medium",
+      "seed": 25
+    },
+    {
+      "bot": "medium",
+      "seed": 29
+    },
+    {
+      "bot": "medium",
+      "seed": 33
+    },
+    {
+      "bot": "medium",
+      "seed": 37
+    },
+    {
+      "bot": "medium",
+      "seed": 41
+    },
+    {
+      "bot": "medium",
+      "seed": 45
+    },
+    {
+      "bot": "medium",
+      "seed": 49
+    },
+    {
+      "bot": "medium",
+      "seed": 53
+    },
+    {
+      "bot": "medium",
+      "seed": 57
+    },
+    {
+      "bot": "medium",
+      "seed": 61
+    },
+    {
+      "bot": "medium",
+      "seed": 65
+    },
+    {
+      "bot": "medium",
+      "seed": 69
+    },
+    {
+      "bot": "medium",
+      "seed": 73
+    },
+    {
+      "bot": "medium",
+      "seed": 77
+    },
+    {
+      "bot": "medium",
+      "seed": 81
+    },
+    {
+      "bot": "medium",
+      "seed": 85
+    },
+    {
+      "bot": "medium",
+      "seed": 89
+    },
+    {
+      "bot": "medium",
+      "seed": 93
+    },
+    {
+      "bot": "medium",
+      "seed": 97
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\training\\search-v1\\iteration-05\\parts\\part-0.jsonl"
+}

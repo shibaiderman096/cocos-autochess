@@ -1,0 +1,17 @@
+
+> batch
+> pwsh -NoProfile -File tools/run-batch.ps1 1000 1
+
+=== 批量模拟结果 ===
+场次:        1000
+己方胜:      153 (15.3%)
+敌方胜:      826 (82.6%)
+平局:        21 (2.1%)
+平均时长:    18.2s
+平均事件数:  141
+模拟耗时:    264ms
+npm notice
+npm notice New major version of npm available! 11.12.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

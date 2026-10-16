@@ -1,0 +1,13 @@
+{
+  "inputHash": "8f65b5fab9cf6c71a402ca4045a0d12e13508c12fb9fa1b1db729d50de3794b4",
+  "seedRange": [
+    2201,
+    2700
+  ],
+  "bots": [
+    "weak",
+    "medium",
+    "strong"
+  ],
+  "config": "docs/p4r1-bot-qualification/freeze/bots-v2.json"
+}

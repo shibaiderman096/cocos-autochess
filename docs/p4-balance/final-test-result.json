@@ -1,0 +1,7 @@
+{
+  "exitCode": 0,
+  "command": "npm.cmd test",
+  "completedUtc": "2026-10-15T13:20:06.0333290Z",
+  "frozenCandidate": "docs/p4-balance/freeze/candidate.json",
+  "phase": "Final regression after validation and holdout"
+}

@@ -1,0 +1,80 @@
+
+> balance-sim
+> node --require tsx/cjs tools/balance-sim.ts --bot all --seed-start 1 --seed-count 50 --stages 12 --workers 2 --partition training --config docs/p4-balance/freeze/candidate.json --output docs/p4-balance/determinism/parallel-50
+
+Balance training: 150 runs, 12 campaign stages, 2 worker processes; no difficulty values are changed
+progress 10/150
+progress 20/150
+progress 30/150
+progress 40/150
+progress 50/150
+progress 60/150
+progress 70/150
+progress 80/150
+progress 90/150
+progress 100/150
+progress 110/150
+progress 120/150
+progress 130/150
+progress 140/150
+progress 145/150
+progress 150/150
+{
+  "output": "docs/p4-balance/determinism/parallel-50",
+  "runs": 150,
+  "battles": 9646,
+  "seconds": 57.9206881,
+  "results": {
+    "weak": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 2,
+        "total": 50,
+        "rate": 0.04,
+        "low": 0.011038884327619805,
+        "high": 0.1346009068750702
+      },
+      "failedActions": 0
+    },
+    "medium": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 26,
+        "total": 50,
+        "rate": 0.52,
+        "low": 0.38511744890044614,
+        "high": 0.6520286471342196
+      },
+      "failedActions": 0
+    },
+    "strong": {
+      "stage3": {
+        "wins": 50,
+        "total": 50,
+        "rate": 1,
+        "low": 0.9286524008666414,
+        "high": 1
+      },
+      "stage6": {
+        "wins": 49,
+        "total": 50,
+        "rate": 0.98,
+        "low": 0.8950455641036219,
+        "high": 0.9964607407283539
+      },
+      "failedActions": 0
+    }
+  }
+}

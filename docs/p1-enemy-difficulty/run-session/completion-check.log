@@ -1,0 +1,4 @@
+PASS 23 protected files unchanged
+PASS all 19 implementation/metadata/test/tool source hashes unchanged
+PASS actual 3-stage completion matches sampling run wave records
+PASS independent reports and prefixes verified in verification.json

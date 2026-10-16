@@ -1,0 +1,9 @@
+{
+  "seed": 17,
+  "botVersion": "medium-v1",
+  "botConfigHash": "4228cefda6138a41e6e438a222af69c6fe50f31b95d616eb7867d0f7c2527a67",
+  "configHash": "99cd1fb9bd8479430819f21a05eb14ec06d0afb1210a0fd877e4b864375bb468",
+  "waves": 38,
+  "actionsExactlyMatch": true,
+  "traceSha256": "5d030e31d706b86be2de087f6f42b70bc3ed9a518b8f1800fbda85d491b9895c"
+}

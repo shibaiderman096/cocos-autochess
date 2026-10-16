@@ -9,7 +9,7 @@ export class CombatStatistics {
     this.cursor = 0;
     this.rows.clear();
     for (const u of units) this.rows.set(u.id, {
-      id: u.id, name: u.cfg.name, side: u.side, star: u.star, damage: 0, taken: 0, healing: 0,
+      id: u.id, name: u.cfg.name, side: u.side, star: u.star, damage: 0, taken: 0, healing: 0, shielding: 0,
       damageByType: { physical: 0, magic: 0, true: 0 }, takenByType: { physical: 0, magic: 0, true: 0 },
     });
   }
@@ -26,6 +26,10 @@ export class CombatStatistics {
       } else if (event.t === 'heal') {
         const source = this.rows.get(event.source);
         if (source) source.healing += event.amount;
+        changed = true;
+      } else if (event.t === 'shield') {
+        const source = this.rows.get(event.source ?? event.id);
+        if (source) source.shielding += event.amount;
         changed = true;
       }
     }

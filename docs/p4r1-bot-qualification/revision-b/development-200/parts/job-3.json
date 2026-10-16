@@ -1,0 +1,217 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4r1-bot-qualification/revision-b/development-200",
+    "bot": "medium",
+    "seedStart": 5601,
+    "seedCount": 200,
+    "stages": 12,
+    "workers": 4,
+    "partition": "development",
+    "audit": true,
+    "experiment": "bot-qualification-v2r1b"
+  },
+  "jobs": [
+    {
+      "bot": "medium",
+      "seed": 5604
+    },
+    {
+      "bot": "medium",
+      "seed": 5608
+    },
+    {
+      "bot": "medium",
+      "seed": 5612
+    },
+    {
+      "bot": "medium",
+      "seed": 5616
+    },
+    {
+      "bot": "medium",
+      "seed": 5620
+    },
+    {
+      "bot": "medium",
+      "seed": 5624
+    },
+    {
+      "bot": "medium",
+      "seed": 5628
+    },
+    {
+      "bot": "medium",
+      "seed": 5632
+    },
+    {
+      "bot": "medium",
+      "seed": 5636
+    },
+    {
+      "bot": "medium",
+      "seed": 5640
+    },
+    {
+      "bot": "medium",
+      "seed": 5644
+    },
+    {
+      "bot": "medium",
+      "seed": 5648
+    },
+    {
+      "bot": "medium",
+      "seed": 5652
+    },
+    {
+      "bot": "medium",
+      "seed": 5656
+    },
+    {
+      "bot": "medium",
+      "seed": 5660
+    },
+    {
+      "bot": "medium",
+      "seed": 5664
+    },
+    {
+      "bot": "medium",
+      "seed": 5668
+    },
+    {
+      "bot": "medium",
+      "seed": 5672
+    },
+    {
+      "bot": "medium",
+      "seed": 5676
+    },
+    {
+      "bot": "medium",
+      "seed": 5680
+    },
+    {
+      "bot": "medium",
+      "seed": 5684
+    },
+    {
+      "bot": "medium",
+      "seed": 5688
+    },
+    {
+      "bot": "medium",
+      "seed": 5692
+    },
+    {
+      "bot": "medium",
+      "seed": 5696
+    },
+    {
+      "bot": "medium",
+      "seed": 5700
+    },
+    {
+      "bot": "medium",
+      "seed": 5704
+    },
+    {
+      "bot": "medium",
+      "seed": 5708
+    },
+    {
+      "bot": "medium",
+      "seed": 5712
+    },
+    {
+      "bot": "medium",
+      "seed": 5716
+    },
+    {
+      "bot": "medium",
+      "seed": 5720
+    },
+    {
+      "bot": "medium",
+      "seed": 5724
+    },
+    {
+      "bot": "medium",
+      "seed": 5728
+    },
+    {
+      "bot": "medium",
+      "seed": 5732
+    },
+    {
+      "bot": "medium",
+      "seed": 5736
+    },
+    {
+      "bot": "medium",
+      "seed": 5740
+    },
+    {
+      "bot": "medium",
+      "seed": 5744
+    },
+    {
+      "bot": "medium",
+      "seed": 5748
+    },
+    {
+      "bot": "medium",
+      "seed": 5752
+    },
+    {
+      "bot": "medium",
+      "seed": 5756
+    },
+    {
+      "bot": "medium",
+      "seed": 5760
+    },
+    {
+      "bot": "medium",
+      "seed": 5764
+    },
+    {
+      "bot": "medium",
+      "seed": 5768
+    },
+    {
+      "bot": "medium",
+      "seed": 5772
+    },
+    {
+      "bot": "medium",
+      "seed": 5776
+    },
+    {
+      "bot": "medium",
+      "seed": 5780
+    },
+    {
+      "bot": "medium",
+      "seed": 5784
+    },
+    {
+      "bot": "medium",
+      "seed": 5788
+    },
+    {
+      "bot": "medium",
+      "seed": 5792
+    },
+    {
+      "bot": "medium",
+      "seed": 5796
+    },
+    {
+      "bot": "medium",
+      "seed": 5800
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\revision-b\\development-200\\parts\\part-3.jsonl"
+}

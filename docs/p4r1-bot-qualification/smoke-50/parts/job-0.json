@@ -1,0 +1,69 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4r1-bot-qualification/smoke-50",
+    "bot": "medium",
+    "seedStart": 1951,
+    "seedCount": 50,
+    "stages": 12,
+    "workers": 4,
+    "partition": "smoke",
+    "audit": true,
+    "experiment": "bot-qualification-v2"
+  },
+  "jobs": [
+    {
+      "bot": "medium",
+      "seed": 1951
+    },
+    {
+      "bot": "medium",
+      "seed": 1955
+    },
+    {
+      "bot": "medium",
+      "seed": 1959
+    },
+    {
+      "bot": "medium",
+      "seed": 1963
+    },
+    {
+      "bot": "medium",
+      "seed": 1967
+    },
+    {
+      "bot": "medium",
+      "seed": 1971
+    },
+    {
+      "bot": "medium",
+      "seed": 1975
+    },
+    {
+      "bot": "medium",
+      "seed": 1979
+    },
+    {
+      "bot": "medium",
+      "seed": 1983
+    },
+    {
+      "bot": "medium",
+      "seed": 1987
+    },
+    {
+      "bot": "medium",
+      "seed": 1991
+    },
+    {
+      "bot": "medium",
+      "seed": 1995
+    },
+    {
+      "bot": "medium",
+      "seed": 1999
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\smoke-50\\parts\\part-0.jsonl"
+}

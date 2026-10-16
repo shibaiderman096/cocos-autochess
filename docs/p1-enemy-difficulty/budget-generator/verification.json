@@ -1,0 +1,267 @@
+{
+  "version": "p1-c-verification-v1",
+  "model": {
+    "version": "enemy-power-v1",
+    "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+    "sha256": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0",
+    "p1bArtifactAndCalibrationInputsUnchanged": true
+  },
+  "b0": {
+    "value": 106.17578444811335,
+    "source": "P0 legacy Stage 2-1; real naked unit/star queries, summed by EnemyPowerModel",
+    "enemies": [
+      {
+        "unitId": "warrior",
+        "star": 1,
+        "y": 4,
+        "x": 3,
+        "statMultiplier": 1,
+        "damageAmp": 0,
+        "damageReduction": 0
+      }
+    ],
+    "constituents": [
+      {
+        "unitId": "warrior",
+        "star": 1,
+        "power": 106.17578444811335,
+        "confidence": "high",
+        "sampleCount": 48000,
+        "diagnostics": [],
+        "method": "measured"
+      }
+    ]
+  },
+  "determinism": {
+    "directories": [
+      "docs/p1-enemy-difficulty/budget-generator/final-v2-seed12345",
+      "docs/p1-enemy-difficulty/budget-generator/final-v2-seed12345-repeat"
+    ],
+    "byteIdenticalFiles": 7,
+    "hashes": {
+      "waves.json": "8487eedca0f91bf2f0353c2c565f82841e0ad21aaf544dde330849fc8d69b029",
+      "summary.json": "8df5354e78aa739c66a1517e87eb92c5de568c255d23a0aa4d1fccbcb782e8e0",
+      "boundaries.json": "974855eeff9ae7829a2675ad0c5d9b8fb1f2d496988d33e97f3de88367cedf34",
+      "provenance.json": "a982ecb6033c98d90e21a2cd3aa4150d73528e120453ea1f75a64416efca64db",
+      "budget-table.csv": "8d29b3f3ffb5ff0c4f94c953774059ff472aabbecced3ab8f049127fcc6eecb4",
+      "composition-table.csv": "233cd57c441856b8684da5829f14859fa2756f5a88509340fa029e0ebbeedc07",
+      "REPORT.md": "9d1255d4e40585df354a9161e74a0fd4a1507278cd3efe4d3aba06fbd327664d"
+    },
+    "timingExcluded": true
+  },
+  "legacy": {
+    "waveCount": 968,
+    "exactP0Equality": true,
+    "legacyFunctionBodyUnchanged": true,
+    "legacyWaveHash": "be2e2bd7719a9f496394d07f363dfca1747bbda5d61723e93caf1d05851b5665"
+  },
+  "prefixes": [
+    {
+      "stages": 3,
+      "waves": 14,
+      "sha256": "85259b19c4b49e1389254755a44030f25cdf5186fde4dbbc92adee51612d14a0",
+      "exactPrefixOf99": true
+    },
+    {
+      "stages": 6,
+      "waves": 38,
+      "sha256": "6c0c8d7d627f3ba6f737ac61ea21dd38ce0237ed6c530f0b2987bf72e2757775",
+      "exactPrefixOf99": true
+    }
+  ],
+  "protected": {
+    "beforeHashEntries": 267,
+    "unchangedFiles": 257,
+    "explicitlyAuthorizedIntegrationFiles": [
+      "assets/scripts/core/RunSetup.ts",
+      "assets/scripts/core/RoundFlow.ts",
+      "assets/scripts/core/RunSession.ts",
+      "assets/scripts/core/RunSessionTypes.ts",
+      "assets/scripts/core/ShopSave.ts",
+      "assets/scripts/view/BattleStage.ts",
+      "tests/run-session-tests.cjs",
+      "tests/run-sim-cli-tests.cjs",
+      "tests/regression-tests.cjs",
+      "tests/enemy-power-tests.cjs"
+    ],
+    "allOtherBytesUnchanged": true
+  },
+  "formal": {
+    "seed": 12345,
+    "totalWaves": 968,
+    "nonIntroWaves": 965,
+    "solutions": {
+      "within-tolerance": 965
+    },
+    "maxDeviationPct": 4.890329851944681,
+    "maxOptimizerIterations": 5,
+    "recoveryBoundaries": 97,
+    "allEffectiveTargetsExactlySixPercentRecovery": true,
+    "saturation": {
+      "none": 33,
+      "ABOVE_MAX_FEASIBLE": 878,
+      "BELOW_MIN_FEASIBLE": 40,
+      "STAGE_ENVELOPE_CONSTRAINT": 14
+    },
+    "firstTransientAboveMax": {
+      "globalWaveId": 5,
+      "budgetWaveIndex": 2,
+      "stage": 2,
+      "round": 2,
+      "waveKind": "normal",
+      "rawBudget": 110.42281582603789,
+      "kindMultiplier": 1,
+      "pacingMultiplier": 1.0255961253249524,
+      "requestedBudget": 113.24921205865529,
+      "effectiveBudget": 106.17578444811335,
+      "minFeasibleBudget": 94.21007912035388,
+      "maxFeasibleBudget": 106.17578444811335,
+      "saturated": true,
+      "saturationReason": "ABOVE_MAX_FEASIBLE",
+      "effectiveEnvelopeAdjusted": true,
+      "recoveryFeasible": true,
+      "enemyGenerationMode": "budget-v1",
+      "population": 1,
+      "actualBudget": 106.17578444811335,
+      "deviationPct": 0,
+      "feasible": true,
+      "solution": "within-tolerance",
+      "candidateCount": 4,
+      "optimizerIterations": 1,
+      "enemyCostDistribution": {
+        "1": 1
+      },
+      "enemyStarDistribution": {
+        "1": 1
+      },
+      "unitDiversity": 1,
+      "twoStarTarget": 0,
+      "twoStarRatio": 0,
+      "starPolicyBudgetConflict": false,
+      "lowConfidenceUnits": [],
+      "estimatedBudgetConfidence": "low",
+      "powerDiagnostics": [
+        "Individual-power sum omits composition effects; P1-B held-out team MAE is 0.13602208330724963"
+      ],
+      "powerModelVersion": "enemy-power-v1",
+      "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+      "difficultyConfigVersion": "budget-v1",
+      "statMultiplier": 1
+    },
+    "allRemainingWavesAboveMaxFrom": {
+      "stage": 12,
+      "round": 5,
+      "globalWaveId": 93
+    }
+  },
+  "additionalSeeds": [
+    {
+      "seed": 0,
+      "nonIntroWaves": 965,
+      "maxDeviationPct": 4.890329851944681,
+      "allWithinTolerance": true
+    },
+    {
+      "seed": 1,
+      "nonIntroWaves": 965,
+      "maxDeviationPct": 4.890329851944681,
+      "allWithinTolerance": true
+    },
+    {
+      "seed": 42,
+      "nonIntroWaves": 965,
+      "maxDeviationPct": 4.890329851944681,
+      "allWithinTolerance": true
+    },
+    {
+      "seed": 12346,
+      "nonIntroWaves": 965,
+      "maxDeviationPct": 4.890329851944681,
+      "allWithinTolerance": true
+    },
+    {
+      "seed": 4294967295,
+      "nonIntroWaves": 965,
+      "maxDeviationPct": 4.890329851944681,
+      "allWithinTolerance": true
+    }
+  ],
+  "simulations": [
+    {
+      "file": "run-sim-legacy.json",
+      "mode": "legacy",
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 391,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "4f6a9a09da9c045944959283464ebf8d5ca64fdf46e8429c48352101269f5709",
+      "interpretation": "Infrastructure smoke only; not a calibrated player strategy or balance conclusion"
+    },
+    {
+      "file": "run-sim-budget-v2.json",
+      "mode": "budget-v1",
+      "result": "PLAYER_DEAD",
+      "waves": 75,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 10,
+        "round": 7,
+        "waveId": 75,
+        "playerHp": 0,
+        "gold": 1197,
+        "level": 8,
+        "xp": 18,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "5993c54703c359a88cc71c58e303887193e8c589ac439beedc27a4cdb8d59d99",
+      "interpretation": "Infrastructure smoke only; not a calibrated player strategy or balance conclusion"
+    }
+  ],
+  "performance": {
+    "first": {
+      "totalMilliseconds": 270.7639,
+      "measuredPerWaveScope": "EnemyBudget.calculate + EnemyGenerator.generate; stage-bound precomputation included only in total",
+      "averagePerWaveMilliseconds": 0.2423113989637326,
+      "p95Milliseconds": 0.5554000000000201,
+      "maxMilliseconds": 3.563199999999995
+    },
+    "repeat": {
+      "totalMilliseconds": 266.41940000000005,
+      "measuredPerWaveScope": "EnemyBudget.calculate + EnemyGenerator.generate; stage-bound precomputation included only in total",
+      "averagePerWaveMilliseconds": 0.24023398963730547,
+      "p95Milliseconds": 0.6125999999999863,
+      "maxMilliseconds": 3.725500000000011
+    }
+  },
+  "tests": {
+    "preflightNpmExitCode": 0,
+    "finalNpmExitCode": 0,
+    "finalLog": "npm-test-final-v2.log",
+    "enemyBudget": 26,
+    "regression": 69,
+    "runSession": 12,
+    "runSimCli": 5,
+    "enemyPower": 8,
+    "powerCalibration": 6,
+    "executedScopes": "Node / real pure BattleSim / Cocos adapter boundary stubs; no editor visual or device run claimed"
+  },
+  "limitations": [
+    "P1-B team sum is an uncertain budget proxy, not a guaranteed combat-strength equality.",
+    "Stage7 and Stage8 star targets are unaffordable under the current B0/growth/population/model constraints; soft goals remain unmet and are not granted for free.",
+    "Requested and effective targets differ explicitly under feasibility and stage-envelope constraints; saturation never authorizes extra population, stars, gear or stats.",
+    "P2/P3/P4 and final 85%/50% completion targets are not implemented or validated."
+  ]
+}

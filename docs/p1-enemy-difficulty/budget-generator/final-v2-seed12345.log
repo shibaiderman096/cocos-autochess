@@ -1,0 +1,15 @@
+
+> report-enemy-budget
+> node --require tsx/cjs tools/report-enemy-budget.ts --seed 12345 --output docs/p1-enemy-difficulty/budget-generator/final-v2-seed12345
+
+{
+  "output": "D:\\cocos\\NewProject\\docs\\p1-enemy-difficulty\\budget-generator\\final-v2-seed12345",
+  "waves": 968,
+  "maxDeviationPct": 4.890329851944681,
+  "solutions": {
+    "within-tolerance": 965
+  },
+  "modelVersion": "enemy-power-v1",
+  "wavesSha256": "8487eedca0f91bf2f0353c2c565f82841e0ad21aaf544dde330849fc8d69b029",
+  "totalMilliseconds": 270.7639
+}

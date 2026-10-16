@@ -270,6 +270,41 @@ console.log('[10] 同名合并');
   void pool;
 }
 
+console.log('[11] 高费棋子的实际购买、升星与出售');
+for (const [unitId, cost] of [['k1', 4], ['d1', 5]] as const) {
+  for (const star of [1, 2, 3]) {
+    const copies = 3 ** (star - 1);
+    const economy = new EconomySystem(undefined, { gold: cost * copies, winStreak: 0, loseStreak: 0 });
+    const pool = new CardPool(UNITS);
+    const owned = new OwnedUnits();
+    const shop = new ShopSystem(pool, owned, economy, UNIT_MAP, new Rng(42), () => 10, 9,
+      [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }], false);
+    for (let n = 0; n < copies; n++) {
+      if (n > 0) {
+        assert(pool.take(unitId), `${cost}费：为商店预留第${n + 1}张卡`);
+        shop.slots[0].unitId = unitId;
+      }
+      assert(!shop.buy(0).error, `${cost}费：按每张${cost}金购买第${n + 1}张卡`);
+    }
+    assert(economy.gold === 0, `${cost}费${star}星：购买应恰好花完预算`);
+    const unit = owned.all()[0];
+    assert(owned.all().length === 1 && unit?.star === star, `${cost}费：合并为${star}星`);
+    assert(pool.count(unitId) === POOL_STOCK[cost] - copies, `${cost}费：合并不返还卡池`);
+    const expectedSell = cost * copies - (star > 1 ? 1 : 0);
+    const sale = unit ? shop.sell(unit.uid) : null;
+    assert(sale?.gold === expectedSell && economy.gold === expectedSell, `${cost}费${star}星：应卖${expectedSell}金`);
+    assert(pool.count(unitId) === POOL_STOCK[cost] && owned.all().length === 0, `${cost}费：出售返还全部原卡`);
+    assert(!unit || shop.sell(unit.uid) === null, `${cost}费：不能重复出售`);
+  }
+  const economy = new EconomySystem(undefined, { gold: cost - 1, winStreak: 0, loseStreak: 0 });
+  const pool = new CardPool(UNITS), owned = new OwnedUnits();
+  const shop = new ShopSystem(pool, owned, economy, UNIT_MAP, new Rng(42), () => 10, 9,
+    [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }], false);
+  assert(shop.buy(0).error === 'not_enough_gold', `${cost}费：少1金应拒绝购买`);
+  assert(economy.gold === cost - 1 && owned.all().length === 0 && shop.slots[0].unitId === unitId
+    && pool.count(unitId) === POOL_STOCK[cost] - 1, `${cost}费：拒绝购买保留金币和预留卡`);
+}
+
 // ─── 结果 ───
 console.log(`\n=== 结果：${pass} passed, ${fail} failed ===`);
 process.exit(fail > 0 ? 1 : 0);

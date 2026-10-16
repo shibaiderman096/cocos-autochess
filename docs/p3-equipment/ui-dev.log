@@ -1,0 +1,5 @@
+PASS actual UI: merged XP, colored odds, gold header, range/live vitals, asynchronous bars, drag sale, and combat shop
+PASS actual UnitView: fixed left edges, independent HP/mana widths, clamped values, and delayed texture loading
+PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration
+PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, modal input, choice callback and stale async protection
+PASS drag polygon highlight, centered bold population, animated preparation fill and idle wave visibility

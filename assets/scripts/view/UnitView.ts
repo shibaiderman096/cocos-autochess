@@ -1,8 +1,11 @@
+import { loadArtSprite } from './ArtSpriteLoader';
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, tween, UIOpacity, Graphics, Color } from 'cc';
 import { UnitRuntime, EquipmentConfigData } from '../battle/types';
 import { UNIT_SPRITE, UI_SPRITE, FX_SPRITE, unitSpriteKey } from './ArtPaths';
 import { drawFactionRing } from './FactionRing';
 import { setStarBadge } from '../ui/UISkin';
+import { healthBarSegments } from './HealthBar';
+import { createHealthBarClip } from './HealthBarClip';
 
 const { ccclass } = _decorator;
 
@@ -20,8 +23,10 @@ export class UnitView extends Component {
 
   private bodySprite: Sprite;
   private hpFill: Sprite;
+  private shieldFill: Sprite;
   private manaFill: Sprite;
   private hpBarBg: Node;
+  private hpBarContent: Node;
   private loaded = false;
   private starBadge: Node;
   private cellSize = 64;
@@ -72,13 +77,25 @@ export class UnitView extends Component {
     this.hpBarBg.setPosition(0, size * 0.62 + raised, 0);
     this.node.addChild(this.hpBarBg);
 
+    const innerWidth = Math.max(0, size * 0.9 - 2);
+    this.hpBarContent = createHealthBarClip(this.hpBarBg, innerWidth, 4);
+
     const hpFillNode = new Node('hpFill');
-    hpFillNode.addComponent(UITransform).setContentSize(size * 0.9, 4);
+    hpFillNode.addComponent(UITransform).setContentSize(innerWidth, 4);
     hpFillNode.getComponent(UITransform).setAnchorPoint(0, 0.5);
     this.hpFill = hpFillNode.addComponent(Sprite);
     this.hpFill.sizeMode = Sprite.SizeMode.CUSTOM;
-    this.hpBarBg.addChild(hpFillNode);
-    hpFillNode.setPosition(-size * 0.9 / 2, 0, 0);
+    this.hpBarContent.addChild(hpFillNode);
+    hpFillNode.setPosition(-innerWidth / 2, 0, 0);
+
+    const shieldFillNode = new Node('shieldFill');
+    shieldFillNode.addComponent(UITransform).setContentSize(innerWidth, 4);
+    shieldFillNode.getComponent(UITransform).setAnchorPoint(0, 0.5);
+    this.hpBarContent.addChild(shieldFillNode);
+    this.shieldFill = shieldFillNode.addComponent(Sprite);
+    this.shieldFill.sizeMode = Sprite.SizeMode.CUSTOM;
+    shieldFillNode.setPosition(-innerWidth / 2, 0, 0);
+    shieldFillNode.active = false;
 
     const manaFillNode = new Node('manaFill');
     manaFillNode.addComponent(UITransform).setContentSize(size * 0.9, 3);
@@ -102,6 +119,7 @@ export class UnitView extends Component {
     if (tint) { const color = new Color(); color.fromHEX(tint); this.bodySprite.color = color; }
   }
 
+
   /** Rank uses the supplied one-, two-, and three-star image badges. */
   setStar(star: number): void {
     if (this.starBadge) setStarBadge(this.starBadge, star);
@@ -116,7 +134,7 @@ export class UnitView extends Component {
       const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       this.hpBarBg.addChild(node); node.setPosition((i - (items.length - 1) / 2) * 14, -17, 0);
       this.equipmentIcons.push(node);
-      resources.load(item.icon, SpriteFrame, (err, frame) => { if (!err && sprite.isValid) sprite.spriteFrame = frame; });
+      loadArtSprite(item.icon, (err, frame) => { if (!err && sprite.isValid) sprite.spriteFrame = frame; });
     });
   }
 
@@ -126,6 +144,7 @@ export class UnitView extends Component {
       resources.load(p, SpriteFrame, (e, sf) => { if (!e && sf && this.isValid) cb(sf); });
     loadSf(UI_SPRITE.barBg, sf => { if (this.hpBarBg) this.hpBarBg.getComponent(Sprite).spriteFrame = sf; });
     loadSf(this.side === 0 ? UI_SPRITE.hpFillAlly : UI_SPRITE.hpFillEnemy, sf => { if (this.hpFill) this.hpFill.spriteFrame = sf; });
+    loadSf(UI_SPRITE.shieldFill, sf => { if (this.shieldFill) this.shieldFill.spriteFrame = sf; });
     if (this.side === 0) loadSf(UI_SPRITE.manaFill, sf => { if (this.manaFill) this.manaFill.spriteFrame = sf; });
     else this.manaFill.node.active = false;
   }
@@ -141,12 +160,19 @@ export class UnitView extends Component {
       cur.y + (targetPos.y - cur.y) * k,
       0,
     );
+    const segments = healthBarSegments(snap.hp, snap.maxHp, snap.shield);
+    const barWidth = this.hpBarContent.getComponent(UITransform).contentSize.width;
     if (this.hpFill) {
       this.hpFill.node.getComponent(UITransform).setContentSize(
-        (snap.maxHp > 0 ? Math.max(0, Math.min(1, snap.hp / snap.maxHp)) : 0)
-          * this.hpBarBg.getComponent(UITransform).contentSize.width,
+        segments.health * barWidth,
         4,
       );
+    }
+    if (this.shieldFill) {
+      const width = segments.shield * barWidth;
+      this.shieldFill.node.active = width > 0;
+      this.shieldFill.node.setPosition(-barWidth / 2 + segments.health * barWidth, 0, 0);
+      this.shieldFill.node.getComponent(UITransform).setContentSize(width, 4);
     }
     if (this.manaFill) this.manaFill.node.active = this.side === 0 && snap.maxMana > 0;
     if (this.manaFill && this.side === 0) {
@@ -195,6 +221,14 @@ export class UnitView extends Component {
     tween(this.bodySprite).to(seconds, {}).call(() => {
       if (this.bodySprite) this.bodySprite.color = orig;
     }).start();
+  }
+
+  playKnockup(seconds: number) {
+    if (!this.bodySprite) return;
+    const body = this.bodySprite.node;
+    const original = body.position.clone();
+    tween(body).to(seconds / 2, { position: new Vec3(original.x, original.y + this.cellSize * 0.6, original.z) })
+      .to(seconds / 2, { position: original }).start();
   }
 
   playBlackFlame(seconds: number) {

@@ -27,5 +27,9 @@
   ],
   "criticalMultiplier": 1.5,
   "attackSpeedCap": 5,
+  "roleMana": {
+    "casterPerSecond": 2,
+    "damageTakenFraction": 0.1
+  },
   "legendaryThreeStarBonusHp": 5000
 }

@@ -1,0 +1,210 @@
+{
+  "rulesVersion": 1,
+  "configHash": "d1c871087e0dd8d79c6886a38b2e24a498f6dfecd561633707e808f2a5203067",
+  "repeat": {
+    "byteIdentical": true,
+    "sha256": "0912e53724b7eef0b77fb24b7e0bb8417559489d9b2abe31744ac6fd008d52bb"
+  },
+  "prefix": {
+    "waves": 14,
+    "stages": [
+      3,
+      6,
+      99
+    ],
+    "fullWaveRecordsIdentical": true
+  },
+  "seedVariation": {
+    "differentInitialShop": true,
+    "seed12345": [
+      {
+        "unitId": "guardian"
+      },
+      {
+        "unitId": "scout"
+      },
+      {
+        "unitId": "guardian"
+      },
+      {
+        "unitId": "warrior"
+      },
+      {
+        "unitId": "warrior"
+      }
+    ],
+    "seed12346": [
+      {
+        "unitId": "guardian"
+      },
+      {
+        "unitId": "warrior"
+      },
+      {
+        "unitId": "archer"
+      },
+      {
+        "unitId": "warrior"
+      },
+      {
+        "unitId": "scout"
+      }
+    ]
+  },
+  "protectedFilesUnchanged": 23,
+  "runs": [
+    {
+      "file": "seed-1.json",
+      "seed": 1,
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 1,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 367,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "6a1826bfb46304d4e52e61f21c181f6a76511dc1df77bc896acd91ea9f66049c"
+    },
+    {
+      "file": "seed-12345-a.json",
+      "seed": 12345,
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 391,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "0912e53724b7eef0b77fb24b7e0bb8417559489d9b2abe31744ac6fd008d52bb"
+    },
+    {
+      "file": "seed-12345-b.json",
+      "seed": 12345,
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 391,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "0912e53724b7eef0b77fb24b7e0bb8417559489d9b2abe31744ac6fd008d52bb"
+    },
+    {
+      "file": "seed-12346.json",
+      "seed": 12346,
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 12346,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 369,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "85303ca595001a660c198f44d956ab4cec1b7ac5cd0ac4be1bc340e26b5a8921"
+    },
+    {
+      "file": "seed-12345-stage3.json",
+      "seed": 12345,
+      "result": "MAX_WAVE_REACHED",
+      "waves": 14,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 3,
+        "round": 6,
+        "waveId": 14,
+        "playerHp": 20,
+        "gold": 95,
+        "level": 5,
+        "xp": 8,
+        "phase": "settlement",
+        "result": null
+      },
+      "sha256": "cceb0b11dcd2dad9a9ea38023dfa7a9115c1c0bea551ae8de698ca7287654231"
+    },
+    {
+      "file": "seed-12345-stage99.json",
+      "seed": 12345,
+      "result": "PLAYER_DEAD",
+      "waves": 31,
+      "endState": {
+        "runSeed": 12345,
+        "rulesVersion": 1,
+        "stage": 6,
+        "round": 2,
+        "waveId": 31,
+        "playerHp": 0,
+        "gold": 391,
+        "level": 6,
+        "xp": 22,
+        "phase": "ended",
+        "result": "defeat"
+      },
+      "sha256": "c93bfc306969da18d6ac4d23064e650f7500e18bdd63008742616628827bff98"
+    }
+  ],
+  "runtime": {
+    "node": "v24.15.0",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15"
+  },
+  "sourceSha256": {
+    "assets/scripts/core/RunRandomContext.ts": "81fc77870b45a6cb52c4bf74f9b006d5f43dfba1bb725d4d39464f53a4e10613",
+    "assets/scripts/core/RunRandomContext.ts.meta": "832789b2cb682d91911cb6d9195fdca8c6110e9654353c2bdab337407ec3d794",
+    "assets/scripts/core/RunSession.ts": "bc8816ef9815499767627c8b509ac97762b5d829cbc1ba79948063f02d12d5a0",
+    "assets/scripts/core/RunSession.ts.meta": "5ee3d0cb7e5801a95ada5e8c863fb89ca3bb779baf5a52629da9b4fe5a2cf479",
+    "assets/scripts/core/RunSessionTypes.ts": "9feb4da335c5dfa9ec34139741a155322b147b404a89768958ff4dbebe95a518",
+    "assets/scripts/core/RunSessionTypes.ts.meta": "f13c160b4c34842232d1bdc1e142a843d3e7062512a6177598487a4427415c02",
+    "assets/scripts/core/OwnedUnits.ts": "23378f88dd93ab0b9c02be8e7aadac20148fd4011fcfc8f760079313091c6799",
+    "assets/scripts/core/ShopSave.ts": "f395a7d624dd9506c939510b29177e391776146fcd698de9a68b489de430431c",
+    "assets/scripts/core/ShopSystem.ts": "c22a154b0ffa5f2dfcc4aefb41b3208d7ec54252c7a5377be54883b5d8650859",
+    "assets/scripts/core/index.ts": "d10f3b61620c7353e7af998d69f79e133a6aeb3083b5ada0a1e0ff992fb96b87",
+    "assets/scripts/view/BattleStage.ts": "a1200e528472127a108e35205bff4150053257eb5b604181a85007a01d4d4376",
+    "tools/run-sim.ts": "b837729a91b0f5210355060f0783657caa86f918211e85d141eaa0eff40b7d93",
+    "tools/run-simulation.ts": "fb0370888b5ef5e25dbfb23235de3b841f85e7ae4974b39888f4c41a51fce9ca",
+    "tools/bots/minimal-baseline.ts": "3e206b0bf0203873ab704552cb5e61c5a4f60b8f547bb6f05b8a49ceef5fee2f",
+    "tools/run-tests.ps1": "0893f48363db8abd014ebfb4d01ec07472553f7a18697e1d9621e40e234db035",
+    "tests/run-session-tests.cjs": "624d02454aec34615eb664d7205b6ac631e4266257c68a194adede56050b58e7",
+    "tests/run-sim-cli-tests.cjs": "66492898d7c32554f80d303f6c63d5edab2d93269f3cbddb8f23e393380191a7",
+    "tests/regression-tests.cjs": "bdce8cbf8e27f27f0625964d2d9de974da029e41b099b20c932b72c9d523e259",
+    "package.json": "e33afbc80bca82d29140e7d61b93400cc940f22b9dc80919557afceacadb1ddf"
+  },
+  "actualCampaignCompletion": {
+    "file": "seed-12345-completed.json",
+    "result": "RUN_COMPLETED",
+    "waves": 14,
+    "sha256": "112713f751748f8dee80643f44638600e2a6807a80c42806656d5c70887e501f",
+    "commonWaveRecordsMatchSamplingCutoff": true
+  }
+}

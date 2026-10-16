@@ -1,0 +1,76 @@
+
+> report-enemy-formation
+> node --require tsx/cjs tools/report-enemy-formation.ts --seed 12345 --output docs/p2-enemy-formation/final-seed12345
+
+{
+  "destination": "D:\\cocos\\NewProject\\docs\\p2-enemy-formation\\final-seed12345",
+  "summary": [
+    {
+      "level": "L0",
+      "waves": 965,
+      "spacingViolations": 0,
+      "wavesWithSpacingViolations": 0,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 0,
+      "templateUsedWaves": 0,
+      "meanCoverScore": 0
+    },
+    {
+      "level": "L1",
+      "waves": 965,
+      "spacingViolations": 731,
+      "wavesWithSpacingViolations": 73,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 112,
+      "templateUsedWaves": 98,
+      "meanCoverScore": 0.045994736409244195
+    },
+    {
+      "level": "L2",
+      "waves": 965,
+      "spacingViolations": 334,
+      "wavesWithSpacingViolations": 58,
+      "roleDepthViolationWaves": 0,
+      "fallbackWaves": 155,
+      "templateUsedWaves": 98,
+      "meanCoverScore": 0.03928201332346411
+    }
+  ],
+  "actualBattleSimCalls": 3150,
+  "deterministicFiles": 10,
+  "formationsSha256": "aede69fd0a33ebe05f0f9c38cf25c88e0621c06ed06e28453b698597b444688b",
+  "performance": [
+    {
+      "level": "L0",
+      "samples": 974,
+      "meanMilliseconds": 0.0252917864476374,
+      "p95Milliseconds": 0.03200000000003911,
+      "maxMilliseconds": 0.6725999999999885,
+      "maxIterations": 0
+    },
+    {
+      "level": "L1",
+      "samples": 965,
+      "meanMilliseconds": 0.12691056994818772,
+      "p95Milliseconds": 0.23299999999994725,
+      "maxMilliseconds": 0.77049999999997,
+      "maxIterations": 3
+    },
+    {
+      "level": "L2",
+      "samples": 965,
+      "meanMilliseconds": 0.13190974093264465,
+      "p95Milliseconds": 0.27509999999995216,
+      "maxMilliseconds": 1.2799999999999727,
+      "maxIterations": 6
+    },
+    {
+      "level": "L3",
+      "samples": 18,
+      "meanMilliseconds": 1.3077999999999987,
+      "p95Milliseconds": 2.764599999999973,
+      "maxMilliseconds": 2.764599999999973,
+      "maxIterations": 6
+    }
+  ]
+}

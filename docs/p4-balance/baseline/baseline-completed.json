@@ -1,0 +1,28 @@
+{
+  "runs": 1500,
+  "bots": [
+    "weak",
+    "medium",
+    "strong"
+  ],
+  "trainingSeeds": [
+    1,
+    500
+  ],
+  "campaignStages": 12,
+  "configsUnchanged": true,
+  "configHashes": {
+    "assets/resources/config/units.json": "91991de9c7330ff4bccc959b771ce39538cab65a0457a026c60f793b49a3ce83",
+    "assets/resources/config/skills.json": "6ee03fb676ba45ae7ed723b740338de75241cb7ae5e95de73a88bd7c450089d6",
+    "assets/resources/config/battle.json": "41222cce273075b60dd6c3e746909ed6c4a107713cd8b4bb1876650df2b06b02",
+    "assets/resources/config/run.json": "9c12c3ea2b9fcd0ebe17475b4abe03f87417cbdc1f00e9bb28e8031ca2f98a4e",
+    "assets/resources/config/waves.json": "4a188c22bbd4258355030d15b70b2e49c0cb4489296eeff8f8019105ab6cdac2",
+    "assets/resources/config/equipment.json": "4b933feb4e02617cd0222a131bdee6fbb84d3d580e805d8654eb4e749b2c1e39",
+    "assets/resources/config/enemy-difficulty.json": "5892b75f445d03de4029d17d1d5fbf22bf451d87c15537a370a0be70ef39fcd8",
+    "assets/resources/config/enemy-formation.json": "cd3b96fff6003cbf3747e3d6af38bf30de0dcc0440bbf399e11659bb9b79f5c1",
+    "assets/resources/config/enemy-roles.json": "25d91c2c5b2c7d0fba0a487cf2f70be566ae45966408b66d402bcb60a183e8e1",
+    "assets/resources/config/enemy-power.json": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0",
+    "assets/resources/config/equipment-policy.json": "8e122c229ce38c4fe4c4ddb1407ded250a28484288a1262cd28cf5993f941a5a"
+  },
+  "baselineReport": "baseline/README.md"
+}

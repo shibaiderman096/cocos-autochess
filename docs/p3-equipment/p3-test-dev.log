@@ -1,0 +1,19 @@
+PASS P3-0 old model, combat, stats, content, P2 solver and all previous evidence are byte protected
+PASS all 968 waves retain targets, population, classification and hard unlocks; normal/intro/stage1-2 have no items
+PASS final exact team queries pay for every item and preserve <=5% reachable budget protection
+PASS same-budget alternatives can exchange unit/star composition; quota conflicts never give free power
+PASS candidate beam cap applies per identity across stars; missing calibration never becomes free equipment
+PASS real duplicate-slot rules and explicit tier/pool validation are preserved
+PASS only an actual battle victory creates rewards, including last-wave alive loss semantics
+PASS pending freezes the distinct two-choice early fallback, blocks all progression and rejects invalid indices
+PASS settle x3 grants currency/XP/reward once and claim is idempotent
+PASS pending save/load, choose second, save/load preserves candidates, gold/XP and compact claimed marker
+PASS old P2 saves pin both policies to none, keep player items and reproduce pre-P3 future enemies
+PASS menu new-game ticket binds P3 before play; saved configuration/model drift is explicitly rejected
+PASS malformed saved pending state rejects instead of silently dropping or regenerating loot
+PASS guarantee requires eligible victory, is satisfied on claim, and cannot send special gear early
+PASS reward RNG x1000 and enemy/formation x1000 leave all other domains and frozen loot unchanged
+PASS reward inventory -> original equip -> original unequip and real BattleSim Guinsuo reset
+PASS all 3/6/99 common generated and played history includes identical shops/enemies/formation/rewards/choices
+PASS P2 same member/equipment/snapshot remains deterministic and minimal bot uses the common claim/equip port
+P3 equipment: 18 passed, 0 failed

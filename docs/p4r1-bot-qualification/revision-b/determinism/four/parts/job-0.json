@@ -1,0 +1,26 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\revision-b\\determinism\\four",
+    "bot": "all",
+    "seedStart": 5799,
+    "seedCount": 2,
+    "stages": 12,
+    "workers": 4,
+    "partition": "development",
+    "audit": true,
+    "experiment": "bot-qualification-v2r1b",
+    "config": "docs/p4r1-bot-qualification/revision-b/freeze/bots-v2.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 5799
+    },
+    {
+      "bot": "strong",
+      "seed": 5799
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\revision-b\\determinism\\four\\parts\\part-0.jsonl"
+}

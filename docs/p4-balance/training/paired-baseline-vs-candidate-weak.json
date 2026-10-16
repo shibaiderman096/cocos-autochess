@@ -1,0 +1,651 @@
+{
+  "a": "docs/p4-balance/baseline/runs-500",
+  "b": "docs/p4-balance/training/confirmation-500",
+  "bot": "weak",
+  "pairedSeeds": 500,
+  "stages": [
+    {
+      "stage": 3,
+      "seeds": 500,
+      "onlyA": 0,
+      "onlyB": 0,
+      "both": 500,
+      "neither": 0,
+      "deltaBMinusA": 0,
+      "pairedNormal95": [
+        0,
+        0
+      ]
+    },
+    {
+      "stage": 6,
+      "seeds": 500,
+      "onlyA": 488,
+      "onlyB": 0,
+      "both": 12,
+      "neither": 0,
+      "deltaBMinusA": -0.976,
+      "pairedNormal95": [
+        -0.9894285261089513,
+        -0.9625714738910487
+      ]
+    },
+    {
+      "stage": 10,
+      "seeds": 500,
+      "onlyA": 491,
+      "onlyB": 0,
+      "both": 4,
+      "neither": 5,
+      "deltaBMinusA": -0.982,
+      "pairedNormal95": [
+        -0.9936651362201752,
+        -0.9703348637798248
+      ]
+    },
+    {
+      "stage": 12,
+      "seeds": 500,
+      "onlyA": 258,
+      "onlyB": 0,
+      "both": 4,
+      "neither": 238,
+      "deltaBMinusA": -0.516,
+      "pairedNormal95": [
+        -0.5598475518019971,
+        -0.4721524481980029
+      ]
+    }
+  ],
+  "waves": [
+    {
+      "waveId": 1,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 2,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 3,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 4,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 5,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 6,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 7,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 8,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 9,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 10,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 11,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 12,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 13,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": -0.006,
+      "hpLossDeltaBMinusA": 0.012
+    },
+    {
+      "waveId": 14,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": -0.272,
+      "hpLossDeltaBMinusA": 1.08
+    },
+    {
+      "waveId": 15,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": -0.04,
+      "hpLossDeltaBMinusA": 0.132
+    },
+    {
+      "waveId": 16,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": -0.154,
+      "hpLossDeltaBMinusA": 0.624
+    },
+    {
+      "waveId": 17,
+      "commonEncounters": 500,
+      "winDeltaBMinusA": -0.212,
+      "hpLossDeltaBMinusA": 1
+    },
+    {
+      "waveId": 18,
+      "commonEncounters": 491,
+      "winDeltaBMinusA": -0.1364562118126273,
+      "hpLossDeltaBMinusA": 0.4847250509164969
+    },
+    {
+      "waveId": 19,
+      "commonEncounters": 482,
+      "winDeltaBMinusA": -0.0912863070539419,
+      "hpLossDeltaBMinusA": 0.24481327800829875
+    },
+    {
+      "waveId": 20,
+      "commonEncounters": 466,
+      "winDeltaBMinusA": -0.019313304721030045,
+      "hpLossDeltaBMinusA": 0.04291845493562232
+    },
+    {
+      "waveId": 21,
+      "commonEncounters": 463,
+      "winDeltaBMinusA": -0.11447084233261338,
+      "hpLossDeltaBMinusA": 0.46220302375809935
+    },
+    {
+      "waveId": 22,
+      "commonEncounters": 453,
+      "winDeltaBMinusA": -0.08830022075055188,
+      "hpLossDeltaBMinusA": 0.25165562913907286
+    },
+    {
+      "waveId": 23,
+      "commonEncounters": 445,
+      "winDeltaBMinusA": -0.23146067415730337,
+      "hpLossDeltaBMinusA": 0.8853932584269663
+    },
+    {
+      "waveId": 24,
+      "commonEncounters": 434,
+      "winDeltaBMinusA": -0.2926267281105991,
+      "hpLossDeltaBMinusA": 1.2258064516129032
+    },
+    {
+      "waveId": 25,
+      "commonEncounters": 414,
+      "winDeltaBMinusA": -0.4323671497584541,
+      "hpLossDeltaBMinusA": 2.42512077294686
+    },
+    {
+      "waveId": 26,
+      "commonEncounters": 377,
+      "winDeltaBMinusA": -0.4880636604774536,
+      "hpLossDeltaBMinusA": 2.413793103448276
+    },
+    {
+      "waveId": 27,
+      "commonEncounters": 325,
+      "winDeltaBMinusA": -0.4492307692307692,
+      "hpLossDeltaBMinusA": 2.116923076923077
+    },
+    {
+      "waveId": 28,
+      "commonEncounters": 287,
+      "winDeltaBMinusA": -0.7839721254355401,
+      "hpLossDeltaBMinusA": 6.320557491289199
+    },
+    {
+      "waveId": 29,
+      "commonEncounters": 199,
+      "winDeltaBMinusA": -0.6532663316582915,
+      "hpLossDeltaBMinusA": 4
+    },
+    {
+      "waveId": 30,
+      "commonEncounters": 138,
+      "winDeltaBMinusA": -0.12318840579710146,
+      "hpLossDeltaBMinusA": 0.4927536231884058
+    },
+    {
+      "waveId": 31,
+      "commonEncounters": 128,
+      "winDeltaBMinusA": -0.65625,
+      "hpLossDeltaBMinusA": 3.734375
+    },
+    {
+      "waveId": 32,
+      "commonEncounters": 89,
+      "winDeltaBMinusA": -0.34831460674157305,
+      "hpLossDeltaBMinusA": 1.4606741573033708
+    },
+    {
+      "waveId": 33,
+      "commonEncounters": 72,
+      "winDeltaBMinusA": -0.6944444444444444,
+      "hpLossDeltaBMinusA": 4.388888888888889
+    },
+    {
+      "waveId": 34,
+      "commonEncounters": 56,
+      "winDeltaBMinusA": -0.35714285714285715,
+      "hpLossDeltaBMinusA": 1.7857142857142858
+    },
+    {
+      "waveId": 35,
+      "commonEncounters": 48,
+      "winDeltaBMinusA": -0.6458333333333334,
+      "hpLossDeltaBMinusA": 4.083333333333333
+    },
+    {
+      "waveId": 36,
+      "commonEncounters": 34,
+      "winDeltaBMinusA": -0.6764705882352942,
+      "hpLossDeltaBMinusA": 4.588235294117647
+    },
+    {
+      "waveId": 37,
+      "commonEncounters": 23,
+      "winDeltaBMinusA": -0.391304347826087,
+      "hpLossDeltaBMinusA": 2.260869565217391
+    },
+    {
+      "waveId": 38,
+      "commonEncounters": 18,
+      "winDeltaBMinusA": -0.7777777777777778,
+      "hpLossDeltaBMinusA": 4.888888888888889
+    },
+    {
+      "waveId": 39,
+      "commonEncounters": 12,
+      "winDeltaBMinusA": -0.08333333333333333,
+      "hpLossDeltaBMinusA": 0.3333333333333333
+    },
+    {
+      "waveId": 40,
+      "commonEncounters": 11,
+      "winDeltaBMinusA": -0.09090909090909091,
+      "hpLossDeltaBMinusA": 0.5454545454545454
+    },
+    {
+      "waveId": 41,
+      "commonEncounters": 11,
+      "winDeltaBMinusA": -0.2727272727272727,
+      "hpLossDeltaBMinusA": 1.8181818181818181
+    },
+    {
+      "waveId": 42,
+      "commonEncounters": 10,
+      "winDeltaBMinusA": -0.3,
+      "hpLossDeltaBMinusA": 0.6
+    },
+    {
+      "waveId": 43,
+      "commonEncounters": 8,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 44,
+      "commonEncounters": 8,
+      "winDeltaBMinusA": -0.125,
+      "hpLossDeltaBMinusA": 0.5
+    },
+    {
+      "waveId": 45,
+      "commonEncounters": 8,
+      "winDeltaBMinusA": -0.125,
+      "hpLossDeltaBMinusA": 0.75
+    },
+    {
+      "waveId": 46,
+      "commonEncounters": 7,
+      "winDeltaBMinusA": -0.2857142857142857,
+      "hpLossDeltaBMinusA": 2
+    },
+    {
+      "waveId": 47,
+      "commonEncounters": 7,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 48,
+      "commonEncounters": 7,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 49,
+      "commonEncounters": 7,
+      "winDeltaBMinusA": -0.2857142857142857,
+      "hpLossDeltaBMinusA": 1.4285714285714286
+    },
+    {
+      "waveId": 50,
+      "commonEncounters": 7,
+      "winDeltaBMinusA": -0.14285714285714285,
+      "hpLossDeltaBMinusA": 0.8571428571428571
+    },
+    {
+      "waveId": 51,
+      "commonEncounters": 6,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 52,
+      "commonEncounters": 6,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 53,
+      "commonEncounters": 6,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 54,
+      "commonEncounters": 6,
+      "winDeltaBMinusA": -0.3333333333333333,
+      "hpLossDeltaBMinusA": 1.3333333333333333
+    },
+    {
+      "waveId": 55,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 56,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 57,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 58,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 59,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 60,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 61,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 62,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 63,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 64,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 65,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 66,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 67,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 68,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 69,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 70,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 71,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 72,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 73,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 74,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 75,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 76,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 77,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 78,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 79,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 80,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 81,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 82,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 83,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 84,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 85,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 86,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 87,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 88,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 89,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 90,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 91,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 92,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 93,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 94,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 95,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 96,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 97,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    },
+    {
+      "waveId": 98,
+      "commonEncounters": 4,
+      "winDeltaBMinusA": 0,
+      "hpLossDeltaBMinusA": 0
+    }
+  ],
+  "note": "Same seed and frozen bot version; survival changes affect later exposure. Wave differences use common encounters only. Formation-aware bots may react to the changed current preview; this is a gameplay policy comparison, not a fixed-placement causal isolation."
+}

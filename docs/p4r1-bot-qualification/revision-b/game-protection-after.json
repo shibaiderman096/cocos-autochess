@@ -1,0 +1,11 @@
+{
+  "gameFiles": 139,
+  "historicalFiles": 1110,
+  "allExact": true,
+  "gameBalanceChanges": 0,
+  "snapshotSha256": "be569c675380419b73c04d5a9f977bfbb4e72d21a5e6027bb053b13f18567ba0",
+  "historicalSnapshotSha256": "3c6eef0ef86669de9ad3fa26c6b06e15ee33b2cac43d4624e48e1ea9d22c8c95",
+  "frozenBotsSha256": "3ac96d9d6c22d4c8105636c31cf68afc530e5a3236c3fe73a7fff07c9b9e5371",
+  "rejectedR1EvidenceFiles": 209,
+  "rejectedR1EvidenceExact": true
+}

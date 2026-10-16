@@ -41,12 +41,15 @@ class Sprite {
   set fillRange(v) { if(this.type===2&&!this.spriteFrame) throw Error('filled range before image'); this.range=v; }
   get fillRange() { return this.range; }
 }
-class Label { static HorizontalAlign={LEFT:0,CENTER:1}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1}; }
+class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {} }
 class Color {
   constructor(r=0,g=0,b=0,a=255) { Object.assign(this,{r,g,b,a}); }
   fromHEX() {} static WHITE=new Color(255,255,255);
 }
-class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} ellipse(){} }
+class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} roundRect(...args){this.roundedRect=args;} ellipse(){} }
+class Mask { static Type={GRAPHICS_STENCIL:2}; }
+class Rect { constructor(x,y,width,height){Object.assign(this,{x,y,width,height});} }
+class Size { constructor(width,height){Object.assign(this,{width,height});} }
 const inputListeners=[];
 const Input={EventType:{TOUCH_START:'touchStart',TOUCH_MOVE:'touchMove',MOUSE_DOWN:'mouseDown',KEY_DOWN:'keyDown'}};
 const input={on:(type,callback,target)=>inputListeners.push({type,callback,target}),off:(type,callback,target)=>{
@@ -54,11 +57,11 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,RichText:class{},Color,Graphics,UIOpacity:class{},SpriteFrame:class{},JsonAsset:class{},Component:class{isValid=true},
+const cc={Node,UITransform,Sprite,Label,RichText:class{},Color,Graphics,Mask,Rect,Size,UIOpacity:class{},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   input,Input,
   ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
-  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
+  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{width:1536,height:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
 function load(file) {
   file=path.resolve(file); if(cache.has(file)) return cache.get(file);
@@ -82,7 +85,7 @@ ui.showResult(1,null,0,0,1);assert.equal(ui.resultLabel.string,'失败');ui.hide
 ui.showResult(1,null,0,0,1,{runResult:'defeat'});ui.update(1);
 assert.equal(ui.resultPanel.active,false);assert.equal(ui.runEndActions.active,true,'run-end navigation remains available after the outcome fades');
 ui.hideResult();ui.waveIdle=0;
-ui.refreshCombatStats([{id:1,name:'战士',side:0,star:1,damage:50,taken:30,healing:10,
+ui.refreshCombatStats([{id:1,name:'战士',side:0,star:1,damage:50,taken:30,healing:10,shielding:40,
   damageByType:{physical:20,magic:20,true:10},takenByType:{physical:30,magic:0,true:0}},
   {id:2,name:'野怪',side:1,star:1,damage:30,taken:50,healing:0,
   damageByType:{physical:30,magic:0,true:0},takenByType:{physical:20,magic:20,true:10}}]);
@@ -93,8 +96,10 @@ assert.equal(ui.combatStatBars[0].bar.lastRect[2],208);
 ui.combatSideButtons[1].events.get('end')();assert.equal(ui.combatStatBars[0].name.string,'野怪 1★');
 assert.equal(ui.combatStatBars[0].value.string,'50');assert.equal(ui.combatStatsTotal.string,'合计 50');
 ui.combatMetricButtons[2].events.get('end')();assert.equal(ui.combatStatBars[0].value.string,'0');
-ui.combatSideButtons[0].events.get('end')();assert.equal(ui.combatStatBars[0].value.string,'10');
-assert.equal(ui.combatStatBars[0].bar.fillColor.g,203,'healing bars use green');
+ui.combatSideButtons[0].events.get('end')();assert.equal(ui.combatStatBars[0].value.string,'50');
+assert.equal(ui.combatStatBars[0].bar.fillColor.g,186,'shield portion uses grey');
+assert.equal(ui.combatStatsTotal.string,'合计 50');assert.equal(ui.combatStatsBreakdown.string,'治疗 10 · 护盾 40');
+assert.deepEqual(ui.combatStatsLegend.filter(l=>l.node.active).map(l=>l.string),['治疗','护盾']);
 ui.combatMetricButtons[0].events.get('end')();
 assert.equal(ui.combatStatsPanel.active,true);
 ui.closeUnitDetail();assert.equal(ui.combatStatsPanel.active,true);
@@ -126,6 +131,8 @@ assert.equal(ui.node.getChildByName('formation'),undefined); assert.equal(ui.nod
 const {FloatText}=load(path.join(__dirname,'../assets/scripts/view/FloatText.ts'));
 assert.deepEqual(['physical','magic','true'].map(type=>{const c=FloatText.colorForType(type);return [c.r,c.g,c.b];}),[[255,151,64],[80,180,255],[255,255,255]]);
 const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,spellPower:150,critChance:.25,lifesteal:.1,damageAmp:.2,damageReduction:.3,skillName:'斩击',skillDescription:'造成伤害'};
+ui.showUnitDetail({...warriorDetail,physicalPower:20});
+assert.equal(ui.unitStats[0].string,'66','attack panel includes physical bonus exactly once');
 ui.showUnitDetail(warriorDetail);
 const firstStatRow=[0,5,6,1,2].map(i=>ui.unitStats[i].node.position);
 const secondStatRow=[3,7,8,9,10].map(i=>ui.unitStats[i].node.position);
@@ -139,8 +146,8 @@ ui.skillIconNode.events.get(Node.EventType.TOUCH_END)();assert.equal(ui.detailPo
 ui.attackSpeedIconNode.events.get(Node.EventType.TOUCH_END)();assert.match(ui.unitDetail.string,/\+5%.*\+0\.05/);
 ui.closeUnitDetail();assert.equal(ui.detailPopup.active,false);
 ui.showUnitDetail(warriorDetail);
-ui.showUnitDetail({...warriorDetail,cost:4});assert.equal(ui.unitCost.string,'5金');
-ui.showUnitDetail({...warriorDetail,cost:5});assert.equal(ui.unitCost.string,'8金');
+ui.showUnitDetail({...warriorDetail,cost:4});assert.equal(ui.unitCost.string,'4金');
+ui.showUnitDetail({...warriorDetail,cost:5});assert.equal(ui.unitCost.string,'5金');
 ui.showUnitDetail(warriorDetail);
 function screenRect(node) {
  let x=0,y=0;for(let n=node;n;n=n.parent){x+=n.position?.x??0;y+=n.position?.y??0;}
@@ -185,7 +192,10 @@ ui.refreshBackpack([{...totem,kind:'equipment'}],true);flush();
 assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,totem.icon);
 ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_START)();
 assert.equal(ui.equipmentTooltip.active,true);assert.equal(ui.equipmentTooltipTitle.string,'不死图腾');
-assert.match(ui.equipmentTooltipText.string,/200生命/);assert.match(ui.equipmentTooltipText.string,/5秒/);
+assert.equal(ui.equipmentTooltipText.string,totem.effectDescription);assert.match(ui.equipmentTooltipText.string,/5秒/);
+assert.deepEqual(ui.equipmentTooltipRows.filter(row=>row.node.active).map(row=>[row.name.string,row.value.string]),[['生命值','+200'],['护甲','+10'],['魔抗','+10']]);
+assert.ok(!ui.equipmentTooltipText.string.includes('+200生命'),'base stats are separate from the effect paragraph');
+flush();assert.equal(ui.equipmentTooltipIcon.spriteFrame.name,totem.icon);
 ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_CANCEL)();assert.equal(ui.equipmentTooltip.active,false);
 ui.showEquipment([totem],true,0);flush();
 ui.equipmentSlots[0].node.events.get(Node.EventType.MOUSE_ENTER)();assert.equal(ui.equipmentTooltip.active,true);
@@ -209,13 +219,32 @@ for(const [id,title] of [['jeweled_gauntlet','领取珠光'],['infinity_edge','�
   ui.refreshBackpack([{...item,kind:'equipment'}],true);flush();
   assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,item.icon);
   ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_START)();
-  assert.equal(ui.equipmentTooltipTitle.string,item.name);assert.match(ui.equipmentTooltipText.string,/35%暴击率/);
+  assert.equal(ui.equipmentTooltipTitle.string,item.name);assert.equal(ui.equipmentTooltipText.string,item.effectDescription);
+  assert.ok(ui.equipmentTooltipRows.some(row=>row.node.active&&row.name.string==='暴击率'&&row.value.string==='+35%'));
   ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_CANCEL)();
   ui.showEquipment([item],true,0);flush();assert.equal(ui.equipmentSlots[0].icon.spriteFrame.name,item.icon);
   const count=grants.length;ui.refreshBackpack([],false);grant.events.get(Node.EventType.TOUCH_END)();assert.equal(grants.length,count);
 }
+// Rapid hover changes must keep the latest large portrait and clear unused stat rows.
+ui.showEquipmentTooltip(totem,-216);ui.showEquipmentTooltip(guinsoo,-216);flush();
+assert.equal(ui.equipmentTooltipIcon.spriteFrame.name,guinsoo.icon);
+assert.deepEqual(ui.equipmentTooltipRows.filter(row=>row.node.active).map(row=>[row.name.string,row.value.string]),[['攻击速度','+10%'],['法术加成','+10%']]);
+ui.showEquipmentTooltip(potionIcon,-216);flush();
+assert.equal(ui.equipmentTooltipRows.filter(row=>row.node.active).length,0,'non-equipment items retain their description without stale stats');
+ui.showEquipmentTooltip(undefined,-216);assert.equal(ui.equipmentTooltip.active,false,'empty slots clear the equipment card');
 const clickDebugTab=tab=>ui.debugPanel.getChildByName('debugTab_'+tab).events.get(Node.EventType.TOUCH_END)();
 const clickDebug=name=>ui.debugContent.getChildByName(name).events.get(Node.EventType.TOUCH_END)();
+ui.refreshBackpack([],true);clickDebugTab('equipment');
+for(let page=0;page<Math.ceil(debugEquipment.length/6);page++) {
+  if(page)clickDebug('debugNextPage');flush();
+  for(const item of debugEquipment.slice(page*6,page*6+6)) {
+    const row=ui.debugContent.getChildByName('debug_equipment_'+item.id);
+    assert.ok(row,'all configured equipment appears in debug pages');
+    const icon=row.getChildByName('debugItemIcon');
+    assert.equal(icon.getComponent(Sprite).spriteFrame.name,item.icon);
+    assert.deepEqual(icon.getComponent(UITransform).contentSize,{width:24,height:24});
+  }
+}
 const debugGold=[];ui.onDebugGold=amount=>debugGold.push(amount);clickDebugTab('gold');clickDebug('debugGold100');
 assert.deepEqual(debugGold,[100]);
 const debugGrantedUnits=[];ui.onDebugUnit=(id,star)=>debugGrantedUnits.push({id,star});clickDebugTab('unit');
@@ -236,6 +265,32 @@ ui.showUnitDetail({...warriorDetail,skillName:'黑炎 · 150物理伤害',skillD
 assert.match(ui.unitDetail.string,/<color=#ff9740>150点物理伤害<\/color>/);
 assert.match(ui.unitDetail.string,/<color=#ffffff>2%的真实伤害<\/color>/);
 assert.equal(ui.unitDetail.handleTouchEvent,false);
+ui.showUnitDetail({...warriorDetail,skillDisplayName:'爆裂火球',skillIcon:'attr_spell_bonus',skillDescription:'第一段造成210点魔法伤害。第二段说明。',
+  skillStats:[{label:'伤害',current:'315',stars:'210 / 315 / 500',tone:'magic'}]});
+ui.skillIconNode.events.get(Node.EventType.TOUCH_END)();
+assert.equal(ui.detailPopupTitle.string,'爆裂火球');
+assert.equal(ui.detailPopup.getComponent(UITransform).contentSize.width,600);
+assert.match(ui.detailPopupStatLabels[0].current.string,/>315<\/color>/);
+assert.equal(ui.detailPopupStatLabels[0].stars.string,'210/315/500');
+assert.match(ui.unitDetail.string,/。\n\n第二段/);
+assert.match(ui.detailPopupStatLabels[0].current.string,/<color=#50b4ff>/);
+assert.equal(ui.detailPopupIcon.node.parent.parent,ui.detailPopup,'skill icon stays inside the popup header');
+assert.equal(ui.detailPopupIcon.node.parent.position.x,-250);
+assert.ok(ui.detailPopupStatLabels.slice(1).every(row=>!row.root.active),'unused stat rows disappear');
+const popupRect=screenRect(ui.detailPopup);assert.ok(popupRect.left>=-640&&popupRect.right<=640&&popupRect.top<=360&&popupRect.bottom>=-360);
+ui.showUnitDetail({...warriorDetail,skillDisplayName:'忍术飞弹',
+ skillRichDescription:'对目标造成<color=#50b4ff>232</color>点魔法伤害。',
+ skillDescription:'对目标造成232点魔法伤害。',skillStats:[{label:'伤害',current:'232',
+ currentRich:"<color=#50b4ff>232</color>（<img src='attr_phys_bonus' /><img src='attr_spell_bonus' />）",stars:'118 / 157 / 232',tone:'magic'}]});
+assert.equal(ui.detailPopupRows.active,true,'rich body must keep the bottom stat table visible');
+assert.match(ui.detailPopupStatLabels[0].current.string,/attr_phys_bonus.*attr_spell_bonus/);
+assert.equal(ui.detailPopupStatLabels[0].stars.string,'118/157/232');
+assert.equal(ui.detailPopupStatLabels[0].stars.horizontalAlign,Label.HorizontalAlign.RIGHT);
+assert.equal(ui.detailPopupStatLabels[0].stars.overflow,Label.Overflow.CLAMP,'base column retains its full width when values change');
+assert.equal(ui.detailPopupStatLabels[0].current.imageAtlas,ui.unitDetail.imageAtlas,'body and row images share loaded frames');
+assert.ok(ui.detailPopupStatLabels[0].root.position.y===0,'first stat follows the body divider without column headers');
+ui.attackSpeedIconNode.events.get(Node.EventType.TOUCH_END)();assert.equal(ui.detailPopupRows.active,false);
+ui.closeDetailPopup();
 ui.showUnitDetail(warriorDetail);
 assert.deepEqual(ui.unitStats.slice(5).map(l=>l.string),['0%','150%','25%','10%','20%','30%']);
 assert.ok(ui.unitPanel.position.x>350); assert.equal(ui.node.getChildByName('detailShield'),undefined,'details do not block the board');
@@ -246,11 +301,11 @@ for(const icon of attributeIcons) {
   assert.ok(fs.existsSync(path.join(__dirname,`../assets/resources/art/ui_m2/${icon}.png`)));
 }
 ui.showUnitDetail({...warriorDetail,atkSpeed:2.5});
-assert.equal(ui.unitStats[3].string,'2.5');assert.equal(pending.length,0,'live detail refresh does not reload portraits or stars');
+assert.equal(ui.unitStats[3].string,'250%');assert.equal(pending.length,0,'live detail refresh does not reload portraits or stars');
 ui.showUnitDetail(warriorDetail);
 assert.equal(ui.hpMeter.fill.fillStart,0);assert.equal(ui.manaMeter.fill.fillStart,0,'detail bars also begin at the left');
 assert.equal(ui.hpMeter.value.string,'350 / 700');assert.equal(ui.unitStats[4].string,'1格');assert.equal(ui.unitStats[4].node.position.y,158);
-assert.deepEqual(ui.unitStats.slice(0,4).map(l=>l.string),['55','30','20','1']);
+assert.deepEqual(ui.unitStats.slice(0,4).map(l=>l.string),['55','30','20','100%']);
 assert.equal(ui.unitStats[0].color.r,255);assert.equal(ui.unitStats[6].color.b,255);
 ui.updateUnitVitals(0,700,0,0);assert.equal(ui.hpMeter.fill.fillRange,0);assert.equal(ui.manaMeter.fill.fillRange,0);
 ui.updateUnitVitals(999,700,200,100);assert.equal(ui.hpMeter.fill.fillRange,1);assert.equal(ui.manaMeter.fill.fillRange,1);
@@ -308,6 +363,12 @@ assert.equal(delayedUI.hpMeter.fill.fillRange,.25);assert.equal(delayedUI.manaMe
 console.log('PASS actual UI: merged XP, colored odds, gold header, range/live vitals, asynchronous bars, drag sale, and combat shop');
 
 const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
+ui.showUnitDetail({...warriorDetail,manaPerSecond:2,maxMana:100});flush();
+assert.equal(ui.manaRegen.value.string,'+2/s');assert.equal(ui.manaRegen.node.active,true);
+assert.equal(ui.manaRegen.node.parent,ui.manaMeter.fill.node.parent);
+assert.ok(ui.manaRegen.node.position.x>0,'mana regeneration is labelled at the right end');
+assert.ok(ui.manaRegen.node.getChildByName('manaRegenIcon').getComponent(Sprite).spriteFrame,'uses the mana droplet icon');
+ui.showUnitDetail({...warriorDetail,manaPerSecond:0});assert.equal(ui.manaRegen.node.active,false);
 const unitView=new UnitView();unitView.node=new Node('unit');unitView.node.setPosition(0,0,0);
 unitView.setup('warrior',0,1,56);
 assert.equal(unitView.bodySprite.node.getComponent(UITransform).contentSize.width,56*.82,'reserve portraits retain their slot size');
@@ -327,21 +388,50 @@ unitView.sync({hp:10,maxHp:100,mana:0,maxMana:0,shield:10,untargetable:true},{x:
 assert.equal(unitView.shieldRing.active,true);assert.equal(unitView.bodyOpacity.opacity,80);
 unitView.sync({hp:10,maxHp:100,mana:0,maxMana:0,shield:0,untargetable:false},{x:0,y:0},64,0);
 assert.equal(unitView.shieldRing.active,false);assert.equal(unitView.bodyOpacity.opacity,255);
-const barWidth=unitView.hpBarBg.getComponent(UITransform).contentSize.width;
+const barWidth=unitView.hpBarContent.getComponent(UITransform).contentSize.width;
 const checkBar=(sprite,ratio)=>{
+  const barWidth=sprite===unitView.manaFill?unitView.hpBarBg.getComponent(UITransform).contentSize.width:unitView.hpBarContent.getComponent(UITransform).contentSize.width;
   const transform=sprite.node.getComponent(UITransform);
   const left=sprite.node.position.x-transform.anchorPoint.x*transform.contentSize.width;
   assert.ok(Math.abs(left+barWidth/2)<1e-8,'left edge stays fixed as HP or mana changes');
   assert.ok(Math.abs(left+transform.contentSize.width-(-barWidth/2+barWidth*ratio))<1e-8,'only the right edge moves');
 };
+assert.ok(barWidth<unitView.hpBarBg.getComponent(UITransform).contentSize.width,'health/shield stay inset from the outer frame');
+assert.equal(unitView.hpFill.node.parent,unitView.shieldFill.node.parent);
+assert.equal(unitView.hpBarContent.getComponent(Mask).type,Mask.Type.GRAPHICS_STENCIL);
+assert.equal(unitView.hpBarContent.getComponent(Graphics).roundedRect[4],2,'inner edge clips to a rounded cap');
 for(const [hp,mana,hpRatio,manaRatio] of [[100,100,1,1],[50,25,.5,.25],[25,50,.25,.5],[0,0,0,0],[150,120,1,1],[-1,-5,0,0]]) {
   unitView.sync({hp,maxHp:100,mana,maxMana:100},{x:0,y:0,z:0},56,.1);
   checkBar(unitView.hpFill,hpRatio);checkBar(unitView.manaFill,manaRatio);
 }
 unitView.sync({hp:25,maxHp:100,mana:50,maxMana:100},{x:0,y:0,z:0},56,.1);flush();
+unitView.sync({hp:25,maxHp:100,mana:50,maxMana:100,manaPerSecond:2},{x:0,y:0,z:0},56,.1);
+assert.ok(!unitView.hpBarBg.getChildByName('manaRegen'),'board units never create extra mana text, even for casters');
+unitView.sync({hp:25,maxHp:100,mana:50,maxMana:100,manaPerSecond:0},{x:0,y:0,z:0},56,.1);
 checkBar(unitView.hpFill,.25);checkBar(unitView.manaFill,.5);
 unitView.sync({hp:0,maxHp:0,mana:0,maxMana:0},{x:0,y:0,z:0},56,.1);
 checkBar(unitView.hpFill,0);checkBar(unitView.manaFill,0);assert.equal(unitView.manaFill.node.active,false);
+// Shields occupy a grey segment after HP; overflow shares the available width.
+for(const [hp,maxHp,shield,hpRatio,shieldRatio] of [[40,100,30,.4,.3],[100,100,50,2/3,1/3],[10,100,60,.1,.6],[10,100,0,.1,0],[10,100,-5,.1,0],[0,0,20,0,0]]) {
+ unitView.sync({hp,maxHp,shield,mana:0,maxMana:0},{x:0,y:0,z:0},56,.1);
+ checkBar(unitView.hpFill,hpRatio);
+ const overlay=unitView.shieldFill,rect=overlay.node.getComponent(UITransform).contentSize;
+ assert.equal(overlay.node.active,shieldRatio>0);
+ assert.ok(Math.abs(rect.width-barWidth*shieldRatio)<1e-8);
+ assert.ok(Math.abs(overlay.node.position.x-(-barWidth/2+barWidth*hpRatio))<1e-8,'shield begins exactly where HP ends');
+ assert.ok(overlay.node.position.x+rect.width<=barWidth/2+1e-8,'shield stays within the bar');
+ ui.updateUnitVitals(hp,maxHp,0,0,shield);
+ assert.ok(Math.abs(ui.hpMeter.ratio-hpRatio)<1e-8);
+ assert.equal(ui.hpMeter.shield.node.active,shieldRatio>0);
+ assert.ok(Math.abs(ui.hpMeter.shield.node.getComponent(UITransform).contentSize.width-246*shieldRatio)<1e-8);
+ if(shieldRatio>0)assert.match(ui.hpMeter.value.string,new RegExp(`\\+${shield}护盾`));
+ else assert.ok(!ui.hpMeter.value.string.includes('护盾'));
+}
+flush();assert.equal(unitView.shieldFill.spriteFrame.name,'art/ui/shield_fill/spriteFrame','uses the supplied grey shield texture');
+const shieldDelayedUI=new BattleUI();shieldDelayedUI.node=new Node('shieldDelayedUI');new Node('Canvas').addChild(shieldDelayedUI.node);shieldDelayedUI.init();
+shieldDelayedUI.showUnitDetail({...warriorDetail,hp:700,shield:350});flush();
+assert.ok(Math.abs(shieldDelayedUI.hpMeter.fill.fillRange-2/3)<1e-8,'shield scaling survives delayed textures');
+console.log('PASS grey shields: acquisition, absorption, disappearance, excess shield, invalid bounds, detail text and texture callbacks');
 console.log('PASS actual UnitView: fixed left edges, independent HP/mana widths, clamped values, and delayed texture loading');
 
 const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
@@ -353,7 +443,8 @@ assert.deepEqual(menu.node.getChildByName('menuBackground').getChildByName('skin
 const configIndex=pending.findIndex(f=>f.path==='config/run');pending.splice(configIndex,1)[0]();
 assert.equal(menu.ready,false,'monster images must finish loading before the run is ready');
 menu.startNewRun();assert.equal(sceneLoads.length,0,'do not enter a monster stage while its images are missing');
-assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,4,'load all four monster SpriteFrames');
+assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,5,'load all ordinary and strong monster SpriteFrames');
+for(const art of ['warrior_enemy','archer_enemy','mage_enemy'])assert.ok(pending.some(f=>f.path===`art/units/${art}/spriteFrame`),`preload reused monster ${art} before entering the scene`);
 flush();assert.equal(menu.ready,true);
 const setup=menu.node.getChildByName('runSetup');
 setup.getChildByName('fewerStages').events.get('end')(); assert.equal(menu.stageCount,3);
@@ -375,5 +466,51 @@ const builder=JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/pac
 assert.ok(builder.scenes.some(s=>s.uuid===builder.startScene&&s.url==='db://assets/main.scene'));
 assert.ok(builder.scenes.some(s=>s.url==='db://assets/scene.scene'));
 console.log('PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');
+const rewardItems=require('../assets/resources/config/equipment.json').slice(0,3),choices=[];
+ui.onClaimEquipmentReward=index=>choices.push(index);
+ui.showEquipmentReward(rewardItems.slice(0,2));
+let rewardRoot=ui.node.getChildByName('equipmentReward'),cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');
+assert.equal(cards.length,2);assert.ok(rewardRoot.children.some(n=>n.getComponent(Label)?.string==='装备奖励 · 2选一'));
+for(let index=0;index<2;index++){const card=cards[index];assert.ok(card.children.some(n=>n.getComponent(Label)?.string===rewardItems[index].name));
+ assert.ok(card.children.some(n=>n.getComponent(Label)?.string===rewardItems[index].description));}
+cards[1].children.find(n=>n.name==='button').events.get('end')();assert.deepEqual(choices,[1]);
+const modalEvent={};rewardRoot.events.get('start')(modalEvent);assert.equal(modalEvent.propagationStopped,true);
+const oldIcon=cards[0].getChildByName('rewardIcon').getComponent(Sprite);ui.hideEquipmentReward();
+ui.showEquipmentReward(rewardItems);flush();assert.equal(oldIcon.spriteFrame,undefined,'late icon callbacks cannot write into a destroyed reward');
+rewardRoot=ui.node.getChildByName('equipmentReward');cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');assert.equal(cards.length,3);
+for(let index=0;index<3;index++)assert.equal(cards[index].getChildByName('rewardIcon').getComponent(Sprite).spriteFrame.name,rewardItems[index].icon);
+ui.hideEquipmentReward();assert.equal(ui.node.getChildByName('equipmentReward'),undefined);
+console.log('PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, modal input, choice callback and stale async protection');
 ui.onDestroy();assert.equal(inputListeners.filter(l=>l.target===ui).length,0,'scene cleanup removes all idle wake listeners');
 console.log('PASS drag polygon highlight, centered bold population, animated preparation fill and idle wave visibility');
+
+const {StageRewardPanel}=load(path.join(__dirname,'../assets/scripts/ui/StageRewardPanel.ts'));
+const {ConfigManager:StageConfig}=load(path.join(__dirname,'../assets/scripts/core/ConfigManager.ts'));
+const stageCfg=new StageConfig();stageCfg.setUnits(require('../assets/resources/config/units.json'));stageCfg.setEquipment(require('../assets/resources/config/equipment.json'));
+const stageActions=[],stagePanel=new StageRewardPanel(ui.node,stageCfg,a=>stageActions.push(a));
+stagePanel.show({id:'boss',waveId:20,kind:'bossChoice',value:8},10);flush();
+let stageBody=stagePanel.root.getChildByName('stageRewardBody');
+const bossCards=stageBody.children.filter(n=>n.name==='bossChoice');assert.equal(bossCards.length,2);
+const oldBossClick=bossCards[0].children.find(n=>n.name==='button').events.get('end');oldBossClick();assert.equal(stageActions.at(-1).choice,'units');
+const basicIds=require('../assets/resources/config/run.json').stageEncounters.basicEquipmentIds.slice(0,4);
+stagePanel.show({id:'four',waveId:20,kind:'equipmentChoice',candidates:basicIds},10);flush();
+stageBody=stagePanel.root.getChildByName('stageRewardBody');let stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,4);
+for(const [i,card]of stageCards.entries()){
+ assert.ok(card.children.some(n=>n.getComponent(Label)?.string===stageCfg.getEquipmentReserve([basicIds[i]])[0].name));
+ const frame=card.getChildByName('rewardArt').getComponent(Sprite).spriteFrame;
+ assert.equal(frame.name,stageCfg.getEquipmentReserve([basicIds[i]])[0].icon);
+}
+stageCards[0].getChildByName('stageDetails_0').events.get('end')();flush();
+const equipmentDetail=stagePanel.root.getChildByName('stageEquipmentDetail');assert.ok(equipmentDetail);
+const equipmentCard=equipmentDetail.getChildByName('equipmentDetailCard');
+assert.ok(equipmentCard.children.some(n=>n.getComponent(Label)?.string===stageCfg.getEquipmentReserve([basicIds[0]])[0].name));
+assert.equal(equipmentCard.children.filter(n=>n.name==='equipmentStat').length,2);
+equipmentCard.children.find(n=>n.name==='button').events.get('end')();assert.equal(equipmentDetail.active,false);
+let stageActionCount=stageActions.length;oldBossClick();assert.equal(stageActions.length,stageActionCount,'old category buttons cannot fire after changing panel');
+stageCards[2].getChildByName('stageChoice_2').events.get('end')();assert.deepEqual(stageActions.at(-1),{type:'stageChoice',rewardId:'four',choice:'claim',index:2});
+stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'young_sasuke',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
+stageBody=stagePanel.root.getChildByName('stageRewardBody');stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,5);
+stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(stageActions.at(-1).choice,'buy');
+stageBody.children.find(n=>n.name==='button').events.get('end')();assert.equal(stageActions.at(-1).choice,'continue');
+stagePanel.hide();assert.equal(stagePanel.root,null);
+console.log('PASS stage reward UI: category cards, four original equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');

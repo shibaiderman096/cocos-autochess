@@ -1,0 +1,60 @@
+{
+  "status": "rejected",
+  "candidateBalanceVersion": "balance-v1",
+  "productionBalance": "p3-baseline (unchanged)",
+  "productionNumericalChanges": [],
+  "candidateSha256": "a055010c3dfcd7e608eccd4c3678b29afad8150ffdcaef3da27c6b3bb0d46165",
+  "acceptedBalanceVersion": null,
+  "retainedGenerationVersion": "budget-v1",
+  "retainedPowerModelVersion": "enemy-power-v1",
+  "sourceReport": "docs/p4-balance/README.md",
+  "trainingSeeds": [
+    1,
+    500
+  ],
+  "validationSeeds": [
+    501,
+    1000
+  ],
+  "holdoutSeeds": [
+    1001,
+    1250
+  ],
+  "searchIterations": 20,
+  "reasons": [
+    "Medium基准策略资格不足：Stage6死亡220局，其中220局入战仍有100+金币，固定等级目标造成过度囤积",
+    "Validation Medium Stage3不在80%..90%区间",
+    "Validation Medium Stage6不在45%..55%区间",
+    "Validation Strong仍有至少90%通关99阶段，无尽上限未解决",
+    "Holdout Medium Stage3不在80%..90%区间",
+    "Holdout Medium Stage6不在45%..55%区间",
+    "Holdout Strong仍有至少90%通关99阶段，无尽上限未解决"
+  ],
+  "retainedConfigHashes": {
+    "assets/resources/config/units.json": "91991de9c7330ff4bccc959b771ce39538cab65a0457a026c60f793b49a3ce83",
+    "assets/resources/config/skills.json": "6ee03fb676ba45ae7ed723b740338de75241cb7ae5e95de73a88bd7c450089d6",
+    "assets/resources/config/battle.json": "41222cce273075b60dd6c3e746909ed6c4a107713cd8b4bb1876650df2b06b02",
+    "assets/resources/config/run.json": "9c12c3ea2b9fcd0ebe17475b4abe03f87417cbdc1f00e9bb28e8031ca2f98a4e",
+    "assets/resources/config/waves.json": "4a188c22bbd4258355030d15b70b2e49c0cb4489296eeff8f8019105ab6cdac2",
+    "assets/resources/config/equipment.json": "4b933feb4e02617cd0222a131bdee6fbb84d3d580e805d8654eb4e749b2c1e39",
+    "assets/resources/config/enemy-difficulty.json": "5892b75f445d03de4029d17d1d5fbf22bf451d87c15537a370a0be70ef39fcd8",
+    "assets/resources/config/enemy-formation.json": "cd3b96fff6003cbf3747e3d6af38bf30de0dcc0440bbf399e11659bb9b79f5c1",
+    "assets/resources/config/enemy-roles.json": "25d91c2c5b2c7d0fba0a487cf2f70be566ae45966408b66d402bcb60a183e8e1",
+    "assets/resources/config/enemy-power.json": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0",
+    "assets/resources/config/equipment-policy.json": "8e122c229ce38c4fe4c4ddb1407ded250a28484288a1262cd28cf5993f941a5a"
+  },
+  "policy": "Do not deploy a candidate that fails the primary target. No tuning after validation/holdout; a new experiment needs a new version and untouched seed partitions.",
+  "gates": {
+    "publicActionsAndResources": true,
+    "determinism": true,
+    "independentSeedPartitions": true,
+    "holdoutUsedOnce": true,
+    "fullRegression": true,
+    "mediumNormalPlayerProxy": false,
+    "validationStage3": false,
+    "validationStage6": false,
+    "holdoutStage3": false,
+    "holdoutStage6": false,
+    "newBalanceAccepted": false
+  }
+}

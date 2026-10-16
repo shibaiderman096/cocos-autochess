@@ -1,0 +1,317 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/determinism/parallel-50",
+    "bot": "all",
+    "seedStart": 1,
+    "seedCount": 50,
+    "stages": 12,
+    "workers": 2,
+    "partition": "training",
+    "audit": true,
+    "config": "docs/p4-balance/freeze/candidate.json"
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 2
+    },
+    {
+      "bot": "weak",
+      "seed": 4
+    },
+    {
+      "bot": "weak",
+      "seed": 6
+    },
+    {
+      "bot": "weak",
+      "seed": 8
+    },
+    {
+      "bot": "weak",
+      "seed": 10
+    },
+    {
+      "bot": "weak",
+      "seed": 12
+    },
+    {
+      "bot": "weak",
+      "seed": 14
+    },
+    {
+      "bot": "weak",
+      "seed": 16
+    },
+    {
+      "bot": "weak",
+      "seed": 18
+    },
+    {
+      "bot": "weak",
+      "seed": 20
+    },
+    {
+      "bot": "weak",
+      "seed": 22
+    },
+    {
+      "bot": "weak",
+      "seed": 24
+    },
+    {
+      "bot": "weak",
+      "seed": 26
+    },
+    {
+      "bot": "weak",
+      "seed": 28
+    },
+    {
+      "bot": "weak",
+      "seed": 30
+    },
+    {
+      "bot": "weak",
+      "seed": 32
+    },
+    {
+      "bot": "weak",
+      "seed": 34
+    },
+    {
+      "bot": "weak",
+      "seed": 36
+    },
+    {
+      "bot": "weak",
+      "seed": 38
+    },
+    {
+      "bot": "weak",
+      "seed": 40
+    },
+    {
+      "bot": "weak",
+      "seed": 42
+    },
+    {
+      "bot": "weak",
+      "seed": 44
+    },
+    {
+      "bot": "weak",
+      "seed": 46
+    },
+    {
+      "bot": "weak",
+      "seed": 48
+    },
+    {
+      "bot": "weak",
+      "seed": 50
+    },
+    {
+      "bot": "medium",
+      "seed": 2
+    },
+    {
+      "bot": "medium",
+      "seed": 4
+    },
+    {
+      "bot": "medium",
+      "seed": 6
+    },
+    {
+      "bot": "medium",
+      "seed": 8
+    },
+    {
+      "bot": "medium",
+      "seed": 10
+    },
+    {
+      "bot": "medium",
+      "seed": 12
+    },
+    {
+      "bot": "medium",
+      "seed": 14
+    },
+    {
+      "bot": "medium",
+      "seed": 16
+    },
+    {
+      "bot": "medium",
+      "seed": 18
+    },
+    {
+      "bot": "medium",
+      "seed": 20
+    },
+    {
+      "bot": "medium",
+      "seed": 22
+    },
+    {
+      "bot": "medium",
+      "seed": 24
+    },
+    {
+      "bot": "medium",
+      "seed": 26
+    },
+    {
+      "bot": "medium",
+      "seed": 28
+    },
+    {
+      "bot": "medium",
+      "seed": 30
+    },
+    {
+      "bot": "medium",
+      "seed": 32
+    },
+    {
+      "bot": "medium",
+      "seed": 34
+    },
+    {
+      "bot": "medium",
+      "seed": 36
+    },
+    {
+      "bot": "medium",
+      "seed": 38
+    },
+    {
+      "bot": "medium",
+      "seed": 40
+    },
+    {
+      "bot": "medium",
+      "seed": 42
+    },
+    {
+      "bot": "medium",
+      "seed": 44
+    },
+    {
+      "bot": "medium",
+      "seed": 46
+    },
+    {
+      "bot": "medium",
+      "seed": 48
+    },
+    {
+      "bot": "medium",
+      "seed": 50
+    },
+    {
+      "bot": "strong",
+      "seed": 2
+    },
+    {
+      "bot": "strong",
+      "seed": 4
+    },
+    {
+      "bot": "strong",
+      "seed": 6
+    },
+    {
+      "bot": "strong",
+      "seed": 8
+    },
+    {
+      "bot": "strong",
+      "seed": 10
+    },
+    {
+      "bot": "strong",
+      "seed": 12
+    },
+    {
+      "bot": "strong",
+      "seed": 14
+    },
+    {
+      "bot": "strong",
+      "seed": 16
+    },
+    {
+      "bot": "strong",
+      "seed": 18
+    },
+    {
+      "bot": "strong",
+      "seed": 20
+    },
+    {
+      "bot": "strong",
+      "seed": 22
+    },
+    {
+      "bot": "strong",
+      "seed": 24
+    },
+    {
+      "bot": "strong",
+      "seed": 26
+    },
+    {
+      "bot": "strong",
+      "seed": 28
+    },
+    {
+      "bot": "strong",
+      "seed": 30
+    },
+    {
+      "bot": "strong",
+      "seed": 32
+    },
+    {
+      "bot": "strong",
+      "seed": 34
+    },
+    {
+      "bot": "strong",
+      "seed": 36
+    },
+    {
+      "bot": "strong",
+      "seed": 38
+    },
+    {
+      "bot": "strong",
+      "seed": 40
+    },
+    {
+      "bot": "strong",
+      "seed": 42
+    },
+    {
+      "bot": "strong",
+      "seed": 44
+    },
+    {
+      "bot": "strong",
+      "seed": 46
+    },
+    {
+      "bot": "strong",
+      "seed": 48
+    },
+    {
+      "bot": "strong",
+      "seed": 50
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\determinism\\parallel-50\\parts\\part-1.jsonl"
+}

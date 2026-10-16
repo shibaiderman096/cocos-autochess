@@ -28,7 +28,7 @@ assert.equal(scaled.units[0].cfg.hp, 300); assert.equal(scaled.units[0].cfg.atk,
 assert.equal(scaled.units[0].skillScale, 6); scaled.step();
 assert.ok(scaled.events.some(e=>e.t==='hit' && e.id===2 && e.dmg===600));
 for (const cost of [1,2,3,4,5]) for (const star of [1,2,3]) {
-  const price = {1:1,2:2,3:3,4:5,5:8}[cost];
+  const price = {1:1,2:2,3:3,4:4,5:5}[cost];
   assert.equal(sellPrice(cost,star), price * 3 ** (star-1) - (cost>1 && star>1 ? 1 : 0));
 }
 console.log('Fairness, configurable star scaling, and all sell tiers passed');

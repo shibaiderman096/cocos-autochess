@@ -12,13 +12,17 @@ const { OwnedUnits } = core('OwnedUnits');
 const { ShopSystem } = core('ShopSystem');
 const { EconomySystem } = core('EconomySystem');
 const { Rng } = core('Rng');
-const { migrateSaveV2, freshSaveV2, SAVE_KEY } = core('ShopSave');
+const { migrateSaveV2, freshSaveV2: createSaveV2, SAVE_KEY } = core('ShopSave');
+// Existing stage assertions describe legacy behavior; budget-v1 has separate runtime coverage below.
+const freshSaveV2=(stages,seed)=>createSaveV2(stages,seed,'legacy');
 const sceneLoads = [];
 const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
 const { SHOP_DROP_AREA, containsShopDrop } = require('../assets/scripts/ui/BattleUILayout.ts');
 const shopDrop = () => new Vec3(SHOP_DROP_AREA.x, SHOP_DROP_AREA.y - 60);
 const units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
 const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
+const legacyRun = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/run.json'), 'utf8')); delete legacyRun.stageEncounters; delete legacyRun.starterSelection;
+let stageEncountersEnabled = false;
 let passed = 0, failed = 0;
 async function test(name, run) {
   try { await run(); passed++; console.log('PASS ' + name); }
@@ -86,6 +90,9 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
+  setRewardStorage(count,credit) { this.rewardStorage={count,credit}; }
+  showEquipmentReward(items) { this.rewardItems=items; }
+  hideEquipmentReward() { this.rewardItems=null; }
   configureDebug(data) { this.debugData=data; }
   refreshDebugState(...args) { this.debugState=args; }
   setBoardCenter(x,y) { this.boardCenter={x,y}; }
@@ -112,12 +119,12 @@ const code = ts.transpileModule(fs.readFileSync(stageFile, 'utf8'), { compilerOp
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, experimentalDecorators: true,
 } }).outputText;
 const stageExports = {};
-const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/UISkin': { setUISkin() {} } };
+const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/StageRewardPanel':{StageRewardPanel:class{constructor(parent,cfg,choose){this.choose=choose;}show(pending,gold){this.pending=pending;this.gold=gold;}hide(){this.pending=undefined;}}}, '../ui/UISkin': { setUISkin() {} } };
 new Function('require', 'exports', code)(id => {
   if (id === 'cc') return { Component, Node, Vec3, UITransform, Graphics, Label, Color, JsonAsset: class {},
     director: { loadScene: name => { sceneLoads.push(name); return true; } },
     _decorator: { ccclass: () => c => c, property: () => () => {} },
-    resources: { load: (name, T, cb) => cb(null, { json: JSON.parse(fs.readFileSync(path.join(root, 'assets/resources', name + '.json'), 'utf8')) }) } };
+    resources: { load: (name, T, cb) => cb(null, { json: name==='config/run'&&!stageEncountersEnabled?JSON.parse(JSON.stringify(legacyRun)):JSON.parse(fs.readFileSync(path.join(root, 'assets/resources', name + '.json'), 'utf8')) }) } };
   return viewMocks[id] ?? require(path.resolve(path.dirname(stageFile), id) + '.ts');
 }, stageExports);
 const storage = new Map();
@@ -212,10 +219,10 @@ function drag(stage, from, to) {
     stage.update(.1);assert.ok(sim.tick>tick);
     const reloaded=await makeStage(JSON.parse(storage.get(SAVE_KEY)));assert.equal(reloaded.flow.phase,'prepare');assert.equal(reloaded.preparationRemaining,0);
   });
-  await test('stage base gold caps at ten but interest and victory bonuses remain', () => {
+  await test('stage income is zero while interest and victory bonuses remain', () => {
     for(const stage of [1,4,5,6,99]) {
       const economy=new EconomySystem(undefined,{gold:50,winStreak:0,loseStreak:0});
-      const reward=economy.settleBattle(stage,{winner:0});assert.equal(reward.floorIncome,Math.min(stage*2,10));
+      const reward=economy.settleBattle(stage,{winner:0});assert.equal(reward.floorIncome,0);
       assert.equal(reward.interest,5);assert.equal(reward.winBonus,1);assert.equal(reward.total,reward.floorIncome+6);
     }
   });
@@ -314,15 +321,18 @@ function drag(stage, from, to) {
         const skill = stage.cfg.getSkill(unit.skillId);
         const scale = stage.cfg.battle.starScaling[star-1].skill;
         stage.showDetail(star,unit,scale,0,unit.hp,unit.startMana);
-        const expected = Math.round(skill.attackMultipliers ? unit.atk*skill.attackMultipliers[star-1] : skill.power*scale);
+        const expected = Math.round(skill.starDamage?.[star-1] ?? skill.power*scale);
         if (id === 'enderman') {
           assert.equal(stage.ui.detail.skillName,'末影突袭');
           assert.ok(stage.ui.detail.skillDescription.includes(`${expected}点物理伤害`),`${id} star ${star}`);
           assert.doesNotMatch(stage.ui.detail.skillDescription,/施法|攻速上限/);
           if (star < 3) assert.doesNotMatch(stage.ui.detail.skillDescription,/回蓝/);
-          assert.ok(stage.ui.detail.skillDescription.includes(`${skill.attackSpeedBonuses[star-1]*100}%攻速加成`));
+          assert.ok(stage.ui.detail.skillDescription.includes(`${skill.attackSpeedBonuses[star-1]*100}%攻击速度`));
         } else assert.ok(stage.ui.detail.skillName.includes(`${expected}`),`${id} star ${star}`);
-        assert.doesNotMatch(stage.ui.detail.skillDescription,/125%\/|150%\/|1~3星/);
+        assert.doesNotMatch(stage.ui.detail.skillDescription.split('\n')[0],/125%\/|150%\/|1~3星/);
+        assert.doesNotMatch(stage.ui.detail.skillDescription,/标注来源/);
+        assert.ok(stage.ui.detail.skillStats.length>0);
+        assert.match(stage.ui.detail.skillStats[0].currentRich,/<color=/);
       }
     }
   });
@@ -394,16 +404,16 @@ function drag(stage, from, to) {
     stage.flow.startBattle();stage.flow.settle(1,99);stage.resultShown=true;stage.fighting=true;stage.scheduleNextWave();
     stage.update(2);assert.equal(stage.flow.phase,'ended');assert.equal(stage.resultShown,true);assert.equal(stage.nextWaveRemaining,null);
   });
-  await test('zero-gold starter earns base income per subround from the current stage', async () => {
+  await test('zero-gold starter earns only outcome, interest and streak income across stages', async () => {
     const stage = await makeStage();
     assert.equal(stage.economy.gold,0);assert.equal(stage.owned.all().length,1);
     const cards=stage.shop.snapshot();stage.buyFromShop(0);stage.refreshShop();stage.ui.onBuyExp();
     assert.equal(stage.economy.gold,0);assert.deepEqual(stage.shop.snapshot(),cards);assert.equal(stage.owned.all().length,1);
     stage.owned.move(1,{location:'board',x:3,y:3});
-    for(const expectedIncome of [2,2,2,4]) {
+    for(const expectedIncome of [0,0,0,0]) {
       const before=stage.economy.gold;stage.startFight();stage.sim.run();stage.update(.1);
       const reward=stage.save.lastReward.breakdown;
-      assert.equal(reward.floorIncome,expectedIncome,'base reward depends on stage, not total wave or subround index');
+      assert.equal(reward.floorIncome,expectedIncome,'no fixed stage reward at any wave');
       assert.equal(reward.interest,Math.min(Math.floor(before*.1),5));
       assert.equal(reward.winBonus,stage.sim.winner===0?1:0);assert.equal(reward.streakBonus,Math.min(Math.floor(Math.max(reward.winStreak,reward.loseStreak)/2),3));
       assert.equal(stage.economy.gold,before+reward.total);stage.restart();
@@ -897,6 +907,158 @@ function drag(stage, from, to) {
     const stage=await makeStage(),before=stage.owned.snapshot(),sim=stage.sim,gold=stage.economy.gold;
     stage.draggingId=before[0].uid;stage.ui.onDebugGold(100);stage.ui.onDebugUnit('warrior',1);stage.ui.onDebugStage(2,1);
     assert.equal(stage.economy.gold,gold);assert.equal(stage.sim,sim);assert.deepEqual(stage.owned.snapshot(),before);
+  });
+  await test('RunSession: repeated UI preview rebuilds preserve shops, combat seed and complete battle events', async () => {
+    const saved={...freshSaveV2(3,12345),owned:[{uid:17,unitId:'warrior',star:1,location:'board',x:3,y:3}],shopReserved:false};
+    const a=await makeStage(saved),b=await makeStage(saved);
+    const before=b.shop.snapshot(),seed=b.session.battleSeed;
+    for(let i=0;i<25;i++)b.resetBattle(false);
+    assert.deepEqual(b.shop.snapshot(),before);assert.equal(b.session.battleSeed,seed);
+    a.startFight();b.startFight();assert.deepEqual(a.sim.run(),b.sim.run());
+    a.update(.1);b.update(.1);assert.deepEqual(a.save.lastReward,b.save.lastReward);
+    assert.deepEqual(a.session.snapshot(),b.session.snapshot());
+  });
+  await test('RunSession: Cocos adapter and pure headless session consume identical actions and settlement', async () => {
+    const {RunSession}=core('RunSession'),{ConfigManager}=core('ConfigManager');
+    const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
+    const saved=freshSaveV2(3,12345),stage=await makeStage(saved),cfg=new ConfigManager();
+    cfg.setUnits(units);cfg.setSkills(skills);cfg.setBattle(require('../assets/resources/config/battle.json'));
+    cfg.setEquipment(require('../assets/resources/config/equipment.json'));
+    const session=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:saved});
+    const bot=new MinimalBaselineBot();
+    for(let i=0;i<4;i++){
+      assert.deepEqual(bot.prepare(stage.session.playerPort()),bot.prepare(session.playerPort()));
+      stage.resetBattle(false);stage.startFight();const headless=session.startBattle();
+      assert.deepEqual(stage.sim.run(),headless.run());stage.update(.1);session.settleBattle();
+      assert.deepEqual(stage.session.snapshot(),session.snapshot());
+      stage.restart();session.nextWave();assert.deepEqual(stage.session.snapshot(),session.snapshot());
+    }
+  });
+  await test('budget-v1: new Cocos sessions and headless sessions consume the same generated enemies and real combat', async () => {
+    const {RunSession}=core('RunSession'),{ConfigManager}=core('ConfigManager');
+    const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
+    const saved={...createSaveV2(3,12345),formationOverride:'L0'},stage=await makeStage(saved),cfg=new ConfigManager();
+    cfg.setUnits(units);cfg.setSkills(skills);cfg.setBattle(require('../assets/resources/config/battle.json'));cfg.setEquipment(require('../assets/resources/config/equipment.json'));
+    const deps={enemyPower:require('../assets/resources/config/enemy-power.json'),enemyDifficulty:require('../assets/resources/config/enemy-difficulty.json')};
+    const session=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:saved,...deps});
+    assert.equal(stage.save.enemyGenerationVersion,'budget-v1');assert.deepEqual(stage.waves,session.waves);
+    const bot=new MinimalBaselineBot();
+    for(let i=0;i<5;i++){
+      assert.deepEqual(bot.prepare(stage.session.playerPort()),bot.prepare(session.playerPort()));stage.resetBattle(false);stage.startFight();
+      assert.deepEqual(stage.sim.run(),session.startBattle().run());stage.update(.1);session.settleBattle();assert.deepEqual(stage.session.snapshot(),session.snapshot());
+      stage.restart();session.nextWave();
+    }
+  });
+  await test('budget-v1: Cocos debug extension, persisted continuation and late combat keep versioned budgets without free scaling', async () => {
+    const stage=await makeStage({...createSaveV2(3,12345),formationOverride:'L0'});stage.ui.onDebugStage(10,1);
+    assert.equal(stage.flow.wave.budget.enemyGenerationMode,'budget-v1');
+    for(const u of stage.sim.units.filter(u=>u.side===1)){assert.equal(u.cfg.damageAmp,stage.cfg.getUnit(u.cfg.id).damageAmp);assert.equal(u.cfg.damageReduction,stage.cfg.getUnit(u.cfg.id).damageReduction);}
+    const saved=stage.session.snapshot(),continued=await makeStage(saved);assert.deepEqual(continued.waves,stage.waves);assert.deepEqual(continued.session.snapshot(),saved);
+  });
+  await test('P2: Cocos loads versioned formation resources and shows fixed L2 preview before L3 locks at battle start',async()=>{
+    const saved=createSaveV2(3,12345);saved.formationOverride='L3';saved.level=3;
+    saved.owned=[{uid:1,unitId:'guardian',star:1,location:'board',x:3,y:3},{uid:2,unitId:'mage',star:2,location:'board',x:0,y:0},{uid:3,unitId:'archer',star:2,location:'board',x:1,y:0}];
+    const stage=await makeStage(saved);stage.ui.onDebugStage(14,10);const base=stage.session.formation,seed=stage.session.battleSeed,shop=stage.shop.snapshot();
+    assert.equal(base.level,'L2');assert.equal(base.diagnostics.playerSnapshotUsed,false);
+    for(let n=0;n<20;n++)stage.resetBattle(false);assert.deepEqual(stage.session.formation,base);assert.deepEqual(stage.shop.snapshot(),shop);
+    const generator=JSON.parse(JSON.stringify(stage.flow.wave)),before=stage.session.snapshot();stage.startFight();
+    const final=stage.session.formation;assert.equal(final.level,'L3');assert.ok(final.diagnostics.playerSnapshotUsed);assert.equal(stage.session.battleSeed,seed);assert.deepEqual(stage.flow.wave,generator);
+    assert.deepEqual(stage.sim.units.filter(u=>u.side===1).map(u=>({x:u.x,y:u.y})),final.placements.map(e=>({x:e.x,y:e.y})));
+    const {ConfigManager}=core('ConfigManager'),{RunSession}=core('RunSession'),cfg=new ConfigManager();cfg.setUnits(units);cfg.setSkills(skills);cfg.setBattle(require('../assets/resources/config/battle.json'));cfg.setEquipment(require('../assets/resources/config/equipment.json'));
+    const {loadEnemyGenerationInputs,loadFormationInputs}=require('../tools/run-simulation.ts');
+    const headless=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:before,...loadEnemyGenerationInputs(),...loadFormationInputs()});
+    assert.deepEqual(headless.startBattle().run(),stage.sim.run());assert.deepEqual(headless.formation,final);
+  });
+  await test('advanced equipment stays in save, debug catalogue and detail with live missing-HP lifesteal', async () => {
+    const stage=await makeStage(),unit=stage.owned.all()[0];stage.showOwnedDetail(unit.uid);
+    const before={...stage.ui.detail};
+    for(const id of ['arcane_sovereignty','crimson_bloodclaw','forest_sanctuary']) {
+      assert.ok(stage.ui.debugData.equipment.some(item=>item.id===id));
+      stage.ui.onGrantEquipment(id);stage.ui.onBackpack(0);
+    }
+    const detail=stage.ui.detail;
+    assert.equal(detail.maxHp,Math.round((before.maxHp+500)*1.2));
+    assert.equal(detail.armor,before.armor+10);assert.equal(detail.mr,before.mr+10);
+    assert.equal(detail.spellPower,(before.spellPower??0)+60);assert.equal(detail.physicalPower,(before.physicalPower??0)+10);
+    assert.ok(Math.abs(detail.damageAmp-.03)<1e-9);assert.ok(Math.abs(detail.lifesteal-.2)<1e-9);
+    const restored=await makeStage(JSON.parse(storage.get(SAVE_KEY))),owned=restored.owned.all()[0];
+    assert.deepEqual(owned.equipment,['arcane_sovereignty','crimson_bloodclaw','forest_sanctuary']);
+    restored.owned.move(owned.uid,{location:'board',x:0,y:0});restored.resetBattle(false);restored.startFight();
+    const combat=restored.sim.units.find(u=>u.side===0);combat.hp=combat.cfg.hp*.4;
+    restored.showBattleDetail(combat.id);assert.ok(Math.abs(restored.ui.detail.lifesteal-.26)<1e-9);
+    combat.hp=combat.cfg.hp;restored.refreshDetailVitals();assert.ok(Math.abs(restored.ui.detail.lifesteal-.2)<1e-9);
+  });
+  await test('P3: actual Cocos adapter persists pending before UI, blocks auto/manual restart and restores/claims exactly once',async()=>{
+    const ticket=createSaveV2(10,12345,'budget-v1',true),stage=await makeStage(ticket);
+    assert.equal(stage.save.enemyEquipmentVersion,'equipment-policy-v1');
+    stage.levelSys.addExp(10000);const starter=stage.owned.all()[0];stage.owned.remove(starter.uid);
+    for(const [index,id]of ['guardian','mage','archer'].entries()){
+      stage.ui.onDebugUnit(id,3);const unit=stage.owned.all().find(u=>u.unitId===id);assert.ok(unit);stage.owned.move(unit.uid,{location:'board',x:1+index*2,y:index?1:3});
+    }
+    stage.ui.onDebugStage(3,6);stage.startFight();assert.equal(stage.sim.run().winner,0);stage.update(.1);
+    const pending=stage.session.pendingEquipmentReward;assert.ok(pending);assert.equal(stage.nextWaveRemaining,null);
+    assert.deepEqual(stage.ui.rewardItems.map(i=>i.id),pending.candidates);
+    const saved=JSON.parse(storage.get(SAVE_KEY));assert.deepEqual(saved.equipmentProgress.pending,pending);
+    const gold=stage.economy.gold,xp=stage.levelSys.exp,wave=stage.flow.wave.id;
+    stage.update(5);stage.restart();assert.equal(stage.flow.wave.id,wave);assert.ok(stage.session.pendingEquipmentReward);
+    const restored=await makeStage(saved);assert.deepEqual(restored.ui.rewardItems.map(i=>i.id),pending.candidates);assert.equal(restored.economy.gold,gold);assert.equal(restored.levelSys.exp,xp);
+    restored.ui.onClaimEquipmentReward(1);assert.equal(restored.ui.rewardItems,null);assert.equal(restored.owned.equipmentReserve.length,1);
+    const claimed=JSON.parse(storage.get(SAVE_KEY));assert.equal(claimed.equipmentProgress.pending,undefined);assert.equal(claimed.equipmentProgress.lastClaimedWaveId,wave);
+    restored.ui.onClaimEquipmentReward(1);assert.equal(restored.owned.equipmentReserve.length,1);
+    restored.update(2);assert.equal(restored.flow.wave.id,wave+1);assert.equal(restored.flow.phase,'prepare');
+    const again=await makeStage(claimed);assert.equal(again.session.pendingEquipmentReward,undefined);assert.equal(again.owned.equipmentReserve.length,1);
+  });
+  await test('new stage UI persists purchases, skips noncombat shop, blocks unclaimed Boss reward and resumes after four-choice claim',async()=>{
+    stageEncountersEnabled=true;
+    try {
+      const stage=await makeStage(createSaveV2(6,1,'legacy'));
+      stage.ui.onDebugGold(100);stage.ui.onDebugStage(4,3);
+      const shopReward=stage.session.pendingStageReward;assert.equal(shopReward.kind,'specialShop');
+      assert.equal(stage.stageRewards.pending.id,shopReward.id);const gold=stage.economy.gold;
+      stage.chooseStageReward({type:'stageChoice',rewardId:shopReward.id,choice:'buy',index:0});
+      assert.equal(stage.economy.gold,gold-shopReward.offers[0].price);
+      const saved=JSON.parse(storage.get(SAVE_KEY));assert.equal(saved.stageProgress.pending.offers[0].bought,true);
+      const resumed=await makeStage(saved);assert.equal(resumed.stageRewards.pending.offers[0].bought,true);
+      resumed.chooseStageReward({type:'stageChoice',rewardId:shopReward.id,choice:'continue'});
+      assert.equal(resumed.flow.wave.stage,4);assert.equal(resumed.flow.wave.round,4);assert.equal(resumed.flow.phase,'prepare');
+      resumed.ui.onDebugStage(4,7);resumed.owned.move(resumed.owned.all()[0].uid,{location:'board',x:3,y:3});
+      resumed.startFight();
+      resumed.preparationRemaining=0; // The real battle has already consumed its preparation countdown.
+      for(const u of resumed.sim.units){u.cfg.skillId=undefined;u.cfg.maxMana=0;u.cfg.critChance=0;if(u.side===0){u.cfg.atk=100000;u.cfg.hp=100000;u.hp=100000;}else{u.cfg.atk=0;u.hp=1;}}
+      assert.equal(resumed.sim.run().winner,0);resumed.update(.1);
+      const boss=resumed.session.pendingStageReward;assert.equal(boss.kind,'bossChoice');assert.equal(resumed.stageRewards.pending.kind,'bossChoice');
+      resumed.update(5);assert.equal(resumed.flow.wave.round,7,'pending choice blocks auto advance');
+      resumed.chooseStageReward({type:'stageChoice',rewardId:boss.id,choice:'equipment'});
+      const four=resumed.session.pendingStageReward;assert.equal(four.candidates.length,4);
+      const choicePreview=resumed.sim,choiceTick=choicePreview.tick;resumed.update(.2);
+      assert.equal(choicePreview.tick,choiceTick,'reward selection keeps the finished battle frozen');
+      assert.equal(choicePreview.finished,true);
+      const before=resumed.owned.equipmentReserve.length;
+      resumed.chooseStageReward({type:'stageChoice',rewardId:four.id,choice:'claim',index:1});
+      const claimedPreview=resumed.sim,claimedTick=claimedPreview.tick;resumed.update(.4);
+      assert.equal(claimedPreview,choicePreview);assert.equal(claimedPreview.tick,claimedTick,'claiming preserves the final frame during the next-wave delay');
+      assert.equal(resumed.owned.equipmentReserve.length,before+1);resumed.update(2);
+      assert.equal(resumed.flow.wave.stage,5);assert.equal(resumed.flow.wave.round,1);
+    } finally {stageEncountersEnabled=false;}
+  });
+  await test('monster units arrive without modal and preserve battle result, positions, HP and board views throughout the delay',async()=>{
+    stageEncountersEnabled=true;
+    try {
+      const stage=await makeStage(createSaveV2(3,1,'legacy'));
+      stage.owned.move(stage.owned.all()[0].uid,{location:'board',x:3,y:3});stage.startFight();stage.preparationRemaining=0;
+      for(const u of stage.sim.units){u.cfg.skillId=undefined;u.cfg.maxMana=0;u.cfg.critChance=0;if(u.side===0){u.cfg.atk=100000;u.cfg.hp=100000;u.hp=100000;}else{u.cfg.atk=0;u.hp=1;}}
+      assert.equal(stage.sim.run().winner,0);
+      const endSim=stage.sim,endTick=endSim.tick,endState=endSim.units.map(u=>u.snapshot(endTick)),boardViews=new Map(stage.views);
+      stage.update(.1);assert.equal(stage.sim,endSim,'settlement must not recreate the opening preview');
+      for(const [id,view]of boardViews)assert.equal(stage.views.get(id),view,'board views stay intact');
+      assert.equal(stage.stageRewards.pending,undefined);assert.equal(stage.session.pendingStageReward,undefined);
+      assert.equal(stage.save.stageProgress.lastUnitDrop.value,2);
+      assert.equal(stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0),3);
+      const preview=stage.sim;stage.update(.4);assert.equal(preview.tick,endTick);assert.deepEqual(preview.units.map(u=>u.snapshot(endTick)),endState);
+      const saved=JSON.parse(storage.get(SAVE_KEY)),loaded=await makeStage(saved);
+      assert.deepEqual(loaded.owned.snapshot(),stage.owned.snapshot());assert.equal(loaded.stageRewards.pending,undefined);
+      stage.update(.7);assert.equal(stage.flow.wave.round,2);assert.equal(stage.flow.phase,'prepare');
+    }finally{stageEncountersEnabled=false;}
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;

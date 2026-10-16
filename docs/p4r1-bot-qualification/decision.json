@@ -1,0 +1,70 @@
+{
+  "status": "BOT QUALIFICATION FAILED",
+  "gameBalanceChanges": [],
+  "newGameBalanceAccepted": false,
+  "botVersions": {
+    "weak": "weak-v1",
+    "medium": "medium-v2",
+    "strong": "strong-v1"
+  },
+  "frozenBotSha256": "a2d584e6e21994708152611451ed1350a545cba0a8a825bcac979e27b5d90616",
+  "botConfigHashes": {
+    "weak": "cabaf7c488bd4f04a99062ebc997052a317fa0015040a1d8bd663d8123c60fd8",
+    "medium": "bd0d770c1819c9e6a4a363179b02bd1cf65a1506fe07403289f2cc61a7b3677c",
+    "strong": "c5e866e5f75e3862029010b64c17ee9911d3382357930273726b44504e015cb3"
+  },
+  "gates": {
+    "publicActionsAndFutureInfoTraps": true,
+    "determinism": true,
+    "bossPreSpending": true,
+    "lowHpReserveAndFiniteRolls": true,
+    "coreStageGold": true,
+    "populationOpportunities": true,
+    "stableStateInterest": true,
+    "stressIdleDeathReduction": false,
+    "naturalDeathHighGold": null,
+    "ranking": true,
+    "qualitativeReplayReview": false,
+    "gameBytesUnchanged": true,
+    "historicalBytesUnchanged": true,
+    "fullRegression": true,
+    "weakStrongUnchanged": true,
+    "runsAndLongTail": true
+  },
+  "naturalDeathInference": "No natural v2 deaths in this production sample. Death-gold rate is unknown (0/0), not zero percent. Old candidate results are not a causal comparator.",
+  "controlledStress": {
+    "v1": {
+      "runs": 50,
+      "deaths": 0,
+      "deathGold100Plus": 0,
+      "meanGoldAtBattle": 261.86,
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanSpent": 38.14
+    },
+    "v2": {
+      "runs": 50,
+      "deaths": 0,
+      "deathGold100Plus": 0,
+      "meanGoldAtBattle": 120.1,
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanSpent": 179.9
+    }
+  },
+  "nextPhase": "P4-R2 requires explicit continuation and the frozen bots; no difficulty tuning performed here",
+  "reservedNextBalance": {
+    "training": [
+      3001,
+      3500
+    ],
+    "validation": [
+      4001,
+      4500
+    ],
+    "holdout": [
+      5001,
+      5250
+    ]
+  }
+}

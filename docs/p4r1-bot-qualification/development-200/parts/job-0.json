@@ -1,0 +1,217 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4r1-bot-qualification/development-200",
+    "bot": "medium",
+    "seedStart": 2001,
+    "seedCount": 200,
+    "stages": 12,
+    "workers": 4,
+    "partition": "development",
+    "audit": true,
+    "experiment": "bot-qualification-v2"
+  },
+  "jobs": [
+    {
+      "bot": "medium",
+      "seed": 2001
+    },
+    {
+      "bot": "medium",
+      "seed": 2005
+    },
+    {
+      "bot": "medium",
+      "seed": 2009
+    },
+    {
+      "bot": "medium",
+      "seed": 2013
+    },
+    {
+      "bot": "medium",
+      "seed": 2017
+    },
+    {
+      "bot": "medium",
+      "seed": 2021
+    },
+    {
+      "bot": "medium",
+      "seed": 2025
+    },
+    {
+      "bot": "medium",
+      "seed": 2029
+    },
+    {
+      "bot": "medium",
+      "seed": 2033
+    },
+    {
+      "bot": "medium",
+      "seed": 2037
+    },
+    {
+      "bot": "medium",
+      "seed": 2041
+    },
+    {
+      "bot": "medium",
+      "seed": 2045
+    },
+    {
+      "bot": "medium",
+      "seed": 2049
+    },
+    {
+      "bot": "medium",
+      "seed": 2053
+    },
+    {
+      "bot": "medium",
+      "seed": 2057
+    },
+    {
+      "bot": "medium",
+      "seed": 2061
+    },
+    {
+      "bot": "medium",
+      "seed": 2065
+    },
+    {
+      "bot": "medium",
+      "seed": 2069
+    },
+    {
+      "bot": "medium",
+      "seed": 2073
+    },
+    {
+      "bot": "medium",
+      "seed": 2077
+    },
+    {
+      "bot": "medium",
+      "seed": 2081
+    },
+    {
+      "bot": "medium",
+      "seed": 2085
+    },
+    {
+      "bot": "medium",
+      "seed": 2089
+    },
+    {
+      "bot": "medium",
+      "seed": 2093
+    },
+    {
+      "bot": "medium",
+      "seed": 2097
+    },
+    {
+      "bot": "medium",
+      "seed": 2101
+    },
+    {
+      "bot": "medium",
+      "seed": 2105
+    },
+    {
+      "bot": "medium",
+      "seed": 2109
+    },
+    {
+      "bot": "medium",
+      "seed": 2113
+    },
+    {
+      "bot": "medium",
+      "seed": 2117
+    },
+    {
+      "bot": "medium",
+      "seed": 2121
+    },
+    {
+      "bot": "medium",
+      "seed": 2125
+    },
+    {
+      "bot": "medium",
+      "seed": 2129
+    },
+    {
+      "bot": "medium",
+      "seed": 2133
+    },
+    {
+      "bot": "medium",
+      "seed": 2137
+    },
+    {
+      "bot": "medium",
+      "seed": 2141
+    },
+    {
+      "bot": "medium",
+      "seed": 2145
+    },
+    {
+      "bot": "medium",
+      "seed": 2149
+    },
+    {
+      "bot": "medium",
+      "seed": 2153
+    },
+    {
+      "bot": "medium",
+      "seed": 2157
+    },
+    {
+      "bot": "medium",
+      "seed": 2161
+    },
+    {
+      "bot": "medium",
+      "seed": 2165
+    },
+    {
+      "bot": "medium",
+      "seed": 2169
+    },
+    {
+      "bot": "medium",
+      "seed": 2173
+    },
+    {
+      "bot": "medium",
+      "seed": 2177
+    },
+    {
+      "bot": "medium",
+      "seed": 2181
+    },
+    {
+      "bot": "medium",
+      "seed": 2185
+    },
+    {
+      "bot": "medium",
+      "seed": 2189
+    },
+    {
+      "bot": "medium",
+      "seed": 2193
+    },
+    {
+      "bot": "medium",
+      "seed": 2197
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4r1-bot-qualification\\development-200\\parts\\part-0.jsonl"
+}

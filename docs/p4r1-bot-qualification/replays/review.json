@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "method": "Assistant qualitative inspection of five full traces and Boss preparation actions; not a human-user approval or only an aggregate check",
+  "seeds": [2201, 2700, 2202, 2203, 2204],
+  "summary": "未通过定性重放资格。seed2201/2700/2204在Stage6 Boss前主carry已3星、tank已2星、没有对子或catalogUpgrade时，仍因weakSlot相对3星carry的比例触发14次刷新，28金没有形成任何买卡或经验收益。当前基线过于容易使这些行为没有导致死亡，不能用100%完成率或低金币中位数掩盖测量工具缺陷。seed2202/2203保留80至84金是可解释的：升人口需68金且Boss储备20金，当前还不足88金，没有立刻升级并非固定阶段锁。五局全健康且Stage6死亡类型缺失已披露；10个历史死亡和单独低血压力夹具均保留。此medium-v2候选拒绝，需修复刷新目标并另用未使用资格seed，不能覆盖本批数据。"
+}

@@ -1,0 +1,168 @@
+{
+  "options": {
+    "root": "D:\\cocos\\NewProject",
+    "output": "docs/p4-balance/smoke-50",
+    "bot": "all",
+    "seedStart": 1,
+    "seedCount": 50,
+    "stages": 12,
+    "workers": 4,
+    "partition": "smoke",
+    "audit": true
+  },
+  "jobs": [
+    {
+      "bot": "weak",
+      "seed": 1
+    },
+    {
+      "bot": "weak",
+      "seed": 5
+    },
+    {
+      "bot": "weak",
+      "seed": 9
+    },
+    {
+      "bot": "weak",
+      "seed": 13
+    },
+    {
+      "bot": "weak",
+      "seed": 17
+    },
+    {
+      "bot": "weak",
+      "seed": 21
+    },
+    {
+      "bot": "weak",
+      "seed": 25
+    },
+    {
+      "bot": "weak",
+      "seed": 29
+    },
+    {
+      "bot": "weak",
+      "seed": 33
+    },
+    {
+      "bot": "weak",
+      "seed": 37
+    },
+    {
+      "bot": "weak",
+      "seed": 41
+    },
+    {
+      "bot": "weak",
+      "seed": 45
+    },
+    {
+      "bot": "weak",
+      "seed": 49
+    },
+    {
+      "bot": "medium",
+      "seed": 3
+    },
+    {
+      "bot": "medium",
+      "seed": 7
+    },
+    {
+      "bot": "medium",
+      "seed": 11
+    },
+    {
+      "bot": "medium",
+      "seed": 15
+    },
+    {
+      "bot": "medium",
+      "seed": 19
+    },
+    {
+      "bot": "medium",
+      "seed": 23
+    },
+    {
+      "bot": "medium",
+      "seed": 27
+    },
+    {
+      "bot": "medium",
+      "seed": 31
+    },
+    {
+      "bot": "medium",
+      "seed": 35
+    },
+    {
+      "bot": "medium",
+      "seed": 39
+    },
+    {
+      "bot": "medium",
+      "seed": 43
+    },
+    {
+      "bot": "medium",
+      "seed": 47
+    },
+    {
+      "bot": "strong",
+      "seed": 1
+    },
+    {
+      "bot": "strong",
+      "seed": 5
+    },
+    {
+      "bot": "strong",
+      "seed": 9
+    },
+    {
+      "bot": "strong",
+      "seed": 13
+    },
+    {
+      "bot": "strong",
+      "seed": 17
+    },
+    {
+      "bot": "strong",
+      "seed": 21
+    },
+    {
+      "bot": "strong",
+      "seed": 25
+    },
+    {
+      "bot": "strong",
+      "seed": 29
+    },
+    {
+      "bot": "strong",
+      "seed": 33
+    },
+    {
+      "bot": "strong",
+      "seed": 37
+    },
+    {
+      "bot": "strong",
+      "seed": 41
+    },
+    {
+      "bot": "strong",
+      "seed": 45
+    },
+    {
+      "bot": "strong",
+      "seed": 49
+    }
+  ],
+  "part": "D:\\cocos\\NewProject\\docs\\p4-balance\\smoke-50\\parts\\part-0.jsonl"
+}

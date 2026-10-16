@@ -13,6 +13,8 @@ export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttribut
 export interface UnitConfigData extends Partial<CombatAttributes> {
   id: string;
   name: string;
+  /** Strong PvE monsters keep authored attributes instead of the ordinary monster template. */
+  monsterTier?: 'normal' | 'strong';
   /** Creature lore and combat behavior shown in the unit detail panel. */
   description?: string;
   /** 费用档位 1~5，默认 1 */
@@ -32,7 +34,10 @@ export interface UnitConfigData extends Partial<CombatAttributes> {
   skillCanCrit?: boolean;
   /** Presentation resource id; independent of unit role and combat behavior. */
   artId?: string;
-  role?: 'frontline' | 'ranged' | 'caster' | 'assassin' | 'fighter' | 'tank' | 'magicArcher';
+  basicAttackFx?: 'arrow' | 'fireball' | 'ninjaBolt';
+  basicAttackTint?: [number, number, number];
+  damageType?: 'physical' | 'magic';
+  role?: 'warrior' | 'marksman' | 'frontline' | 'ranged' | 'caster' | 'assassin' | 'fighter' | 'tank' | 'magicTank' | 'magicArcher' | 'physicalCaster' | 'physicalArcher' | 'support';
   tint?: string;
 }
 
@@ -41,18 +46,30 @@ export interface SkillConfigData {
   dmgType: 'physical' | 'magic' | 'true';
   name?: string;
   description?: string;
+  /** Presentation-only rows; current values are resolved from live combat attributes. */
+  statRows?: Array<{ label: string; value: string; stars: string }>;
+  /** Internal rules, excluded from the player-facing description. */
+  mechanics?: string[];
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly';
+  healAmounts?: number[];
+  /** Configured skill damage by star; never derived from attack or armor. */
+  starDamage?: number[];
+  /** Total pre-mitigation damage by star, divided among enemies in the target radius. */
+  splitDamage?: number[];
+  /** Base shield by star, multiplied by 1 + spellPower / 100. */
+  shieldAmounts?: number[];
+  knockupSeconds?: number;
+  guard?: { durations: number[]; reductions: number[] };
   spellMultipliers?: number[];
   stunSeconds?: number[];
-  hybrid?: { attackRatios: number[]; spellRatios: number[] };
-  heal?: { intervalSeconds: number; maxHpFractions: number[] };
+  hybrid?: { physicalDamage: number[]; magicDamage: number[] };
+  heal?: { intervalSeconds: number; maxHpFractions: number[]; bonusAmounts?: number[] };
   castSeconds?: number;
   targetRange?: number;
   empoweredAttacks?: number;
-  attackMultipliers?: number[];
   /** Absolute attacks/second by star; +50% means +0.5, not base × 1.5. */
   attackSpeedBonuses?: number[];
   manaLockDuringEmpower?: boolean;
@@ -60,11 +77,23 @@ export interface SkillConfigData {
   burn?: { durationSeconds: number; intervalSeconds: number; maxHpFraction: number; dmgType: 'physical' | 'magic' | 'true' };
 }
 
-/** Each component receives only its corresponding percentage bonus. */
+/** Channel healing keeps its HP fraction unscaled; only the fixed bonus uses spell power. */
+export function channelHealAmount(unit: Pick<UnitConfigData, 'hp' | 'spellPower'>, skill: SkillConfigData, star: number): number {
+  const rank = Math.max(0, Math.min(2, star - 1)), heal = skill.heal!;
+  return Math.round(unit.hp * heal.maxHpFractions[rank] + (heal.bonusAmounts?.[rank] ?? 0) * (1 + (unit.spellPower ?? 0) / 100));
+}
+
+/** Attack is reserved for ordinary basic attacks; skills use configured values. */
+export function configuredSkillDamage(skill: SkillConfigData, star: number, skillScale = 1): number {
+  const rank = Math.max(0, Math.min(2, star - 1));
+  return skill.starDamage?.[rank] ?? skill.splitDamage?.[rank] ?? skill.power * (skill.spellMultipliers?.[rank] ?? skillScale);
+}
+
+/** Fixed component values each receive only their corresponding percentage bonus. */
 export function hybridSpellDamage(unit: UnitConfigData, skill: SkillConfigData, star: number): number {
   const rank = Math.max(0, Math.min(2, star - 1));
-  return unit.atk * skill.hybrid!.attackRatios[rank] * (1 + (unit.physicalPower ?? 0) / 100)
-    + skill.power * skill.hybrid!.spellRatios[rank] * (1 + (unit.spellPower ?? 0) / 100);
+  return skill.hybrid!.physicalDamage[rank] * (1 + (unit.physicalPower ?? 0) / 100)
+    + skill.hybrid!.magicDamage[rank] * (1 + (unit.spellPower ?? 0) / 100);
 }
 
 export interface BattleConfigData {
@@ -78,6 +107,7 @@ export interface BattleConfigData {
   criticalMultiplier?: number;
   attackSpeedCap?: number;
   legendaryThreeStarBonusHp?: number;
+  roleMana?: { casterPerSecond: number; damageTakenFraction: number };
   starScaling: Array<{ hp: number; atk: number; skill: number }>;
   initialHealth: number;
   lossPerEnemy: number;
@@ -101,14 +131,26 @@ export class ConfigManager {
   }
   equipmentStats(cfg: UnitConfigData, ids: string[] = []): UnitConfigData {
     const items = this.getEquipment(ids);
+    const armor = cfg.armor + items.reduce((sum, item) => sum + (item.armor ?? 0), 0);
+    const spellPower = (cfg.spellPower ?? 0) + items.reduce((sum, item) => sum + item.spellPower, 0);
+    const damageAmp = (cfg.damageAmp ?? 0) + items.reduce((sum, item) => {
+      const effect = item.spellPowerDamageAmp;
+      return sum + (effect ? Math.min(effect.cap, Math.floor(spellPower / effect.step) * effect.bonus) : 0);
+    }, 0);
+    const damageReduction = Math.min(1, (cfg.damageReduction ?? 0) + items.reduce((sum, item) => {
+      const effect = item.armorDamageReduction;
+      return sum + (effect && armor > effect.threshold ? effect.bonus : 0);
+    }, 0));
     return { ...cfg,
-      hp: cfg.hp + items.reduce((sum, item) => sum + (item.hp ?? 0), 0),
-      armor: cfg.armor + items.reduce((sum, item) => sum + (item.armor ?? 0), 0),
+      hp: Math.round((cfg.hp + items.reduce((sum, item) => sum + (item.hp ?? 0), 0))
+        * (1 + items.reduce((sum, item) => sum + (item.maxHpBonus ?? 0), 0))),
+      armor,
       mr: cfg.mr + items.reduce((sum, item) => sum + (item.mr ?? 0), 0),
       physicalPower: (cfg.physicalPower ?? 0) + items.reduce((sum, item) => sum + (item.physicalPower ?? 0), 0),
       critChance: Math.min(1, combatAttributes(cfg).critChance + items.reduce((sum, item) => sum + (item.critChance ?? 0), 0)),
       skillCanCrit: cfg.skillCanCrit === true || items.some(item => item.skillCanCrit),
-      spellPower: (cfg.spellPower ?? 0) + items.reduce((sum, item) => sum + item.spellPower, 0) };
+      lifesteal: Math.min(1, (cfg.lifesteal ?? 0) + items.reduce((sum, item) => sum + (item.lifesteal ?? 0), 0)),
+      damageAmp, damageReduction, spellPower };
   }
   battle: BattleConfigData = {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
@@ -118,6 +160,7 @@ export class ConfigManager {
     criticalMultiplier: 1.5,
     attackSpeedCap: 5,
     legendaryThreeStarBonusHp: 5000,
+    roleMana: { casterPerSecond: 2, damageTakenFraction: 0.1 },
     starScaling: [{ hp: 1, atk: 1, skill: 1 }, { hp: 1.8, atk: 1.8, skill: 1.8 }, { hp: 3.24, atk: 3.24, skill: 3.24 }],
     initialHealth: 20,
     lossPerEnemy: 2,
@@ -139,6 +182,8 @@ export class ConfigManager {
   }
 
   setBattle(data: Partial<BattleConfigData>): void {
+    if (data.roleMana && (!Number.isFinite(data.roleMana.casterPerSecond) || data.roleMana.casterPerSecond < 0
+      || !Number.isFinite(data.roleMana.damageTakenFraction) || data.roleMana.damageTakenFraction < 0 || data.roleMana.damageTakenFraction > 1)) throw new Error('Invalid role mana configuration');
     Object.assign(this.battle, data);
   }
 

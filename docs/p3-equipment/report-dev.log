@@ -1,0 +1,24 @@
+
+> report-equipment
+> node --require tsx/cjs tools/report-equipment.ts --output docs/p3-equipment/development-report
+
+{
+  "output": "docs\\p3-equipment\\development-report",
+  "waveCount": 968,
+  "maxDeviationPct": 4.9799648911365875,
+  "rewardSha256": "0a18a5f99981a50ee75e199ae8b83258865e4904a14d5564728df3ad659449df",
+  "generation": {
+    "mean": 1.0677791709844575,
+    "p95": 4.303699999999935,
+    "max": 48.2731
+  },
+  "candidates": [
+    48,
+    228
+  ]
+}
+npm notice
+npm notice New major version of npm available! 11.12.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

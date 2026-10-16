@@ -1,0 +1,324 @@
+
+> test
+> pwsh -NoProfile -File tools/run-tests.ps1
+
+
+--- 单元测试（六边形战斗）---
+=== M1 单元测试（六边形版）===
+
+[1] 伤害公式
+[2] 寻敌
+[3] 六边形 BFS 寻路
+[4] hex 数学
+[5] Grid 边界
+[6] 同种子可复现
+[7] Rng 确定性
+[8] 超时判平局
+
+=== 结果：127 passed, 0 failed ===
+
+--- 经济/等级/存档测试 ---
+=== 经济 / 等级 / 存档测试 ===
+
+[1] 经济结算
+[2] 利息上限
+[3] 连胜/连败
+[4] 消费不为负
+[5] 利息基线
+[6] 等级经验
+[7] 10 级上限
+[8] 旧存档兼容
+
+=== 结果：56 passed, 0 failed ===
+
+--- 商店/卡池测试 ---
+=== 商店 / 卡池测试 ===
+
+[1] 概率总和
+[2] 低等级费用限制
+[3] 卡池耗尽
+[4] 购买/刷新/出售
+[5] 拖动不改卡池
+[6] 备战席满
+[7] 金币不足
+[8] 连续交易
+[9] 存档一致
+[10] 同名合并
+[11] 高费棋子的实际购买、升星与出售
+
+=== 结果：127 passed, 0 failed ===
+
+--- 冒烟测试 ---
+--- 战斗结果 ---
+winner=1 ticks=408 survivors=1
+事件数=138
+--- 断言 ---
+死亡数=5
+施法数=2
+移动数=2
+攻击数=62
+TickDriver 到 100 tick: 1x=5.00 2x=2.50 3x=1.67s
+20 种子胜者集合=1,-1,0（暴击随种子变化，同种子可复现）
+
+OK smoke test passed
+
+--- 商店与阶段联动回归测试（无渲染）---
+PASS attack speed bonuses are flat additions in preparation and combat
+PASS audit: unknown saved equipment is repaired and visible backpack indices stay aligned
+PASS audit: exhausted cost tiers show the same probabilities as actual draws
+PASS board units use 1.3-cell portraits while reserve units retain their slot size
+PASS drag highlights valid cells, rejects over-cap/enemy cells, and clears on cancel
+PASS one second preparation uses real time and never ticks early or charges twice
+PASS stage base gold caps at ten but interest and victory bonuses remain
+PASS preparation crossing frame spends only leftover time on combat
+PASS legacy ten-round progress maps to the same stage and clamps its subround
+PASS audit: run numeric configuration cannot produce infinite counts or population
+PASS audit: duplicate and out-of-range saved positions are repaired
+PASS audit: restore reconciles pool, owned stars and reserved shop per unit
+PASS audit: exhausted weighted tier never creates a false empty slot
+PASS audit: nonfinite money and level inputs cannot poison state
+PASS audit: invalid costs and pool counts are rejected or bounded
+PASS audit: saved coordinates and reward fields are finite
+PASS audit: failed full-bench merge rolls back gold, units, UID and reservation
+PASS locked shop retains exact slots and inventory across waves and reload
+PASS tap opens star-scaled attributes and skill without moving or selling
+PASS skill detail resolves current-star damage instead of multiplier lists
+PASS drag sale refunds discounted upgraded unit and restores original cards once
+PASS shop drag mode previews population, blocks transactions, and cancels without selling
+PASS settlement reload does not grant duplicate income and advances exactly one wave
+PASS auto next wave waits one real second, advances once and preserves rewards
+PASS manual next wave cancels automatic transition and run end retains final result
+PASS zero-gold starter earns base income per subround from the current stage
+PASS run end restarts health, economy, levels, inventory, lock, and wave together
+PASS experience button exchanges exactly four gold for four XP and persists upgrades
+PASS XP purchase rejects insufficient gold and max level, and remains available during combat
+PASS XP purchase carries remaining XP and stops charging after reaching level ten
+PASS star rank reaches bench and combat views and updates after merging
+PASS perspective hex centers round trip, edges reject outside points
+PASS fourth deployment row is playable and enemy formation stays in its half
+PASS old eighth-column save retains unit identity and star in a free valid cell
+PASS refresh conserves cards across owned, shop and remaining pool
+PASS last reserved card remains purchasable
+PASS zero inventory survives save migration and reload
+PASS fresh game renders bench and populates shop without charging
+PASS bench drag deploys, enforces cap, undeploys, and binds new nodes
+PASS ally view IDs match events without overwriting enemies
+PASS startFight binds current simulation and restart restores free shop
+PASS purchase immediately renders new bench unit and persists initialization
+PASS legacy unreserved shop is deducted exactly once on restore
+PASS full bench merge and sale return the original three cards
+PASS empty formation cannot start, and combat freezes deployed units while allowing shop purchases
+PASS cancelled or invalid drag restores position and does not persist a move
+PASS selected stage count survives reload, stage boundaries, and a complete restart
+PASS runtime population grows across stages without increasing shared base stats
+PASS late-stage bonuses reach combat and detail without mutating shared unit configs
+PASS main menu return preserves run and is blocked during battle
+PASS combat shop, XP, lock, reserve swap/sale and board merging preserve the active battle
+PASS combat ending mid-drag restores the reserve piece and prevents a late sale
+PASS combat merge keeps the deployed position even when the oldest copy was on the bench
+PASS combat details follow runtime HP/mana for allies and enemies even after death
+PASS displayed cost rates match implemented tiers and refresh stays populated at high level
+PASS equipment detail edits persist, cap at three and lock during combat
+PASS totem grant, equip, detail stats, save reload, combat stats and equipment lock
+PASS skill-crit items grant, stack matching attributes, reload, unlock combat and unequip
+PASS backpack drag equips reserve unit and generic consumables survive reload
+PASS debug catalogue follows configs and gold grants preserve combat and survive reload at the save cap
+PASS debug unit grants conserve star copies and equipment through reload and sale
+PASS debug unit rejects invalid/full bench, allows full-bench merge and rolls back failures
+PASS debug stage jump extends the run without changing existing waves, resources or shop and resumes exactly
+PASS debug jump cancels countdown, active battle and pending settlement without stale rewards or timers
+PASS debug mutations reject an in-progress drag
+PASS RunSession: repeated UI preview rebuilds preserve shops, combat seed and complete battle events
+PASS RunSession: Cocos adapter and pure headless session consume identical actions and settlement
+PASS budget-v1: new Cocos sessions and headless sessions consume the same generated enemies and real combat
+PASS budget-v1: Cocos debug extension, persisted continuation and late combat keep versioned budgets without free scaling
+PASS P2: Cocos loads versioned formation resources and shows fixed L2 preview before L3 locks at battle start
+PASS advanced equipment stays in save, debug catalogue and detail with live missing-HP lifesteal
+PASS P3: actual Cocos adapter persists pending before UI, blocks auto/manual restart and restores/claims exactly once
+Regression: 72 passed, 0 failed
+PASS actual UI: merged XP, colored odds, gold header, range/live vitals, asynchronous bars, drag sale, and combat shop
+PASS actual UnitView: fixed left edges, independent HP/mana widths, clamped values, and delayed texture loading
+PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration
+PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, modal input, choice callback and stale async protection
+PASS drag polygon highlight, centered bold population, animated preparation fill and idle wave visibility
+Fairness, configurable star scaling, and all sell tiers passed
+Shared stats, cost/star progression, capped population and late bonuses, quarter-strength monsters, real battles, save resume and skills passed
+PASS default attributes preserve base spell damage and allow explicit zero crit
+PASS spell power scales skill damage and composes with star scaling
+PASS type bonuses affect only matching damage, including basic attacks
+PASS crit, amplification, reduction and armor compose in one rounding step
+PASS lifesteal uses actual damage, caps healing and emits health state
+PASS lifesteal cannot resurrect either side after simultaneous lethal attacks
+PASS true damage still obeys amplification and damage reduction
+PASS crit randomness is reproducible by seed and varies across seeds
+PASS combat attributes sanitize nonfinite inputs and rates
+Combat attributes: 9 passed, 0 failed
+PASS combat statistics: source attribution, actual damage, capped healing, deaths, no double count and reset
+PASS enderman: config, targeting, six-tick cast, legal teleport, three empowered attacks at all stars, retarget and determinism
+PASS black flame: four-cost card, ten-tick cast, all star ratios, physical/true damage, five burn pulses, death, refresh and determinism
+PASS healing channel: roster, 20/50 mana, all stars, three half-second heals, capped HP, stationary channel, death and determinism
+PASS hybrid magic: config, all-star ratios, distinct type bonuses, single magic resistance pass, range, mana and attack speed
+PASS Itachi: config, nine-tick cast, all star damage and stun durations, action suppression, interruption, ordering and determinism
+PASS iron golem: cast, attack+armor damage, knockup, all-star guard, completion order, exact expiry, refresh and determinism
+PASS equipment: three slots, stats, attack stacks, skill bonus isolation, cap, new battle reset, deterministic replay, merge overflow, sale return and save
+PASS advanced equipment: final stats, passive stacks/caps, strict thresholds, live execute, omni lifesteal, magic-only reduction, max HP, persistent per-second healing, stun/death/reset, totem synergy, statistics, deterministic replay and all six icons
+PASS totem: stats, strict threshold, lethal save, same-tick protection, six-tick untargetability, targeting, delayed spells, shield, burn/AoE, 100-tick healing, stun independence, duplicate passive, death/reset, deterministic replay and icon
+PASS skill-crit equipment: matching +20% bonus, additive +35% crit, cap, all damage types, AoE, hybrid spell, delayed stun, burn, no healing crit, no double crit, stats, deterministic RNG and icons
+PASS new session uses real starter, shop reservations and read-only bot observations
+PASS actions reject unpaid purchases, illegal cells, over-cap deployments and phase violations
+PASS shop, combat and preview RNG are isolated from enemy and bot streams (C/D/E)
+PASS save/load keeps shop refresh indices, UID allocation and deterministic continuation
+PASS old saves migrate deterministically without rerolling offers or granting duplicate starter
+PASS legal swaps, full bench merge, sale/equipment return and combat shopping share existing rules
+PASS locked shops persist across wave boundaries and paid rolls resume exactly
+  seed12345 SHA256 b2ee0bc3c59206ac194700115de39e76ec064c299ec6d5555120bb5964eb6e34
+PASS same seed full run report is byte-identical, another seed changes shops/actions (A/B)
+PASS 3/6/99 sampling cutoffs and actual campaign sizes keep full wave prefixes identical
+PASS terminal reasons include elimination, completion, sampling cutoff and simulation errors
+PASS minimal bot keeps legal positions, pool conservation and nonnegative gold across complete runs
+PASS P0 enemies and input configs remain unchanged across all 99 stages
+RunSession: 12 passed, 0 failed
+  separate-process SHA256 b2ee0bc3c59206ac194700115de39e76ec064c299ec6d5555120bb5964eb6e34
+PASS real CLI writes byte-identical reports for seed 12345 in separate processes
+PASS CLI config validation writes SIMULATION_ERROR and exits nonzero
+PASS CLI distinguishes true completion from a maximum-wave sampling cutoff
+PASS CLI cannot overwrite protected P0 baseline evidence
+PASS budget-v1 CLI exposes actual generator budgets, defaults to new rules and rejects unknown modes
+PASS P2 CLI accepts L0/L1/L2/L3, exports snapshot diagnostics and protects P1-C evidence
+PASS P3 CLI rewards repeat in independent processes, can pin none, and protects all P2 evidence
+Run-sim CLI: 7 passed, 0 failed
+PASS runtime model returns measured unit/star/equipment points and explicit tactical environments
+PASS derived values and legacy environment metadata never claim unsupported confidence
+PASS model does not mutate inputs or expose a mutable model through queries
+PASS missing unit/star/equipment and unmeasured combinations are explicit positive low-confidence fallbacks
+PASS model rejects malformed requests, source mismatches and invalid model points
+PASS team estimates sum real calibrated points, propagate fallback confidence, and predict complementary scores
+PASS star and equipment diagnostics expose non-monotonic evidence instead of forcing positive gains
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: settings/v2/packages/information.json
++ actual - expected
+
++ '5f7d4d7b50002579424ba13e63ae1838e7d8ae34f0a6e096877da0e6294c31e6'
+- '1a80a3445c27456d235075c2fc6c43aa23e1f647009a6961ea01d01af02e36b0'
+
+    at D:\cocos\NewProject\tests\enemy-power-tests.cjs:77:136
+    at test (D:\cocos\NewProject\tests\enemy-power-tests.cjs:10:24)
+    at Object.<anonymous> (D:\cocos\NewProject\tests\enemy-power-tests.cjs:67:1)
+    at Module._compile (node:internal/modules/cjs/loader:1830:14)
+    at Object.<anonymous> (node:internal/modules/cjs/loader:1961:10)
+    at Module.load (node:internal/modules/cjs/loader:1553:32)
+    at Module._load (node:internal/modules/cjs/loader:1355:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '5f7d4d7b50002579424ba13e63ae1838e7d8ae34f0a6e096877da0e6294c31e6',
+  expected: '1a80a3445c27456d235075c2fc6c43aa23e1f647009a6961ea01d01af02e36b0',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.15.0
+PASS bounded plan contains exact matrix counts and all fixture cells are legal odd-r half-boards
+PASS real sampling, seed partitions and clustered summaries are deterministic
+PASS cache keys include source/config/version, unit/star/equipment, positions, orientations and seed range
+PASS cache replay preserves data, config changes miss cache and corrupt cache is recomputed
+PASS relative-value fitting is bounded, deterministic and rejects disconnected/nonfinite input
+PASS validation seed data cannot influence fitted powers or training win-probability slope
+Power calibration: 6 passed, 0 failed
+PASS C0 uses the published P1-B model and B0 is the old Stage 2-1 real army query
+PASS A legacy all 968 waves exactly equal P0, intro and population stay unchanged
+PASS B same seed regenerates all wave enemies and diagnostics exactly; another seed can vary choices
+PASS C 3 / 6 / 99 stage prefixes include identical budgets and final selected-stage Boss
+PASS D 1000 enemy draws and composition generation leave shop/battle/bot/formation streams unchanged
+PASS E mixed costs really occur, costs respect unlock and implemented 4-cost units enter the pool and army
+  seed12345 Stage6/7/8 2-star ratios 0.30337078651685395/0.42/0.56
+PASS F 1-star / 2-star mixtures and progressive feasible soft targets replace full-team tier switching
+PASS soft diversity avoids the observed affordable all-mage degeneration without imposing unique-unit caps
+PASS G normal/elite have zero 3-stars, Boss has at most one and its real nonlinear price is paid
+PASS H every budget multiplier is 1, enemy equipment is empty and legacy late bonuses are absent
+PASS I all 965 formal generated non-intro waves meet tolerance with explicit solution classification
+PASS J requested and effective Boss-to-next-first budgets recover exactly 6 percent at all 97 boundaries
+PASS K requested normal anchors follow 4 percent per budget wave with no compounded Boss multiplier
+PASS L saturation preserves huge requested budgets, returns within finite limits and never breaks population or star caps
+PASS wave kind rules are centralized and explicitly configurable
+PASS feasible intervals exactly account for the shared three-star quota and legal repeats
+PASS unreachable discrete target is reported with an exact small-population nearest certificate
+PASS bounded optimizer reports a limit rather than asserting an unproved discrete impossibility
+PASS stable candidate sorting and generation ignore object-key and roster load order
+PASS invalid candidates, models, policies and nonfinite targets fail loudly
+PASS missing P1-B points retain low-confidence fallback diagnostics; team confidence stays qualified
+PASS new games default budget-v1, missing old save fields pin to legacy and saved modes cannot be replaced
+PASS saved model/version/hash/config mismatches are refused before future waves can drift
+PASS budget save/load and debug extension retain all enemies, IDs, shops and isolated future combat seeds
+PASS run-sim exports the generator diagnostics and explicit modes without granting bot resources
+PASS P0/P1-A/P1-B evidence, old battle rules and all existing configuration data remain byte-identical
+Enemy budget: 26 passed, 0 failed
+PASS P2-0 generator waves, member/budget/position baseline and P0 legacy remain exact
+PASS all 15 purchasable units have auditable roles; self-heal and damage casters are not invented support
+PASS odd-r even and odd row adjacency comes from the existing HexMath
+PASS L0 exactly preserves all 968 P1-C positions and ignores malformed templates and player snapshots
+PASS L1 uses role depth including a synthetic support classification without adding game content
+PASS L0/L1/L2 never access a supplied player snapshot
+PASS L2 spaces three key backliners by at least two actual hexes when a feasible layout exists
+PASS crowded backline retains legal unique cells, terminates and diagnoses spacing relaxation
+PASS tank cover is stronger than a deterministic random-position baseline, without requiring every backliner covered
+PASS L3 reacts to left versus right backline mages using existing assassin/teleport capability only
+PASS L3 ranged density and cluster heuristics report existing melee/AoE/control responses
+PASS no assassin or teleport enemy gets no new ability and only coordinates can change
+PASS all seven templates extract coordinates only; malicious old stars, identities and multipliers never enter placements
+PASS legal templates apply, invalid templates fall back and partial templates fill remaining units
+PASS all L1/L2/L3 formations retain exact members and budget diagnostics over all 99 stages
+PASS same inputs repeat exactly and configuration key order does not affect formations
+PASS formation RNG consumption leaves shop/battle/enemy/bot/reward streams unchanged
+PASS snapshot identity ignores order and future data but includes current tactical positions/stars/equipment
+PASS progression strengths vary smoothly; early bosses do not unlock counter scoring through a bonus alone
+PASS repeated previews freeze the L2 base and do not alter final L3, shop, members, budgets or battle seed
+PASS interrupt/load to preparation rebuilds the same final snapshot/formation, while changed player positions may change it
+PASS legacy and pre-P2 saves pin to L0; future versions/configurations are rejected explicitly
+PASS L0/L1/L2 preserve 3/6/99 prefixes; L3 full simulations keep prefixes with matching bot snapshots
+PASS invalid config/snapshot/insufficient cells fail clearly; invalid template alone does not crash
+PASS P2 does not import BattleSim/EnemyGenerator into formation or alter generator/config/battle evidence
+Enemy formation: 25 passed, 0 failed
+PASS P3-0 old model, combat, stats, content, P2 solver and all previous evidence are byte protected
+PASS all 968 waves retain targets, population, classification and hard unlocks; normal/intro/stage1-2 have no items
+PASS final exact team queries pay for every item and preserve <=5% reachable budget protection
+PASS same-budget alternatives can exchange unit/star composition; quota conflicts never give free power
+PASS candidate beam cap applies per identity across stars; missing calibration never becomes free equipment
+PASS real duplicate-slot rules and explicit tier/pool validation are preserved
+PASS only an actual battle victory creates rewards, including last-wave alive loss semantics
+PASS pending freezes the distinct two-choice early fallback, blocks all progression and rejects invalid indices
+PASS settle x3 grants currency/XP/reward once and claim is idempotent
+PASS pending save/load, choose second, save/load preserves candidates, gold/XP and compact claimed marker
+PASS old P2 saves pin both policies to none, keep player items and reproduce pre-P3 future enemies
+PASS menu new-game ticket binds P3 before play; saved configuration/model drift is explicitly rejected
+PASS malformed saved pending state rejects instead of silently dropping or regenerating loot
+PASS guarantee requires eligible victory, is satisfied on claim, and cannot send special gear early
+PASS reward RNG x1000 and enemy/formation x1000 leave all other domains and frozen loot unchanged
+PASS reward inventory -> original equip -> original unequip and real BattleSim Guinsuo reset
+PASS all 3/6/99 common generated and played history includes identical shops/enemies/formation/rewards/choices
+PASS P2 same member/equipment/snapshot remains deterministic and minimal bot uses the common claim/equip port
+P3 equipment: 18 passed, 0 failed
+PASS P4 observation is current public information, detached/frozen and has no future/RNG/model or privileged core references
+PASS formal policy modules cannot import battle simulation, calibrated model, orchestration or privileged mutation APIs
+PASS all three bots run real public actions, conserve cards/equipment/gold, and repeat complete decisions and battles
+PASS all bot purchase/reward/formation/equipment histories preserve 3/6/99 common prefixes
+PASS economy policies use true interest rules and spend reserves under low HP without changing game rules
+PASS Strong responds to current visible enemy flank, while basic rows do not read future information
+PASS metrics have Wilson 95% intervals, explicit zero denominators and censored star timing coverage
+PASS all historical evidence and rules remain protected except the verified high-cost price correction
+Formal bots: 8 passed, 0 failed
+PASS balance CLI single/multiple worker process logical output is identical
+PASS balance CLI seed partitions, invalid options, immutable outputs and historical evidence protection
+Balance CLI: 2 passed, 0 failed
+PASS P4 leaves every production configuration and P0-P3 evidence byte-identical to the frozen baseline
+PASS optional budget controls default to the exact original anchors, requested/effective budgets and recovery
+PASS tuning whitelist has bounds/steps and rejects invalid/undeclared-grid values
+PASS candidate pays for equipment, respects feasible budgets and retains hard star/stat rules
+PASS bound old saves reject a new balance identity, and same-version continuation is exact
+PASS finite search stays at 20 training trials and never changes content/model/formation/equipment/economy
+P4 balance: 6 passed, 0 failed

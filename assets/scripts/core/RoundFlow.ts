@@ -1,11 +1,15 @@
 import { Side } from '../battle/types';
+import type { EnemyGenerationMode, EnemyGenerationDiagnostics, WaveKind } from './EnemyGenerationTypes';
+import type { StageEncounterKind } from './StageEncounters';
 
 export type RoundPhase = 'prepare' | 'battle' | 'settlement' | 'ended';
 export type RunResult = 'victory' | 'defeat' | null;
-export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number; damageAmp?: number; damageReduction?: number }
+export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number; damageAmp?: number; damageReduction?: number; equipment?: string[] }
 export interface WaveConfig {
   id: number; name: string; enemies: WaveEnemy[];
   stage?: number; round?: number; roundsInStage?: number;
+  encounterKind?: StageEncounterKind;
+  waveKind?: WaveKind; enemyGenerationMode?: EnemyGenerationMode; budget?: EnemyGenerationDiagnostics;
 }
 export interface RoundSettlement {
   waveId: number; winner: Side | -1; enemySurvivors: number;
@@ -65,6 +69,11 @@ export class RoundFlow {
   nextWave(): boolean {
     if (this.phase !== 'settlement') return false;
     this.state.waveIndex++; this.state.phase = 'prepare'; this.state.lastSettlement = null; return true;
+  }
+  completeEncounter(): RoundSettlement | null {
+    if (this.phase !== 'prepare') return null;
+    this.state.phase = 'battle';
+    return this.settle(-1, 0);
   }
   restart(): void { this.state = this.freshState(); }
   snapshot(): RoundSnapshot {

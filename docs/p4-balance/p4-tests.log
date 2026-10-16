@@ -1,0 +1,7 @@
+PASS P4 leaves every production configuration and P0-P3 evidence byte-identical to the frozen baseline
+PASS optional budget controls default to the exact original anchors, requested/effective budgets and recovery
+PASS tuning whitelist has bounds/steps and rejects invalid/undeclared-grid values
+PASS candidate pays for equipment, respects feasible budgets and retains hard star/stat rules
+PASS bound old saves reject a new balance identity, and same-version continuation is exact
+PASS finite search stays at 20 training trials and never changes content/model/formation/equipment/economy
+P4 balance: 6 passed, 0 failed

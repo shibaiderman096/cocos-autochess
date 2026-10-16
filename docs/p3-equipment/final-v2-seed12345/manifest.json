@@ -1,0 +1,19 @@
+{
+  "hashes": {
+    "waves.json": "b7f4c712648083f6052a2a01868711378b0dc620d4c879620f0aed54c063a31d",
+    "run-3.json": "a80d126c496d0d777cb86fe9b7246da9ca9a5969035b1a2da727902c6950d736",
+    "run-6.json": "62d933e8c207c33eba8f4220a9ef3e5c0bf315332e26f89783c799f0db594317",
+    "run-99.json": "26db781996c775eee60db8aac930b859aa207c93c0013ee2b15f582810ae32c1",
+    "reward-report.json": "0a18a5f99981a50ee75e199ae8b83258865e4904a14d5564728df3ad659449df",
+    "budget-examples.json": "899749689503f5eefda964e558b4141a7934cb96df751e7fedfc46271434e6d5",
+    "actual-effects.json": "00e4b85a31a1ed4143559f4fb0fd975ba400976d111e8da6ebe06bca8067f216",
+    "pending-save.json": "8eb75badccddab31c373d3ab026a82a8eb0380b995ec47a37d43aec05609d0fd",
+    "claimed-save.json": "fa4ec0aa9f12888c011993135770e4f46078143e1c344d7706abaa7f907b7ef5",
+    "candidate-counts.json": "1ce39f7f7a9852cbf8286c690d864a90b4ea06808ddde12440c196a5323af607",
+    "enemy-equipment-by-stage.csv": "a4afcba50063cb136de5959dfbbca7c2ac325e08eabcb5a973082bbf2df9b4ac",
+    "reward-table.csv": "40b6d035f98e51182ba18093ed82f8b837df9fd2338487aa90ae1b0b4872069f",
+    "equipment-table.csv": "b2eb44d755c51f17058fee69b201c3b77db36e1096ef9be2e55a6cea6f652635",
+    "verification.json": "7d6e6197b5fc13e04d0fc16bb8852d7a84fe2f367adf1408d67efa7f4a4db3e9",
+    "performance.json": "6f5b4297402758933a723368b0930439310ffd07575ee0c02e937187d988d917"
+  }
+}

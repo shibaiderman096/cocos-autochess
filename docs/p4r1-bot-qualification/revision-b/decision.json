@@ -1,0 +1,76 @@
+{
+  "status": "BOT QUALIFICATION FAILED",
+  "gameBalanceChanges": [],
+  "newGameBalanceAccepted": false,
+  "botVersions": {
+    "weak": "weak-v1",
+    "medium": "medium-v2r1b",
+    "strong": "strong-v1"
+  },
+  "frozenBotSha256": "3ac96d9d6c22d4c8105636c31cf68afc530e5a3236c3fe73a7fff07c9b9e5371",
+  "botConfigHashes": {
+    "weak": "cabaf7c488bd4f04a99062ebc997052a317fa0015040a1d8bd663d8123c60fd8",
+    "medium": "db811c74fb3bf3d1960ab23a2bc658e315c6b27f198c6b703fb8c9b544a3d68d",
+    "strong": "c5e866e5f75e3862029010b64c17ee9911d3382357930273726b44504e015cb3"
+  },
+  "gates": {
+    "publicActionsAndFutureInfoTraps": true,
+    "determinism": true,
+    "bossPreSpending": true,
+    "lowHpReserveAndFiniteRolls": true,
+    "coreStageGold": false,
+    "populationOpportunities": true,
+    "stableStateInterest": true,
+    "stressIdleDeathReduction": true,
+    "naturalDeathHighGold": null,
+    "ranking": true,
+    "qualitativeReplayReview": true,
+    "gameBytesUnchanged": true,
+    "historicalBytesUnchanged": true,
+    "fullRegression": true,
+    "weakStrongUnchanged": true,
+    "runsAndLongTail": true
+  },
+  "naturalDeathInference": "No natural v2 deaths in this production sample. Death-gold rate is unknown (0/0), not zero percent. Old candidate results are not a causal comparator.",
+  "controlledStress": {
+    "v1": {
+      "runs": 50,
+      "deaths": 50,
+      "deathGold100Plus": 50,
+      "meanGoldAtBattle": 248.06,
+      "meanLevel": 7,
+      "meanPopulation": 7,
+      "meanSpent": 51.94
+    },
+    "v2": {
+      "runs": 50,
+      "deaths": 50,
+      "deathGold100Plus": 10,
+      "meanGoldAtBattle": 91.3,
+      "meanLevel": 8,
+      "meanPopulation": 8,
+      "meanSpent": 208.7
+    }
+  },
+  "nextPhase": "Do not enter P4-R2: this frozen bot is reproducible but has not passed all normal-player qualification requirements",
+  "reservedNextBalance": {
+    "training": [
+      3001,
+      3500
+    ],
+    "validation": [
+      4001,
+      4500
+    ],
+    "holdout": [
+      5001,
+      5250
+    ]
+  },
+  "priorR1Attempt": {
+    "status": "BOT QUALIFICATION FAILED",
+    "source": "../decision.json",
+    "reason": "Qualitative replay found 14 useless refreshes without an allowed upgrade target. Frozen medium-v2 was rejected; neither its reports nor seed set were reused."
+  },
+  "highGoldExceptionPolicy": "Policy-target exhaustion is diagnosis only. More non-core star upgrades remain legal in the game; therefore it does not automatically waive the core-stage high-gold qualification gate."
+}

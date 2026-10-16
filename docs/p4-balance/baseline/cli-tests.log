@@ -1,0 +1,3 @@
+PASS balance CLI single/multiple worker process logical output is identical
+PASS balance CLI seed partitions, invalid options, immutable outputs and historical evidence protection
+Balance CLI: 2 passed, 0 failed

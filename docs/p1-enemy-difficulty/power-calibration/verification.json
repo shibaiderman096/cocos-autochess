@@ -1,0 +1,624 @@
+{
+  "version": "p1-b-verification-v2",
+  "protectedFileCount": 142,
+  "allProtectedBytesUnchanged": true,
+  "p0GeneratedWavesExactlyEqual": 968,
+  "currentSourceMatchesCalibration": true,
+  "productionModelMatchesFormal": true,
+  "modelSha256": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0",
+  "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+  "sourceHash": "c17d68540ce0515a0c43e08ad863a83df913ac10d2ebd8b8d29fe22d2d75c1e7",
+  "configHash": "ebee0b52f8891023b3f9d7e02430e7ddd6d6e5ca414d3eb9a668eafe31dd0d4b",
+  "smoke": {
+    "a": "smoke-confidence",
+    "b": "smoke-confidence-repeat",
+    "byteIdenticalFiles": 7,
+    "modelSha256": "d1bb0719603f97ba83a7ee6a0590244c8a6074f446f267332aa0cac8153c334e"
+  },
+  "formal": {
+    "a": "final-500",
+    "b": "final-500-repeat",
+    "byteIdenticalFiles": 7,
+    "modelSha256": "38ba7d425fa235b528799d46e6a21a1c58ec506841fd58e15c41a64887837cb0"
+  },
+  "calibrationRuns": [
+    {
+      "name": "smoke-20",
+      "actualBattleSimCalls": 77360,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 9.941565700000002,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 13200,
+          "actual": 13200,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 16800,
+          "actual": 16800,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 3600,
+          "actual": 3600,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 14400,
+          "actual": 14400,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 24000,
+          "actual": 24000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 67,
+          "logicalBattles": 5360,
+          "actual": 5360,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "smoke-20-v2",
+      "actualBattleSimCalls": 77680,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 10.323685099999999,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 13200,
+          "actual": 13200,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 16800,
+          "actual": 16800,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 3600,
+          "actual": 3600,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 14400,
+          "actual": 14400,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 24000,
+          "actual": 24000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 5680,
+          "actual": 5680,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "smoke-20-repeat",
+      "actualBattleSimCalls": 77680,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 11.099376099999999,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 13200,
+          "actual": 13200,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 16800,
+          "actual": 16800,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 3600,
+          "actual": 3600,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 14400,
+          "actual": 14400,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 24000,
+          "actual": 24000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 5680,
+          "actual": 5680,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "formal-500",
+      "actualBattleSimCalls": 1942000,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 262.3055374,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 330000,
+          "actual": 330000,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 420000,
+          "actual": 420000,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 90000,
+          "actual": 90000,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 360000,
+          "actual": 360000,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 600000,
+          "actual": 600000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 142000,
+          "actual": 142000,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "formal-500-repeat",
+      "actualBattleSimCalls": 0,
+      "cacheHits": 1942000,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 21.5356487,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 330000,
+          "actual": 0,
+          "cached": 330000
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 420000,
+          "actual": 0,
+          "cached": 420000
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 90000,
+          "actual": 0,
+          "cached": 90000
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 360000,
+          "actual": 0,
+          "cached": 360000
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 600000,
+          "actual": 0,
+          "cached": 600000
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 142000,
+          "actual": 0,
+          "cached": 142000
+        }
+      ]
+    },
+    {
+      "name": "smoke-confidence",
+      "actualBattleSimCalls": 77680,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 10.8030477,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 13200,
+          "actual": 13200,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 16800,
+          "actual": 16800,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 3600,
+          "actual": 3600,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 14400,
+          "actual": 14400,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 24000,
+          "actual": 24000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 5680,
+          "actual": 5680,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "smoke-confidence-repeat",
+      "actualBattleSimCalls": 77680,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 11.172842300000001,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 13200,
+          "actual": 13200,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 16800,
+          "actual": 16800,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 3600,
+          "actual": 3600,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 14400,
+          "actual": 14400,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 24000,
+          "actual": 24000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 5680,
+          "actual": 5680,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "final-500",
+      "actualBattleSimCalls": 1942000,
+      "cacheHits": 0,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 273.3010441,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 330000,
+          "actual": 330000,
+          "cached": 0
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 420000,
+          "actual": 420000,
+          "cached": 0
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 90000,
+          "actual": 90000,
+          "cached": 0
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 360000,
+          "actual": 360000,
+          "cached": 0
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 600000,
+          "actual": 600000,
+          "cached": 0
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 142000,
+          "actual": 142000,
+          "cached": 0
+        }
+      ]
+    },
+    {
+      "name": "final-500-repeat",
+      "actualBattleSimCalls": 0,
+      "cacheHits": 1942000,
+      "cacheCorruptions": 0,
+      "elapsedSeconds": 22.524099800000002,
+      "byMode": [
+        {
+          "category": "mirror",
+          "cases": 165,
+          "logicalBattles": 330000,
+          "actual": 0,
+          "cached": 330000
+        },
+        {
+          "category": "unit",
+          "cases": 210,
+          "logicalBattles": 420000,
+          "actual": 0,
+          "cached": 420000
+        },
+        {
+          "category": "star",
+          "cases": 45,
+          "logicalBattles": 90000,
+          "actual": 0,
+          "cached": 90000
+        },
+        {
+          "category": "single",
+          "cases": 180,
+          "logicalBattles": 360000,
+          "actual": 0,
+          "cached": 360000
+        },
+        {
+          "category": "combo",
+          "cases": 300,
+          "logicalBattles": 600000,
+          "actual": 0,
+          "cached": 600000
+        },
+        {
+          "category": "team",
+          "cases": 71,
+          "logicalBattles": 142000,
+          "actual": 0,
+          "cached": 142000
+        }
+      ]
+    }
+  ],
+  "totalActualCalibrationBattles": 4272080,
+  "totalCacheReusedBattles": 3884000,
+  "separateMirrorDiagnosisBattles": 6,
+  "countsExcludeUnitAndRegressionFixtures": true,
+  "stratifiedValidation": [
+    {
+      "category": "unit",
+      "cases": 210,
+      "samples": 84000,
+      "mae": 0.04398830945210899,
+      "decisiveAccuracy": 0.9690438027798378
+    },
+    {
+      "category": "star",
+      "cases": 45,
+      "samples": 18000,
+      "mae": 0.000009488867335177869,
+      "decisiveAccuracy": 1
+    },
+    {
+      "category": "single",
+      "cases": 180,
+      "samples": 72000,
+      "mae": 0.08953811261060915,
+      "decisiveAccuracy": 0.9865790735049482
+    },
+    {
+      "category": "combo",
+      "cases": 300,
+      "samples": 120000,
+      "mae": 0.006346161317108202,
+      "decisiveAccuracy": 1
+    },
+    {
+      "category": "team",
+      "cases": 71,
+      "samples": 28400,
+      "mae": 0.13602208330724963,
+      "decisiveAccuracy": 0.8441507967353284
+    }
+  ],
+  "environmentValidation": [
+    {
+      "environment": "close",
+      "groups": [
+        {
+          "group": "unit",
+          "samples": 97020,
+          "mae": 0.04323884349530926
+        },
+        {
+          "group": "team",
+          "samples": 9372,
+          "mae": 0.19338554262948773
+        }
+      ]
+    },
+    {
+      "environment": "medium",
+      "groups": [
+        {
+          "group": "unit",
+          "samples": 99960,
+          "mae": 0.03765922216469755
+        },
+        {
+          "group": "team",
+          "samples": 9656,
+          "mae": 0.17617223551397096
+        }
+      ]
+    },
+    {
+      "environment": "far",
+      "groups": [
+        {
+          "group": "unit",
+          "samples": 97020,
+          "mae": 0.03571321130761053
+        },
+        {
+          "group": "team",
+          "samples": 9372,
+          "mae": 0.18315745409386194
+        }
+      ]
+    }
+  ],
+  "knownQualityLimits": {
+    "teamMaE": 0.13602208330724963,
+    "nearEqualExtremeCases": [
+      "team:904",
+      "team:954",
+      "team:964",
+      "team:965",
+      "team:966"
+    ],
+    "specialThreeStarCounterexamples": [
+      "team:967",
+      "team:968"
+    ],
+    "modelSuitableAsUnconditionalTeamBudget": false
+  },
+  "tests": {
+    "preflightExitCode": 0,
+    "finalNpmTestExitCode": 0,
+    "enemyPowerTests": 8,
+    "calibrationTests": 6,
+    "p1aRunSessionTests": 12,
+    "p1aCliTests": 4,
+    "regressionTests": 67,
+    "log": "npm-test-final.log"
+  },
+  "runtime": {
+    "node": "v24.15.0",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15"
+  },
+  "historicalDeterminism": {
+    "smoke": {
+      "a": "smoke-20-v2",
+      "b": "smoke-20-repeat",
+      "byteIdenticalFiles": 7,
+      "modelSha256": "37e9912a5272c3f4167033500b7fde4885e9e418bb8a44d37b0551cf37ebd486"
+    },
+    "formal": {
+      "a": "formal-500",
+      "b": "formal-500-repeat",
+      "byteIdenticalFiles": 7,
+      "modelSha256": "e7f56aef6d2ba07cd09aff09e7bb39314892d58bd49acc39cc831e36a8014a12"
+    }
+  },
+  "metadataCorrection": {
+    "numericPowersUnchanged": true,
+    "observationsByteIdenticalToPreviousFormal": true,
+    "environmentConfidenceSeparate": true,
+    "derivedConfidenceIncluded": true
+  },
+  "totalCachedRepresentedBattles": 3884000
+}
