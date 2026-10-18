@@ -2,7 +2,7 @@
  * 配置读取（M1：units.json / skills.json / battle 基础配置）。
  * 逻辑层不 import cc：由调用方（view 或 Node 模拟器）把 JSON 喂进来。
  */
-import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT } from '../battle/types';
+import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig } from '../battle/types';
 
 export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttributes {
   const safe = (v: number | undefined, fallback: number, max: number) => Number.isFinite(v) ? Math.max(0, Math.min(max, v!)) : fallback;
@@ -53,7 +53,10 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo';
+  formDurations?: number[];
+  formReductions?: number[];
+  formBonusDamage?: number[];
   healAmounts?: number[];
   /** Configured skill damage by star; never derived from attack or armor. */
   starDamage?: number[];
@@ -97,11 +100,14 @@ export function hybridSpellDamage(unit: UnitConfigData, skill: SkillConfigData, 
 }
 
 export interface BattleConfigData {
+  traits?: TraitConfigData[];
   boardWidth: number;
   boardHeight: number;
   ownRows: number;       // 己方可摆的行数（从下往上）
   maxTicks: number;      // 超时 tick
   tickMs: number;        // 每 tick 毫秒
+  combatSeconds?: number;
+  overtime?: BattleOvertimeConfig;
   preparationSeconds?: number;
   nextWaveDelaySeconds?: number;
   criticalMultiplier?: number;
@@ -154,8 +160,10 @@ export class ConfigManager {
   }
   battle: BattleConfigData = {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
-    maxTicks: 1200,
+    maxTicks: 900,
     tickMs: 50,
+    combatSeconds: 30,
+    overtime: { seconds: 15, attackSpeedBonus: 1, damageAmp: 1 },
     preparationSeconds: 1,
     criticalMultiplier: 1.5,
     attackSpeedCap: 5,
@@ -182,6 +190,41 @@ export class ConfigManager {
   }
 
   setBattle(data: Partial<BattleConfigData>): void {
+    if (data.combatSeconds !== undefined && (!Number.isFinite(data.combatSeconds) || data.combatSeconds <= 0)) throw new Error('Invalid combat duration');
+    if (data.overtime && (!Number.isFinite(data.overtime.seconds) || data.overtime.seconds <= 0
+      || !Number.isFinite(data.overtime.attackSpeedBonus) || data.overtime.attackSpeedBonus < 0
+      || !Number.isFinite(data.overtime.damageAmp) || data.overtime.damageAmp < 0)) throw new Error('Invalid overtime configuration');
+    if (data.traits) {
+      const ids = new Set<string>();
+      for (const trait of data.traits) {
+        if (!trait.id || ids.has(trait.id) || (!trait.members.length && !trait.selector) || !trait.breakpoints.length) throw new Error('Invalid trait configuration');
+        if (trait.selector && (!['tank', 'marksman', 'assassin'].includes(trait.selector.role)
+          || (trait.selector.damageType !== undefined && !['physical', 'magic'].includes(trait.selector.damageType)))) throw new Error('Invalid trait selector');
+        ids.add(trait.id);
+        let previous = 0;
+        for (const tier of trait.breakpoints) {
+          if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
+            || (tier.power === undefined && !tier.formation && !tier.stats)
+            || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
+            || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
+          if (tier.formation) {
+            const bonus = tier.formation;
+            if (![bonus.maxHpBonus, bonus.damageReduction, bonus.attackSpeedBonus, bonus.damageAmp].every(value => Number.isFinite(value) && value >= 0)
+              || bonus.damageReduction > 1) throw new Error('Invalid trait formation bonus');
+          }
+          if (tier.stats) {
+            const bonus = tier.stats;
+            for (const key of ['armor', 'mr', 'maxHpBonus', 'attackSpeedBonus', 'physicalPower', 'attackDamage', 'critChance', 'executeThreshold'] as const) {
+              const value = bonus[key];
+              if (value !== undefined && (!Number.isFinite(value) || value < 0)) throw new Error('Invalid trait stat bonus');
+            }
+            if ((bonus.critChance ?? 0) > 1 || (bonus.executeThreshold ?? 0) >= 1
+              || (bonus.skillCanCrit !== undefined && typeof bonus.skillCanCrit !== 'boolean')) throw new Error('Invalid trait stat bonus');
+          }
+          previous = tier.count;
+        }
+      }
+    }
     if (data.roleMana && (!Number.isFinite(data.roleMana.casterPerSecond) || data.roleMana.casterPerSecond < 0
       || !Number.isFinite(data.roleMana.damageTakenFraction) || data.roleMana.damageTakenFraction < 0 || data.roleMana.damageTakenFraction > 1)) throw new Error('Invalid role mana configuration');
     Object.assign(this.battle, data);

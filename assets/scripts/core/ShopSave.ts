@@ -93,6 +93,8 @@ export interface SaveDataV2 extends SaveData {
   runSeed: number;
   rulesVersion: number;
   runSeedSource: 'explicit' | 'legacy-default';
+  /** Missing on older saves: retain their existing early-stage encounter sequence. */
+  earlyEncounterLayout?: 'random-rounds-v1';
   /** Successful manual shop rolls in the current wave; automatic roll is index zero. */
   shopRollIndex: number;
   nextOwnedUid: number;
@@ -189,6 +191,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
     runSeed: isRunSeed(d.runSeed) ? d.runSeed : DEFAULT_RUN_SEED,
     rulesVersion: safeInt(d.rulesVersion, RUN_RULES_VERSION, 1, Number.MAX_SAFE_INTEGER),
     runSeedSource: !isRunSeed(d.runSeed) || d.runSeedSource === 'legacy-default' ? 'legacy-default' : 'explicit',
+    ...(d.earlyEncounterLayout === undefined ? {} : { earlyEncounterLayout: d.earlyEncounterLayout }),
     shopRollIndex: safeInt(d.shopRollIndex, 0, 0, Number.MAX_SAFE_INTEGER - 1),
     nextOwnedUid: Math.max(owned.reduce((max, u) => Math.max(max, u.uid + 1), 1), safeInt(d.nextOwnedUid, 1, 1, Number.MAX_SAFE_INTEGER)),
     runRulesVersion: d.runRulesVersion === 2 ? 2 : 1,
@@ -227,7 +230,7 @@ export function writeSaveV2(data: SaveDataV2): void {
 export function freshSaveV2(stageCount = DEFAULT_STAGE_COUNT, runSeed = DEFAULT_RUN_SEED, mode: EnemyGenerationMode = 'budget-v1',equipmentEnabled=false): SaveDataV2 {
   if (!isRunSeed(runSeed)) throw new Error('runSeed must be a uint32 integer');
   if (!['legacy','budget-v1'].includes(mode)) throw new Error('Unsupported enemy generation version');
-  return migrateSaveV2({ stageCount, runRulesVersion: 2, runSeed, rulesVersion: RUN_RULES_VERSION, enemyGenerationVersion:mode,
+  return migrateSaveV2({ stageCount, runRulesVersion: 2, runSeed, rulesVersion: RUN_RULES_VERSION, earlyEncounterLayout:'random-rounds-v1', enemyGenerationVersion:mode,
     enemyEquipmentVersion:equipmentEnabled&&mode==='budget-v1'?'equipment-policy-v1':'none',equipmentRewardVersion:equipmentEnabled?'equipment-reward-v1':'none',
     formationVersion:mode==='budget-v1'?FORMATION_VERSION:'l0-compat',formationOverride:mode==='budget-v1'?'auto':'L0',
     powerModelVersion:mode==='budget-v1'?DEFAULT_POWER_MODEL_VERSION:'none',

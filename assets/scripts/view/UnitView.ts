@@ -1,5 +1,5 @@
 import { loadArtSprite } from './ArtSpriteLoader';
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, tween, UIOpacity, Graphics, Color } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, Tween, tween, UIOpacity, Graphics, Color, Label, LabelOutline } from 'cc';
 import { UnitRuntime, EquipmentConfigData } from '../battle/types';
 import { UNIT_SPRITE, UI_SPRITE, FX_SPRITE, unitSpriteKey } from './ArtPaths';
 import { drawFactionRing } from './FactionRing';
@@ -22,6 +22,7 @@ export class UnitView extends Component {
   cfgId = '';
 
   private bodySprite: Sprite;
+  private attackMotion: Node;
   private hpFill: Sprite;
   private shieldFill: Sprite;
   private manaFill: Sprite;
@@ -29,9 +30,11 @@ export class UnitView extends Component {
   private hpBarContent: Node;
   private loaded = false;
   private starBadge: Node;
+  private susanooView: Node;
   private cellSize = 64;
   private equipmentIcons: Node[] = [];
   private equipmentKey = "";
+  private equipmentStackLabels: Label[] = [];
   private bodyOpacity: UIOpacity;
   private shieldRing: Node;
 
@@ -44,12 +47,13 @@ export class UnitView extends Component {
     const size = cellSize * 0.82;
     const portraitSize = cellSize * portraitScale;
     const raised = portraitSize - size;
+    this.attackMotion = new Node('attackMotion'); this.node.addChild(this.attackMotion);
     const body = new Node('body');
     body.addComponent(UITransform).setContentSize(portraitSize, portraitSize);
     this.bodySprite = body.addComponent(Sprite);
     this.bodySprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.bodySprite.trim = false;
-    this.node.addChild(body);
+    this.attackMotion.addChild(body);
     this.bodyOpacity = body.addComponent(UIOpacity);
     // Keep feet on the faction ring when the board portrait grows upward.
     body.setPosition(0, raised / 2, 0);
@@ -125,15 +129,33 @@ export class UnitView extends Component {
     if (this.starBadge) setStarBadge(this.starBadge, star);
   }
 
+  /** Reserve pieces keep their rank and equipment, while hiding combat vitals. */
+  setVitalsVisible(visible: boolean): void {
+    this.hpBarBg.active = visible;
+    for (const icon of this.equipmentIcons) icon.setPosition(icon.position.x, this.hpBarBg.position.y - (visible ? 17 : 0), 0);
+  }
+
   setEquipment(items: EquipmentConfigData[]): void {
     const key = items.map(item => item.icon).join('|');
     if (key === this.equipmentKey) return; this.equipmentKey = key;
     for (const node of this.equipmentIcons) node.destroy(); this.equipmentIcons = [];
+    this.equipmentStackLabels = [];
     items.slice(0, 3).forEach((item, i) => {
       const node = new Node('carriedEquipment'); node.addComponent(UITransform).setContentSize(12, 12);
       const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-      this.hpBarBg.addChild(node); node.setPosition((i - (items.length - 1) / 2) * 14, -17, 0);
+      this.node.addChild(node);
+      node.setPosition((i - (items.length - 1) / 2) * 14, this.hpBarBg.position.y - (this.hpBarBg.active ? 17 : 0), 0);
       this.equipmentIcons.push(node);
+      if (item.attackSpeedPerAttack > 0) {
+        const counter = new Node('equipmentStacks'); node.addChild(counter);
+        counter.addComponent(UITransform).setContentSize(12, 10); counter.setPosition(0, -2, 0);
+        const text = counter.addComponent(Label); text.fontSize = 8; text.lineHeight = 10;
+        text.overflow = Label.Overflow.SHRINK; text.enableWrapText = false;
+        text.color = Color.WHITE; text.isBold = true; text.string = '0';
+        const outline = counter.addComponent(LabelOutline); outline.color = new Color(8, 17, 23);
+        outline.width = 1;
+        this.equipmentStackLabels.push(text);
+      }
       loadArtSprite(item.icon, (err, frame) => { if (!err && sprite.isValid) sprite.spriteFrame = frame; });
     });
   }
@@ -149,17 +171,21 @@ export class UnitView extends Component {
     else this.manaFill.node.active = false;
   }
 
-  /** 每帧由 BattleReplayer 调用：用 sim 快照 + 目标世界坐标驱动视图 */
-  sync(snap: UnitRuntime, targetPos: Vec3, cellSize: number, dt: number) {
+  /** Vitals and effects only; BattleReplayer owns the root's smooth travel position. */
+  sync(snap: UnitRuntime, cellSize: number) {
+    for (const text of this.equipmentStackLabels) text.string = String(snap.equipmentAttackStacks ?? 0);
+    if (snap.susanooActive && !this.susanooView) {
+      const form = new Node('blueSusanoo');
+      form.addComponent(UITransform).setContentSize(cellSize * 2.2, cellSize * 2.2);
+      form.setPosition(0, cellSize * 0.45, 0);
+      const sprite = form.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
+      form.addComponent(UIOpacity).opacity = 185;
+      this.node.addChild(form); form.setSiblingIndex(0); this.susanooView = form;
+      resources.load(FX_SPRITE.susanooBlue, SpriteFrame, (err, frame) => { if (!err && form.isValid) sprite.spriteFrame = frame; });
+    }
+    if (this.susanooView) this.susanooView.active = !!snap.susanooActive;
     if (this.bodyOpacity) this.bodyOpacity.opacity = snap.untargetable ? 80 : 255;
     if (this.shieldRing) this.shieldRing.active = (snap.shield ?? 0) > 0;
-    const cur = this.node.position;
-    const k = Math.min(1, dt * 12);
-    this.node.setPosition(
-      cur.x + (targetPos.x - cur.x) * k,
-      cur.y + (targetPos.y - cur.y) * k,
-      0,
-    );
     const segments = healthBarSegments(snap.hp, snap.maxHp, snap.shield);
     const barWidth = this.hpBarContent.getComponent(UITransform).contentSize.width;
     if (this.hpFill) {
@@ -206,11 +232,12 @@ export class UnitView extends Component {
 
   playAttack(dirToTarget: Vec3) {
     if (!this.loaded) return;
-    const orig = this.node.position.clone();
+    const motion = this.attackMotion;
+    Tween.stopAllByTarget(motion); motion.setPosition(0, 0, 0);
     const lunge = new Vec3(dirToTarget.x * 6, dirToTarget.y * 6, 0);
-    tween(this.node)
-      .to(0.08, { position: new Vec3(orig.x + lunge.x, orig.y + lunge.y, 0) })
-      .to(0.08, { position: orig })
+    tween(motion)
+      .to(0.08, { position: lunge })
+      .to(0.08, { position: new Vec3() })
       .start();
   }
 

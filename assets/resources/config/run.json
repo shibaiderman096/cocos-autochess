@@ -10,7 +10,7 @@
     "armor": 10,
     "mr": 10,
     "atkSpeed": 0.75,
-    "critChance": 0.0625
+    "critChance": 0.25
   },
   "monsters": [
     {
@@ -31,7 +31,7 @@
       "role": "frontline",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0
@@ -54,7 +54,7 @@
       "role": "ranged",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0
@@ -77,7 +77,7 @@
       "role": "frontline",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0
@@ -100,7 +100,7 @@
       "role": "frontline",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0
@@ -123,7 +123,7 @@
       "role": "frontline",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0
@@ -146,7 +146,7 @@
       "role": "ranged",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0,
@@ -170,7 +170,7 @@
       "role": "ranged",
       "physicalPower": 0,
       "spellPower": 0,
-      "critChance": 0.0625,
+      "critChance": 0.25,
       "lifesteal": 0,
       "damageAmp": 0,
       "damageReduction": 0,

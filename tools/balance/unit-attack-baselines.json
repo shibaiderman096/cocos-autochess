@@ -1,0 +1,15 @@
+{
+  "version": "role-cost-ad-v2",
+  "description": "本项目的一星基础攻击力设计表。按定位、伤害方向与费用匹配；参考云顶的职责划分，不是云顶官方统一公式。",
+  "references": [
+    "https://teamfighttactics.leagueoflegends.com/en-us/news/game-updates/roles-revamped-and-item-changes/"
+  ],
+  "costs": [1, 2, 3, 4, 5],
+  "roles": {
+    "tank": { "physical": [30, 35, 40, 45, 50], "magic": [25, 30, 35, 40, 45] },
+    "caster": { "physical": [40, 45, 50, 55, 60], "magic": [30, 35, 40, 45, 50] },
+    "marksman": { "physical": [50, 55, 60, 65, 80], "magic": [35, 40, 45, 50, 60] },
+    "warrior": { "physical": [55, 60, 65, 70, 85], "magic": [40, 45, 50, 55, 65] },
+    "assassin": { "physical": [55, 60, 65, 75, 90], "magic": [40, 45, 50, 60, 70] }
+  }
+}

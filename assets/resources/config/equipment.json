@@ -1,7 +1,7 @@
 [
   {
     "id": "guinsoo",
-    "name": "鬼索的狂暴之刃",
+    "name": "炽轮战刃",
     "spellPower": 10,
     "attackSpeedBonus": 0.1,
     "attackSpeedPerAttack": 0.05,
@@ -11,7 +11,7 @@
   },
   {
     "id": "totem_of_undying",
-    "name": "不死图腾",
+    "name": "余烬命核",
     "hp": 200,
     "armor": 10,
     "mr": 10,
@@ -31,7 +31,7 @@
   },
   {
     "id": "jeweled_gauntlet",
-    "name": "珠光护手",
+    "name": "星棱法印",
     "spellPower": 20,
     "critChance": 0.35,
     "skillCanCrit": true,
@@ -43,7 +43,7 @@
   },
   {
     "id": "infinity_edge",
-    "name": "无尽之刃",
+    "name": "裂星锋刃",
     "physicalPower": 20,
     "spellPower": 0,
     "critChance": 0.35,

@@ -202,8 +202,8 @@
   "healing_channel": {
     "id": "healing_channel",
     "name": "掌仙术",
-    "description": "持续施法1.5秒，每0.5秒回复自身{治疗:heal}点生命值，共3次。",
-    "dmgType": "physical",
+    "description": "持续施法1.5秒，每0.5秒回复自身{治疗:healPercent}最大生命值＋{治疗+:healBonus}点生命值，共3次。",
+    "dmgType": "magic",
     "power": 0,
     "radius": 0,
     "targeting": "nearest",
@@ -229,7 +229,7 @@
       {
         "label": "每次治疗",
         "value": "{治疗:heal}",
-        "stars": "36/74/188"
+        "stars": "26/51/124"
       },
       {
         "label": "生命比例",
@@ -586,6 +586,53 @@
         "value": "{魔法+:dmg}",
         "stars": "320/320/320"
       }
+    ]
+  },
+  "susanoo_form": {
+    "id": "susanoo_form",
+    "name": "须佐能乎",
+    "description": "召唤蓝色半身须佐作战，持续{物理+:formDuration}秒，期间免疫控制并获得{物理:formReduction}伤害减免。\n\n强化期间，普攻释放半月横扫，对目标及其1格内所有敌人造成普攻伤害和{物理+:formBonus}点额外物理伤害。",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 1,
+    "targeting": "nearest",
+    "effect": "susanoo",
+    "castSeconds": 0,
+    "formDurations": [
+      2,
+      3,
+      99
+    ],
+    "mechanics": [
+      "须佐为自身强化，不生成额外占格单位。",
+      "持续期间不重复释放；同一普攻仅回蓝一次。"
+    ],
+    "statRows": [
+      {
+        "label": "持续时间",
+        "value": "{物理+:formDuration}秒",
+        "stars": "2/3/99秒"
+      },
+      {
+        "label": "伤害减免",
+        "value": "{物理:formReduction}",
+        "stars": "50%/70%/99%"
+      },
+      {
+        "label": "额外伤害",
+        "value": "{物理+:formBonus}",
+        "stars": "60/100/10000"
+      }
+    ],
+    "formReductions": [
+      0.5,
+      0.7,
+      0.99
+    ],
+    "formBonusDamage": [
+      60,
+      100,
+      10000
     ]
   }
 }

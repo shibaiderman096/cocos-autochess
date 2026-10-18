@@ -5,8 +5,20 @@ const buildRoot=path.join(__dirname,'../build/web-desktop');
 const mainRoot=path.join(buildRoot,'assets/main');
 const file=fs.readdirSync(mainRoot).find(name=>/^index.*\.js$/.test(name));
 const code=fs.readFileSync(path.join(mainRoot,file),'utf8');
+assert.doesNotMatch(code,/\.concat\(new Set\(/,'Creator cannot compile Set spread as array concatenation');
+assert.doesNotMatch(code,/\.concat\((?:new Map\(|[\w.]+\.(?:values|keys)\(\))/,'Creator must convert Map iterators with Array.from');
 const ts=require('typescript');
 const source=ts.createSourceFile(file,code,ts.ScriptTarget.ES2020,true,ts.ScriptKind.JS);
+let traitResolver;
+function findTraitResolver(node) {
+  if(ts.isFunctionDeclaration(node)&&node.name?.text==='resolveTraits') traitResolver=node.getText(source);
+  ts.forEachChild(node,findTraitResolver);
+}
+findTraitResolver(source);assert.ok(traitResolver,'compiled trait resolver exists');
+const compiledResolve=new Function('return ('+traitResolver+')')();
+const trait=require('../assets/resources/config/battle.json').traits[0];
+assert.equal(compiledResolve([trait],trait.members.slice(0,3))[0].active.power,15,'compiled game activates three unique ninjas');
+assert.equal(compiledResolve([trait],[trait.members[0],trait.members[0],trait.members[1]])[0].active,null,'compiled game ignores duplicate copies');
 const helpers={};
 const chunksRoot=path.join(buildRoot,'src/chunks');
 const chunksFile=fs.readdirSync(chunksRoot).find(name=>/^bundle.*\.js$/.test(name));
@@ -42,11 +54,23 @@ assert.equal(method('rollCost',{shopCostRates}).call(shop,3),2);
 shop.pool.count=id=>id==='one'?0:10;
 assert.deepEqual(shop.costRates(),[0,100,0,0,0]);
 assert.equal(method('rollCost',{shopCostRates}).call(shop,3),2);
-const progress={preparationBar:{active:false},preparationLabel:{string:''},phaseLabel:{string:''},preparationFill:{clear(){},rect(x,y,width){this.width=width;},fill(){}}};
+const timerNode=()=>({active:true,setPosition(){},getComponent:()=>({setContentSize(){}})});
+const progress={combatActive:true,battleTimer:timerNode(),floorLabel:{node:timerNode()},
+  preparationBar:{active:false},preparationLabel:{string:''},phaseLabel:{string:'',node:timerNode()},
+  preparationFill:{clear(){},rect(x,y,width){this.width=width;},fill(){}},
+  battleTimerFill:{clear(){},rect(x,y,width){this.width=width;},fill(){}}};
+progress.clearBattleTimer=method('clearBattleTimer',{UITransform:class{}});
 const countdown=method('setCombatCountdown',{TEAL:{},GOLD:{},Color:class{}});
 countdown.call(progress,.5);assert.equal(progress.preparationBar.active,true);assert.equal(progress.preparationFill.width,140);
 assert.equal(progress.phaseLabel.string,'准备 0.5s');
 countdown.call(progress,0);assert.equal(progress.preparationBar.active,false);
+const battleTimer=method('setBattleTimer',{UITransform:class{},Color:class{}});
+battleTimer.call(progress,{phase:'combat',remainingSeconds:30,durationSeconds:30,overtimeProgress:0});
+assert.equal(progress.phaseLabel.string,'战斗 30s');assert.equal(progress.battleTimerFill.width,310);
+assert.equal(progress.floorLabel.node.active,false);
+battleTimer.call(progress,{phase:'overtime',remainingSeconds:7.5,durationSeconds:15,overtimeProgress:.5});
+assert.equal(progress.phaseLabel.string,'加时 8s');assert.equal(progress.battleTimerFill.width,155);
+progress.clearBattleTimer();assert.equal(progress.battleTimer.active,false);assert.equal(progress.floorLabel.node.active,true);
 assert.ok(code.includes('spellPower')&&code.includes('unitStats')&&code.includes('physicalPower')&&code.includes('detailStat'),'compiled detail contains new attributes');
 assert.ok(code.includes('backpackEquipmentIndices'),'compiled backpack maps display slots to reserve indices');
 let bagNodeName='button';

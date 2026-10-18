@@ -37,7 +37,7 @@ export class CombatStatistics {
   }
 
   snapshot(): CombatStatRow[] {
-    return [...this.rows.values()].sort((a, b) => a.side - b.side || b.damage - a.damage || a.id - b.id)
+    return Array.from(this.rows.values()).sort((a, b) => a.side - b.side || b.damage - a.damage || a.id - b.id)
       .map(row => ({ ...row, damageByType: { ...row.damageByType }, takenByType: { ...row.takenByType } }));
   }
 }

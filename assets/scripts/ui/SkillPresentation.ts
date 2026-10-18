@@ -22,7 +22,11 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       stars: ranks.map((u, i) => value(u, i, configs.battle.starScaling[i].skill)).join(' / '), tone });
   };
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
-  if (skill.effect === 'selfShield') {
+  if (skill.effect === 'susanoo') {
+    add('持续时间', (u, i) => `${number(skill.formDurations![i] * (1 + (u.physicalPower ?? 0) / 100))}秒`, 'neutral');
+    add('伤害减免', (_u, i) => `${number(skill.formReductions![i] * 100)}%`, 'shield');
+    add('额外伤害', (u, i) => String(Math.round(skill.formBonusDamage![i] * (1 + (u.physicalPower ?? 0) / 100) * (1 + (u.damageAmp ?? 0)))), 'physical');
+  } else if (skill.effect === 'selfShield') {
     add('护盾', (u, i) => String(Math.round(skill.shieldAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'shield');
   } else if (skill.effect === 'healAlly') {
     add('治疗', (u, i) => String(Math.round(skill.healAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
@@ -94,6 +98,8 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
     basePhysical: current('基础物理伤害'), baseMagic: current('基础魔法伤害'),
     burn: current('每秒生命伤害'), aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0,
     stun: skill.stunSeconds?.[star - 1] ?? 0,
+    formDuration: current('持续时间').replace(/秒$/, ''),
+    formReduction: current('伤害减免'), formBonus: current('额外伤害'),
     guardDuration: skill.guard?.durations[star - 1] ?? 0,
     guardReduction: current('伤害减免'),
     healPercent: current('生命比例'), healBonus: current('额外治疗'), burnDuration: skill.burn?.durationSeconds ?? 0,

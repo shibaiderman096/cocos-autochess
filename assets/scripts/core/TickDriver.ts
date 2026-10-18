@@ -29,4 +29,7 @@ export class TickDriver {
   reset(): void {
     this.acc = 0;
   }
+
+  /** Read-only presentation fraction between fixed simulation ticks. */
+  get interpolation(): number { return Math.max(0, Math.min(1, this.acc / this.tickMs)); }
 }

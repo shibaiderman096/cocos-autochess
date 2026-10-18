@@ -5,6 +5,7 @@ const requested = new WeakMap<Sprite, UISkinKey>();
 const sliced = new Set<UISkinKey>([
   'panel_ink', 'panel_side', 'panel_dock', 'panel_modal', 'tooltip_panel',
   'btn_primary', 'btn_secondary', 'btn_disabled', 'btn_danger',
+  'stage_track_panel',
 ]);
 
 /** Load a skin behind labels. Keep the vector fallback until the image is ready. */

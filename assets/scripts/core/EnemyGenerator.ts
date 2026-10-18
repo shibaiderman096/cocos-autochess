@@ -138,7 +138,7 @@ export class EnemyGenerator {
     const actual=estimate.power,dev=deviation(actual,target),costs:Record<string,number>={},stars:Record<string,number>={};
     for(const u of team){costs[u.cost]=(costs[u.cost]??0)+1;stars[u.star]=(stars[u.star]??0)+1;}
     const within=dev<=c.optimizer.targetDeviation+1e-12,solution=within?'within-tolerance':exactNearest!==undefined?'nearest-discrete':'optimizer-limit';
-    const powerDiagnostics=[...new Set(team.flatMap(u=>u.diagnostics))];
+    const powerDiagnostics=Array.from(new Set(team.flatMap(u=>u.diagnostics)));
     powerDiagnostics.push('Individual-power sum omits composition effects; P1-B held-out team MAE is '+this.power.applicability.teamValidationMae);
     if(!budget.recoveryFeasible)powerDiagnostics.push('Stage recovery cannot be satisfied under the supplied feasible intervals');
     let equipment:EnemyEquipmentDiagnostics|undefined;

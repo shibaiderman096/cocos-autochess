@@ -30,7 +30,7 @@ console.log('[1] 伤害公式');
 {
   const w = cfg.getUnit('warrior');
   const expectedPhys = Math.max(1, Math.round(w.atk * 100 / (100 + w.armor)));
-  assert(expectedPhys === 42, `warrior vs warrior 物理伤害应为 42，得 ${expectedPhys}`);
+  assert(expectedPhys === 33, `40 攻击对 20 护甲，物理伤害应为 33，得 ${expectedPhys}`);
 
   const a = cfg.getUnit('archer');
   const m = cfg.getUnit('mage');

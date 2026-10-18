@@ -2,6 +2,66 @@
 
 export interface BackpackItem { id: string; name: string; icon: string; description?: string; kind: 'equipment' | 'consumable'; }
 export const MAX_EQUIPMENT = 3;
+export interface BattleOvertimeConfig {
+  seconds: number;
+  /** Absolute attacks/second at the end of overtime: 1 means +100% displayed speed. */
+  attackSpeedBonus: number;
+  /** Additive damage amplification at the end of overtime: 1 means +100%. */
+  damageAmp: number;
+}
+export interface BattleClockState {
+  phase: 'combat' | 'overtime';
+  remainingSeconds: number;
+  durationSeconds: number;
+  overtimeProgress: number;
+}
+export type TraitTier = 'bronze' | 'silver' | 'gold' | 'prismatic';
+export interface TraitStatBonus {
+  armor?: number;
+  mr?: number;
+  maxHpBonus?: number;
+  /** Absolute attacks/second, as with all other attack-speed bonuses. */
+  attackSpeedBonus?: number;
+  physicalPower?: number;
+  /** Flat extra physical damage per basic attack, before damage modifiers. */
+  attackDamage?: number;
+  critChance?: number;
+  skillCanCrit?: boolean;
+  /** Execute after a damaging hit if remaining HP is strictly below this fraction. */
+  executeThreshold?: number;
+}
+export interface TraitSelector {
+  role: 'tank' | 'marksman' | 'assassin';
+  damageType?: 'physical' | 'magic';
+}
+export interface TraitFormationBonus {
+  /** Fractions: 0.2 means +20% of maximum HP after star/equipment scaling. */
+  maxHpBonus: number;
+  damageReduction: number;
+  /** Absolute attacks/second: 0.15 means +15% displayed speed. */
+  attackSpeedBonus: number;
+  damageAmp: number;
+}
+export interface TraitBreakpoint {
+  count: number;
+  tier: TraitTier;
+  /** Percentage points, additive with equipment and base physical/spell power. */
+  power?: number;
+  regenPerSecond?: number;
+  /** Members choose front defense or back offense from their initial placement. */
+  formation?: TraitFormationBonus;
+  stats?: TraitStatBonus;
+}
+export interface TraitConfigData {
+  id: string;
+  name: string;
+  glyph: string;
+  description: string;
+  members: string[];
+  /** Resolve members from the current roster rather than a hand-maintained ID list. */
+  selector?: TraitSelector;
+  breakpoints: TraitBreakpoint[];
+}
 export interface EquipmentConfigData {
   id: string;
   name: string;
@@ -69,8 +129,8 @@ export type BattleEvent =
   | { t: 'battle_start'; tick: number }
   | { t: 'move';   tick: number; id: number; from: Pos; to: Pos }
   | { t: 'teleport'; tick: number; id: number; from: Pos; to: Pos }
-  | { t: 'attack'; tick: number; id: number; target: number }
-  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; critical?: boolean }
+  | { t: 'attack'; tick: number; id: number; target: number; area?: boolean }
+  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; critical?: boolean; executed?: boolean }
   | { t: 'heal';   tick: number; id: number; source: number; amount: number; hp: number }
   | { t: 'shield'; tick: number; id: number; source?: number; equipmentId?: string; amount: number; shield: number }
   | { t: 'equipment_trigger'; tick: number; id: number; equipmentId: string; shield: number }
@@ -100,6 +160,8 @@ export interface CombatStatRow {
 }
 
 export interface UnitRuntime {
+  equipmentAttackStacks?: number;
+  susanooActive?: boolean;
   manaPerSecond?: number;
   id: number;
   side: Side;

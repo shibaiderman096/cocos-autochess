@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 16);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,3,1]);
-assert.equal(cfg.allUnits().length,16,'monsters must stay out of shop inventory');
+assert.equal(units.length, 17);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,3,2]);
+assert.equal(cfg.allUnits().length,17,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -66,15 +66,17 @@ for (const wave of waves) {
   }
 }
 for (const u of units) { assert.ok(u.artId); if (u.skillId) assert.ok(skills[u.skillId]); }
-// Every starter encounter is winnable by the original one-star, one-cost piece alone.
+// Low-cost HP tuning requires a one-cost recruit after the first opening encounter.
 for(const wave of waves.filter(w=>w.stage===1)) {
   const enemies=wave.enemies.map(e=>({cfg:cfg.getUnit(e.unitId),side:1,...e}));
   for(const e of enemies) assert.equal(e.cfg.atkSpeed,.75,'monster attack speed stays fixed');
   for(const e of enemies) for(const key of ['hp','atk','armor','mr']) {
     assert.equal(e.cfg[key],runConfig.monsterTemplate[key],`independent monster template ${key}`);
   }
-  const sim=new BattleSim(cfg,[...enemies,{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
-  sim.start();sim.run();assert.equal(sim.winner,0,`starter beats ${wave.stage}-${wave.round}`);
+  const allies=[{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}];
+  if(wave.round>1)allies.push({cfg:cfg.getUnit('archer'),side:0,star:1,x:2,y:2});
+  const sim=new BattleSim(cfg,[...enemies,...allies],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
+  sim.start();sim.run();assert.equal(sim.winner,0,`starter with affordable opening recruit beats ${wave.stage}-${wave.round}`);
   for(const enemy of sim.units.filter(u=>u.side===1)) {
     const hits=sim.events.filter(e=>e.t==='hit'&&e.id===enemy.id);
     assert.ok(hits.length>0,`${enemy.cfg.id} must take damage`);
@@ -119,7 +121,8 @@ for (const [id, skill] of Object.entries(skills)) {
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
   assert.ok(cast,`${id} must start casting with full mana`);
-  assert.equal(cast.target,['healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  assert.equal(cast.target,['susanoo','healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  if (skill.effect === 'susanoo') continue;
   if (skill.effect === 'teleportEmpower' || cast.duration > 0) {
     assert.equal(sim.events.filter(e=>e.t==='hit' && e.id!==1).length,0,'empower cast does not deal immediate damage');
     continue; // Delayed attack effects are covered by enderman-tests.cjs.

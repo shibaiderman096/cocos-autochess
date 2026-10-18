@@ -11,7 +11,7 @@ const GOLD = new Color(220, 187, 115), TEXT = new Color(231, 236, 223), MUTED = 
 /** Modal presentation only: every mutation goes through the session's guarded action. */
 export class StageRewardPanel {
   private root: Node | null = null;
-  constructor(private parent: Node, private cfg: ConfigManager, private choose: (action: StageChoice) => void) {}
+  constructor(private parent: Node, private cfg: ConfigManager, private choose: (action: StageChoice) => void, private close?: () => void) {}
   hide(): void { if (this.root) { this.root.active = false; this.root.destroy(); this.root = null; } }
   show(pending: StagePending | undefined, gold: number): void {
     this.hide(); if (!pending) return;
@@ -19,6 +19,7 @@ export class StageRewardPanel {
     this.root = overlay;
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) overlay.on(type, (e: any) => { e.propagationStopped = true; });
     const body = panel(overlay, 'stageRewardBody', 0, 0, 1150, 600);
+    if (this.close) button(body, '×', 530, 263, 34, 30, () => this.close!());
     const act = (choice: StageChoice['choice'], index?: number) => { if (this.root === overlay) this.choose({ type: 'stageChoice', rewardId: pending.id, choice, index }); };
     const art = (parent: Node, path: string, x: number, y: number, size: number) => {
       const node = new Node('rewardArt'); parent.addChild(node); node.setPosition(x, y, 0);
@@ -45,7 +46,7 @@ export class StageRewardPanel {
     const heading = pending.kind === 'specialShop' ? '旅行商人的珍藏' : pending.kind === 'bossChoice' ? '首领宝藏' : pending.kind === 'unitBundle' ? '棋子补给' : '选择一件普通装备';
     art(body, ENCOUNTER_ART[pending.kind === 'specialShop' ? 'specialShop' : pending.kind === 'unitBundle' ? 'monster' : 'boss'], -450, 214, 125);
     label(body, heading, 0, 235, 32, GOLD, 720);
-    const subtitle = pending.kind === 'specialShop' ? `持有 ${gold} 金币 · 商品各限购一次，可直接离开`
+    const subtitle = pending.kind === 'specialShop' ? `持有 ${gold} 金币 · 商品各限购一次，返回棋盘后点击下一关`
       : pending.kind === 'bossChoice' ? '选择棋子补给或装备奖励'
       : pending.kind === 'unitBundle' ? `总价值 ${pending.value} 金币 · 按一星购买价计算` : '四件随机普通装备，选择一件放入背包';
     label(body, subtitle, 0, 193, 17, MUTED, 800);
@@ -59,7 +60,7 @@ export class StageRewardPanel {
         button(card, '选择', 0, -123, 220, 40, () => act(option.choice), true);
       });
     } else if (pending.kind === 'unitBundle') {
-      const groups = [...new Set(pending.units)].map(id => ({ id, count: pending.units.filter(value => value === id).length }));
+      const groups = Array.from(new Set(pending.units)).map(id => ({ id, count: pending.units.filter(value => value === id).length }));
       groups.forEach((group, i) => {
         const x = (i % 4 - 1.5) * 250, y = 74 - Math.floor(i / 4) * 100, unit = this.cfg.getUnit(group.id);
         art(body, UNIT_ART[unit.artId ?? unit.id] ?? UNIT_ART[unit.id], x - 65, y, 72);
@@ -87,7 +88,7 @@ export class StageRewardPanel {
         control.name = `stageChoice_${i}`;
         if (offer.bought || (pending.kind === 'specialShop' && gold < offer.price)) control.getChildByName('text')!.getComponent(Label)!.color = MUTED;
       });
-      if (pending.kind === 'specialShop') button(body, '离开商店', 0, -254, 250, 40, () => act('continue'), true);
+      if (pending.kind === 'specialShop' && this.close) button(body, '返回棋盘', 0, -254, 250, 40, () => this.close!(), true);
     }
   }
 }

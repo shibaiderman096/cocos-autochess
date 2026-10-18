@@ -99,6 +99,7 @@ class BattleUI {
   init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
   refreshTop(gold, floor, lv, rates) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; this.rates=rates; }
   refreshFormation() {}
+  refreshTraits(states) { this.traits = states; }
   refreshRun(...args) { this.run = args; } setLocked(v) { this.locked = v; }
   clearSellPreview() { this.sale = null; } showSellPreview(...args) { this.sale = args; }
   isInSellArea(x,y) { return this.shopVisible !== false && containsShopDrop(x,y); }

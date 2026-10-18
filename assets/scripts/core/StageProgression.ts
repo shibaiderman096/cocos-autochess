@@ -100,7 +100,7 @@ export class StageProgression {
         const price = COST_PRICE[validCost(u.cost)]; if (price > target || !this.pool.take(u.id)) return false;
         const fits = possible(target - price); this.pool.give(u.id); return fits;
       });
-      const costs = [...new Set(choices.map(u => validCost(u.cost)))];
+      const costs = Array.from(new Set(choices.map(u => validCost(u.cost))));
       let roll = rng.next() * costs.reduce((n, cost) => n + rates[cost - 1], 0);
       const cost = costs.find(cost => { roll -= rates[cost - 1]; return roll < 0; }) ?? costs[costs.length - 1];
       const cards = choices.filter(u => validCost(u.cost) === cost);

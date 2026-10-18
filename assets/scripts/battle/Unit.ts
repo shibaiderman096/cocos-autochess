@@ -5,6 +5,9 @@ export class Unit {
   hp: number;
   mana: number;
   manaPerSecond = 0;
+  traitRegenPerSecond = 0;
+  traitAttackDamage = 0;
+  traitExecuteThreshold = 0;
   private manaFraction = 0;
   gainMana(amount: number): void {
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
@@ -28,6 +31,9 @@ export class Unit {
   priorityTarget: number | null = null;
   /** Absolute attacks/second added to the base: +5% means +0.05. */
   attackSpeedBonus = 0;
+  overtimeAttackSpeedBonus = 0;
+  overtimeDamageAmp = 0;
+  get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp; }
   equipment: EquipmentConfigData[] = [];
   equipmentAttackStacks = 0;
   get equipmentAttackSpeedBonus(): number {
@@ -38,8 +44,11 @@ export class Unit {
   stunnedUntilTick = 0;
   guardUntilTick = 0;
   guardReduction = 0;
+  susanooUntilTick = 0;
+  susanooReduction = 0;
   damageReductionAt(tick: number): number {
-    return Math.min(1, (this.cfg.damageReduction ?? 0) + (tick < this.guardUntilTick ? this.guardReduction : 0));
+    return Math.min(1, (this.cfg.damageReduction ?? 0) + (tick < this.guardUntilTick ? this.guardReduction : 0)
+      + (tick < this.susanooUntilTick ? this.susanooReduction : 0));
   }
   shield = 0;
   untargetableUntilTick = 0;
@@ -56,7 +65,7 @@ export class Unit {
     }, 0));
   }
 
-  get attackSpeed(): number { return Math.min(this.attackSpeedCap, this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus); }
+  get attackSpeed(): number { return Math.min(this.attackSpeedCap, this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus); }
 
   constructor(
     public id: number,
@@ -74,6 +83,8 @@ export class Unit {
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */
   snapshot(tick = 0) {
     return {
+      susanooActive: this.alive && tick < this.susanooUntilTick,
+      equipmentAttackStacks: this.equipmentAttackStacks,
       id: this.id,
       side: this.side,
       cfgId: this.cfg.id,

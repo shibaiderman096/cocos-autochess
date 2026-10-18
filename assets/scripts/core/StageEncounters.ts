@@ -3,7 +3,7 @@ import { RunRandomContext } from './RunRandomContext';
 export type StageEncounterKind = 'normal' | 'monster' | 'elite' | 'specialShop' | 'boss';
 
 /** Seeded stage layout, independent of shops, combat RNG, and campaign length. */
-export function planStageEncounters(stage: number, rounds: number, random: RunRandomContext, startStage = 4): StageEncounterKind[] {
+export function planStageEncounters(stage: number, rounds: number, random: RunRandomContext, startStage = 4, randomEarly = true): StageEncounterKind[] {
   if (![stage, rounds, startStage].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid stage encounter layout');
   if (stage === 1) return Array(rounds).fill('monster');
   const plan: StageEncounterKind[] = Array(rounds).fill('normal');
@@ -11,6 +11,14 @@ export function planStageEncounters(stage: number, rounds: number, random: RunRa
   if (stage === 2 || stage === 3) {
     if (rounds < 3) throw new Error('Early stage encounters require at least three rounds');
     const rng = random.stream('encounter', stage);
+    if (randomEarly) {
+      const slots = Array.from({ length: rounds }, (_, i) => i);
+      for (let i = slots.length - 1; i > 0; i--) {
+        const j = rng.int(0, i); [slots[i], slots[j]] = [slots[j], slots[i]];
+      }
+      plan[slots[0]] = 'monster'; plan[slots[1]] = 'specialShop';
+      return plan;
+    }
     const early = Math.max(1, Math.floor(rounds / 3));
     plan[rng.int(0, early - 1)] = 'monster';
     if (stage === 3) plan[rng.int(early, Math.min(rounds - 2, Math.ceil(rounds * 2 / 3) - 1))] = 'specialShop';

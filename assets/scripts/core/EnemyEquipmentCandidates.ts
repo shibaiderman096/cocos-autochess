@@ -28,17 +28,17 @@ export function equipmentCandidates(naked:EnemyCandidate[],roster:UnitConfigData
     const singles=ids.map(id=>estimate([id])).filter(u=>u.power>base.power+1e-9);
     // Keep a preferred item as well as the largest measured gain, rather than random equal-probability assignment.
     singles.sort(rank);const preferred=preferences.map(id=>singles.find(u=>u.equipment[0]===id)).filter((v):v is EnemyCandidate=>!!v);
-    let beam=[...new Map([...preferred.slice(0,1),...singles].map(u=>[equipmentPowerKey(u.equipment),u])).values()].slice(0,settings.topKSingle);
+    let beam=Array.from(new Map([...preferred.slice(0,1),...singles].map(u=>[equipmentPowerKey(u.equipment),u])).values()).slice(0,settings.topKSingle);
     const selected=beam.slice();
     for(let slots=2;slots<=quota.maxItemsPerUnit;slots++){
       const unique=new Map<string,EnemyCandidate>();
       for(const a of beam)for(const id of ids){const eq=[...a.equipment,id].sort(),key=equipmentPowerKey(eq);if(!unique.has(key))unique.set(key,estimate(eq));}
-      beam=[...unique.values()].filter(u=>u.power>base.power+1e-9).sort(rank).slice(0,settings.topKCombination);selected.push(...beam);
+      beam=Array.from(unique.values()).filter(u=>u.power>base.power+1e-9).sort(rank).slice(0,settings.topKCombination);selected.push(...beam);
     }
     const starCount=naked.filter(u=>u.unitId===base.unitId).length,limit=Math.floor(settings.maxEquipmentCandidatesPerUnit/starCount);
     // Reserve one candidate at each legal slot depth before filling the remaining beam.
     const byDepth=[1,2,3].map(n=>selected.find(u=>u.equipment.length===n)).filter((u):u is EnemyCandidate=>!!u);
-    const bounded=[...new Map([...byDepth,...selected].map(u=>[equipmentPowerKey(u.equipment),u])).values()].slice(0,limit);
+    const bounded=Array.from(new Map([...byDepth,...selected].map(u=>[equipmentPowerKey(u.equipment),u])).values()).slice(0,limit);
     result.push(...bounded);
   }
   return result;

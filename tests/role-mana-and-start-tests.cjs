@@ -17,6 +17,9 @@ for(let seed=1;seed<=30;seed++){
 }
 assert.ok(starters.size>=3,'fresh seeds cover varied one-cost starters');
 const monsters=buildMonsterUnits(inputs.run,inputs.units);
+assert.ok(monsters.every(m=>m.critChance===.25),'ordinary and strong monsters have 25% base crit');
+const legacyMonsters=buildMonsterUnits({...inputs.run,monsterTemplate:undefined},inputs.units);
+assert.ok(legacyMonsters.every(m=>m.critChance===.25),'legacy stat scaling does not reduce crit chance');
 for(const monster of monsters.filter(m=>m.monsterTier!=='strong'))assert.deepEqual([monster.atk,monster.armor,monster.mr,monster.maxMana],[30,10,10,0]);
 assert.deepEqual(buildMonsterUnits(inputs.run,inputs.units.map(u=>({...u,hp:u.hp*10,atk:u.atk*10}))),monsters,'monster template is independent of playable unit balance');
 function battle(role,armor=0,mr=0){

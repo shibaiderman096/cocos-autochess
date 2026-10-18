@@ -57,6 +57,16 @@ export function stableEnemyJson(value: unknown): string {
   return JSON.stringify(value);
 }
 
+/** Inventory art and display copy do not affect equipment mechanics. */
+export function combatEquipmentIdentity(items: unknown): unknown {
+  if (!Array.isArray(items)) throw new Error('Invalid equipment identity');
+  return items.map(item => {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Invalid equipment identity');
+    return Object.fromEntries(Object.entries(item).filter(([key]) =>
+      !['name', 'icon', 'description', 'effectDescription'].includes(key)));
+  });
+}
+
 /** Display copy and table templates do not change difficulty or formation rules. */
 export function combatConfigurationIdentity(value: Record<string, unknown>): string {
   if (!value || typeof value !== 'object' || !value.skills || typeof value.skills !== 'object' || Array.isArray(value.skills)) {
@@ -66,7 +76,7 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
     if (!skill || typeof skill !== 'object' || Array.isArray(skill)) throw new Error('Invalid skill identity');
     return [id, Object.fromEntries(Object.entries(skill).filter(([key]) => key !== 'description' && key !== 'statRows'))];
   }));
-  return stableEnemyJson({ ...value, skills });
+  return stableEnemyJson({ ...value, skills, ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
 }
 
 /** Legacy saves may contain presentation fields; all combat fields must still match. */

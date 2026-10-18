@@ -1,6 +1,7 @@
 import { Rng } from '../core/Rng';
-import { BattleEvent, BattleResult, Side } from './types';
+import { BattleEvent, BattleResult, Side, BattleClockState } from './types';
 import { Unit } from './Unit';
+import { resolveTraits, isTraitFrontRow } from './Traits';
 import { dist, nextStep } from './Pathfinding';
 import { hexNeighbors } from './HexMath';
 import { ConfigManager, SkillConfigData, UnitConfigData, combatAttributes, hybridSpellDamage, configuredSkillDamage, channelHealAmount } from '../core/ConfigManager';
@@ -25,7 +26,7 @@ export interface BattleOptions {
   seed?: number;
   w?: number;
   h?: number;
-  maxTicks?: number; // 默认 1200 = 60s
+  maxTicks?: number; // Optional shorter diagnostic limit; configured combat + overtime is a hard cap.
 }
 
 export class BattleSim {
@@ -64,11 +65,60 @@ export class BattleSim {
       unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
       this.units.push(unit);
     });
+    for (const side of [0, 1] as Side[]) {
+      const army = this.units.filter(unit => unit.side === side);
+      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg.id), [...configs.allUnits(), ...army.map(unit => unit.cfg)]);
+      for (const unit of army) for (const trait of traits) {
+        if (!trait.active || !trait.memberIds.includes(unit.cfg.id)) continue;
+        unit.cfg.physicalPower = (unit.cfg.physicalPower ?? 0) + (trait.active.power ?? 0);
+        unit.cfg.spellPower = (unit.cfg.spellPower ?? 0) + (trait.active.power ?? 0);
+        unit.traitRegenPerSecond += trait.active.regenPerSecond ?? 0;
+        const stats = trait.active.stats;
+        if (stats) {
+          const previousArmor = unit.cfg.armor;
+          unit.cfg.armor += stats.armor ?? 0;
+          unit.cfg.mr += stats.mr ?? 0;
+          const armorReduction = unit.equipment.reduce((sum, item) => {
+            const effect = item.armorDamageReduction;
+            return sum + (effect && previousArmor <= effect.threshold && unit.cfg.armor > effect.threshold ? effect.bonus : 0);
+          }, 0);
+          unit.cfg.damageReduction = Math.min(1, (unit.cfg.damageReduction ?? 0) + armorReduction);
+          if (stats.maxHpBonus) { unit.cfg.hp = Math.round(unit.cfg.hp * (1 + stats.maxHpBonus)); unit.hp = unit.cfg.hp; }
+          unit.cfg.atkSpeed = Math.min(unit.attackSpeedCap, unit.cfg.atkSpeed + (stats.attackSpeedBonus ?? 0));
+          unit.cfg.physicalPower = (unit.cfg.physicalPower ?? 0) + (stats.physicalPower ?? 0);
+          unit.cfg.critChance = Math.min(1, (unit.cfg.critChance ?? 0) + (stats.critChance ?? 0));
+          unit.cfg.skillCanCrit = unit.cfg.skillCanCrit === true || stats.skillCanCrit === true;
+          unit.traitAttackDamage += stats.attackDamage ?? 0;
+          unit.traitExecuteThreshold = Math.max(unit.traitExecuteThreshold, stats.executeThreshold ?? 0);
+        }
+        const bonus = trait.active.formation;
+        if (bonus) {
+          if (isTraitFrontRow(side, unit.y, h, configs.battle.ownRows)) {
+            unit.cfg.hp = Math.round(unit.cfg.hp * (1 + bonus.maxHpBonus));
+            unit.hp = unit.cfg.hp;
+            unit.cfg.damageReduction = Math.min(1, (unit.cfg.damageReduction ?? 0) + bonus.damageReduction);
+          } else {
+            unit.cfg.atkSpeed = Math.min(unit.attackSpeedCap, unit.cfg.atkSpeed + bonus.attackSpeedBonus);
+            unit.cfg.damageAmp = (unit.cfg.damageAmp ?? 0) + bonus.damageAmp;
+          }
+        }
+      }
+    }
   }
 
   get w(): number { return this.opts.w ?? this.configs.battle.boardWidth; }
   get h(): number { return this.opts.h ?? this.configs.battle.boardHeight; }
-  get maxTicks(): number { return this.opts.maxTicks ?? this.configs.battle.maxTicks; }
+  private get combatTicks(): number { return Math.max(1, Math.round((this.configs.battle.combatSeconds ?? 30) * 1000 / this.configs.battle.tickMs)); }
+  private get overtimeTicks(): number { return Math.max(1, Math.round((this.configs.battle.overtime?.seconds ?? 15) * 1000 / this.configs.battle.tickMs)); }
+  get maxTicks(): number { return Math.min(this.opts.maxTicks ?? this.configs.battle.maxTicks, this.combatTicks + this.overtimeTicks); }
+  get clockState(): BattleClockState {
+    const overtime = this.tick >= this.combatTicks;
+    const endTick = Math.min(this.maxTicks, overtime ? this.combatTicks + this.overtimeTicks : this.combatTicks);
+    return { phase: overtime ? 'overtime' : 'combat',
+      remainingSeconds: Math.max(0, endTick - this.tick) * this.configs.battle.tickMs / 1000,
+      durationSeconds: (overtime ? this.overtimeTicks : this.combatTicks) * this.configs.battle.tickMs / 1000,
+      overtimeProgress: Math.max(0, Math.min(1, (this.tick - this.combatTicks) / this.overtimeTicks)) };
+  }
 
   /** 布阵完成，正式开战 */
   start(): void {
@@ -85,7 +135,9 @@ export class BattleSim {
     if (this.checkEnd()) return;
     this.pendingDamage.length = 0;
     this.pendingStuns.length = 0;
+    this.updateOvertime();
     this.updateEquipment();
+    this.updateTraitRegen();
     this.updateBurns();
     for (const u of this.units) { // 按 id 升序遍历，确定性
       if (!u.alive) continue;
@@ -102,6 +154,28 @@ export class BattleSim {
   run(): BattleResult {
     while (!this.finished) this.step();
     return this.getResult();
+  }
+
+  private updateOvertime(): void {
+    const progress = Math.max(0, Math.min(1, (this.tick - this.combatTicks) / this.overtimeTicks));
+    const overtime = this.configs.battle.overtime;
+    for (const unit of this.units) {
+      if (!unit.alive) continue;
+      unit.overtimeAttackSpeedBonus = (overtime?.attackSpeedBonus ?? 1) * progress;
+      unit.overtimeDamageAmp = (overtime?.damageAmp ?? 1) * progress;
+    }
+  }
+
+  private updateTraitRegen(): void {
+    const interval = Math.max(1, Math.round(1000 / this.configs.battle.tickMs));
+    if (this.tick % interval !== 0) return;
+    for (const unit of this.units) {
+      if (!unit.alive || unit.traitRegenPerSecond <= 0) continue;
+      const amount = Math.min(unit.cfg.hp - unit.hp, Math.round(unit.cfg.hp * unit.traitRegenPerSecond));
+      if (amount <= 0) continue;
+      unit.hp += amount;
+      this.events.push({ t: 'heal', tick: this.tick, id: unit.id, source: unit.id, amount, hp: unit.hp });
+    }
   }
 
   getResult(): BattleResult {
@@ -235,6 +309,14 @@ export class BattleSim {
     }
 
     const teleportSkill = u.cfg.skillId ? this.configs.getSkill(u.cfg.skillId) : null;
+    if (teleportSkill?.effect === 'susanoo' && this.tick >= u.susanooUntilTick && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
+      u.mana = 0;
+      u.susanooUntilTick = this.tick + Math.max(1, Math.round(teleportSkill.formDurations![u.star - 1]
+        * (1 + (u.cfg.physicalPower ?? 0) / 100) * 1000 / this.configs.battle.tickMs));
+      u.susanooReduction = teleportSkill.formReductions![u.star - 1];
+      this.events.push({ t: 'cast', tick: this.tick, id: u.id, target: u.id, skillId: teleportSkill.id, duration: 0 });
+      return;
+    }
     if (teleportSkill?.effect === 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
       const ally = this.units.filter(e => e.alive && e.side === u.side && e.hp < e.cfg.hp && dist(u.pos, e.pos) <= (teleportSkill.targetRange ?? u.cfg.range))
         .sort((a, b) => a.hp / a.cfg.hp - b.hp / b.cfg.hp || a.id - b.id)[0];
@@ -268,7 +350,7 @@ export class BattleSim {
     const d = dist(u.pos, target.pos);
 
     // 1. 蓝满施法（需在射程内）
-    if (u.cfg.skillId && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
+    if (u.cfg.skillId && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
       const skill = this.configs.getSkill(u.cfg.skillId);
       const castTarget = skill.targeting === 'lowestHp'
         ? this.units.filter(e => this.targetable(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
@@ -280,10 +362,16 @@ export class BattleSim {
     if (d <= u.cfg.range) {
       if (u.atkCd === 0) {
         const empowered = u.permanentEmpower || u.empoweredAttacks > 0;
-        this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id });
+        this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id,
+          ...(this.tick < u.susanooUntilTick ? { area: true } : {}) });
         if (u.equipment.some(item => item.attackSpeedPerAttack > 0)) u.equipmentAttackStacks++;
         const damage = empowered ? u.empoweredAttackDamage : u.cfg.atk;
-        this.damage(u, target, damage, 'physical', true);
+        if (this.tick < u.susanooUntilTick) {
+          for (const enemy of this.units) {
+            if (enemy.alive && enemy.side !== u.side && dist(enemy.pos, target.pos) <= teleportSkill!.radius)
+              this.damage(u, enemy, damage + (teleportSkill!.formBonusDamage?.[u.star - 1] ?? 0), 'physical', true, false, enemy === target);
+          }
+        } else this.damage(u, target, damage, 'physical', true);
         u.gainMana(u.cfg.manaPerHit);
         if (empowered && !u.permanentEmpower && --u.empoweredAttacks === 0) {
           u.priorityTarget = null;
@@ -349,6 +437,7 @@ export class BattleSim {
 
   private resolveStuns(): void {
     for (const { src, dst, seconds, knockup } of this.pendingStuns) {
+      if (this.tick < dst.susanooUntilTick) continue;
       if (!this.targetable(dst)) continue;
       const ticks = Math.max(1, Math.round(seconds * 1000 / this.configs.battle.tickMs));
       dst.stunnedUntilTick = Math.max(dst.stunnedUntilTick, this.tick + ticks + 1);
@@ -399,12 +488,21 @@ export class BattleSim {
     const critical = (basicAttack || src.cfg.skillCanCrit === true) && src.cfg.critChance! > 0 && this.rng.next() < src.cfg.critChance!;
     const configuredCrit = this.configs.battle.criticalMultiplier ?? 1.5;
     const critMultiplier = critical ? (Number.isFinite(configuredCrit) && configuredCrit >= 1 ? configuredCrit : 1.5) : 1;
-    const res = type === 'physical' ? dst.cfg.armor : type === 'magic' ? dst.cfg.mr : 0;
-    const typeMultiplier = typeBonusApplied ? 1 : 1 + (type === 'physical' ? src.cfg.physicalPower! : type === 'magic' ? src.cfg.spellPower! : 0) / 100;
-    const reduction = Math.min(1, dst.cfg.damageReduction! + (type === 'magic'
-      ? dst.equipment.reduce((sum, item) => sum + (item.magicDamageReduction ?? 0), 0) : 0));
-    this.pendingDamage.push({ src, dst, raw: raw * typeMultiplier * critMultiplier,
-      damageAmp: src.cfg.damageAmp!, resistance: res, reduction, type, critical, targeted });
+    const queue = (amount: number, damageType: 'physical' | 'magic' | 'true', bonusApplied: boolean) => {
+      const resistance = damageType === 'physical' ? dst.cfg.armor : damageType === 'magic' ? dst.cfg.mr : 0;
+      const multiplier = bonusApplied ? 1 : 1 + (damageType === 'physical' ? src.cfg.physicalPower! : damageType === 'magic' ? src.cfg.spellPower! : 0) / 100;
+      const reduction = Math.min(1, dst.cfg.damageReduction! + (damageType === 'magic'
+        ? dst.equipment.reduce((sum, item) => sum + (item.magicDamageReduction ?? 0), 0) : 0));
+      this.pendingDamage.push({ src, dst, raw: amount * multiplier * critMultiplier,
+        damageAmp: src.damageAmp, resistance, reduction, type: damageType, critical, targeted });
+    };
+    const extra = basicAttack ? src.traitAttackDamage : 0;
+    // Physical basics share one damage/crit roll. Replaced basics keep their extra physical component.
+    if (extra > 0 && type === 'physical' && !typeBonusApplied) queue(raw + extra, type, false);
+    else {
+      queue(raw, type, typeBonusApplied);
+      if (extra > 0) queue(extra, 'physical', false);
+    }
   }
 
   /** Every unit alive at tick start can act; deaths are applied after all damage. */
@@ -417,19 +515,23 @@ export class BattleSim {
         const effect = item.lowTargetDamageAmp;
         return sum + (effect && dst.hp < dst.cfg.hp * effect.threshold ? effect.bonus : 0);
       }, 0);
-      const effectiveReduction = Math.min(1, reduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0));
-      const dmg = effectiveReduction >= 1 ? 0 : Math.max(1, Math.round(raw * (1 + damageAmp + extraAmp)
+      const effectiveReduction = Math.min(1, reduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0)
+        + (this.tick < dst.susanooUntilTick ? dst.susanooReduction : 0));
+      let dmg = effectiveReduction >= 1 ? 0 : Math.max(1, Math.round(raw * (1 + damageAmp + extraAmp)
         * (1 - effectiveReduction) * 100 / (100 + resistance)));
       const absorbed = Math.min(dst.shield, dmg);
       dst.shield -= absorbed;
       const previousHp = dst.hp;
       dst.hp = Math.max(0, dst.hp - (dmg - absorbed));
+      const executed = this.targetable(dst) && dmg > 0 && dst.hp > 0 && src.traitExecuteThreshold > 0
+        && dst.hp < dst.cfg.hp * src.traitExecuteThreshold;
+      if (executed) { dmg += dst.hp; dst.hp = 0; }
       // Trigger between hits so the lethal hit leaves 1 HP and later targeted hits miss.
       const triggered = this.triggerLowHealthProtection(dst);
       const dealt = Math.max(0, previousHp - dst.hp);
       if (dst.cfg.role === 'tank' || dst.cfg.role === 'warrior') dst.gainMana(dealt * (this.configs.battle.roleMana?.damageTakenFraction ?? 0));
       healing.set(src, (healing.get(src) ?? 0) + dealt * src.lifesteal);
-      this.events.push({ t: 'hit', tick: this.tick, id: dst.id, source: src.id, actualDamage: dealt, dmg, hp: dst.hp, dmgType: type, ...(critical ? { critical: true } : {}) });
+      this.events.push({ t: 'hit', tick: this.tick, id: dst.id, source: src.id, actualDamage: dealt, dmg, hp: dst.hp, dmgType: type, ...(critical ? { critical: true } : {}), ...(executed && dst.hp === 0 ? { executed: true } : {}) });
       if (triggered) this.events.push({ t: 'equipment_trigger', tick: this.tick, id: dst.id, equipmentId: triggered, shield: dst.shield });
       this.startEquipmentSustain(dst);
     }

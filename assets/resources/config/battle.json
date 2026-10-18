@@ -2,8 +2,10 @@
   "boardWidth": 7,
   "boardHeight": 8,
   "ownRows": 4,
-  "maxTicks": 1200,
+  "maxTicks": 900,
   "tickMs": 50,
+  "combatSeconds": 30,
+  "overtime": { "seconds": 15, "attackSpeedBonus": 1, "damageAmp": 1 },
   "preparationSeconds": 1,
   "nextWaveDelaySeconds": 1,
   "initialHealth": 20,
@@ -31,5 +33,87 @@
     "casterPerSecond": 2,
     "damageTakenFraction": 0.1
   },
-  "legendaryThreeStarBonusHp": 5000
+  "legendaryThreeStarBonusHp": 5000,
+  "traits": [
+    {
+      "id": "naruto",
+      "name": "火影忍者",
+      "glyph": "火",
+      "description": "忍者们之间的羁绊为他们带来双攻提升。",
+      "members": ["scout", "warrior", "champion", "young_sasuke", "sasuke", "sakura", "itachi", "madara"],
+      "breakpoints": [
+        { "count": 3, "tier": "bronze", "power": 15 },
+        { "count": 5, "tier": "silver", "power": 30 },
+        { "count": 7, "tier": "gold", "power": 50 },
+        { "count": 10, "tier": "prismatic", "power": 80, "regenPerSecond": 0.02 }
+      ]
+    },
+    {
+      "id": "native",
+      "name": "原住民",
+      "glyph": "原",
+      "description": "原住民适应赖以生存的环境。\n开战时，前两排提升生命与减伤，后两排提升攻速与增伤。",
+      "members": ["archer", "guardian", "duelist", "ranger", "shaman", "mage", "sorcerer"],
+      "breakpoints": [
+        { "count": 3, "tier": "bronze", "formation": { "maxHpBonus": 0.2, "damageReduction": 0.08, "attackSpeedBonus": 0.15, "damageAmp": 0.1 } },
+        { "count": 5, "tier": "silver", "formation": { "maxHpBonus": 0.35, "damageReduction": 0.12, "attackSpeedBonus": 0.3, "damageAmp": 0.16 } },
+        { "count": 7, "tier": "gold", "formation": { "maxHpBonus": 0.55, "damageReduction": 0.18, "attackSpeedBonus": 0.45, "damageAmp": 0.24 } }
+      ]
+    },
+    {
+      "id": "armored_tank", "name": "重甲坦克", "glyph": "甲",
+      "description": "重甲坦克获得额外护甲和魔抗。",
+      "members": [], "selector": { "role": "tank", "damageType": "physical" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "stats": { "armor": 25, "mr": 25 } },
+        { "count": 4, "tier": "silver", "stats": { "armor": 50, "mr": 50 } },
+        { "count": 6, "tier": "gold", "stats": { "armor": 80, "mr": 80 } },
+        { "count": 8, "tier": "prismatic", "stats": { "armor": 120, "mr": 120 } }
+      ]
+    },
+    {
+      "id": "brawler", "name": "斗士", "glyph": "斗",
+      "description": "斗士获得额外最大生命值。",
+      "members": [], "selector": { "role": "tank", "damageType": "magic" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "stats": { "maxHpBonus": 0.2 } },
+        { "count": 4, "tier": "silver", "stats": { "maxHpBonus": 0.35 } },
+        { "count": 6, "tier": "gold", "stats": { "maxHpBonus": 0.55 } },
+        { "count": 8, "tier": "prismatic", "stats": { "maxHpBonus": 0.85 } }
+      ]
+    },
+    {
+      "id": "swift_marksman", "name": "迅捷射手", "glyph": "迅",
+      "description": "迅捷射手获得额外攻速。",
+      "members": [], "selector": { "role": "marksman", "damageType": "magic" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "stats": { "attackSpeedBonus": 0.2 } },
+        { "count": 3, "tier": "silver", "stats": { "attackSpeedBonus": 0.35 } },
+        { "count": 4, "tier": "gold", "stats": { "attackSpeedBonus": 0.55 } },
+        { "count": 5, "tier": "prismatic", "stats": { "attackSpeedBonus": 0.8 } }
+      ]
+    },
+    {
+      "id": "sharpshooter", "name": "神射手", "glyph": "射",
+      "description": "神射手获得物理加成，普攻追加固定基础物理伤害。",
+      "members": [], "selector": { "role": "marksman", "damageType": "physical" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "stats": { "physicalPower": 15, "attackDamage": 10 } },
+        { "count": 4, "tier": "silver", "stats": { "physicalPower": 30, "attackDamage": 20 } },
+        { "count": 6, "tier": "gold", "stats": { "physicalPower": 50, "attackDamage": 35 } },
+        { "count": 8, "tier": "prismatic", "stats": { "physicalPower": 80, "attackDamage": 55 } }
+      ]
+    },
+    {
+      "id": "assassin", "name": "刺客", "glyph": "刺",
+      "description": "刺客技能可以暴击，并获得暴击率。\n命中后斩杀低于血线的目标。",
+      "members": [], "selector": { "role": "assassin" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "stats": { "skillCanCrit": true, "critChance": 0.15, "executeThreshold": 0.08 } },
+        { "count": 3, "tier": "silver", "stats": { "skillCanCrit": true, "critChance": 0.25, "executeThreshold": 0.12 } },
+        { "count": 4, "tier": "gold", "stats": { "skillCanCrit": true, "critChance": 0.4, "executeThreshold": 0.16 } },
+        { "count": 5, "tier": "prismatic", "stats": { "skillCanCrit": true, "critChance": 0.6, "executeThreshold": 0.2 } }
+      ]
+    }
+  ]
 }

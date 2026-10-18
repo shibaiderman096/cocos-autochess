@@ -142,19 +142,20 @@ const originals={
   [ARCANE]:'星辉蓝晶魔杖.png',[CLAW]:'猩红血魔利爪徽章.png',[PLATE]:'暗黑尖刺骑士胸甲.png',
   [SWORD]:'神圣星辉华丽长剑.png',[VEIL]:'星辉蓝金法师斗篷.png',[FOREST]:'翡翠藤甲：森林守护者铠甲.png',
 };
-const digest=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 for(const [id,file] of Object.entries(originals)) {
   const item=equipment.find(item=>item.id===id),asset=path.join(__dirname,'../assets/resources',item.icon.replace('/spriteFrame','.png'));
   const original=path.join(__dirname,'../art-source/equipment',file);
   const meta=JSON.parse(fs.readFileSync(asset+'.meta','utf8'));
   assert.ok(fs.existsSync(original),'supplied source artwork remains available');
   assert.ok(meta.subMetas.f9941);
-  if([PLATE,SWORD,VEIL,FOREST].includes(id)) {
+  {
     const png=fs.readFileSync(asset),frame=meta.subMetas.f9941.userData;
     assert.equal(png.readUInt8(25),6,'cutout PNG retains RGBA transparency');
     assert.equal(meta.userData.hasAlpha,true,'Cocos imports the cutout alpha channel');
     assert.equal(frame.rawWidth,png.readUInt32BE(16));
     assert.equal(frame.rawHeight,png.readUInt32BE(20));
-  } else assert.equal(digest(asset),digest(original),'unchanged icons preserve supplied artwork');
+    assert.equal(frame.rawWidth,128);
+    assert.equal(frame.rawHeight,128);
+  }
 }
 console.log('PASS advanced equipment: final stats, passive stacks/caps, strict thresholds, live execute, omni lifesteal, magic-only reduction, max HP, persistent per-second healing, stun/death/reset, totem synergy, statistics, deterministic replay and all six icons');

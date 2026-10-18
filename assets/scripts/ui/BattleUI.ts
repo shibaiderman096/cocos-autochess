@@ -1,4 +1,7 @@
 import { loadArtSprite } from '../view/ArtSpriteLoader';
+import { TraitPanel } from './TraitPanel';
+import { WaveTransition } from './WaveTransition';
+import type { TraitState } from '../battle/Traits';
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, input, Input, SpriteAtlas } from 'cc';
 import { UNIT_SPRITE, UI_SPRITE, UISkinKey, M2_UI_SPRITE, ENCOUNTER_SPRITE } from '../view/ArtPaths';
 import { setUISkin, setStarBadge } from './UISkin';
@@ -14,7 +17,7 @@ import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { RoundSettlement, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
 import { shopCostRates, COST_PRICE, Cost } from '../core/ShopConfig';
-import { CombatAttributes, CombatStatRow, EquipmentConfigData, BackpackItem } from '../battle/types';
+import { CombatAttributes, CombatStatRow, EquipmentConfigData, BackpackItem, BattleClockState } from '../battle/types';
 
 const { ccclass } = _decorator;
 const INK = new Color(13, 27, 35);
@@ -22,6 +25,7 @@ const GOLD = new Color(204, 174, 109);
 const TEXT = new Color(233, 231, 210);
 const MUTED = new Color(133, 161, 164);
 const TEAL = new Color(89, 203, 176);
+const RUN_PROGRESS_WIDTH = 330;
 const TIERS = [MUTED, new Color(163, 177, 169), TEAL, new Color(86, 167, 226), new Color(181, 127, 230), GOLD];
 const UNIT_ROLES: Record<string, string> = { frontline:'前排', ranged:'远程', caster:'法术', assassin:'物理刺客', fighter:'物理战士', tank:'物理坦克', magicTank:'魔法坦克', physicalCaster:'物理术士', physicalArcher:'物理射手', magicArcher:'魔法射手', support:'治疗辅助' };
 interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
@@ -29,6 +33,7 @@ export interface UnitDetailData extends Partial<CombatAttributes> {
   name: string; star: number; cost?: number; artId: string; side: 0 | 1; tint?: string;
   hp: number; maxHp: number; mana: number; maxMana: number; shield?: number;
   manaPerSecond?: number;
+  traits?: string[];
   atk: number; armor: number; mr: number; atkSpeed: number; range: number;
   skillName: string; skillDescription: string; skillRichDescription?: string;
   damageType?: 'physical' | 'magic';
@@ -150,13 +155,29 @@ export class BattleUI extends Component {
   private backpackPage = 0;
   private backpackData: BackpackItem[] = [];
   private backpackEditable = false;
+  private backpackRoot: Node;
+  private traitPanel: TraitPanel;
+  private waveTransition: WaveTransition;
+  private sideTabs: Node[] = [];
+  private sideTab: 'traits' | 'backpack' = 'traits';
+  refreshTraits(states: TraitState[], roster: UnitConfigData[]): void { this.traitPanel.refresh(states, roster); }
+  private setSideTab(tab: 'traits' | 'backpack'): void {
+    this.sideTab = tab;
+    this.backpackRoot.active = tab === 'backpack'; this.traitPanel.setVisible(tab === 'traits');
+    this.hideEquipmentTooltip();
+    this.sideTabs.forEach((node, i) => {
+      const selected = i === (tab === 'traits' ? 0 : 1);
+      node.getChildByName('text')!.getComponent(Label)!.color = selected ? GOLD : MUTED;
+    });
+  }
   onEquipment = (slot: number) => {};
-  private equipmentSlots: Array<{ node: Node; icon: Sprite; text: Label }> = [];
-  private equipmentInfo: Label;
+  private equipmentSlots: Array<{ node: Node; icon: Sprite; stacks: Label }> = [];
+  private unitTraits: Label;
   private equipmentEditable = false;
   onFight = () => {};
   onSpeed = (s: number) => {};
   onRestart = () => {};
+  onNextWave = () => {};
   onHome = () => {};
   onBuy = (slot: number) => {};
   onRefresh = () => {};
@@ -168,6 +189,9 @@ export class BattleUI extends Component {
   private waveIdle = 0;
   private preparationBar: Node;
   private preparationFill: Graphics;
+  private battleTimer: Node;
+  private battleTimerFill: Graphics;
+  private battleTimerActive = false;
   private healthLabel: Label;
   private waveLabel: Label;
   private sellNode: Node;
@@ -216,6 +240,7 @@ export class BattleUI extends Component {
   private speed = 1;
   private backdrop: Node;
   private fightBtn: Node;
+  private nextWaveBtn: Node;
   private speedLabel: Label;
   private resultPanel: Node;
   private resultTimer = 0;
@@ -231,6 +256,7 @@ export class BattleUI extends Component {
   private buyExpLabel: Label;
   private canBuyExp = false;
   private capLabel: Label;
+  private shopEncounter = false;
   private phaseLabel: Label;
   private shopRoot: Node;
   private economyRoot: Node;
@@ -251,16 +277,22 @@ export class BattleUI extends Component {
     fillScreen();
     this.node.addComponent(UITransform).setContentSize(1280, 720);
     this.drawArena();
-    const header = panel(this.node, 'roundBar', 0, 310, 330, 54, new Color(17, 35, 42), GOLD);
+    const header = panel(this.node, 'roundBar', 0, 310, RUN_PROGRESS_WIDTH, 54, new Color(17, 35, 42), GOLD);
     this.floorLabel = label(header, '1-1', -78, 0, 22, GOLD, 155);
     this.phaseLabel = label(header, '准备', 76, 0, 17, TEAL, 130);
+    this.battleTimer = new Node('battleTimer'); header.addChild(this.battleTimer);
+    this.battleTimer.addComponent(UITransform).setContentSize(310, 34);
+    this.battleTimerFill = this.battleTimer.addComponent(Graphics);
+    this.battleTimer.setSiblingIndex(1); this.battleTimer.active = false;
     panel(this.node, 'healthPanel', 490, 307, 220, 60, INK, GOLD, 'panel_side');
     this.healthLabel = label(this.node, '20 / 20', 490, 320, 19, TEAL, 190);
     this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 220);
-    this.waveTrack = panel(this.node, 'waveTrack', 0, 267, 300, 26, INK, GOLD, 'panel_side');
+    this.waveTrack = panel(this.node, 'waveTrack', 0, 260, RUN_PROGRESS_WIDTH, 44, INK, GOLD, 'stage_track_panel');
     picture(this.node, 'icon_life', 414, 320, 24);
-    this.capLabel = label(this.node, '0 / 1', 0, 60, 64, new Color(233, 231, 210, 230), 300);
+    this.capLabel = label(this.node, '0 / 1', 0, 88, 86, new Color(91, 184, 255, 240), 380);
     this.capLabel.isBold = true; this.capLabel.horizontalAlign = Label.HorizontalAlign.CENTER;
+    this.capLabel.node.setRotationFromEuler(0, 0, 0);
+    this.capLabel.node.addComponent(UIOpacity).opacity = 150;
     this.capLabel.node.name = 'population'; this.capLabel.node.active = false;
 
     const area = SHOP_DROP_AREA;
@@ -287,6 +319,7 @@ export class BattleUI extends Component {
     this.preparationFill = this.preparationBar.addComponent(Graphics);
     this.preparationBar.active = false;
     this.buildDebugMenu();
+    this.waveTransition = new WaveTransition(this.node);
     for (const type of [Input.EventType.TOUCH_START, Input.EventType.TOUCH_MOVE, Input.EventType.MOUSE_DOWN, Input.EventType.KEY_DOWN] as const) input.on(type, this.noteActivity, this);
   }
 
@@ -371,6 +404,8 @@ export class BattleUI extends Component {
     this.fightBtn = button(command, '开始战斗', 0, 32, 188, 42, () => this.onFight(), true);
     picture(this.fightBtn, 'icon_swords', -76, 0, 22);
     this.fightBtn.getChildByName('text')!.setPosition(10, 0, 0);
+    this.nextWaveBtn = button(command, '下一关', 0, 32, 188, 42, () => this.onNextWave(), true);
+    this.nextWaveBtn.active = false;
     const speed = button(command, '', 0, -13, 188, 30,
       () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
     picture(speed, 'icon_speed', -76, 0, 20);
@@ -382,7 +417,7 @@ export class BattleUI extends Component {
   private buildSettlement(): void {
     const header = this.node.getChildByName('roundBar')!;
     this.resultPanel = new Node('roundOutcome'); header.addChild(this.resultPanel);
-    this.resultLabel = label(this.resultPanel, '', 0, -78, 28, TEXT, 240);
+    this.resultLabel = label(this.resultPanel, '', 0, -102, 28, TEXT, 240);
     this.resultLabel.isBold = true;
     this.runEndActions = new Node('runEndActions'); header.addChild(this.runEndActions);
     button(this.runEndActions, '重开一局', -77, -122, 144, 32, () => this.onRestart());
@@ -391,7 +426,7 @@ export class BattleUI extends Component {
   }
   private buildUnitDetails(): void {
     // Keep the full detail panel above the command dock, including equipment.
-    this.unitPanel = panel(this.node, 'unitDetail', 450, 35, 280, 470, INK, GOLD, 'tooltip_panel');
+    this.unitPanel = panel(this.node, 'unitDetail', 450, 35, 280, 490, INK, GOLD, 'tooltip_panel');
     const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(70, 70);
     this.unitPanel.addChild(portrait); portrait.setPosition(-92, 165, 0);
     this.unitPortrait = portrait.addComponent(Sprite); this.unitPortrait.sizeMode = Sprite.SizeMode.CUSTOM;
@@ -404,6 +439,10 @@ export class BattleUI extends Component {
     const coinSprite = coin.addComponent(Sprite); coinSprite.sizeMode = Sprite.SizeMode.CUSTOM;
     resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => { if (!err && coinSprite.isValid) coinSprite.spriteFrame = frame; });
     this.unitCost = label(this.unitPanel, '', -12, 158, 14, GOLD, 56);
+    this.unitTraits = label(this.unitPanel, '', 0, 119, 13, TEAL, 252);
+    this.unitTraits.node.name = 'unitTraits';
+    this.unitTraits.enableWrapText = false;
+    this.unitTraits.overflow = Label.Overflow.SHRINK;
     this.hpMeter = this.makeDetailMeter('health', 90, UI_SPRITE.hpFillAlly);
     this.manaMeter = this.makeDetailMeter('mana', 65, UI_SPRITE.manaFill);
     this.manaRegen = new ManaRegenBadge(this.manaMeter.fill.node.parent!, 64, 0);
@@ -433,7 +472,7 @@ export class BattleUI extends Component {
     picture(this.skillIconNode, 'icon_swords', 0, 0, 34);
     this.skillIconNode.on(Node.EventType.TOUCH_END, () => this.toggleDetailPopup('skill'));
     this.unitSkillName = label(this.unitPanel, '', 26, -115, 15, TEXT, 174);
-    const role = panel(this.unitPanel, 'unitRole', 0, -158, 252, 26, INK, GOLD, 'panel_ink');
+    const role = panel(this.unitPanel, 'unitRole', 0, -151, 252, 26, INK, GOLD, 'panel_ink');
     picture(role, 'icon_swords', -89, 0, 16);
     this.unitRole = label(role, '', 6, 0, 13, TEXT, 176);
     this.detailPopup = panel(this.unitPanel, 'detailPopup', -450, 0, 600, 360, new Color(15, 23, 31, 247), GOLD, null);
@@ -488,19 +527,21 @@ export class BattleUI extends Component {
     this.unitDetail.horizontalAlign = Label.HorizontalAlign.LEFT;
     this.unitDetail.verticalAlign = Label.VerticalAlign.TOP;
     this.detailPopup.active = false;
-    const equipmentRoot = panel(this.unitPanel, 'equipment', 0, -204, 252, 58, INK, GOLD, 'tooltip_panel');
-    label(equipmentRoot, '装备', 0, 21, 11, GOLD, 240);
+    const equipmentRoot = panel(this.unitPanel, 'equipment', 0, -205, 252, 72, INK, GOLD, 'tooltip_panel');
     for (let slot = 0; slot < 3; slot++) {
-      const node = button(equipmentRoot, '', (slot - 1) * 68, 0, 42, 32, () => { this.hideEquipmentTooltip(); if (this.equipmentEditable) this.onEquipment(slot); });
+      const node = button(equipmentRoot, '', (slot - 1) * 78, 0, 64, 64, () => { this.hideEquipmentTooltip(); if (this.equipmentEditable) this.onEquipment(slot); });
+      node.getChildByName('text')!.destroy();
       node.on(Node.EventType.MOUSE_ENTER, () => this.showEquipmentTooltip(this.displayedEquipment[slot], 110));
       node.on(Node.EventType.MOUSE_LEAVE, () => this.hideEquipmentTooltip());
       node.on(Node.EventType.TOUCH_START, () => this.showEquipmentTooltip(this.displayedEquipment[slot], 110));
       node.on(Node.EventType.TOUCH_CANCEL, () => this.hideEquipmentTooltip());
-      const iconNode = new Node('equipmentIcon'); iconNode.addComponent(UITransform).setContentSize(24, 24); node.addChild(iconNode);
+      const iconNode = new Node('equipmentIcon'); iconNode.addComponent(UITransform).setContentSize(64, 64); node.addChild(iconNode);
       const icon = iconNode.addComponent(Sprite); icon.sizeMode = Sprite.SizeMode.CUSTOM;
-      this.equipmentSlots.push({ node, icon, text: node.getChildByName('text')!.getComponent(Label)! });
+      const badge = panel(node, 'equipmentStacks', 16, -21, 30, 20, new Color(8, 17, 23, 235), GOLD, null);
+      const stacks = label(badge, '', 0, 0, 14, TEXT, 28); stacks.isBold = true;
+      badge.active = false;
+      this.equipmentSlots.push({ node, icon, stacks });
     }
-    this.equipmentInfo = label(equipmentRoot, '', 0, -23, 10, TEXT, 218);
     this.unitPanel.active = false;
   }
 
@@ -567,7 +608,8 @@ export class BattleUI extends Component {
     this.equipmentEditable = editable;
     this.equipmentSlots.forEach((slot, i) => {
       const item = items[i]; slot.icon.node.active = !!item;
-      slot.text.string = '';
+      slot.stacks.node.parent!.active = !!item && item.attackSpeedPerAttack > 0;
+      slot.stacks.string = String(Math.max(0, Math.floor(stacks)));
       if (slot.node.name !== (item?.id ?? 'empty')) {
         slot.node.name = item?.id ?? 'empty'; slot.icon.spriteFrame = null;
         if (item) loadArtSprite(item.icon, (err, frame) => {
@@ -575,15 +617,11 @@ export class BattleUI extends Component {
         });
       }
     });
-    const hints: string[] = [];
-    if (items.some(item => item.attackSpeedPerAttack > 0)) hints.push(`普攻叠层：${stacks}`);
-    if (items.length) hints.push(editable ? '点击卸下' : '战斗中锁定');
-    this.equipmentInfo.string = hints.join(' · ');
   }
 
   private buildBackpack(): void {
     const root = panel(this.node, 'backpack', -510, 45, 192, 390, INK, GOLD, 'panel_side');
-    label(root, '背包', 0, 173, 18, GOLD, 160);
+    this.backpackRoot = root;
     this.backpackCaption = label(root, '', 0, 145, 11, MUTED, 180);
     for (let i = 0; i < 24; i++) {
       const node = button(root, '', -66 + (i % 4) * 44, 112 - Math.floor(i / 4) * 44, 36, 36, () => {});
@@ -612,7 +650,7 @@ export class BattleUI extends Component {
     this.equipmentTooltipHeader = new Node('equipmentHeader'); this.equipmentTooltip.addChild(this.equipmentTooltipHeader);
     const portrait = panel(this.equipmentTooltipHeader, 'equipmentPortrait', -128, -48, 68, 68,
       new Color(8, 13, 21), new Color(100, 96, 72), null);
-    const icon = new Node('equipmentPortraitIcon'); icon.addComponent(UITransform).setContentSize(62, 62); portrait.addChild(icon);
+    const icon = new Node('equipmentPortraitIcon'); icon.addComponent(UITransform).setContentSize(64, 64); portrait.addChild(icon);
     this.equipmentTooltipIcon = icon.addComponent(Sprite); this.equipmentTooltipIcon.sizeMode = Sprite.SizeMode.CUSTOM;
     this.equipmentTooltipTitle = label(this.equipmentTooltipHeader, '', -80, -26, 20, TEXT, 234);
     this.equipmentTooltipTitle.isBold = true;
@@ -631,6 +669,11 @@ export class BattleUI extends Component {
     this.equipmentTooltipText.horizontalAlign = Label.HorizontalAlign.LEFT;
     this.equipmentTooltipText.verticalAlign = Label.VerticalAlign.TOP;
     this.equipmentTooltip.active = false;
+    this.traitPanel = new TraitPanel(this.node);
+    this.sideTabs = [button(this.node, '羁绊', -556, 218, 84, 30, () => this.setSideTab('traits')),
+      button(this.node, '背包', -464, 218, 84, 30, () => this.setSideTab('backpack'))];
+    this.sideTabs[0].name = 'traitsTab'; this.sideTabs[1].name = 'backpackTab';
+    this.setSideTab(this.sideTab);
   }
   private showEquipmentTooltip(item: EquipmentDisplayItem | undefined, x: number): void {
     if (!item || !this.equipmentTooltip) { this.hideEquipmentTooltip(); return; }
@@ -945,25 +988,63 @@ export class BattleUI extends Component {
   }
 
   onDestroy(): void {
+    this.waveTransition?.stop();
     for (const type of [Input.EventType.TOUCH_START, Input.EventType.TOUCH_MOVE, Input.EventType.MOUSE_DOWN, Input.EventType.KEY_DOWN] as const) input.off(type, this.noteActivity, this);
     this.backdrop?.destroy();
   }
   noteActivity(): void { this.waveIdle = 0; if (this.waveTrack) this.waveTrack.active = true; }
   setBoardCenter(x: number, y: number): void {
-    this.capLabel.node.setPosition(x, y, 0);
+    this.capLabel.node.setPosition(x, y + 28, 0);
+  }
+  playWaveTransition(onCovered: () => WaveConfig, onComplete: () => void): void {
+    this.closeUnitDetail(); this.traitPanel.hideDetail(); this.hideEquipmentTooltip();
+    this.debugPanel.active = false;
+    this.waveTransition.play(onCovered, onComplete);
   }
   setSpeed(s: number): void { this.speed = s; if (this.speedLabel) this.speedLabel.string = `×${s}`; }
   showFightBtn(): void { if (this.fightBtn) this.fightBtn.active = true; }
   hideFightBtn(): void { if (this.fightBtn) this.fightBtn.active = false; }
+  setNextWaveVisible(visible: boolean): void {
+    this.nextWaveBtn.active = visible;
+    if (visible) this.hideFightBtn();
+  }
 
   setCombatCountdown(seconds: number, duration = 1): void {
+    if (seconds > 0) this.clearBattleTimer();
     const ratio = Math.max(0, Math.min(1, 1 - seconds / (duration > 0 ? duration : 1)));
     this.preparationBar.active = seconds > 0;
     const g = this.preparationFill; g.clear(); g.fillColor = new Color(5, 16, 23);
     g.rect(-140, -3, 280, 6); g.fill(); g.fillColor = TEAL;
     g.rect(-140, -3, 280 * ratio, 6); g.fill();
-    this.phaseLabel.string = seconds > 0 ? `准备 ${seconds.toFixed(1)}s` : '战斗';
+    this.phaseLabel.string = seconds > 0 ? `准备 ${seconds.toFixed(1)}s` : this.combatActive ? '战斗' : '准备';
     this.phaseLabel.color = seconds > 0 ? TEAL : GOLD;
+  }
+
+  setBattleTimer(clock: BattleClockState): void {
+    this.battleTimerActive = true; this.battleTimer.active = true;
+    this.preparationBar.active = false; this.floorLabel.node.active = false;
+    const overtime = clock.phase === 'overtime';
+    const remaining = Math.max(0, clock.remainingSeconds);
+    const ratio = Math.max(0, Math.min(1, remaining / Math.max(clock.durationSeconds, 0.001)));
+    const g = this.battleTimerFill;
+    g.clear(); g.fillColor = new Color(5, 16, 23);
+    g.rect(-155, -17, 310, 34); g.fill();
+    g.fillColor = overtime ? new Color(159, 68, 36, 235) : new Color(33, 112, 137, 235);
+    if (ratio > 0) { g.rect(-155, -17, 310 * ratio, 34); g.fill(); }
+    this.phaseLabel.node.setPosition(0, 0, 0);
+    this.phaseLabel.node.getComponent(UITransform)!.setContentSize(290, 44);
+    this.phaseLabel.fontSize = 21; this.phaseLabel.lineHeight = 26;
+    this.phaseLabel.isBold = true;
+    this.phaseLabel.string = `${overtime ? '加时' : '战斗'} ${Math.ceil(remaining)}s`;
+    this.phaseLabel.color = overtime ? new Color(255, 210, 128) : new Color(219, 246, 255);
+  }
+
+  private clearBattleTimer(): void {
+    this.battleTimerActive = false;
+    this.battleTimer.active = false; this.floorLabel.node.active = true;
+    this.phaseLabel.node.setPosition(76, 0, 0);
+    this.phaseLabel.node.getComponent(UITransform)!.setContentSize(130, 42);
+    this.phaseLabel.fontSize = 17; this.phaseLabel.lineHeight = 22; this.phaseLabel.isBold = false;
   }
 
   refreshTop(gold: number, _floor: number, lv: LevelSystem, rates = shopCostRates(lv.level)): void {
@@ -988,7 +1069,10 @@ export class BattleUI extends Component {
   private updateCap(population = this.deployed): void {
     if (!this.capLabel) return;
     this.capLabel.string = `${population} / ${this.cap}`;
-    this.capLabel.color = population > this.cap ? new Color(229, 121, 112, 230) : new Color(233, 231, 210, 230);
+    const underCap = population < this.cap;
+    this.capLabel.color = population > this.cap ? new Color(229, 121, 112, 240)
+      : underCap ? new Color(91, 184, 255, 240) : new Color(233, 231, 210, 230);
+    this.capLabel.node.active = !this.shopEncounter && (this.dragging || (!this.combatActive && this.shopAvailable && population !== this.cap));
   }
 
   refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number; artId?: string; role?: string; damageType?: 'physical' | 'magic'; tint?: string }>): void {
@@ -1012,10 +1096,24 @@ export class BattleUI extends Component {
   setShopVisible(v: boolean): void {
     this.shopAvailable = v; this.clearSellPreview();
     this.homeButton.active = v && !this.combatActive;
-    this.phaseLabel.string = this.combatActive ? '战斗' : '准备'; this.phaseLabel.color = this.combatActive ? GOLD : TEAL;
+    if (!this.battleTimerActive) {
+      this.phaseLabel.string = this.shopEncounter ? '商店' : this.combatActive ? '战斗' : '准备'; this.phaseLabel.color = this.combatActive ? GOLD : TEAL;
+    }
   }
-  setCombatActive(v: boolean): void { this.combatActive = v; this.setShopVisible(this.shopAvailable); }
+  setShopEncounter(active: boolean): void {
+    const wasShop = this.shopEncounter;
+    this.shopEncounter = active;
+    if (active) { this.hideFightBtn(); this.phaseLabel.string = '商店'; }
+    else if (wasShop) this.phaseLabel.string = this.combatActive ? '战斗' : '准备';
+    this.updateCap();
+  }
+  setCombatActive(v: boolean): void {
+    this.combatActive = v;
+    if (!v) this.clearBattleTimer();
+    this.setShopVisible(this.shopAvailable);
+  }
   showResult(winner: number, settle: SettlementBreakdown | null, expGained: number, levelUps: number, newLevel: number, round?: RoundSettlement): void {
+    this.clearBattleTimer();
     this.preparationBar.active = false;
     const ended = !!round?.runResult, win = ended ? round.runResult === 'victory' : winner === 0;
     this.resultLabel.string = win ? '胜利' : winner === -1 && !ended ? '平局' : '失败';
@@ -1036,17 +1134,27 @@ export class BattleUI extends Component {
     this.waveLabel.string = info?.stage ? `${name} · 阶段 ${info.stage} / ${stageCount}` : name;
     const current = info?.round ?? wave, count = info?.roundsInStage ?? total;
     for (const child of [...this.waveTrack.children]) if (child.name !== 'skin') child.destroy();
-    const spacing = Math.min(36, 260 / count);
+    const width = this.waveTrack.getComponent(UITransform)!.contentSize.width;
+    const spacing = count > 1 ? (width - 52) / (count - 1) : 0;
+    const nodeScale = count > 1 ? Math.min(1, spacing / 36) : 1;
+    const kinds = Array.from({ length: count }, (_, i) => {
+      const planned = encounterPlan?.[i];
+      if (planned && ENCOUNTER_SPRITE[planned]) return planned;
+      if (i + 1 === current && info?.encounterKind) return info.encounterKind;
+      return !info?.encounterKind && i === count - 1 && info?.stage !== 1 ? 'boss' : 'normal';
+    });
+    // Draw links first so their ends remain behind the node artwork.
+    for (let i = 1; i < count; i++) {
+      const key = i + 1 < current ? 'stage_link_done' : i + 1 === current ? 'stage_link_current' : 'stage_link_todo';
+      const gap = spacing - ((kinds[i - 1] === 'boss' ? 18 : 14) + (kinds[i] === 'boss' ? 18 : 14)) * nodeScale;
+      picture(this.waveTrack, key, (i - count / 2) * spacing, 0, Math.max(1, gap), 4);
+    }
     for (let i = 0; i < count; i++) {
-      const boss = info?.encounterKind ? encounterPlan?.[i] === 'boss' : i === count - 1 && info?.stage !== 1;
-      const key = i + 1 < current ? 'wave_done' : i + 1 === current ? 'wave_current' : boss ? 'wave_boss' : 'wave_todo';
-      picture(this.waveTrack, key, (i - (count - 1) / 2) * spacing, 0, 20);
-      const art = info?.encounterKind ? ENCOUNTER_SPRITE[encounterPlan?.[i] ?? ''] : undefined;
-      if (art) {
-        const node = new Node('encounterIcon'); this.waveTrack.addChild(node); node.setPosition((i - (count - 1) / 2) * spacing, 0, 0);
-        node.addComponent(UITransform).setContentSize(24, 24); const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-        loadArtSprite(art, (error, frame) => { if (!error && sprite.isValid) sprite.spriteFrame = frame; });
-      }
+      const boss = kinds[i] === 'boss', x = (i - (count - 1) / 2) * spacing;
+      const base = `stage_node_${kinds[i] === 'specialShop' ? 'shop' : kinds[i]}`;
+      const key = (i + 1 > current ? `${base}_locked` : base) as UISkinKey;
+      picture(this.waveTrack, key, x, 0, (boss ? 36 : 28) * nodeScale);
+      if (i + 1 === current) picture(this.waveTrack, boss ? 'stage_node_ring_boss' : 'stage_node_ring', x, 0, (boss ? 48 : 38) * nodeScale);
     }
   }
   setLocked(locked: boolean): void {
@@ -1078,6 +1186,7 @@ export class BattleUI extends Component {
     const key = data.detailKey ?? `${data.name}:${data.artId}:${data.side}`;
     if (this.detailKey !== key) { this.detailKey = key; this.closeDetailPopup(); }
     this.currentDetail = data;
+    this.unitTraits.string = (data.traits ?? []).join(' · ');
     this.unitSkillName.string = data.skillDisplayName ?? data.skillName.split(' · ')[0];
     this.unitRole.string = unitRoleLabel(data.role, data.damageType) || UNIT_ROLES[data.role ?? ''] || (data.cost ? '普通棋子' : '野怪');
     const skillIcon = data.skillIcon ?? 'icon_swords';

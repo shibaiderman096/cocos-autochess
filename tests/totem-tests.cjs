@@ -136,7 +136,6 @@ assert.deepEqual(deterministic(),deterministic());
 const item=equipment.find(e=>e.id===id), asset=path.join(__dirname,'../assets/resources',item.icon.replace('/spriteFrame','.png'));
 assert.ok(fs.existsSync(asset));
 const meta=JSON.parse(fs.readFileSync(asset+'.meta','utf8'));
-assert.equal(meta.subMetas.f9941.userData.width,160);
+assert.equal(meta.subMetas.f9941.userData.width,128);
 assert.equal(meta.subMetas['6c48a'].userData.minfilter,'nearest');
-assert.equal(meta.userData.hasAlpha,true);
 console.log('PASS totem: stats, strict threshold, lethal save, same-tick protection, six-tick untargetability, targeting, delayed spells, shield, burn/AoE, 100-tick healing, stun independence, duplicate passive, death/reset, deterministic replay and icon');

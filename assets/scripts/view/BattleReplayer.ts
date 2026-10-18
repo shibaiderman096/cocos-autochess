@@ -7,6 +7,7 @@ import { BoardView } from './BoardView';
 import { FX_SPRITE } from './ArtPaths';
 
 const { ccclass } = _decorator;
+interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: number }
 const ROLE_SKILL_FX: Record<string, { path: string; size: number; tint: [number, number, number] }> = {
   aimed_arrow: { path: FX_SPRITE.hit, size: 0.9, tint: [255, 220, 150] },
   piercing_shot: { path: FX_SPRITE.hit, size: 1.3, tint: [130, 235, 160] },
@@ -27,13 +28,18 @@ export class BattleReplayer extends Component {
   private cellSize = 64;
   private fxRoot: Node;
   private boardView: BoardView;
+  private moves = new Map<number, MoveVisual>();
+  private renderTick = 0;
+  private tickMs = 50;
 
-  bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView) {
+  bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
     this.sim = sim;
     this.unitViews = views;
     this.cellSize = cellSize;
     this.boardView = boardView;
+    this.tickMs = tickMs;
     this.eventCursor = 0;
+    this.moves.clear(); this.renderTick = sim.tick;
   }
 
   setFxRoot(root: Node): void { this.fxRoot = root; }
@@ -50,8 +56,17 @@ export class BattleReplayer extends Component {
   private play(e: BattleEvent) {
     switch (e.t) {
       case 'battle_start': break;
-      case 'move': break;
+      case 'move': {
+        const unit = this.sim.units.find(u => u.id === e.id);
+        if (unit && this.boardView) this.moves.set(e.id, {
+          from: this.boardView.cellToWorld(e.from.x, e.from.y),
+          to: this.boardView.cellToWorld(e.to.x, e.to.y),
+          startTick: e.tick, durationTicks: Math.max(1, unit.cfg.moveTicks),
+        });
+        break;
+      }
       case 'teleport': {
+        this.moves.delete(e.id);
         const uv = this.unitViews.get(e.id);
         if (uv && this.boardView) uv.node.setPosition(this.boardView.cellToWorld(e.to.x, e.to.y));
         break;
@@ -68,6 +83,12 @@ export class BattleReplayer extends Component {
           uv.playAttack(dir);
           const attacker = this.sim.units.find(u => u.id === e.id);
           const skillId = attacker?.cfg.skillId;
+          if (e.area && skillId === 'susanoo_form') {
+            const pos = tv.node.position.clone();
+            // The original crescent's convex edge points down (-90 degrees).
+            const sweepAngle = Math.atan2(pos.y - uv.node.position.y, pos.x - uv.node.position.x) * 180 / Math.PI + 90;
+            this.playSpriteFx(FX_SPRITE.susanooSlash, pos, pos, 2.7, 2.7, false, false, undefined, false, sweepAngle);
+          }
           const projectile = attacker?.cfg.basicAttackFx;
           if (projectile) {
             const tint = attacker.cfg.basicAttackTint;
@@ -94,7 +115,7 @@ export class BattleReplayer extends Component {
             const color = FloatText.colorForType(e.dmgType);
             const pos = tv.node.position.clone();
             const sourcePos = this.unitViews.get(e.source)?.node.position;
-            ft.show(`${e.critical ? '!' : ''}${e.dmg}`, color, pos, this.fxRoot, {
+            ft.show(e.executed ? '斩杀' : `${e.critical ? '!' : ''}${e.dmg}`, color, pos, this.fxRoot, {
               critical: e.critical,
               damage: e.dmg,
               direction: sourcePos ? pos.x - sourcePos.x : 0,
@@ -165,7 +186,7 @@ export class BattleReplayer extends Component {
         const target = this.unitViews.get(e.target);
         if (e.skillId === 'dragon_breath' && target) {
           const pos = target.node.position.clone();
-          this.playSpriteFx(FX_SPRITE.fireball, pos, pos, 3.2, 3.2, false, false, new Color(180, 70, 255));
+          this.playSpriteFx(FX_SPRITE.dragonBreath, pos, pos, 3.2, 3.2);
         }
         const roleFx = ROLE_SKILL_FX[e.skillId];
         if (roleFx && target) {
@@ -191,6 +212,7 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'death': {
+        this.moves.delete(e.id);
         const uv = this.unitViews.get(e.id);
         if (uv) uv.playDeath();
         break;
@@ -199,19 +221,30 @@ export class BattleReplayer extends Component {
     }
   }
 
-  syncViews(dt: number) {
+  syncViews(dt: number, interpolation = 0, playbackSpeed = 1) {
     if (!this.sim || !this.boardView) return;
+    // The fixed clock controls travel at every playback speed; only the final step may finish after settlement.
+    this.renderTick = this.sim.finished
+      ? Math.max(this.renderTick, this.sim.tick) + Math.max(0, dt) * playbackSpeed * 1000 / this.tickMs
+      : this.sim.tick + Math.max(0, Math.min(1, interpolation));
     for (const u of this.sim.units) {
       const uv = this.unitViews.get(u.id);
       if (!uv) continue;
       if (u.alive) {
         const target = this.boardView.cellToWorld(u.x, u.y);
-        uv.sync(u.snapshot(this.sim.tick), target, this.cellSize, dt);
+        const movement = this.moves.get(u.id);
+        if (movement) {
+          const progress = Math.max(0, Math.min(1, (this.renderTick - movement.startTick) / movement.durationTicks));
+          Vec3.lerp(target, movement.from, movement.to, progress);
+          if (progress === 1) this.moves.delete(u.id);
+        }
+        uv.node.setPosition(target);
+        uv.sync(u.snapshot(this.sim.tick), this.cellSize);
       }
     }
   }
 
-  private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false): void {
+  private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
     if (!this.fxRoot?.isValid) return;
     const effect = new Node(projectile ? 'ravenProjectile' : 'ravenVortex');
     effect.addComponent(UITransform).setContentSize(this.cellSize * width, this.cellSize * height);
@@ -219,7 +252,8 @@ export class BattleReplayer extends Component {
     sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
     if (tint) sprite.color = tint;
     this.fxRoot.addChild(effect); effect.setPosition(from);
-    if (projectile && rotate) effect.angle = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
+    if (angle !== undefined) effect.angle = angle;
+    else if (projectile && rotate) effect.angle = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
     else if (mirror || (projectile && to.x < from.x)) effect.setScale(new Vec3(-1, 1, 1));
     resources.load(path, SpriteFrame, (err, frame) => {
       if (!effect.isValid) return;

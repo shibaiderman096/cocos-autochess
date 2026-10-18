@@ -3,7 +3,9 @@
   "units": {
     "warrior": {
       "role": "mage",
-      "tags": ["aoe"],
+      "tags": [
+        "aoe"
+      ],
       "source": "explicit",
       "confidence": "high",
       "reason": "Range-4 physical caster; rasengan splits physical damage among enemies within 2 hexes of the target."
@@ -134,7 +136,7 @@
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Existing tank; healing_channel heals herself only, not allies."
+      "reason": "Magic tank; healing_channel heals herself for max-health fraction plus a spell-scaled flat amount."
     },
     "iron_golem": {
       "role": "tank",
@@ -144,6 +146,16 @@
       ],
       "confidence": "high",
       "reason": "4费近战坦克，以护甲加成重拳击飞目标并获得限时减伤。"
+    },
+    "madara": {
+      "role": "tank",
+      "tags": [
+        "aoe",
+        "damage-reduction",
+        "control-immunity"
+      ],
+      "confidence": "high",
+      "reason": "5费物理坦克，须佐期间免控、减伤并强化范围普攻。"
     }
   }
 }

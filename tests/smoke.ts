@@ -35,7 +35,12 @@ console.log(`winner=${r1.winner} ticks=${r1.ticks} survivors=${r1.survivors.leng
 console.log(`事件数=${r1.events.length}`);
 
 console.log('--- 断言 ---');
-assert(r1.winner === 0 || r1.winner === 1, 'must have a winner');
+assert(r1.winner === 0 || r1.winner === 1 || r1.winner === -1, 'must have a valid terminal result');
+if (r1.winner === -1) {
+  assert(r1.survivors.length === 0 || r1.ticks === 1200, 'draw requires mutual destruction or the configured timeout');
+} else {
+  assert(r1.survivors.length > 0, 'a decisive winner must have surviving units');
+}
 assert(JSON.stringify(r1.events) === JSON.stringify(r2.events), 'same seed => same events');
 assert(r1.events[0].t === 'battle_start', 'first event is battle_start');
 assert(r1.events[r1.events.length - 1].t === 'end', 'last event is end');

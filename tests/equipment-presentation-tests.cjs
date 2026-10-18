@@ -1,0 +1,55 @@
+const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
+const {load,Node,Label,Sprite,UITransform,pending}=require('./helpers/ui-harness.cjs');
+const {BattleUI}=load(path.join(__dirname,'../assets/scripts/ui/BattleUI.ts'));
+const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
+const {Unit}=load(path.join(__dirname,'../assets/scripts/battle/Unit.ts'));
+const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
+const {combatEquipmentIdentity,sameCombatConfigurationIdentity,stableEnemyJson}=load(path.join(__dirname,'../assets/scripts/core/EnemyGenerationTypes.ts'));
+const {equipmentIdentity,sameEquipmentIdentity}=load(path.join(__dirname,'../assets/scripts/core/EquipmentPolicy.ts'));
+const before=require('../art-source/original-equipment/equipment-before.json');
+const items=require('../assets/resources/config/equipment.json');
+const roster=require('../assets/resources/config/units.json'),battle=require('../assets/resources/config/battle.json');
+assert.deepEqual(combatEquipmentIdentity(items),combatEquipmentIdentity(before),'every mechanical field is preserved');
+for(const item of items) {
+  const png=fs.readFileSync(path.join(__dirname,'../assets/resources',item.icon.replace('/spriteFrame','.png')));
+  assert.equal(png.readUInt32BE(16),128);assert.equal(png.readUInt32BE(20),128);
+  assert.equal(png.readUInt8(25),6,'equipment PNG uses RGBA');
+}
+const oldIdentity=stableEnemyJson({skills:{},equipment:before}),currentIdentity=stableEnemyJson({skills:{},equipment:items});
+assert.ok(sameCombatConfigurationIdentity(oldIdentity,currentIdentity));
+const oldPolicy=stableEnemyJson({policy:{},roles:null,items:before.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
+assert.ok(sameEquipmentIdentity(oldPolicy,equipmentIdentity({},items)));
+const changed=JSON.parse(JSON.stringify(items));changed[0].attackSpeedPerAttack+=.01;
+assert.ok(!sameEquipmentIdentity(oldPolicy,equipmentIdentity({},changed)));
+assert.ok(!sameCombatConfigurationIdentity(oldIdentity,stableEnemyJson({skills:{},equipment:changed})));
+const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
+const flush=()=>{while(pending.length)pending.shift()();};
+const base={name:'卫士',star:1,cost:1,artId:'guardian',side:0,hp:700,maxHp:700,mana:0,maxMana:50,atk:40,armor:40,mr:40,atkSpeed:1,range:1,skillName:'技能',skillDescription:''};
+const traits=resolveTraits(battle.traits,[],roster).filter(s=>s.config.members.includes('guardian')).map(s=>s.config.name);
+ui.showUnitDetail({...base,traits});
+assert.equal(ui.unitTraits.string,traits.join(' · '));assert.ok(traits.includes('原住民')&&traits.includes('重甲坦克'),'inactive and reserve memberships appear');
+assert.ok(ui.unitTraits.node.position.y>90);
+ui.showUnitDetail({...base,name:'野怪',traits:[]});assert.equal(ui.unitTraits.string,'','membership clears when selection changes');
+ui.showEquipment([items[0],items[3],items[0]],true,12);flush();
+for(const slot of ui.equipmentSlots) {
+  assert.deepEqual(slot.icon.node.getComponent(UITransform).contentSize,{width:64,height:64});
+  assert.ok(slot.icon.spriteFrame);assert.equal(slot.icon.sizeMode,Sprite.SizeMode.CUSTOM);
+}
+assert.equal(ui.equipmentSlots[0].stacks.string,'12');assert.ok(ui.equipmentSlots[0].stacks.node.parent.active);
+assert.equal(ui.equipmentSlots[1].stacks.node.parent.active,false);assert.equal(ui.equipmentSlots[2].stacks.string,'12');
+let removed=-1;ui.onEquipment=index=>removed=index;ui.equipmentSlots[1].node.events.get('end')();assert.equal(removed,1);
+ui.equipmentSlots[0].node.events.get('enter')();flush();assert.ok(ui.equipmentTooltip.active);assert.equal(ui.equipmentTooltipTitle.string,items[0].name);
+ui.showEquipment([items[0]],false,0);assert.equal(ui.equipmentSlots[0].stacks.string,'0');
+removed=-1;ui.equipmentSlots[0].node.events.get('end')();assert.equal(removed,-1,'battle equipment is locked');
+ui.showEquipment([],true,0);assert.ok(ui.equipmentSlots.every(s=>!s.stacks.node.parent.active&&!s.icon.node.active));
+const root=ui.unitPanel.getChildByName('equipment');
+assert.ok(!root.children.some(n=>n.getComponent(Label)?.string),'no equipment heading or hint copy');
+const view=new UnitView();view.node=new Node('unit');view.setup('guardian',0,1,64);view.setEquipment([items[0],items[3]]);flush();
+const counter=view.equipmentStackLabels[0].node;
+assert.ok(!Array.from(counter.components.keys()).some(type=>type.name==='Graphics'),'stack label has no competing Graphics renderer or opaque backing over the equipment art');
+assert.ok(Array.from(counter.components.keys()).some(type=>type.name==='LabelOutline'),'stack digits retain a readable outline without hiding the icon');
+const unit=new Unit(1,0,{...roster.find(u=>u.id==='guardian')},0,0);unit.equipmentAttackStacks=17;
+view.sync(unit.snapshot(),64);assert.equal(view.equipmentStackLabels[0].string,'17');
+unit.equipmentAttackStacks=0;view.sync(unit.snapshot(),64);assert.equal(view.equipmentStackLabels[0].string,'0');
+view.setEquipment([items[3]]);assert.equal(view.equipmentStackLabels.length,0);
+console.log('PASS equipment presentation: unchanged mechanics, ten 128px RGBA assets, fixed detail slots, memberships, per-item stacks/reset, tooltip, unload/lock, and legacy identity checks');

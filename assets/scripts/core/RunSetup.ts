@@ -74,13 +74,14 @@ export function buildMonsterUnits(config: RunConfig, roster: UnitConfigData[]): 
     hp: Math.round(base.hp * multiplier), atk: base.atk * multiplier, armor: base.armor * multiplier,
     mr: base.mr * multiplier, atkSpeed: config.monsterAttackSpeed,
     maxMana: base.maxMana * multiplier, startMana: base.startMana * multiplier, manaPerHit: base.manaPerHit * multiplier,
-    physicalPower: attributes.physicalPower * multiplier, spellPower: attributes.spellPower * multiplier, critChance: attributes.critChance * multiplier,
+    physicalPower: attributes.physicalPower * multiplier, spellPower: attributes.spellPower * multiplier, critChance: monster.critChance ?? 0.25,
     lifesteal: attributes.lifesteal * multiplier, damageAmp: attributes.damageAmp * multiplier,
     damageReduction: attributes.damageReduction * multiplier })), ...strong];
 }
 
 /** Four-argument calls retain the legacy public contract; sessions explicitly select their saved mode. */
 export interface EnemyGenerationOptions { mode:EnemyGenerationMode; runSeed?:number; difficulty?:EnemyDifficultyConfig; power?:EnemyPowerData;
+  earlyEncounterLayout?: 'legacy' | 'random-rounds-v1';
   equipmentPolicy?:EquipmentPolicyConfig;
   equipmentRoles?:EnemyRoleConfig;
   /** Optional offline timing observer. Timing is never read by the generator or serialized into waves. */
@@ -95,7 +96,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   const encounterRandom = new RunRandomContext(generation?.runSeed ?? 1);
   const decorate = (wave: WaveConfig): WaveConfig => {
     const rules = config.stageEncounters; if (!rules) return wave;
-    const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage)[wave.round! - 1];
+    const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage, generation?.earlyEncounterLayout !== 'legacy')[wave.round! - 1];
     const result = { ...wave, encounterKind: kind, waveKind: wave.stage === 1 ? 'intro' as const : kind === 'elite' || kind === 'boss' ? kind : 'normal' as const };
     if (kind === 'specialShop') return { ...result, name: '特殊商店', enemies: [], budget: undefined };
     if (kind === 'monster' && wave.stage! > 1) {
@@ -122,7 +123,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   // One complete stage of lookahead makes the last selected stage independent of campaign length.
   for(let stage=2;stage<=MAX_STAGE_COUNT+1;stage++){
     const rounds=stageRoundCount(stage,config);
-    const encounters = config.stageEncounters ? planStageEncounters(stage, rounds, encounterRandom, config.stageEncounters.startStage) : undefined;
+    const encounters = config.stageEncounters ? planStageEncounters(stage, rounds, encounterRandom, config.stageEncounters.startStage, generation.earlyEncounterLayout !== 'legacy') : undefined;
     for(let round=1;round<=rounds;round++){
       const encounter = encounters?.[round - 1];
       const kind = encounters ? (encounter === 'elite' || encounter === 'boss' ? encounter : 'normal') : classifyWave(stage,round,rounds,generation.difficulty) as 'normal'|'elite'|'boss';

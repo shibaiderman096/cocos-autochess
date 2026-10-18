@@ -25,7 +25,7 @@ import { formationSettings } from './FormationPolicy';
 import { extractFormationTemplates } from './FormationTemplates';
 import { resolveEnemyRole } from './EnemyRoles';
 import { EnemyPowerModel } from './EnemyPowerModel';
-import { equipmentIdentity,validateEquipmentPolicy } from './EquipmentPolicy';
+import { equipmentIdentity,sameEquipmentIdentity,validateEquipmentPolicy } from './EquipmentPolicy';
 import type { EquipmentPolicyConfig,PendingEquipmentReward } from './EquipmentPolicyTypes';
 import { createEquipmentReward } from './EquipmentReward';
 import type { BotPlayerPort,BotCatalog } from './BotObservation';
@@ -59,6 +59,7 @@ export class RunSession {
     this.save = loaded ? migrateSaveV2(options.save) : freshSaveV2(options.stageCount ?? DEFAULT_STAGE_COUNT, options.runSeed ?? DEFAULT_RUN_SEED, options.enemyGenerationMode ?? 'budget-v1');
     if (loaded && options.runSeed !== undefined && options.runSeed !== this.save.runSeed) throw new Error('Cannot replace the seed of a saved run');
     if (this.save.rulesVersion !== RUN_RULES_VERSION) throw new Error(`Unsupported run rules version: ${this.save.rulesVersion}`);
+    if (this.save.earlyEncounterLayout !== undefined && this.save.earlyEncounterLayout !== 'random-rounds-v1') throw new Error('Unsupported early encounter layout');
     const mode=this.save.enemyGenerationVersion;
     if(!['legacy','budget-v1'].includes(mode))throw new Error('Unsupported enemy generation version: '+mode);
     if(loaded&&options.enemyGenerationMode!==undefined&&options.enemyGenerationMode!==mode)throw new Error('Cannot replace saved enemy generation mode');
@@ -72,13 +73,13 @@ export class RunSession {
       if(this.save.powerModelVersion!==power.version||this.save.powerModelCalibrationHash!==power.calibrationHash
         ||this.save.difficultyConfigVersion!==difficulty.version)throw new Error('Saved enemy power / difficulty version mismatch');
       const roster=cfg.allUnits().slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
-      const skills=Object.fromEntries([...new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))].sort().map(id=>[id,cfg.getSkill(id)]));
+      const skills=Object.fromEntries(Array.from(new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))).sort().map(id=>[id,cfg.getSkill(id)]));
       const identity=combatConfigurationIdentity({difficulty,run:runConfig,units:roster,battle:cfg.battle,skills,equipment:cfg.allEquipment().slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
       if(this.save.difficultyConfigIdentity!==undefined&&!sameCombatConfigurationIdentity(this.save.difficultyConfigIdentity,identity))throw new Error('Saved enemy difficulty configuration mismatch');
       if(loaded&&this.save.difficultyConfigIdentity===undefined&&(this.save.round?.waveIndex??0)>0)throw new Error('Saved enemy difficulty identity missing');
       this.save.difficultyConfigIdentity??=identity;
     }
-    this.generation={mode,runSeed:this.save.runSeed,difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
+    this.generation={mode,runSeed:this.save.runSeed,earlyEncounterLayout:this.save.earlyEncounterLayout ?? 'legacy',difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
       power:options.enemyPower&&JSON.parse(JSON.stringify(options.enemyPower))};
     this.configureEquipment(options,loaded);
     this.random = new RunRandomContext(this.save.runSeed);
@@ -132,8 +133,8 @@ export class RunSession {
     validateEquipmentPolicy(c,this.cfg.allEquipment(),options.enemyPower);
     const identity=equipmentIdentity(c,this.cfg.allEquipment(),options.enemyRoles);
     const menuNewGame=loaded&&!this.save.round&&!this.save.owned.length&&!this.save.shopReserved&&this.save.equipmentConfigIdentity===undefined;
-    if(loaded&&!menuNewGame&&this.save.equipmentConfigIdentity!==identity)throw new Error('Saved equipment configuration mismatch');
-    this.save.equipmentConfigIdentity=identity;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
+    if(loaded&&!menuNewGame&&!sameEquipmentIdentity(this.save.equipmentConfigIdentity!,identity))throw new Error('Saved equipment configuration mismatch');
+    this.save.equipmentConfigIdentity=this.save.equipmentConfigIdentity??identity;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
     if(this.save.enemyEquipmentVersion!=='none'){
       this.generation.equipmentPolicy=this.equipmentPolicy;
       this.generation.equipmentRoles=options.enemyRoles&&JSON.parse(JSON.stringify(options.enemyRoles));
@@ -225,7 +226,7 @@ export class RunSession {
     if(this.save.formationVersion!==FORMATION_VERSION)throw new Error('Unsupported saved formation version');
     if(!options.formationConfig||!options.enemyRoles||!options.enemyPower)throw new Error('Formation requires versioned config, roles and power model');
     if(this.cfg.battle.boardWidth!==7||this.cfg.battle.boardHeight!==8||this.cfg.battle.ownRows!==4)throw new Error('Formation requires current 7x8 odd-r board');
-    const roster=this.cfg.allUnits(),skills=Object.fromEntries([...new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))].sort().map(id=>[id,this.cfg.getSkill(id)]));
+    const roster=this.cfg.allUnits(),skills=Object.fromEntries(Array.from(new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))).sort().map(id=>[id,this.cfg.getSkill(id)]));
     let savedFormationIdentity:string|undefined;
     if(this.save.formationConfigIdentity!==undefined){
       try{savedFormationIdentity=JSON.parse(this.save.formationConfigIdentity).formation;}catch{throw new Error('Saved formation configuration mismatch');}
@@ -379,7 +380,7 @@ export class RunSession {
   /** Opt-in richer public surface for formal bots. The original player port retains its P1-A contract. */
   botPort():BotPlayerPort {
     const freeze=<T>(value:T):T=>{if(value&&typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;};
-    const units=this.cfg.allUnits(),skills=Object.fromEntries([...new Set(units.map(u=>u.skillId).filter((id):id is string=>!!id))].sort().map(id=>[id,this.cfg.getSkill(id)]));
+    const units=this.cfg.allUnits(),skills=Object.fromEntries(Array.from(new Set(units.map(u=>u.skillId).filter((id):id is string=>!!id))).sort().map(id=>[id,this.cfg.getSkill(id)]));
     const catalog:BotCatalog=freeze(JSON.parse(JSON.stringify({units,skills,equipment:this.cfg.allEquipment(),economy:this.economy.config,
       levelUpExp:[...LEVEL_UP_EXP],xpPurchase:EXP_PURCHASE,refreshCost:REFRESH_COST,initialHealth:this.cfg.battle.initialHealth,maxEquipment:MAX_EQUIPMENT})));
     const player=this.playerPort();let preview:{id:number;placements:WaveConfig['enemies']}|undefined;

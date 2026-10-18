@@ -18,6 +18,7 @@ class Node {
   getComponent(T) { return this.components.get(T); }
   setPosition(x,y,z) { this.position={x,y,z}; }
   setScale(x,y,z) { this.scale={x,y,z}; }
+  setRotationFromEuler(x,y,z) { this.rotation={x,y,z}; }
   setSiblingIndex(i) { const list=this.parent.children; list.splice(list.indexOf(this),1); list.splice(i,0,this); }
   on(type,fn) { this.events.set(type,fn); }
   destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
@@ -57,11 +58,11 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,RichText:class{},Color,Graphics,Mask,Rect,Size,UIOpacity:class{},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+const cc={Node,UITransform,Sprite,Label,RichText:class{},Color,Graphics,Mask,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   input,Input,
   ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
-  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{width:1536,height:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
+  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:name.includes('trait_badges')?2172:1536,height:name.includes('trait_badges')?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
 function load(file) {
   file=path.resolve(file); if(cache.has(file)) return cache.get(file);
@@ -78,7 +79,7 @@ const flush=()=>{ while(pending.length) pending.shift()(); };
 const ui=new BattleUI(); ui.node=new Node('UI'); new Node('Canvas').addChild(ui.node); ui.init();
 assert.equal(ui.node.getChildByName('settlement'),undefined,'no report modal or full-screen shield');
 assert.equal(ui.resultPanel.parent,ui.node.getChildByName('roundBar'));
-assert.equal(ui.resultLabel.node.position.y,-78,'outcome appears below the stage header and wave track');
+assert.equal(ui.resultLabel.node.position.y,-102,'outcome appears below the taller stage node track');
 ui.showResult(0,null,0,0,1);assert.equal(ui.resultLabel.string,'胜利');assert.equal(ui.resultPanel.active,true);
 ui.update(.5);assert.equal(ui.resultPanel.active,true);ui.update(.5);assert.equal(ui.resultPanel.active,false);
 ui.showResult(1,null,0,0,1);assert.equal(ui.resultLabel.string,'失败');ui.hideResult();
@@ -353,10 +354,10 @@ let xpBought=0,refreshed=0;ui.onBuyExp=()=>xpBought++;ui.onRefresh=()=>refreshed
 ui.buyExpBtn.events.get('end')();refreshButton.events.get('end')();assert.equal(xpBought,1);assert.equal(refreshed,1);
 ui.refreshTop(3,1,new LevelSystem());ui.buyExpBtn.events.get('end')();assert.equal(xpBought,1,'icon purchase still rejects insufficient gold');
 ui.refreshRun(20,20,4,23,'边境哨卫',{stage:2,round:1,roundsInStage:10},3); flush();
-assert.equal(ui.floorLabel.string,'2-1'); assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,10);
+assert.equal(ui.floorLabel.string,'2-1'); assert.equal(ui.waveTrack.children.filter(n=>/^stage_node_(normal|boss)(_locked)?$/.test(n.name)).length,10);
 ui.refreshTop(10,2,new LevelSystem()); assert.equal(ui.floorLabel.string,'2-1','economy updates retain stage-round header');
 ui.refreshRun(20,20,1,23,'史莱姆营地',{stage:1,round:1,roundsInStage:3},3); flush();
-assert.equal(ui.waveTrack.children.filter(n=>n.name!=='skin').length,3);
+assert.equal(ui.waveTrack.children.filter(n=>/^stage_node_(normal|boss)(_locked)?$/.test(n.name)).length,3);
 const delayedUI=new BattleUI();delayedUI.node=new Node('delayedUI');new Node('Canvas').addChild(delayedUI.node);delayedUI.init();
 delayedUI.showUnitDetail(warriorDetail);delayedUI.updateUnitVitals(175,700,60,100);flush();
 assert.equal(delayedUI.hpMeter.fill.fillRange,.25);assert.equal(delayedUI.manaMeter.fill.fillRange,.6,'live values survive delayed texture loading');
@@ -514,3 +515,37 @@ stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(s
 stageBody.children.find(n=>n.name==='button').events.get('end')();assert.equal(stageActions.at(-1).choice,'continue');
 stagePanel.hide();assert.equal(stagePanel.root,null);
 console.log('PASS stage reward UI: category cards, four original equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');
+const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
+const trait=JSON.parse(JSON.stringify(require('../assets/resources/config/battle.json').traits[0]));
+trait.members.push('future_ninja_1','future_ninja_2');
+const traitRoster=require('../assets/resources/config/units.json');
+ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
+assert.equal(ui.traitPanel.rows.children.filter(node=>node.active).length,0,'no deployed owner means no trait row');
+for(const [count,tier] of [[1,'inactive'],[2,'inactive'],[3,'bronze'],[5,'silver'],[7,'gold'],[10,'prismatic']]) {
+  const state=resolveTraits([trait],trait.members.slice(0,count));ui.refreshTraits(state,traitRoster);flush();
+  const row=ui.traitPanel.rows.children.find(node=>node.active&&node.name==='trait_naruto');
+  assert.ok(row.children.some(node=>node.getComponent(Label)?.string==='火'));
+  assert.ok(row.children.find(node=>node.name==='traitArt').getComponent(Sprite).spriteFrame.name.includes('#rect,'));
+  row.events.get('end')();flush();
+  const card=ui.traitPanel.detail;
+  assert.ok(card?.active);assert.equal(card.children.filter(node=>node.name==='traitBreakpoint').length,4);
+  assert.equal(card.children.filter(node=>node.name.startsWith('traitOwner_')).length,8);
+  assert.ok(card.children.some(node=>node.getComponent(Label)?.string.includes({inactive:'未激活',bronze:'黄铜',silver:'白银',gold:'黄金',prismatic:'棱彩'}[tier])));
+  ui.node.getChildByName('backpackTab').events.get('end')();
+  assert.equal(ui.backpackRoot.active,true);assert.equal(ui.traitPanel.root.active,false);assert.equal(ui.traitPanel.detail,null);
+  ui.node.getChildByName('traitsTab').events.get('end')();
+  assert.equal(ui.backpackRoot.active,false);assert.equal(ui.traitPanel.root.active,true);
+}
+ui.refreshTraits(resolveTraits([trait],trait.members.slice(0,1)),traitRoster);flush();
+ui.traitPanel.rows.children.find(node=>node.active).events.get('end')();flush();
+assert.ok(ui.traitPanel.detail?.active);
+ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
+assert.equal(ui.traitPanel.detail,null,'removing the last owner closes its pinned detail');
+assert.equal(ui.traitPanel.selected,null);
+assert.equal(ui.traitPanel.rows.children.filter(node=>node.active).length,0);
+ui.refreshTraits(resolveTraits([trait],trait.members.slice(0,1)),traitRoster);flush();
+ui.traitPanel.rows.children.find(node=>node.active).events.get('enter')();flush();
+assert.ok(ui.traitPanel.detail?.active);
+ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
+assert.equal(ui.traitPanel.detail,null,'removing the last owner also closes hover details');
+console.log('PASS trait UI: deployed owners only, inactive at 1/2, five badge regions, glyph, tiers, owners, switching and last-owner detail cleanup');

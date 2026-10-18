@@ -80,7 +80,7 @@ export class EnemyPowerModel {
     return { power: estimates.reduce((sum, e) => sum + e.power, 0),
       confidence: estimates.reduce((c, e) => lowest(c, e.confidence), 'high' as PowerReliability),
       sampleCount: Math.min(...estimates.map(e => e.sampleCount)),
-      diagnostics: [...new Set(estimates.flatMap(e => e.diagnostics))], method: estimates.every(e => e.method === 'measured') ? 'measured' : 'additive-fallback' };
+      diagnostics: Array.from(new Set(estimates.flatMap(e => e.diagnostics))), method: estimates.every(e => e.method === 'measured') ? 'measured' : 'additive-fallback' };
   }
   winProbability(powerA: number, powerB: number): number {
     if (!positive(powerA) || !positive(powerB)) throw new Error('Win prediction requires positive finite power');

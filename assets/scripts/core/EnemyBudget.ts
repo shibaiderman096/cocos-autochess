@@ -26,7 +26,7 @@ export class EnemyBudget {
   private recoverable=new Map<number,boolean>();
   constructor(readonly baseBudget:number, readonly config:EnemyDifficultyConfig, bounds:WaveBudgetBounds[]) {
     let previousFirst=0,previousLast:WaveBudgetBounds|undefined;
-    const stages=[...new Set(bounds.map(b=>b.stage))].sort((a,b)=>a-b);
+    const stages=Array.from(new Set(bounds.map(b=>b.stage))).sort((a,b)=>a-b);
     for(const stage of stages){
       const rows=bounds.filter(b=>b.stage===stage).sort((a,b)=>a.round-b.round),first=rows[0],last=rows[rows.length-1];
       for(const b of rows)if(!Number.isFinite(b.min)||!Number.isFinite(b.max)||b.min<=0||b.max<b.min)throw new Error('Invalid feasible enemy interval');

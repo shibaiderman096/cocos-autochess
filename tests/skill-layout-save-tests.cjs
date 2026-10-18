@@ -17,6 +17,8 @@ for(const skill of Object.values(oldSkills)){
 }
 const original=make(oldSkills),bot=new MinimalBaselineBot();
 while(original.flow.wave.stage<2){bot.prepare(original.playerPort());original.startBattle().run();original.settleBattle();bot.claimRewards(original.playerPort());assert.equal(original.nextWave(),true);}
+// A stage can now begin with a shop; finish its public encounter actions before saving a combat fixture.
+if(original.flow.wave.encounterKind==='specialShop'){bot.claimRewards(original.playerPort());assert.equal(original.nextWave(),true);}
 bot.prepare(original.playerPort());
 const saved=original.snapshot(),legacySkills=Object.fromEntries(Object.keys(JSON.parse(saved.difficultyConfigIdentity).skills).map(id=>[id,oldSkills[id]]));
 // Reconstruct the full presentation-bearing identity written by the previous release.

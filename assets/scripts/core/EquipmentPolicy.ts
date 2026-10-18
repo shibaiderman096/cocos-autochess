@@ -2,7 +2,7 @@ import type { EquipmentConfigData } from '../battle/types';
 import type { EnemyPowerData } from './EnemyPowerTypes';
 import type { EquipmentPolicyConfig, EquipmentQuota, EquipmentTier } from './EquipmentPolicyTypes';
 import type { WaveKind } from './EnemyGenerationTypes';
-import { stableEnemyJson } from './EnemyGenerationTypes';
+import { stableEnemyJson, combatEquipmentIdentity } from './EnemyGenerationTypes';
 import type { EnemyRoleConfig } from './EnemyFormationTypes';
 
 export function validateEquipmentPolicy(c:EquipmentPolicyConfig,items?:Pick<EquipmentConfigData,'id'>[],power?:EnemyPowerData):void {
@@ -33,7 +33,13 @@ export function equipmentQuota(c:EquipmentPolicyConfig,stage:number,kind:WaveKin
   return c.enemy.quotas[kind].filter(q=>q.stage<=stage).slice(-1)[0];
 }
 export function equipmentIdentity(c:EquipmentPolicyConfig,items:EquipmentConfigData[],roles?:EnemyRoleConfig):string {
-  return stableEnemyJson({policy:c,roles:roles??null,items:items.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
+  return stableEnemyJson({policy:c,roles:roles??null,items:combatEquipmentIdentity(items.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0))});
+}
+export function sameEquipmentIdentity(saved:string,current:string):boolean {
+  try {
+    const normalize=(text:string)=>{const value=JSON.parse(text);return stableEnemyJson({...value,items:combatEquipmentIdentity(value.items)});};
+    return normalize(saved)===normalize(current);
+  } catch { return false; }
 }
 export function unlockedEquipment(c:EquipmentPolicyConfig,stage:number,unlock:Record<EquipmentTier,number>):string[] {
   return Object.keys(c.tiers).filter(id=>stage>=unlock[c.tiers[id]]).sort();
