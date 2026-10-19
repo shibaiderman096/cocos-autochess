@@ -140,18 +140,10 @@ export class StageProgression {
     if (wave.encounterKind === 'monster') {
       const value = this.value(wave.stage!);
       this.state.lastUnitDrop = { waveId: wave.id, value, ...this.reserveCards(value, wave.id, 4101) };
-      this.collect(wave);
+      const drop = this.state.lastUnitDrop;
+      this.state.pending = { id: this.id(wave, 'units'), kind: 'unitBundle', ...drop };
     }
     else if (wave.encounterKind === 'boss') this.state.pending = { id: this.id(wave, 'boss'), waveId: wave.id, kind: 'bossChoice', value: this.value(wave.stage!) };
-  }
-  /** Older saves may still have an unclaimed monster popup. Deliver it without rerolling. */
-  resume(wave: WaveConfig): void {
-    const pending = this.state.pending;
-    if (wave.encounterKind === 'monster' && pending?.kind === 'unitBundle') {
-      const { waveId, value, units, deferredValue } = pending;
-      this.state.lastUnitDrop = { waveId, value, units: [...units], deferredValue };
-      delete this.state.pending; this.collect(wave);
-    }
   }
   act(action: StageChoice, wave: WaveConfig): { ok: boolean; error?: string; completeShop?: boolean } {
     const p = this.state.pending;

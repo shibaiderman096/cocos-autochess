@@ -30,13 +30,67 @@ export class UnitView extends Component {
   private hpBarContent: Node;
   private loaded = false;
   private starBadge: Node;
-  private susanooView: Node;
+  private shadowView: Node;
+  private domainView: Node;
+  private sunlightAura: Node;
   private cellSize = 64;
   private equipmentIcons: Node[] = [];
   private equipmentKey = "";
   private equipmentStackLabels: Label[] = [];
   private bodyOpacity: UIOpacity;
   private shieldRing: Node;
+  displayedStar = 1;
+  private upgradeEffect: Node | null = null;
+  private upgradeElapsed = 0;
+
+  /** A separate overlay never changes the drag, attack, or replay transforms. */
+  playStarUpgrade(): void {
+    if (this.displayedStar < 2) return;
+    this.upgradeEffect?.destroy();
+    const root = new Node('starUpgrade'); this.node.addChild(root);
+    root.addComponent(UITransform).setContentSize(this.cellSize * 3, this.cellSize * 3);
+    root.addComponent(Graphics);
+    root.addComponent(UIOpacity);
+    const caption = new Node('upgradeCaption'); root.addChild(caption);
+    caption.addComponent(UITransform).setContentSize(180, 36);
+    const text = caption.addComponent(Label);
+    text.string = `${this.displayedStar}星升级`;
+    text.fontSize = 22; text.lineHeight = 30;
+    text.color = this.displayedStar === 3 ? new Color(255, 218, 100) : new Color(195, 235, 255);
+    const outline = caption.addComponent(LabelOutline); outline.color = new Color(26, 32, 54); outline.width = 2;
+    this.upgradeEffect = root; this.upgradeElapsed = 0;
+    this.update(0);
+  }
+
+  update(dt: number): void {
+    const root = this.upgradeEffect;
+    if (!root?.isValid) return;
+    this.upgradeElapsed += Math.max(0, dt);
+    const t = this.upgradeElapsed / 1.1;
+    if (t >= 1) { root.destroy(); this.upgradeEffect = null; return; }
+    const g = root.getComponent(Graphics)!; g.clear();
+    const gold = this.displayedStar === 3;
+    const color = gold ? new Color(255, 211, 86, 230) : new Color(165, 222, 255, 230);
+    g.strokeColor = color; g.fillColor = color; g.lineWidth = gold ? 4 : 3;
+    const radius = this.cellSize * (0.28 + t * 0.9);
+    g.ellipse(0, 0, radius, radius * 0.5); g.stroke();
+    const count = gold ? 12 : 8;
+    for (let i = 0; i < count; i++) {
+      const angle = i * Math.PI * 2 / count;
+      const x = Math.cos(angle) * radius, y = Math.sin(angle) * radius * 0.8 + t * 34;
+      const size = (gold ? 7 : 5) * (1 - t * 0.5);
+      for (let point = 0; point < 10; point++) {
+        const a = point * Math.PI / 5 + Math.PI / 2;
+        const r = point % 2 ? size * 0.42 : size;
+        const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r;
+        if (!point) g.moveTo(px, py); else g.lineTo(px, py);
+      }
+      g.close(); g.fill();
+    }
+    root.getComponent(UIOpacity)!.opacity = 255 * Math.min(1, (1 - t) / 0.35);
+    root.getChildByName('upgradeCaption')!.setPosition(0, this.cellSize * 1.25 + t * 26, 0);
+  }
+
 
   setup(cfgId: string, side: 0 | 1, unitId: number, cellSize: number, artId = cfgId, tint?: string, portraitScale = 0.82) {
     this.cellSize = cellSize;
@@ -116,6 +170,7 @@ export class UnitView extends Component {
       if (!this.isValid) return;
       if (err) { console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
+      if (path.includes('/units/shadow/') || path.includes('/units/sunlight/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
       this.loaded = true;
       this.refreshBarsColor();
     });
@@ -126,6 +181,7 @@ export class UnitView extends Component {
 
   /** Rank uses the supplied one-, two-, and three-star image badges. */
   setStar(star: number): void {
+    this.displayedStar = star;
     if (this.starBadge) setStarBadge(this.starBadge, star);
   }
 
@@ -173,17 +229,48 @@ export class UnitView extends Component {
 
   /** Vitals and effects only; BattleReplayer owns the root's smooth travel position. */
   sync(snap: UnitRuntime, cellSize: number) {
-    for (const text of this.equipmentStackLabels) text.string = String(snap.equipmentAttackStacks ?? 0);
-    if (snap.susanooActive && !this.susanooView) {
-      const form = new Node('blueSusanoo');
-      form.addComponent(UITransform).setContentSize(cellSize * 2.2, cellSize * 2.2);
-      form.setPosition(0, cellSize * 0.45, 0);
-      const sprite = form.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
-      form.addComponent(UIOpacity).opacity = 185;
-      this.node.addChild(form); form.setSiblingIndex(0); this.susanooView = form;
-      resources.load(FX_SPRITE.susanooBlue, SpriteFrame, (err, frame) => { if (!err && form.isValid) sprite.spriteFrame = frame; });
+    if (snap.sunlightShield && !this.sunlightAura) {
+      const node = new Node('sunlightShield'); this.node.addChild(node); this.sunlightAura = node;
+      node.addComponent(UITransform).setContentSize(cellSize * 1.3, cellSize * 1.3);
+      node.addComponent(UIOpacity);
+      const art = new Node('sunlightBarrierArt'); node.addChild(art);
+      art.addComponent(UITransform).setContentSize(cellSize * 1.12, cellSize * 1.5); art.setPosition(0, cellSize * .13, 0);
+      const sprite = art.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
+      art.addComponent(UIOpacity).opacity = 105;
+      resources.load(FX_SPRITE.sunlightBarrier, SpriteFrame, (error, frame) => { if (!error && art.isValid) sprite.spriteFrame = frame; });
+      const g = node.addComponent(Graphics); g.lineWidth = 2; g.strokeColor = new Color(255, 213, 112, 210);
+      g.fillColor = new Color(255, 199, 73, 24); g.ellipse(0, cellSize * .13, cellSize * .47, cellSize * .55); g.fill(); g.stroke();
     }
-    if (this.susanooView) this.susanooView.active = !!snap.susanooActive;
+    if (this.sunlightAura) this.sunlightAura.active = snap.alive && (snap.sunlightShield ?? 0) > 0;
+    if (snap.domainRadius && !this.domainView) {
+      const aura = new Node('shadowDomain');
+      const diameter = (snap.domainRadius * 2 + 1) * cellSize;
+      aura.addComponent(UITransform).setContentSize(diameter, diameter * .6);
+      const sprite = aura.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
+      sprite.color = new Color(150, 180, 220, 190);
+      aura.addComponent(UIOpacity).opacity = 160;
+      this.node.addChild(aura); aura.setSiblingIndex(0); this.domainView = aura;
+      resources.load(FX_SPRITE.shadowCorruption, SpriteFrame, (err, frame) => { if (!err && aura.isValid) sprite.spriteFrame = frame; });
+    }
+    if (this.domainView) this.domainView.active = !!snap.domainRadius;
+    if (snap.shadowCorrupted && !this.shadowView) {
+      const aura = new Node('shadowCorruption');
+      aura.addComponent(UITransform).setContentSize(cellSize * 1.2, cellSize * 1.5);
+      aura.addComponent(UIOpacity).opacity = 225;
+      this.node.addChild(aura); this.shadowView = aura;
+      const sprites: Sprite[] = [];
+      for (let i=0;i<3;i++) {
+        const wisp = new Node(`corruptionWisp${i}`);aura.addChild(wisp);
+        wisp.addComponent(UITransform).setContentSize(cellSize*.47,cellSize*1.41);
+        const sprite=wisp.addComponent(Sprite);sprite.sizeMode=Sprite.SizeMode.CUSTOM;sprite.trim=false;
+        wisp.addComponent(UIOpacity).opacity=0;sprites.push(sprite);
+      }
+      resources.load(FX_SPRITE.shadowWisp, SpriteFrame, (err, frame) => {
+        if (!err && aura.isValid) for(const sprite of sprites) if(sprite.isValid!==false) sprite.spriteFrame=frame;
+      });
+    }
+    if (this.shadowView) this.shadowView.active = !!snap.shadowCorrupted;
+    for (const text of this.equipmentStackLabels) text.string = String(snap.equipmentAttackStacks ?? 0);
     if (this.bodyOpacity) this.bodyOpacity.opacity = snap.untargetable ? 80 : 255;
     if (this.shieldRing) this.shieldRing.active = (snap.shield ?? 0) > 0;
     const segments = healthBarSegments(snap.hp, snap.maxHp, snap.shield);
@@ -210,8 +297,44 @@ export class UnitView extends Component {
     }
   }
 
+  animateSunlight(renderTick: number, tickMs: number, cellSize = this.cellSize): void {
+    const seconds = renderTick * tickMs / 1000;
+    if (this.sunlightAura?.active) {
+      const phase = seconds * 2.4 + this.unitId * .6;
+      const scale = 1 + Math.sin(phase) * .035;
+      this.sunlightAura.setScale(scale, scale, 1);
+      this.sunlightAura.getComponent(UIOpacity)!.opacity = 190 + Math.round(Math.sin(phase) * 35);
+      const g = this.sunlightAura.getComponent(Graphics)!;
+      g.clear(); g.lineWidth = 2; g.strokeColor = new Color(255, 213, 112, 210);
+      g.fillColor = new Color(255, 199, 73, 24);
+      g.ellipse(0, cellSize * .13, cellSize * .47, cellSize * .55); g.fill(); g.stroke();
+      // Three orbiting sparks make the surviving faction shield readable during travel.
+      for (let i = 0; i < 3; i++) {
+        const angle = seconds * 1.3 + i * Math.PI * 2 / 3;
+        g.fillColor = new Color(255, 239, 173, 230);
+        g.ellipse(Math.cos(angle) * cellSize * .47, cellSize * .13 + Math.sin(angle) * cellSize * .55, cellSize * .035, cellSize * .035); g.fill();
+      }
+    }
+  }
+
+  animateShadowCorruption(renderTick: number, tickMs: number, cellSize = this.cellSize): void {
+    if (!this.shadowView?.active) return;
+    const seconds=renderTick*tickMs/1000;
+    this.shadowView.children.forEach((wisp,index)=>{
+      const phase=(seconds*.65+index/3+(this.unitId%7)*.07)%1;
+      const x=((index-1)*.24+Math.sin(seconds*2+index*2)*.09)*cellSize;
+      wisp.setPosition(x,(-.18+phase*.66)*cellSize,0);
+      const scale=.8+phase*.25;wisp.setScale((index%2?-1:1)*scale,scale,1);
+      wisp.angle=Math.sin(seconds*1.6+index)*7;
+      wisp.getComponent(UIOpacity)!.opacity=Math.round(Math.sin(Math.PI*phase)*(110+index*12));
+    });
+  }
+
   playDeath() {
     if (!this.node.active) return;
+    if (this.shadowView) this.shadowView.active = false;
+    if (this.domainView) this.domainView.active = false;
+    if (this.sunlightAura) this.sunlightAura.active = false;
     let op = this.node.getComponent(UIOpacity);
     if (!op) op = this.node.addComponent(UIOpacity);
     tween(op)
@@ -258,39 +381,4 @@ export class UnitView extends Component {
       .to(seconds / 2, { position: original }).start();
   }
 
-  playBlackFlame(seconds: number) {
-    const impact = new Node('blackFlameImpact');
-    const transform = impact.addComponent(UITransform);
-    transform.setContentSize(this.cellSize * 2.4, this.cellSize * 1.6);
-    transform.setAnchorPoint(0.5, 0.1);
-    const sprite = impact.addComponent(Sprite);
-    sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-    sprite.trim = false;
-    this.node.addChild(impact);
-    resources.load(FX_SPRITE.blackFlameImpact, SpriteFrame, (err, frame) => {
-      if (!impact.isValid) return;
-      if (err) { impact.destroy(); return; }
-      sprite.spriteFrame = frame;
-      const fade = impact.addComponent(UIOpacity);
-      tween(fade).to(0.5, { opacity: 0 }).call(() => {
-        if (impact.isValid) impact.destroy();
-      }).start();
-    });
-    const effect = new Node('blackFlame');
-    this.node.addChild(effect);
-    const g = effect.addComponent(Graphics);
-    g.fillColor = new Color(14, 5, 22, 225);
-    g.strokeColor = new Color(165, 55, 220, 255);
-    g.lineWidth = 2;
-    for (let i = 0; i < 5; i++) {
-      const x = (i - 2) * 8;
-      g.moveTo(x - 5, -12); g.lineTo(x - 3, 3);
-      g.lineTo(x + 1, 14 + (i % 2) * 9); g.lineTo(x + 5, 1);
-      g.lineTo(x + 6, -12); g.close(); g.fill(); g.stroke();
-    }
-    const opacity = effect.addComponent(UIOpacity);
-    tween(opacity).to(seconds, { opacity: 80 }).call(() => {
-      if (effect.isValid) effect.destroy();
-    }).start();
-  }
 }

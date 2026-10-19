@@ -7,13 +7,14 @@ const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.no
 const flush=()=>{while(pending.length)pending.shift()();};
 const all=resolveTraits(traits,roster.map(unit=>unit.id),roster);
 ui.refreshTraits(all,roster);flush();
-assert.equal(ui.traitPanel.rows.children.length,7);
+const visible=all.filter(state=>state.count>0);
+assert.equal(ui.traitPanel.rows.children.length,visible.length);
 for(const row of ui.traitPanel.rows.children) {
   const height=row.getComponent(UITransform).contentSize.height;
   assert.ok(Math.abs(row.position.y)+height/2<=195,'seven compact rows fit their panel');
   assert.equal(row.children.find(node=>node.name==='traitArt').getComponent(UITransform).contentSize.width,34);
 }
-for(const state of all.filter(state=>state.config.selector)) {
+for(const state of visible.filter(state=>state.config.selector)) {
   ui.traitPanel.rows.getChildByName(`trait_${state.config.id}`).events.get('end')();flush();
   const card=ui.traitPanel.detail,rows=card.children.filter(n=>n.name==='traitBreakpoint');
   assert.equal(rows.length,4);
@@ -35,4 +36,4 @@ ui.refreshTraits(all,roster);flush();ui.traitPanel.rows.getChildByName('trait_as
 const assassinRows=ui.traitPanel.detail.children.filter(n=>n.name==='traitBreakpoint');
 assert.ok(assassinRows[0].children.some(n=>n.getComponent(Label)?.string==='<8%'));
 assert.ok(assassinRows[3].children.some(n=>n.getComponent(Label)?.string==='+60%'));
-console.log('PASS class trait UI: seven fitted rows, automatic member portraits, all five details, icons, four tier colors and execute thresholds');
+console.log('PASS class trait UI: all fitted rows, automatic member portraits, all five details, icons, four tier colors and execute thresholds');

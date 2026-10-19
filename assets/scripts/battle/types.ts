@@ -51,13 +51,62 @@ export interface TraitBreakpoint {
   /** Members choose front defense or back offense from their initial placement. */
   formation?: TraitFormationBonus;
   stats?: TraitStatBonus;
+  shadow?: ShadowTraitEffect;
+  sunlight?: SunlightTraitEffect;
 }
+export interface SunlightTraitEffect {
+  shieldMaxHpFraction: number;
+  battlefield?: boolean;
+  formation?: { delaySeconds: number; frontReduction: number; backAmp: number };
+  judgment?: { intervalSeconds: number; damage: number; stunSeconds: number;
+    targetMaxHpFraction?: number; independentStatistics?: boolean };
+}
+export type SunlightSkillData =
+  | { kind: 'bulwark'; durationSeconds: number }
+  | { kind: 'arrows'; intervalSeconds: number; finalDamage: number[]; pierceMultiplier: number }
+  | { kind: 'bastion'; durationSeconds: number; allyCount: number; allyShields: number[]; heals: number[] }
+  | { kind: 'hunt'; intervalSeconds: number; hits: number; shieldBonus: number; speedSeconds: number }
+  | { kind: 'cleave'; coneDegrees: number; shieldTargetCap: number; guardTargetCount: number; guardReduction: number; guardSeconds: number }
+  | { kind: 'empower'; durationSeconds: number; attacks: number; burstDamage: number[] }
+  | { kind: 'crossbow'; penetration: number; minimum: number }
+  | { kind: 'prayer'; durationSeconds: number; heals: number[] }
+  | { kind: 'judgment'; counts: number[]; allEnemiesStar: number; delaySeconds: number; trueDamage: number[] }
+  | { kind: 'transit'; counts: number[]; intervalSeconds: number; finalDamage: number[] };
+export type SunlightPulse = 'shield' | 'burst' | 'judgment' | 'warning' | 'formation' | 'board' | 'prayer' | 'bolt' | 'slash' | 'flare';
+export interface ShadowTraitEffect {
+  resistanceReduction: number;
+  damageAmpLossPerSecond?: number;
+  damageAmpLossCap?: number;
+  board?: { intervalSeconds: number; damageIntervalSeconds?: number; attackSpeedPerPulse: number; attackSpeedCap: number; fixedDamage: number };
+}
+export interface ShadowCorruption {
+  resistanceReduction: number;
+  damageAmpLossPerSecond: number;
+  damageAmpLossCap: number;
+  damageAmpLoss: number;
+  nextTick: number;
+}
+/** Authored skill values are star-indexed bases, never multiples of basic attack. */
+export type ShadowSkillData =
+  | { kind: 'bulwark'; durationSeconds: number; resistanceBonuses: number[] }
+  | { kind: 'piercing'; secondaryDamage: number[] }
+  | { kind: 'domain'; durationSeconds: number; allyShieldAmounts: number[]; allyCount: number; slowAmounts: number[] }
+  | { kind: 'flurry'; hits: number; intervalSeconds: number; refundMana: number; refundWindowSeconds: number }
+  | { kind: 'cleave'; coneDegrees: number; missingHpBonusCap: number }
+  | { kind: 'empower'; durationSeconds: number; attacks: number; burstDamage: number[] }
+  | { kind: 'execute'; healthThreshold: number; damageMultiplier: number }
+  | { kind: 'lanterns'; count: number; intervalSeconds: number; repeatMultiplier: number; fearSeconds: number[] }
+  | { kind: 'blackstars'; counts: number[]; intervalSeconds: number; repeatMultiplier: number; collapseDamage: number[]; collapseRadius: number }
+  | { kind: 'void'; counts: number[]; intervalSeconds: number; markDamage: number[] };
+export type ShadowPulseEffect = ShadowSkillData['kind'] | 'bulwarkBurst' | 'flameBurst' | 'collapse' | 'voidMark';
 export interface TraitConfigData {
   id: string;
   name: string;
   glyph: string;
   description: string;
   members: string[];
+  /** Explicitly reserved until this trait's characters are designed. Never activates without members. */
+  pendingMembers?: boolean;
   /** Resolve members from the current roster rather than a hand-maintained ID list. */
   selector?: TraitSelector;
   breakpoints: TraitBreakpoint[];
@@ -126,11 +175,18 @@ export interface CombatAttributes {
 }
 
 export type BattleEvent =
+  | { t: 'sun_pulse'; tick: number; id: number; effect: SunlightPulse; center: Pos; from?: Pos; radius: number; duration: number;
+      kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean }
   | { t: 'battle_start'; tick: number }
   | { t: 'move';   tick: number; id: number; from: Pos; to: Pos }
   | { t: 'teleport'; tick: number; id: number; from: Pos; to: Pos }
-  | { t: 'attack'; tick: number; id: number; target: number; area?: boolean }
-  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; critical?: boolean; executed?: boolean }
+  | { t: 'attack'; tick: number; id: number; target: number; area?: boolean; shadow?: boolean }
+  | { t: 'shadow_mark'; tick: number; id: number; source: number }
+  | { t: 'shadow_board'; tick: number; side: Side }
+  | { t: 'shadow_pulse'; tick: number; side: Side; damage?: boolean; attackSpeed?: boolean }
+  | { t: 'skill_pulse'; tick: number; id: number; skillId: string; effect: ShadowPulseEffect; center: Pos; radius: number; duration?: number; selfCast?: boolean }
+  | { t: 'fear'; tick: number; id: number; source: number; duration: number }
+  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; critical?: boolean; executed?: boolean }
   | { t: 'heal';   tick: number; id: number; source: number; amount: number; hp: number }
   | { t: 'shield'; tick: number; id: number; source?: number; equipmentId?: string; amount: number; shield: number }
   | { t: 'equipment_trigger'; tick: number; id: number; equipmentId: string; shield: number }
@@ -151,6 +207,7 @@ export interface BattleResult {
 }
 
 export interface CombatStatRow {
+  sourceKind?: 'shadowBoard' | 'sunlightJudgment';
   id: number; name: string; side: Side; star: number;
   damage: number; taken: number; healing: number;
   /** Total shields granted, counted at acquisition rather than absorption. */
@@ -160,6 +217,9 @@ export interface CombatStatRow {
 }
 
 export interface UnitRuntime {
+  sunlightShield?: number;
+  domainRadius?: number;
+  shadowCorrupted?: boolean;
   equipmentAttackStacks?: number;
   susanooActive?: boolean;
   manaPerSecond?: number;

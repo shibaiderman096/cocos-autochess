@@ -8,7 +8,7 @@ const battle=require('../assets/resources/config/battle.json'),roster=require('.
 const clone=value=>JSON.parse(JSON.stringify(value));
 const traits=battle.traits.filter(trait=>trait.selector);
 assert.deepEqual(traits.map(t=>t.id),['armored_tank','brawler','swift_marksman','sharpshooter','assassin']);
-const expected={armored_tank:['guardian','iron_golem','madara'],brawler:['sakura','scout'],swift_marksman:['young_sasuke'],sharpshooter:['archer','champion','ranger'],assassin:['enderman']};
+const expected={armored_tank:['abyss_iron_guard','helion'],brawler:['bronda','nightmare_lamplighter'],swift_marksman:[],sharpshooter:['aurelia','blackfeather_hunter','eclipse_crossbow','saiph'],assassin:['kaeru','seraphiel','shadow_seam_assassin','voidscar_reaver']};
 for(const state of resolveTraits(traits,roster.map(u=>u.id),roster))assert.deepEqual(state.memberIds,expected[state.config.id]);
 const base={id:'dummy',name:'dummy',hp:1000,atk:100,armor:0,mr:0,atkSpeed:.8,range:1,moveTicks:1,maxMana:0,startMana:0,manaPerHit:0,critChance:0};
 function create(id,n,side=0,overrides={}) {
@@ -95,13 +95,13 @@ function session(battleData,save) {
   return new RunSession(cfg,inputs.run,inputs.waves,{...options,...(save?{save}: {})});
 }
 const run=session(inputs.battle);for(const unit of run.owned.all())run.owned.remove(unit.uid);
-const tanks=['guardian','iron_golem'].map(id=>run.owned.forceAdd(id));
+const tanks=['helion','abyss_iron_guard'].map(id=>run.owned.forceAdd(id));
 tanks.forEach((unit,x)=>run.owned.move(unit.uid,{location:'board',x,y:2}));
 function guardian(s) {const p=s.createPreview();return p.sim.units.find(u=>u.id===p.battleIds.get(tanks[0].uid));}
-assert.equal(guardian(run).cfg.armor,inputs.units.find(u=>u.id==='guardian').armor+25);
+assert.equal(guardian(run).cfg.armor,inputs.units.find(u=>u.id==='helion').armor+25);
 assert.equal(guardian(session(inputs.battle,run.snapshot())).cfg.armor,guardian(run).cfg.armor,'save/load recomputes class stats once');
 run.owned.move(tanks[1].uid,{location:'bench',x:-1,y:8});
-assert.equal(guardian(run).cfg.armor,inputs.units.find(u=>u.id==='guardian').armor,'reserve member cannot activate a class trait');
+assert.equal(guardian(run).cfg.armor,inputs.units.find(u=>u.id==='helion').armor,'reserve member cannot activate a class trait');
 const changed=clone(inputs.battle);changed.traits.find(t=>t.id==='armored_tank').breakpoints[0].stats.armor++;
 assert.throws(()=>session(changed,run.snapshot()),/configuration mismatch/);
 console.log('PASS class traits: automatic role membership, every threshold on both sides, unique counting, flat physical on-hit, skill crit, post-hit execute boundaries, protection, credit and determinism');

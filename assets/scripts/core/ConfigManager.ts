@@ -2,7 +2,7 @@
  * 配置读取（M1：units.json / skills.json / battle 基础配置）。
  * 逻辑层不 import cc：由调用方（view 或 Node 模拟器）把 JSON 喂进来。
  */
-import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig } from '../battle/types';
+import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig, ShadowSkillData, SunlightSkillData } from '../battle/types';
 
 export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttributes {
   const safe = (v: number | undefined, fallback: number, max: number) => Number.isFinite(v) ? Math.max(0, Math.min(max, v!)) : fallback;
@@ -34,7 +34,7 @@ export interface UnitConfigData extends Partial<CombatAttributes> {
   skillCanCrit?: boolean;
   /** Presentation resource id; independent of unit role and combat behavior. */
   artId?: string;
-  basicAttackFx?: 'arrow' | 'fireball' | 'ninjaBolt';
+  basicAttackFx?: 'arrow' | 'fireball';
   basicAttackTint?: [number, number, number];
   damageType?: 'physical' | 'magic';
   role?: 'warrior' | 'marksman' | 'frontline' | 'ranged' | 'caster' | 'assassin' | 'fighter' | 'tank' | 'magicTank' | 'magicArcher' | 'physicalCaster' | 'physicalArcher' | 'support';
@@ -53,7 +53,11 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight';
+  sunlight?: SunlightSkillData;
+  shadow?: ShadowSkillData;
+  /** Defaults to the unit's damage identity; true/fixed shields receive no power multiplier. */
+  shieldScaling?: 'physical' | 'magic' | 'fixed';
   formDurations?: number[];
   formReductions?: number[];
   formBonusDamage?: number[];
@@ -62,7 +66,7 @@ export interface SkillConfigData {
   starDamage?: number[];
   /** Total pre-mitigation damage by star, divided among enemies in the target radius. */
   splitDamage?: number[];
-  /** Base shield by star, multiplied by 1 + spellPower / 100. */
+  /** Base shield by star; dmgType selects physicalPower or spellPower scaling. */
   shieldAmounts?: number[];
   knockupSeconds?: number;
   guard?: { durations: number[]; reductions: number[] };
@@ -90,6 +94,66 @@ export function channelHealAmount(unit: Pick<UnitConfigData, 'hp' | 'spellPower'
 export function configuredSkillDamage(skill: SkillConfigData, star: number, skillScale = 1): number {
   const rank = Math.max(0, Math.min(2, star - 1));
   return skill.starDamage?.[rank] ?? skill.splitDamage?.[rank] ?? skill.power * (skill.spellMultipliers?.[rank] ?? skillScale);
+}
+
+export function configuredShieldAmount(unit: UnitConfigData, skill: SkillConfigData, star: number, amounts = skill.shieldAmounts): number {
+  const scaling = skill.shieldScaling ?? unit.damageType ?? (skill.dmgType === 'physical' ? 'physical' : 'magic');
+  const power = scaling === 'physical' ? unit.physicalPower ?? 0 : scaling === 'magic' ? unit.spellPower ?? 0 : 0;
+  return Math.round((amounts?.[Math.max(0, Math.min(2, star - 1))] ?? 0) * (1 + power / 100));
+}
+
+function validateShadowSkill(skill: SkillConfigData): void {
+  const bad = () => { throw new Error(`Invalid shadow skill configuration: ${skill.id}`); };
+  const triple = (values?: number[], integer = false) => {
+    if (!Array.isArray(values) || values.length !== 3 || values.some(value => !Number.isFinite(value) || value < 0 || (integer && (!Number.isInteger(value) || value < 1)))) bad();
+  };
+  const positive = (value: number) => { if (!Number.isFinite(value) || value <= 0) bad(); };
+  const fraction = (value: number) => { if (!Number.isFinite(value) || value < 0 || value > 1) bad(); };
+  if (!skill.shadow || !Number.isFinite(skill.radius) || skill.radius < 0 || !Number.isFinite(skill.castSeconds ?? 0) || (skill.castSeconds ?? 0) < 0) bad();
+  const spec = skill.shadow!;
+  if (spec.kind !== 'domain') triple(skill.starDamage);
+  switch (spec.kind) {
+    case 'bulwark': triple(skill.shieldAmounts); triple(spec.resistanceBonuses); positive(spec.durationSeconds); break;
+    case 'piercing': triple(spec.secondaryDamage); break;
+    case 'domain':
+      triple(skill.shieldAmounts); triple(spec.allyShieldAmounts); triple(spec.slowAmounts); spec.slowAmounts.forEach(fraction);
+      positive(spec.durationSeconds); if (!Number.isInteger(spec.allyCount) || spec.allyCount < 0) bad(); break;
+    case 'flurry':
+      positive(spec.intervalSeconds); positive(spec.refundWindowSeconds); if (!Number.isInteger(spec.hits) || spec.hits < 1 || !Number.isFinite(spec.refundMana) || spec.refundMana < 0) bad(); break;
+    case 'cleave': positive(spec.coneDegrees); if (spec.coneDegrees > 360) bad(); fraction(spec.missingHpBonusCap); break;
+    case 'empower':
+      triple(skill.attackSpeedBonuses); triple(spec.burstDamage); positive(spec.durationSeconds); if (!Number.isInteger(spec.attacks) || spec.attacks < 1) bad(); break;
+    case 'execute': fraction(spec.healthThreshold); positive(spec.damageMultiplier); break;
+    case 'lanterns':
+      if (!Number.isInteger(spec.count) || spec.count < 1) bad(); positive(spec.intervalSeconds); fraction(spec.repeatMultiplier); triple(spec.fearSeconds); break;
+    case 'blackstars':
+      triple(spec.counts, true); positive(spec.intervalSeconds); fraction(spec.repeatMultiplier); triple(spec.collapseDamage); if (!Number.isFinite(spec.collapseRadius) || spec.collapseRadius < 0) bad(); break;
+    case 'void': triple(spec.counts, true); positive(spec.intervalSeconds); triple(spec.markDamage); break;
+    default: bad();
+  }
+}
+
+function validateSunlightSkill(skill: SkillConfigData): void {
+  const bad = () => { throw new Error(`Invalid sunlight skill: ${skill.id}`); };
+  const triple = (values?: number[]) => { if (!values || values.length !== 3 || values.some(v => !Number.isFinite(v) || v < 0)) bad(); };
+  const positive = (v: number) => { if (!Number.isFinite(v) || v <= 0) bad(); };
+  const spec = skill.sunlight;
+  if (!spec || !Number.isFinite(skill.radius) || skill.radius < 0 || !Number.isFinite(skill.castSeconds ?? 0) || (skill.castSeconds ?? 0) < 0) bad();
+  const s = spec!;
+  if (!['bastion', 'prayer'].includes(s.kind)) triple(skill.starDamage);
+  switch (s.kind) {
+    case 'bulwark': triple(skill.shieldAmounts); positive(s.durationSeconds); break;
+    case 'arrows': triple(s.finalDamage); positive(s.intervalSeconds); positive(s.pierceMultiplier); if (s.pierceMultiplier > 1) bad(); break;
+    case 'bastion': triple(skill.shieldAmounts); triple(s.allyShields); triple(s.heals); positive(s.durationSeconds); if (!Number.isInteger(s.allyCount) || s.allyCount < 1) bad(); break;
+    case 'hunt': triple(skill.attackSpeedBonuses); positive(s.intervalSeconds); positive(s.speedSeconds); if (!Number.isInteger(s.hits) || s.hits < 1 || !Number.isFinite(s.shieldBonus) || s.shieldBonus < 0) bad(); break;
+    case 'cleave': triple(skill.shieldAmounts); positive(s.coneDegrees); positive(s.guardSeconds); if (s.coneDegrees > 360 || !Number.isInteger(s.shieldTargetCap) || s.shieldTargetCap < 1 || !Number.isInteger(s.guardTargetCount) || s.guardTargetCount < 1 || !Number.isFinite(s.guardReduction) || s.guardReduction < 0 || s.guardReduction > 1) bad(); break;
+    case 'empower': triple(skill.attackSpeedBonuses); triple(s.burstDamage); positive(s.durationSeconds); if (!Number.isInteger(s.attacks) || s.attacks < 1) bad(); break;
+    case 'crossbow': positive(s.penetration); positive(s.minimum); if (s.penetration > 1 || s.minimum > 1) bad(); break;
+    case 'prayer': triple(skill.shieldAmounts); triple(s.heals); triple(skill.starDamage); triple(skill.stunSeconds); positive(s.durationSeconds); break;
+    case 'judgment': triple(s.counts); triple(s.trueDamage); triple(skill.stunSeconds); positive(s.delaySeconds); if (s.counts.some(v => !Number.isInteger(v) || v < 1) || !Number.isInteger(s.allEnemiesStar) || s.allEnemiesStar < 1 || s.allEnemiesStar > 3) bad(); break;
+    case 'transit': triple(s.counts); triple(s.finalDamage); positive(s.intervalSeconds); if (s.counts.some(v => !Number.isInteger(v) || v < 1) || s.finalDamage.some((v, i) => v <= skill.starDamage![i])) bad(); break;
+    default: bad();
+  }
 }
 
 /** Fixed component values each receive only their corresponding percentage bonus. */
@@ -180,6 +244,11 @@ export class ConfigManager {
   }
 
   setSkills(data: Record<string, SkillConfigData>): void {
+    for (const skill of Object.values(data)) {
+      if (skill.shieldScaling !== undefined && !['physical', 'magic', 'fixed'].includes(skill.shieldScaling)) throw new Error('Invalid shield scaling');
+      if (skill.effect === 'shadow') validateShadowSkill(skill);
+      if (skill.effect === 'sunlight') validateSunlightSkill(skill);
+    }
     this.skills = data;
   }
 
@@ -197,14 +266,15 @@ export class ConfigManager {
     if (data.traits) {
       const ids = new Set<string>();
       for (const trait of data.traits) {
-        if (!trait.id || ids.has(trait.id) || (!trait.members.length && !trait.selector) || !trait.breakpoints.length) throw new Error('Invalid trait configuration');
+        if (!trait.id || ids.has(trait.id) || (!trait.members.length && !trait.selector && trait.pendingMembers !== true) || !trait.breakpoints.length
+          || (trait.pendingMembers !== undefined && typeof trait.pendingMembers !== 'boolean')) throw new Error('Invalid trait configuration');
         if (trait.selector && (!['tank', 'marksman', 'assassin'].includes(trait.selector.role)
           || (trait.selector.damageType !== undefined && !['physical', 'magic'].includes(trait.selector.damageType)))) throw new Error('Invalid trait selector');
         ids.add(trait.id);
         let previous = 0;
         for (const tier of trait.breakpoints) {
           if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
-            || (tier.power === undefined && !tier.formation && !tier.stats)
+            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight)
             || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
             || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
           if (tier.formation) {
@@ -220,6 +290,26 @@ export class ConfigManager {
             }
             if ((bonus.critChance ?? 0) > 1 || (bonus.executeThreshold ?? 0) >= 1
               || (bonus.skillCanCrit !== undefined && typeof bonus.skillCanCrit !== 'boolean')) throw new Error('Invalid trait stat bonus');
+          }
+          if (tier.shadow) {
+            const effect = tier.shadow;
+            if (!Number.isFinite(effect.resistanceReduction) || effect.resistanceReduction < 0 || effect.resistanceReduction > 1
+              || !Number.isFinite(effect.damageAmpLossPerSecond ?? 0) || (effect.damageAmpLossPerSecond ?? 0) < 0
+              || !Number.isFinite(effect.damageAmpLossCap ?? 0) || (effect.damageAmpLossCap ?? 0) < 0 || (effect.damageAmpLossCap ?? 0) > 1
+              || ((effect.damageAmpLossPerSecond ?? 0) > 0 && !(effect.damageAmpLossCap! > 0))) throw new Error('Invalid shadow trait effect');
+            const board = effect.board;
+            if (board && (!Number.isFinite(board.intervalSeconds) || board.intervalSeconds <= 0
+              || !Number.isFinite(board.damageIntervalSeconds ?? board.intervalSeconds) || (board.damageIntervalSeconds ?? board.intervalSeconds) <= 0
+              || ![board.attackSpeedPerPulse, board.attackSpeedCap, board.fixedDamage].every(value => Number.isFinite(value) && value >= 0))) throw new Error('Invalid shadow board effect');
+          }
+          if (tier.sunlight) {
+            const s = tier.sunlight, f = s.formation, j = s.judgment;
+            const nonnegative = (v: number) => Number.isFinite(v) && v >= 0;
+            if (!nonnegative(s.shieldMaxHpFraction) || (s.battlefield !== undefined && typeof s.battlefield !== 'boolean')
+              || (f && (![f.delaySeconds, f.frontReduction, f.backAmp].every(nonnegative) || f.frontReduction > 1))
+              || (j && (![j.damage, j.stunSeconds].every(nonnegative) || !Number.isFinite(j.intervalSeconds) || j.intervalSeconds <= 0
+                || !nonnegative(j.targetMaxHpFraction ?? 0) || (j.targetMaxHpFraction ?? 0) > 1
+                || (j.independentStatistics !== undefined && typeof j.independentStatistics !== 'boolean')))) throw new Error('Invalid sunlight trait');
           }
           previous = tier.count;
         }

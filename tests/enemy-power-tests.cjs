@@ -4,7 +4,8 @@ const {EnemyPowerModel}=require('../assets/scripts/core/EnemyPowerModel.ts');
 const {analyzeModel}=require('../tools/power-calibration/report.ts');
 const {loadRunInputs}=require('../tools/run-simulation.ts');
 const root=path.resolve(__dirname,'..');
-const modelFile=path.join(root,'assets/resources/config/enemy-power.json');
+// Measured-point assertions use the immutable model paired with the published roster.
+const modelFile=path.join(root,'docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json');
 const data=JSON.parse(fs.readFileSync(fs.existsSync(modelFile)?modelFile:path.join(root,'docs/p1-enemy-difficulty/power-calibration/smoke-20/enemy-power.json'),'utf8'));
 const clone=v=>JSON.parse(JSON.stringify(v));let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}

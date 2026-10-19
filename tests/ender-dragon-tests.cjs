@@ -25,7 +25,7 @@ for(let i=0;i<13;i++)area.step();
 const hits=area.events.filter(e=>e.t==='hit');assert.equal(hits.length,2);assert.ok(hits.every(e=>e.dmg===160&&e.dmgType==='magic'&&e.tick===13));
 function battle(ids,star,seed){return new BattleSim(cfg,[...ids.map((id,i)=>({cfg:cfg.getUnit(id),side:0,star,x:i+1,y:2})),{cfg:dragon,side:1,x:3,y:6}],{seed}).run();}
 for(let seed=1;seed<=10;seed++){
- assert.equal(battle(['warrior'],1,seed).winner,1,'strong monster defeats lone starter');
- assert.equal(battle(['guardian','duelist','ranger','shaman'],2,seed).winner,0,'developed four-unit team can defeat dragon');
+ assert.equal(battle(['helion'],1,seed).winner,1,'strong monster defeats lone starter');
+ assert.equal(battle(['helion','leon','saiph','celine'],2,seed).winner,0,'developed four-unit team can defeat dragon');
 }
 console.log('PASS ender dragon: enemy-only roster, strong stats/skill, stage 4/7/10 spawn, unchanged early stages, deterministic layouts, AoE timing and 20 strength simulations');

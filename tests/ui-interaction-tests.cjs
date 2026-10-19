@@ -149,6 +149,10 @@ ui.closeUnitDetail();assert.equal(ui.detailPopup.active,false);
 ui.showUnitDetail(warriorDetail);
 ui.showUnitDetail({...warriorDetail,cost:4});assert.equal(ui.unitCost.string,'4金');
 ui.showUnitDetail({...warriorDetail,cost:5});assert.equal(ui.unitCost.string,'5金');
+for (const [cost, star, gold] of [[1,2,3],[1,3,9],[2,2,5],[4,2,11],[4,3,35],[5,3,44]]) {
+  ui.showUnitDetail({...warriorDetail,cost,star});assert.equal(ui.unitCost.string,gold+'金');
+}
+ui.showUnitDetail({...warriorDetail,cost:undefined});assert.equal(ui.unitCost.string,'野怪');
 ui.showUnitDetail(warriorDetail);
 function screenRect(node) {
  let x=0,y=0;for(let n=node;n;n=n.parent){x+=n.position?.x??0;y+=n.position?.y??0;}
@@ -509,27 +513,27 @@ assert.equal(equipmentCard.children.filter(n=>n.name==='equipmentStat').length,2
 equipmentCard.children.find(n=>n.name==='button').events.get('end')();assert.equal(equipmentDetail.active,false);
 let stageActionCount=stageActions.length;oldBossClick();assert.equal(stageActions.length,stageActionCount,'old category buttons cannot fire after changing panel');
 stageCards[2].getChildByName('stageChoice_2').events.get('end')();assert.deepEqual(stageActions.at(-1),{type:'stageChoice',rewardId:'four',choice:'claim',index:2});
-stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'young_sasuke',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
+stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'blackfeather_hunter',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
 stageBody=stagePanel.root.getChildByName('stageRewardBody');stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,5);
 stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(stageActions.at(-1).choice,'buy');
 stageBody.children.find(n=>n.name==='button').events.get('end')();assert.equal(stageActions.at(-1).choice,'continue');
 stagePanel.hide();assert.equal(stagePanel.root,null);
 console.log('PASS stage reward UI: category cards, four original equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
-const trait=JSON.parse(JSON.stringify(require('../assets/resources/config/battle.json').traits[0]));
-trait.members.push('future_ninja_1','future_ninja_2');
+const trait=JSON.parse(JSON.stringify(require('../assets/resources/config/battle.json').traits.find(t=>t.id==='sunlight')));
+
 const traitRoster=require('../assets/resources/config/units.json');
 ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
 assert.equal(ui.traitPanel.rows.children.filter(node=>node.active).length,0,'no deployed owner means no trait row');
 for(const [count,tier] of [[1,'inactive'],[2,'inactive'],[3,'bronze'],[5,'silver'],[7,'gold'],[10,'prismatic']]) {
   const state=resolveTraits([trait],trait.members.slice(0,count));ui.refreshTraits(state,traitRoster);flush();
-  const row=ui.traitPanel.rows.children.find(node=>node.active&&node.name==='trait_naruto');
-  assert.ok(row.children.some(node=>node.getComponent(Label)?.string==='火'));
+  const row=ui.traitPanel.rows.children.find(node=>node.active&&node.name==='trait_sunlight');
+  assert.ok(row.children.some(node=>node.getComponent(Label)?.string==='日'));
   assert.ok(row.children.find(node=>node.name==='traitArt').getComponent(Sprite).spriteFrame.name.includes('#rect,'));
   row.events.get('end')();flush();
   const card=ui.traitPanel.detail;
   assert.ok(card?.active);assert.equal(card.children.filter(node=>node.name==='traitBreakpoint').length,4);
-  assert.equal(card.children.filter(node=>node.name.startsWith('traitOwner_')).length,8);
+  assert.equal(card.children.filter(node=>node.name.startsWith('traitOwner_')).length,10);
   assert.ok(card.children.some(node=>node.getComponent(Label)?.string.includes({inactive:'未激活',bronze:'黄铜',silver:'白银',gold:'黄金',prismatic:'棱彩'}[tier])));
   ui.node.getChildByName('backpackTab').events.get('end')();
   assert.equal(ui.backpackRoot.active,true);assert.equal(ui.traitPanel.root.active,false);assert.equal(ui.traitPanel.detail,null);

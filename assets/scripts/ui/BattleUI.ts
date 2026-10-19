@@ -3,7 +3,7 @@ import { TraitPanel } from './TraitPanel';
 import { WaveTransition } from './WaveTransition';
 import type { TraitState } from '../battle/Traits';
 import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, input, Input, SpriteAtlas } from 'cc';
-import { UNIT_SPRITE, UI_SPRITE, UISkinKey, M2_UI_SPRITE, ENCOUNTER_SPRITE } from '../view/ArtPaths';
+import { UNIT_SPRITE, UNIT_ART, UNIT_PORTRAIT, UI_SPRITE, UISkinKey, M2_UI_SPRITE, ENCOUNTER_SPRITE } from '../view/ArtPaths';
 import { setUISkin, setStarBadge } from './UISkin';
 import { SHOP_DROP_AREA, SHOP_CARDS, containsShopDrop } from './BattleUILayout';
 import { EquipmentDisplayItem, equipmentStatRows, equipmentEffectText } from './EquipmentPresentation';
@@ -16,7 +16,7 @@ import { SettlementBreakdown } from '../core/EconomySystem';
 import { LevelSystem, EXP_PURCHASE, MAX_LEVEL } from '../core/LevelSystem';
 import { RoundSettlement, WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
-import { shopCostRates, COST_PRICE, Cost } from '../core/ShopConfig';
+import { shopCostRates, sellPrice, Cost } from '../core/ShopConfig';
 import { CombatAttributes, CombatStatRow, EquipmentConfigData, BackpackItem, BattleClockState } from '../battle/types';
 
 const { ccclass } = _decorator;
@@ -871,7 +871,8 @@ export class BattleUI extends Component {
   private renderCombatStats(): void {
     const metric = this.combatStatMetric;
     const value = (row: CombatStatRow) => row[metric] + (metric === 'healing' ? row.shielding ?? 0 : 0);
-    const rows = this.combatStatRows.filter(row => row.side === this.combatStatSide)
+    const rows = this.combatStatRows.filter(row => row.side === this.combatStatSide
+      && (!row.sourceKind || metric === 'damage'))
       .sort((a, b) => value(b) - value(a) || a.id - b.id);
     const max = Math.max(1, ...rows.map(value));
     const spacing = Math.min(28, 260 / Math.max(1, rows.length));
@@ -1088,7 +1089,9 @@ export class BattleUI extends Component {
       const key: UISkinKey = id ? `card_cost${Math.max(1, Math.min(5, data.cost))}` as UISkinKey : 'card_empty';
       setUISkin(card.node, key, card.border);
       card.portrait.spriteFrame = null;
-      if (id) resources.load(UNIT_SPRITE[`${data.artId ?? id}_ally`], SpriteFrame, (err, sf) => {
+      const artId = data?.artId ?? id ?? '';
+      const portrait = UNIT_ART[artId]?.includes('/units/shadow/') ? UNIT_PORTRAIT[artId] : undefined;
+      if (id) loadArtSprite(portrait ?? UNIT_SPRITE[`${artId}_ally`], (err, sf) => {
         if (!err && card.portrait.isValid && card.unitId === id) card.portrait.spriteFrame = sf;
       });
     });
@@ -1195,7 +1198,7 @@ export class BattleUI extends Component {
       setUISkin(this.skillIconNode.getChildByName('icon_swords')!, skillIcon);
     }
     this.unitTitle.string = data.name; this.unitTitle.color = TIERS[data.cost ?? 1];
-    this.unitCost.string = data.cost ? `${COST_PRICE[data.cost as Cost]}金` : '野怪';
+    this.unitCost.string = data.cost ? `${sellPrice(data.cost as Cost, data.star)}金` : '野怪';
     if (this.detailStar !== data.star) {
       this.detailStar = data.star;
       setStarBadge(this.unitStars, data.star);
@@ -1213,7 +1216,8 @@ export class BattleUI extends Component {
     const art = `${data.artId}_${data.side === 0 ? 'ally' : 'enemy'}`;
     if (this.detailArt !== art) {
       this.detailArt = art; this.unitPortrait.spriteFrame = null;
-      resources.load(UNIT_SPRITE[art], SpriteFrame, (err, frame) => {
+      const portrait = UNIT_ART[data.artId]?.includes('/units/shadow/') ? UNIT_PORTRAIT[data.artId] : undefined;
+      loadArtSprite(portrait ?? UNIT_SPRITE[art], (err, frame) => {
         if (!err && this.unitPortrait.isValid && this.detailArt === art) this.unitPortrait.spriteFrame = frame;
       });
     }

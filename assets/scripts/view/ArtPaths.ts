@@ -8,27 +8,30 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
-  madara: 'art/units/madara_blue/spriteFrame',
+  helion: 'art/units/sunlight/helion/spriteFrame',
+  saiph: 'art/units/sunlight/saiph/spriteFrame',
+  bronda: 'art/units/sunlight/bronda/spriteFrame',
+  kaeru: 'art/units/sunlight/kaeru/spriteFrame',
+  leon: 'art/units/sunlight/leon/spriteFrame',
+  phinia: 'art/units/sunlight/phinia/spriteFrame',
+  aurelia: 'art/units/sunlight/aurelia/spriteFrame',
+  celine: 'art/units/sunlight/celine/spriteFrame',
+  oris: 'art/units/sunlight/oris/spriteFrame',
+  seraphiel: 'art/units/sunlight/seraphiel/spriteFrame',
+  abyss_iron_guard: 'art/units/shadow/abyss_iron_guard/spriteFrame',
+  blackfeather_hunter: 'art/units/shadow/blackfeather_hunter/spriteFrame',
+  nightmare_lamplighter: 'art/units/shadow/nightmare_lamplighter/spriteFrame',
+  shadow_seam_assassin: 'art/units/shadow/shadow_seam_assassin/spriteFrame',
+  soulcleaver_general: 'art/units/shadow/soulcleaver_general/spriteFrame',
+  ghostflame_blade: 'art/units/shadow/ghostflame_blade/spriteFrame',
+  eclipse_crossbow: 'art/units/shadow/eclipse_crossbow/spriteFrame',
+  nether_lantern_witch: 'art/units/shadow/nether_lantern_witch/spriteFrame',
+  blackstar_warlock: 'art/units/shadow/blackstar_warlock/spriteFrame',
+  voidscar_reaver: 'art/units/shadow/voidscar_reaver/spriteFrame',
   red_guard: 'art/units/warrior_enemy/spriteFrame',
   red_archer: 'art/units/archer_enemy/spriteFrame',
   red_mage: 'art/units/mage_enemy/spriteFrame',
   ender_dragon: 'art/units/monsters/ender_dragon/spriteFrame',
-  iron_golem: 'art/units/iron_golem/spriteFrame',
-  itachi: 'art/units/itachi/spriteFrame',
-  young_sasuke: 'art/units/young_sasuke/spriteFrame',
-  sakura: 'art/units/sakura/spriteFrame',
-  sasuke: 'art/units/sasuke-cutout/spriteFrame',
-  enderman: 'art/units/enderman/spriteFrame',
-  warrior: 'art/units/placeholders/warrior/spriteFrame',
-  archer: 'art/units/archer_ally/spriteFrame',
-  mage: 'art/units/professions/mage/spriteFrame',
-  scout: 'art/units/placeholders/archer/spriteFrame',
-  guardian: 'art/units/warrior_ally/spriteFrame',
-  duelist: 'art/units/professions/duelist/spriteFrame',
-  ranger: 'art/units/professions/ranger/spriteFrame',
-  shaman: 'art/units/professions/shaman/spriteFrame',
-  sorcerer: 'art/units/mage_ally/spriteFrame',
-  champion: 'art/units/placeholders/mage/spriteFrame',
   zombie: 'art/units/monsters/zombie/spriteFrame',
   skeleton_archer: 'art/units/monsters/skeleton_archer/spriteFrame',
   silverfish: 'art/units/monsters/silverfish/spriteFrame',
@@ -43,9 +46,13 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
-  scout: '64,12,128,128', warrior: '64,4,128,128', champion: '64,8,128,128',
-  young_sasuke: '260,10,650,650', sakura: '290,36,680,680',
-  itachi: '575,10,330,330', sasuke: '500,0,290,290', madara: '475,65,340,340',
+  helion:'290,100,400,400', saiph:'270,210,360,360', bronda:'290,260,360,360', kaeru:'480,140,360,360', leon:'280,100,400,400',
+  phinia:'450,70,340,340', aurelia:'260,140,360,360', celine:'350,140,360,360', oris:'360,170,360,360', seraphiel:'340,180,360,360',
+  abyss_iron_guard: '360,40,400,400', blackfeather_hunter: '450,160,350,350',
+  nightmare_lamplighter: '410,20,400,400', shadow_seam_assassin: '610,340,350,350',
+  soulcleaver_general: '580,40,400,400', ghostflame_blade: '450,20,420,420',
+  eclipse_crossbow: '270,100,350,350', nether_lantern_witch: '370,100,360,360',
+  blackstar_warlock: '380,210,350,350', voidscar_reaver: '450,210,400,400',
 }).map(([id, rect]) => [id, `${UNIT_ART[id]}#rawrect,${rect}`]));
 
 export const UI_SPRITE = {
@@ -58,16 +65,20 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
-  susanooSlash: 'art/fx/susanoo_slash/spriteFrame',
-  susanooBlue: 'art/fx/susanoo_blue/spriteFrame',
+  sunlightBarrier: 'art/fx/sunlight_barrier/spriteFrame',
+  sunlightArrow: 'art/fx/sunlight_arrow/spriteFrame',
+  sunlightSlash: 'art/fx/sunlight_slash/spriteFrame',
+  sunlightSigil: 'art/fx/sunlight_sigil/spriteFrame',
+  sunlightJudgment: 'art/fx/sunlight_judgment/spriteFrame',
+  sunlightField: 'art/fx/sunlight_field/spriteFrame',
+  shadowBarrier: 'art/fx/shadow_barrier_v2/spriteFrame',
+  shadowSlash: 'art/fx/shadow_slash_v2/spriteFrame',
+  shadowWisp: 'art/fx/shadow_corruption_wisp/spriteFrame',
+  shadowLantern: 'art/fx/shadow_lantern_v2/spriteFrame',
+  shadowProjectile: 'art/fx/shadow_projectile/spriteFrame',
+  shadowBoardFog: 'art/fx/shadow_board_fog/spriteFrame',
+  shadowCorruption: 'art/fx/shadow_corruption/spriteFrame',
   dragonBreath: 'art/fx/dragon_breath/spriteFrame',
-  ninjaBolt: 'art/fx/young_sasuke_ninja_bolt/spriteFrame',
-  sageCloneRasengan: 'art/fx/sage_clone_rasengan/spriteFrame',
-  rasenganSmall: 'art/fx/rasengan_small/spriteFrame',
-  rasenganLarge: 'art/fx/rasengan_large/spriteFrame',
-  itachiVortex: 'art/fx/itachi_vortex/spriteFrame',
-  itachiRaven: 'art/fx/itachi_raven/spriteFrame',
-  blackFlameImpact: 'art/fx/sasuke_black_flame/spriteFrame',
   arrow:    'art/fx/fx_arrow/spriteFrame',
   fireball: 'art/fx/fx_fireball/spriteFrame',
   hit:      'art/fx/fx_hit/spriteFrame',
@@ -80,6 +91,12 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
   const suffix = side === 0 ? 'ally' : 'enemy';
   return `${cfgId}_${suffix}`;
 }
+
+/** Full-color, text-free objects placed directly on the board. */
+export const BOARD_ENCOUNTER_SPRITE = {
+  shop: 'art/ui/board_shop/spriteFrame',
+  chest: 'art/ui/board_boss_chest/spriteFrame',
+} as const;
 
 /** Current M2 interface textures. */
 export const M2_UI_SPRITE = {

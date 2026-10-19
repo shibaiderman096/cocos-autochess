@@ -12,7 +12,7 @@ export type UnitLocation = 'bench' | 'board';
 export interface OwnedUnit {
   /** 唯一实例 id */
   uid: number;
-  /** 棋子配置 id（如 warrior） */
+  /** 棋子配置 id（如 helion） */
   unitId: string;
   star: number;
   equipment?: string[];
@@ -27,7 +27,7 @@ export class OwnedUnits {
   private nextUid = 1;
   equipmentReserve: string[] = [];
 
-  constructor(initial?: OwnedUnit[], nextUid?: number) {
+  constructor(initial?: OwnedUnit[], nextUid?: number, private canMerge: () => boolean = () => true) {
     if (initial) {
       for (const u of initial) this.list.push({ ...u, equipment: [...(u.equipment ?? [])].slice(0, MAX_EQUIPMENT) });
       this.nextUid = this.list.reduce((m, u) => Math.max(m, u.uid), 0) + 1;
@@ -147,12 +147,19 @@ export class OwnedUnits {
     return u;
   }
 
+  /** Deferred copies stay intact until the owning session leaves combat. */
+  mergeAll(): void {
+    if (!this.canMerge()) return;
+    for (const id of [...new Set(this.list.map(unit => unit.unitId))].sort()) this.tryMerge(id);
+  }
+
   /**
    * 同名同星合并：凑满 MERGE_COUNT 个 → 保留一个星+1，其余移除。
    * 返回升星后的棋子（未合并返回 null）。
    * 注意：只处理 1→2 星、2→3 星；3 星不再升。
    */
   tryMerge(unitId: string): OwnedUnit | null {
+    if (!this.canMerge()) return null;
     let merged: OwnedUnit | null = null;
     for (let star = 1; star < 3; star++) {
       // Preserve a deployed slot when purchases combine board and reserve copies.

@@ -10,7 +10,7 @@ const loadRunInputs=()=>require('./historical-inputs.cjs').archivedInputs;
 const runSimulation=(_,options)=>simulate(require('../tools/run-simulation.ts').loadRunInputs(),{...options,equipmentPolicy:false});
 const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts'),{buildRunWaves}=require('../assets/scripts/core/RunSetup.ts');
 const {hexDist,hexNeighbors}=require('../assets/scripts/battle/HexMath.ts');
-const i=loadRunInputs(),g=loadEnemyGenerationInputs(),f={...loadFormationInputs(),enemyRoles:require('../docs/p4-balance/baseline/frozen.json').configs['enemy-roles']},c=f.formationConfig,r=f.enemyRoles,model=new EnemyPowerModel(g.enemyPower);
+const i=loadRunInputs(),g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f={...loadFormationInputs(),enemyRoles:require('../docs/p4-balance/baseline/frozen.json').configs['enemy-roles']},c=f.formationConfig,r=f.enemyRoles,model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const member=placements=>placements.map(({x,y,...m})=>m);let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}

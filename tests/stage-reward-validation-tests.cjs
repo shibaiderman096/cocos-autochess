@@ -14,12 +14,12 @@ const base={id:'stage-encounters-v1:1:10:shop',waveId:10};
 const offers=Array.from({length:5},(_,i)=>({kind:'equipment',id:rules.basicEquipmentIds[i],price:3,bought:false}));
 assert.doesNotThrow(()=>load({...base,kind:'specialShop',offers}));
 assert.doesNotThrow(()=>load({...base,kind:'equipmentChoice',candidates:rules.basicEquipmentIds.slice(0,4)}));
-assert.doesNotThrow(()=>load({...base,kind:'unitBundle',value:2,units:['warrior','archer'],deferredValue:0}));
+assert.doesNotThrow(()=>load({...base,kind:'unitBundle',value:2,units:['helion','saiph'],deferredValue:0}));
 for(const pending of [null,{}, {...base,kind:'unknown'}, {...base,kind:'bossChoice',value:-1},
  {...base,waveId:NaN,kind:'bossChoice',value:2}, {...base,kind:'equipmentChoice',candidates:['missing']},
  {...base,kind:'equipmentChoice',candidates:Array(4).fill('guinsoo')},
  {...base,kind:'unitBundle',value:2,units:['red_mage'],deferredValue:0},
- {...base,kind:'unitBundle',value:2,units:['warrior'],deferredValue:0},
+ {...base,kind:'unitBundle',value:2,units:['leon'],deferredValue:0},
  {...base,kind:'specialShop',offers:[...offers.slice(0,4),{...offers[4],price:-1}]},
  {...base,kind:'specialShop',offers:[...offers.slice(0,4),{...offers[4],price:Infinity}]},
  {...base,kind:'specialShop',offers:[...offers.slice(0,4),{...offers[4],id:'missing'}]},

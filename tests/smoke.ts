@@ -14,12 +14,12 @@ cfg.setSkills(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/ski
 cfg.setBattle({ boardWidth: 8, boardHeight: 6, maxTicks: 1200, tickMs: 50 });
 
 const placements: Placement[] = [
-  { cfg: cfg.getUnit('warrior'), side: 0, x: 2, y: 2 },
-  { cfg: cfg.getUnit('archer'),  side: 0, x: 4, y: 1 },
-  { cfg: cfg.getUnit('mage'),    side: 0, x: 6, y: 0 },
-  { cfg: cfg.getUnit('warrior'), side: 1, x: 2, y: 3 },
-  { cfg: cfg.getUnit('archer'),  side: 1, x: 4, y: 4 },
-  { cfg: cfg.getUnit('mage'),    side: 1, x: 6, y: 5 },
+  { cfg: cfg.getUnit('leon'), side: 0, x: 2, y: 2 },
+  { cfg: cfg.getUnit('saiph'),  side: 0, x: 4, y: 1 },
+  { cfg: cfg.getUnit('celine'),    side: 0, x: 6, y: 0 },
+  { cfg: cfg.getUnit('leon'), side: 1, x: 2, y: 3 },
+  { cfg: cfg.getUnit('saiph'),  side: 1, x: 4, y: 4 },
+  { cfg: cfg.getUnit('celine'),    side: 1, x: 6, y: 5 },
 ];
 
 function runOnce(seed: number) {

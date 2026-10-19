@@ -1,16 +1,7 @@
 {
   "version": "enemy-roles-v1",
   "units": {
-    "warrior": {
-      "role": "mage",
-      "tags": [
-        "aoe"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Range-4 physical caster; rasengan splits physical damage among enemies within 2 hexes of the target."
-    },
-    "guardian": {
+    "abyss_iron_guard": {
       "role": "tank",
       "tags": [
         "shield",
@@ -18,36 +9,28 @@
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Range-1 defensive tank with a self shield."
+      "reason": "暗渊铁卫：用户暗影v3设计，tank/physical，显式技能基础数值。"
     },
-    "champion": {
+    "blackfeather_hunter": {
       "role": "ranged_dps",
       "tags": [
         "burst"
       ],
       "source": "explicit",
-      "confidence": "medium",
-      "reason": "Range-3 physical archer; sage_clone_rasengan deals delayed single-target physical damage."
+      "confidence": "high",
+      "reason": "玄羽夜猎：用户暗影v3设计，marksman/physical，显式技能基础数值。"
     },
-    "duelist": {
-      "role": "melee_dps",
+    "nightmare_lamplighter": {
+      "role": "tank",
       "tags": [
-        "aoe"
+        "shield",
+        "durable"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Melee fighter with radius-1 physical cleave."
+      "reason": "魇雾守灯人：用户暗影v3设计，tank/magic，显式技能基础数值。"
     },
-    "sasuke": {
-      "role": "melee_dps",
-      "tags": [
-        "burst"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Existing fighter with single-target physical attack and burn; no teleport."
-    },
-    "enderman": {
+    "shadow_seam_assassin": {
       "role": "assassin",
       "tags": [
         "teleport",
@@ -55,107 +38,157 @@
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Existing ender_ambush teleportEmpower; targetRange remains 3 and is not extended by formation."
+      "reason": "影缝刺客：用户暗影v3设计，assassin/physical，显式技能基础数值。"
     },
-    "archer": {
+    "soulcleaver_general": {
+      "role": "melee_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "裂魂斩将：用户暗影v3设计，warrior/physical，显式技能基础数值。"
+    },
+    "ghostflame_blade": {
+      "role": "melee_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "幽焰刃侍：用户暗影v3设计，warrior/magic，显式技能基础数值。"
+    },
+    "eclipse_crossbow": {
       "role": "ranged_dps",
       "tags": [
         "burst"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Range-4 archer with a charged physical arrow."
+      "reason": "蚀月弩姬：用户暗影v3设计，marksman/physical，显式技能基础数值。"
     },
-    "scout": {
-      "role": "tank",
-      "tags": [],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Range 1 magic tank; academy_shield grants a spell-scaled self shield."
-    },
-    "ranger": {
-      "role": "ranged_dps",
+    "nether_lantern_witch": {
+      "role": "mage",
       "tags": [
-        "burst"
+        "aoe",
+        "control"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Range-4 marksman targeting the lowest health ratio."
+      "reason": "冥灯女巫：用户暗影v3设计，caster/magic，显式技能基础数值。"
     },
-    "young_sasuke": {
-      "role": "ranged_dps",
-      "tags": [
-        "burst"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Existing magicArcher, range 4, hybrid_bolt single target."
-    },
-    "mage": {
+    "blackstar_warlock": {
       "role": "mage",
       "tags": [
         "aoe"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Range-4 caster with radius-1 magic fireball."
+      "reason": "黑星咒术师：用户暗影v3设计，caster/magic，显式技能基础数值。"
     },
-    "shaman": {
-      "role": "support",
+    "voidscar_reaver": {
+      "role": "assassin",
       "tags": [
-        "healing"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Ranged healer prioritizing injured allies within 3 hexes."
-    },
-    "sorcerer": {
-      "role": "mage",
-      "tags": [
-        "damage-over-time"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Magic curse with five periodic magic damage pulses."
-    },
-    "itachi": {
-      "role": "mage",
-      "tags": [
-        "control",
+        "teleport",
         "burst"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Tsukuyomi single-target damageStun; no AoE radius."
+      "reason": "虚痕掠杀者：用户暗影v3设计，assassin/magic，显式技能基础数值。"
     },
-    "sakura": {
+    "helion": {
       "role": "tank",
       "tags": [
-        "healing",
+        "shield",
         "durable"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Magic tank; healing_channel heals herself for max-health fraction plus a spell-scaled flat amount."
+      "reason": "Authored sunlight roster: 赫利昂"
     },
-    "iron_golem": {
+    "saiph": {
+      "role": "ranged_dps",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 赛芙"
+    },
+    "bronda": {
       "role": "tank",
       "tags": [
-        "control",
-        "damage-reduction"
+        "shield",
+        "durable"
       ],
+      "source": "explicit",
       "confidence": "high",
-      "reason": "4费近战坦克，以护甲加成重拳击飞目标并获得限时减伤。"
+      "reason": "Authored sunlight roster: 布隆达"
     },
-    "madara": {
-      "role": "tank",
+    "kaeru": {
+      "role": "assassin",
       "tags": [
-        "aoe",
-        "damage-reduction",
-        "control-immunity"
+        "teleport",
+        "burst"
       ],
+      "source": "explicit",
       "confidence": "high",
-      "reason": "5费物理坦克，须佐期间免控、减伤并强化范围普攻。"
+      "reason": "Authored sunlight roster: 凯鲁"
+    },
+    "leon": {
+      "role": "melee_dps",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 雷昂"
+    },
+    "phinia": {
+      "role": "melee_dps",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 菲妮娅"
+    },
+    "aurelia": {
+      "role": "ranged_dps",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 艾蕾娅"
+    },
+    "celine": {
+      "role": "mage",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 瑟琳"
+    },
+    "oris": {
+      "role": "mage",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 奥瑞斯"
+    },
+    "seraphiel": {
+      "role": "assassin",
+      "tags": [
+        "teleport",
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "Authored sunlight roster: 塞拉菲尔"
     }
   }
 }

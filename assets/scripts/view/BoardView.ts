@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Graphics, Vec3, Color, UITransform } from 'cc';
 import { Grid } from '../battle/Grid';
+import { hexDist } from '../battle/HexMath';
 import { BoardGeometry, BoardPoint } from './BoardGeometry';
 import { setUISkin } from '../ui/UISkin';
 
@@ -96,12 +97,24 @@ export class BoardView extends Component {
   }
 
   /** Overlay uses the exact same projected polygon as rendering and hit testing. */
-  highlightTarget(target: { x: number; y: number } | null, allowed = true): void {
+  highlightTarget(target: { x: number; y: number } | null, allowed = true, attackRange = 0): void {
     if (!this.highlight) return;
     const g = this.highlight; g.clear();
     if (!target) return;
     const cell = this.geometry.cells.find(c => c.x === target.x && c.y === target.y);
     if (!cell) return;
+    // Match combat's odd-r hex distance, including cells across the center line.
+    if (allowed && Number.isFinite(attackRange) && attackRange > 0) {
+      for (const candidate of this.geometry.cells) {
+        const distance = hexDist(target, candidate);
+        if (distance === 0 || distance > attackRange) continue;
+        const outline = candidate.polygon;
+        g.moveTo(outline[0].x, outline[0].y);
+        for (let i = 1; i < outline.length; i++) g.lineTo(outline[i].x, outline[i].y);
+        g.close(); g.fillColor = new Color(205, 237, 255, 70); g.fill();
+        g.lineWidth = 1; g.strokeColor = new Color(220, 245, 255, 125); g.stroke();
+      }
+    }
     const points = cell.polygon;
     g.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++) g.lineTo(points[i].x, points[i].y);

@@ -76,7 +76,14 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
     if (!skill || typeof skill !== 'object' || Array.isArray(skill)) throw new Error('Invalid skill identity');
     return [id, Object.fromEntries(Object.entries(skill).filter(([key]) => key !== 'description' && key !== 'statRows'))];
   }));
-  return stableEnemyJson({ ...value, skills, ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
+  const battle = value.battle as { traits?: Array<{ pendingMembers?: boolean; members?: unknown[]; selector?: unknown }> } | undefined;
+  // A reserved trait with no possible members cannot change a battle. Assigning any member
+  // restores normal identity checking, including all configured combat values.
+  const battleIdentity = battle && Array.isArray(battle.traits) ? { ...battle, traits: battle.traits.filter(trait =>
+    !(trait.pendingMembers === true && trait.members?.length === 0 && !trait.selector))
+    .map(trait => Object.fromEntries(Object.entries(trait).filter(([key]) => key !== 'description'))) } : battle;
+  return stableEnemyJson({ ...value, ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
+    ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
 }
 
 /** Legacy saves may contain presentation fields; all combat fields must still match. */

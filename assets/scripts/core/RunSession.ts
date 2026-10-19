@@ -99,7 +99,7 @@ export class RunSession {
     for (const unit of this.save.owned) unit.equipment = cfg.getEquipmentReserve(unit.equipment ?? []).slice(0, MAX_EQUIPMENT).map(item => item.id);
     this.save.equipmentReserve = cfg.getEquipmentReserve(this.save.equipmentReserve ?? []).map(item => item.id);
     this.pool = new CardPool(cfg.allUnits(), this.save.pool);
-    this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid);
+    this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid, () => this.flow.phase !== 'battle');
     this.owned.equipmentReserve = [...(this.save.equipmentReserve ?? [])];
     if (needsStarter) {
       const candidates = cfg.allUnits().filter(u => u.cost === 1 && this.pool.count(u.id) > 0).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
@@ -118,7 +118,6 @@ export class RunSession {
       this.stageProgression = new StageProgression(runConfig.stageEncounters, this.save.stageProgress!, cfg,
         this.pool, this.owned, this.economy, this.random, this.save.benchSlots, this.stageEquipmentTiers, () => this.level.level);
       this.validateStageReward();
-      this.stageProgression.resume(this.flow.wave);
       if (this.flow.phase === 'prepare') this.stageProgression.enter(this.flow.wave);
     }
     this.snapshot();
@@ -453,6 +452,7 @@ export class RunSession {
     this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
   }
   snapshot(): SaveDataV2 {
+    this.owned.mergeAll();
     this.stageProgression?.collect(this.flow.wave);
     Object.assign(this.save, this.economy.snapshot(), this.level.snapshot(), { shop: this.shop.snapshot(), shopReserved: true,
       owned: this.owned.snapshot(), nextOwnedUid: this.owned.nextUnitUid, equipmentReserve: [...this.owned.equipmentReserve],

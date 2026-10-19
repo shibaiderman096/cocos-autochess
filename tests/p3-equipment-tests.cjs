@@ -9,7 +9,7 @@ const {createEquipmentReward}=require('../assets/scripts/core/EquipmentReward.ts
 const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
 const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
 const archived=require('../docs/p4-balance/baseline/frozen.json').configs;
-const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g=loadEnemyGenerationInputs(),f=loadFormationInputs(),{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
+const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f=loadFormationInputs(),{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
 const combatInputs={...i,units:loadRunInputs().units,skills:loadRunInputs().skills};

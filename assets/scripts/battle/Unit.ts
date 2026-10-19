@@ -1,4 +1,4 @@
-import { BurnRuntime, Side, EquipmentConfigData } from './types';
+import { BurnRuntime, Side, EquipmentConfigData, ShadowTraitEffect, ShadowCorruption } from './types';
 import { UnitConfigData } from '../core/ConfigManager';
 
 export class Unit {
@@ -8,6 +8,21 @@ export class Unit {
   traitRegenPerSecond = 0;
   traitAttackDamage = 0;
   traitExecuteThreshold = 0;
+  shadowAttack?: ShadowTraitEffect;
+  shadowCorruption?: ShadowCorruption;
+  shadowAttackSpeedBonus = 0;
+  sunlightShield = 0;
+  skillArmorBonus = 0;
+  skillMrBonus = 0;
+  skillAttackSpeedBonus = 0;
+  skillAttackSpeedPenalty = 0;
+  skillUntargetable = false;
+  domainUntilTick = 0;
+  domainRadius = 0;
+  fearUntilTick = 0;
+  fearOrigin = { x: 0, y: 0 };
+  get armor(): number { return (this.cfg.armor + this.skillArmorBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get mr(): number { return (this.cfg.mr + this.skillMrBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
   gainMana(amount: number): void {
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
@@ -33,7 +48,7 @@ export class Unit {
   attackSpeedBonus = 0;
   overtimeAttackSpeedBonus = 0;
   overtimeDamageAmp = 0;
-  get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp; }
+  get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp - (this.shadowCorruption?.damageAmpLoss ?? 0); }
   equipment: EquipmentConfigData[] = [];
   equipmentAttackStacks = 0;
   get equipmentAttackSpeedBonus(): number {
@@ -65,7 +80,10 @@ export class Unit {
     }, 0));
   }
 
-  get attackSpeed(): number { return Math.min(this.attackSpeedCap, this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus); }
+  get attackSpeed(): number {
+    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - this.skillAttackSpeedPenalty;
+    return Math.min(this.attackSpeedCap, this.skillAttackSpeedPenalty > 0 ? Math.max(.1, speed) : speed);
+  }
 
   constructor(
     public id: number,
@@ -83,6 +101,8 @@ export class Unit {
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */
   snapshot(tick = 0) {
     return {
+      ...(this.shadowCorruption ? { shadowCorrupted: this.alive } : {}),
+      ...(this.domainRadius ? { domainRadius: this.alive && tick < this.domainUntilTick ? this.domainRadius : 0 } : {}),
       susanooActive: this.alive && tick < this.susanooUntilTick,
       equipmentAttackStacks: this.equipmentAttackStacks,
       id: this.id,
@@ -98,7 +118,8 @@ export class Unit {
       moveCd: this.moveCd,
       alive: this.alive,
       shield: this.shield,
-      untargetable: tick < this.untargetableUntilTick,
+      sunlightShield: this.sunlightShield,
+      untargetable: this.skillUntargetable || tick < this.untargetableUntilTick,
     };
   }
 }

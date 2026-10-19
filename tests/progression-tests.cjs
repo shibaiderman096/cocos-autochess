@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 17);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [4,5,3,3,2]);
-assert.equal(cfg.allUnits().length,17,'monsters must stay out of shop inventory');
+assert.equal(units.length, 37);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,9,7,7,6]);
+assert.equal(cfg.allUnits().length,37,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -121,7 +121,11 @@ for (const [id, skill] of Object.entries(skills)) {
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
   assert.ok(cast,`${id} must start casting with full mana`);
-  assert.equal(cast.target,['susanoo','healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  const shadowTarget = ['bulwark','domain','empower'].includes(skill.shadow?.kind) ? 1 : ['flurry','execute'].includes(skill.shadow?.kind) ? 3 : 2;
+  const sunlightTarget = ['bulwark','bastion','empower','prayer'].includes(skill.sunlight?.kind) ? 1 : ['hunt','crossbow'].includes(skill.sunlight?.kind) ? 3 : 2;
+  assert.equal(cast.target,skill.effect==='sunlight'?sunlightTarget:skill.effect==='shadow'?shadowTarget:['susanoo','healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  // Sunlight's shields, multihits and delayed judgments have dedicated all-star assertions.
+  if (skill.effect === 'sunlight') continue;
   if (skill.effect === 'susanoo') continue;
   if (skill.effect === 'teleportEmpower' || cast.duration > 0) {
     assert.equal(sim.events.filter(e=>e.t==='hit' && e.id!==1).length,0,'empower cast does not deal immediate damage');

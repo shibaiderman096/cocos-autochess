@@ -271,9 +271,22 @@ export class BattleStage extends Component {
   }
 
   private refreshOwnedViews(): void {
-    if (this.flow.phase === 'prepare') { this.resetBattle(false); return; }
+    const upgraded = this.owned.all().filter(unit => {
+      const previous = this.ownedViews.get(unit.uid);
+      return previous && unit.star > previous.displayedStar;
+    }).map(unit => unit.uid);
+    if (this.flow.phase === 'prepare') {
+      this.resetBattle(false);
+      for (const uid of upgraded) this.ownedViews.get(uid)?.playStarUpgrade();
+      return;
+    }
     this.createBenchViews(this.boardNode.getChildByName('units')!);
     for (const uid of this.benchViews) this.bindOwnedTouch(uid, this.ownedViews.get(uid)!);
+    for (const uid of upgraded) {
+      const view = this.ownedViews.get(uid);
+      view?.setStar(this.owned.get(uid)!.star);
+      view?.playStarUpgrade();
+    }
     this.ui.refreshFormation(this.owned.all(), this.cfgUnits());
     if (this.selectedDetail?.kind === 'owned' && !this.owned.get(this.selectedDetail.id)) {
       this.selectedDetail = null; this.ui.closeUnitDetail();
@@ -385,7 +398,7 @@ export class BattleStage extends Component {
       && u.location === 'bench' && !this.owned.atBoard(cell.x, cell.y)) population++;
     bv.highlightTarget(!selling && bench === null ? cell : null,
       this.flow.phase === 'prepare' && !!cell && bv.isOwnCell(cell.y)
-      && (u.location === 'board' || !!this.owned.atBoard(cell.x, cell.y) || population <= this.levelSys.unitCap));
+      && (u.location === 'board' || !!this.owned.atBoard(cell.x, cell.y) || population <= this.levelSys.unitCap), this.cfg.getUnit(u.unitId).range);
     this.ui.showSellPreview(this.cfg.getUnit(u.unitId).name,
       sellPrice(this.pool.costOfUnit(u.unitId), u.star), selling, population);
   }
@@ -531,7 +544,7 @@ export class BattleStage extends Component {
     const unit = this.sim.units.find(u => u.id === id); if (!unit) return;
     this.selectedDetail = { kind: 'battle', id };
     this.ui.showEquipment(unit.equipment, false, unit.equipmentAttackStacks);
-    this.showDetail(unit.star, { ...unit.cfg, atkSpeed: unit.attackSpeed, damageAmp: unit.damageAmp, lifesteal: unit.lifesteal, damageReduction: unit.damageReductionAt(this.sim.tick) }, unit.skillScale, unit.side, unit.hp, unit.mana, unit.shield);
+    this.showDetail(unit.star, { ...unit.cfg, armor: unit.armor, mr: unit.mr, atkSpeed: unit.attackSpeed, damageAmp: unit.damageAmp, lifesteal: unit.lifesteal, damageReduction: unit.damageReductionAt(this.sim.tick) }, unit.skillScale, unit.side, unit.hp, unit.mana, unit.shield);
   }
   private showDetail(star: number, cfg: UnitConfigData, skillScale: number, side: 0 | 1, hp: number, mana: number, shield = 0): void {
     const skill = cfg.skillId ? this.cfg.getSkill(cfg.skillId) : null;
@@ -555,7 +568,7 @@ export class BattleStage extends Component {
       manaPerSecond:cfg.role === 'caster' ? this.cfg.battle.roleMana?.casterPerSecond ?? 0 : 0,
       physicalPower:cfg.physicalPower, spellPower:cfg.spellPower, critChance:cfg.critChance, lifesteal:cfg.lifesteal, damageAmp:cfg.damageAmp, damageReduction:cfg.damageReduction,
       skillName:skill ? skill.effect === 'healAlly' ? `${skill.name} · ${healing}治疗` : skill.effect === 'selfShield' ? `${skill.name} · ${shielding}护盾`
-        : skill.effect === 'susanoo' || skill.effect === 'teleportEmpower' || skill.effect === 'healChannel' ? skill.name ?? cfg.skillId : `${skill.name ?? cfg.skillId} · ${damage}${damageType}伤害` : '普通攻击',
+        : skill.effect === 'shadow' || skill.effect === 'susanoo' || skill.effect === 'teleportEmpower' || skill.effect === 'healChannel' ? skill.name ?? cfg.skillId : `${skill.name ?? cfg.skillId} · ${damage}${damageType}伤害` : '普通攻击',
       skillDescription:description });
   }
   private refreshDetailVitals(): void {
@@ -596,6 +609,11 @@ export class BattleStage extends Component {
   private openStageReward(): void {
     if (!this.loaded || this.transitioning || this.draggingId || this.flow.phase === 'battle'
       || !this.session.pendingStageReward) return;
+    const pending = this.session.pendingStageReward;
+    if (this.flow.wave.encounterKind === 'monster' && pending.kind === 'unitBundle') {
+      this.chooseStageReward({ type: 'stageChoice', rewardId: pending.id, choice: 'claim' });
+      return;
+    }
     this.stageRewardOpen = true; this.ui.closeUnitDetail();
     this.stageRewards.show(this.session.pendingStageReward, this.economy.gold);
   }
@@ -614,12 +632,15 @@ export class BattleStage extends Component {
     const result = this.session.claimStageReward(action);
     if (!result.ok) { this.ui.showWarn(result.error === 'not_enough_gold' ? '金币不足' : result.error === 'unit_sold_out' ? '该棋子已售罄' : '无法领取该奖励'); return; }
     this.persistShopState(); this.refreshOwnedViews(); this.refreshShopUI(); this.refreshEconomyUI(); this.refreshRunUI();
+    if (this.flow.wave.encounterKind === 'monster' && this.session.canAdvanceWave()) {
+      this.restart(); return;
+    }
     this.scheduleNextWave();
   }
 
   private manualEncounter(): boolean {
     const kind = this.flow.wave.encounterKind;
-    return kind === 'specialShop' || kind === 'boss';
+    return kind === 'specialShop';
   }
 
   private refreshNextWaveButton(): void {
@@ -845,7 +866,7 @@ export class BattleStage extends Component {
     // Reward changes may rebuild an unfinished preview. It must stay idle during settlement.
     this.fighting = false;
     this.preparationRemaining = 0;
-    if (this.save.stageProgress?.lastUnitDrop?.waveId === this.flow.wave.id) this.refreshOwnedViews();
+    this.refreshOwnedViews();
     // Persist settlement, currency/XP and the frozen pending candidates together before presenting any controls.
     this.persistShopState();
     const { round, reward } = settlement;

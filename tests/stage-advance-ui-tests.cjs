@@ -6,7 +6,7 @@ const ts = require('typescript');
 const file = path.join(__dirname, '../assets/scripts/view/BattleStage.ts');
 const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.ES2020, true);
 const stageClass = source.statements.find(n => ts.isClassDeclaration(n) && n.name.text === 'BattleStage');
-const names = ['manualEncounter', 'refreshNextWaveButton', 'nextSpecialEncounter', 'scheduleNextWave', 'update'];
+const names = ['manualEncounter', 'refreshNextWaveButton', 'nextSpecialEncounter', 'scheduleNextWave', 'update', 'openStageReward', 'chooseStageReward'];
 const methods = names.map(name => stageClass.members.find(n => n.name?.getText(source) === name).getText(source));
 const compiled = ts.transpileModule(`class Stage { ${methods.join('\n')} } exports.Stage=Stage;`, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
@@ -26,9 +26,9 @@ function makeStage(kind, phase = 'settlement') {
   return stage;
 }
 for (const kind of [undefined, 'normal', 'monster', 'elite', 'specialShop', 'boss']) {
-  const stage = makeStage(kind), manual = kind === 'specialShop' || kind === 'boss';
+  const stage = makeStage(kind), manual = kind === 'specialShop';
   stage.scheduleNextWave();
-  assert.equal(stage.ui.nextVisible, manual, `${kind}: only shop/boss display next button`);
+  assert.equal(stage.ui.nextVisible, manual, `${kind}: only shop displays next button`);
   assert.equal(stage.nextWaveRemaining, manual ? null : 1);
   stage.update(.5); assert.equal(stage.restarts, 0);
   stage.update(.5); assert.equal(stage.restarts, manual ? 0 : 1, `${kind}: other encounters advance automatically`);
@@ -37,7 +37,7 @@ for (const kind of [undefined, 'normal', 'monster', 'elite', 'specialShop', 'bos
   stage.flow.phase = 'ended'; stage.scheduleNextWave();
   assert.equal(stage.ui.nextVisible, false); assert.equal(stage.nextWaveRemaining, null);
 }
-for (const kind of ['monster', 'elite', 'normal']) {
+for (const kind of ['monster', 'elite', 'normal', 'boss']) {
   const stage = makeStage(kind);
   stage.session.pendingStageReward = { kind: 'unitBundle' };
   stage.scheduleNextWave(); assert.equal(stage.ui.nextVisible, false); assert.equal(stage.nextWaveRemaining, null);
@@ -57,7 +57,32 @@ shop.chooseStageReward = action => {
 shop.refreshNextWaveButton(); assert.equal(shop.ui.nextVisible, true);
 shop.nextSpecialEncounter(); assert.equal(shop.restarts, 1);
 const boss = makeStage('boss'); boss.session.pendingStageReward = { kind: 'bossChoice' };
-boss.nextSpecialEncounter(); assert.equal(boss.restarts, 0); assert.ok(boss.ui.warning);
+boss.scheduleNextWave(); assert.equal(boss.nextWaveRemaining, null);
+boss.update(2); assert.equal(boss.restarts, 0);
 delete boss.session.pendingStageReward;
-boss.nextSpecialEncounter(); assert.equal(boss.restarts, 1);
-console.log('PASS encounter advancement: shop/boss buttons, other encounters auto-advance, reward gates, shop exit and run-end states');
+boss.scheduleNextWave(); assert.equal(boss.ui.nextVisible, false);
+boss.update(1); assert.equal(boss.restarts, 1);
+console.log('PASS encounter advancement: shop button, boss and other encounters auto-advance, reward gates, shop exit and run-end states');
+
+// Clicking a monster chest claims directly; failed/pending claims never skip rewards.
+for (const outcome of ['success','failed','equipment']) {
+  const stage=makeStage('monster');
+  stage.session.pendingStageReward={id:'monster-chest',kind:'unitBundle'};
+  let claims=0, panels=0;
+  stage.session.claimStageReward=action=>{
+    claims++; assert.deepEqual(action,{type:'stageChoice',rewardId:'monster-chest',choice:'claim'});
+    if(outcome==='failed')return {ok:false};
+    delete stage.session.pendingStageReward;
+    if(outcome==='equipment')stage.session.pendingEquipmentReward={};
+    return {ok:true};
+  };
+  for(const method of ['persistShopState','refreshOwnedViews','refreshShopUI','refreshEconomyUI','refreshRunUI'])stage[method]=()=>{};
+  stage.stageRewards={show(){panels++;}};
+  stage.openStageReward();
+  assert.equal(claims,1);assert.equal(panels,0);
+  assert.equal(stage.restarts,outcome==='success'?1:0);
+  stage.openStageReward();assert.equal(stage.restarts,outcome==='success'?1:0,'repeat click does not advance twice');
+}
+const battleChest=makeStage('monster','battle');battleChest.session.pendingStageReward={kind:'unitBundle'};
+battleChest.openStageReward();assert.equal(battleChest.restarts,0);
+console.log('PASS monster chest: direct claim, immediate advancement, pending/failed reward gates and repeated clicks');

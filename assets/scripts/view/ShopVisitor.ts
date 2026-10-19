@@ -1,5 +1,5 @@
-import { Color, Graphics, Label, Node, Sprite, UITransform, Vec3 } from 'cc';
-import { ENCOUNTER_SPRITE } from './ArtPaths';
+import { Color, Graphics, Node, Sprite, UITransform, Vec3 } from 'cc';
+import { BOARD_ENCOUNTER_SPRITE } from './ArtPaths';
 import { loadArtSprite } from './ArtSpriteLoader';
 
 /** Clickable encounter object, outside combat and formation counting. */
@@ -9,7 +9,8 @@ export class ShopVisitor {
   constructor(parent: Node, position: Vec3, enter: () => void, kind: 'shop' | 'chest' = 'shop') {
     this.root = new Node(kind === 'shop' ? 'shopVisitor' : 'bossChest'); parent.addChild(this.root);
     this.root.layer = parent.layer;
-    this.root.addComponent(UITransform).setContentSize(132, 158);
+    const touchArea = this.root.addComponent(UITransform);
+    touchArea.setContentSize(132, 132); touchArea.setAnchorPoint(0.5, 0.25);
     this.root.setPosition(position);
     const base = this.root.addComponent(Graphics);
     base.fillColor = new Color(20, 29, 30, 220);
@@ -20,19 +21,9 @@ export class ShopVisitor {
     this.root.addChild(portrait); portrait.layer = parent.layer;
     portrait.addComponent(UITransform).setContentSize(112, 112); portrait.setPosition(0, 36, 0);
     const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-    loadArtSprite(ENCOUNTER_SPRITE[kind === 'shop' ? 'specialShop' : 'boss'],
+    loadArtSprite(BOARD_ENCOUNTER_SPRITE[kind],
       (error, frame) => { if (!error && sprite.isValid) sprite.spriteFrame = frame; });
-    this.text(kind === 'shop' ? '旅行商店' : '首领宝箱', -43, 20, new Color(255, 217, 137));
-    this.text(kind === 'shop' ? '点击进入' : '点击领取', -68, 14, new Color(227, 237, 225));
     this.root.on(Node.EventType.TOUCH_END, (event: any) => { event.propagationStopped = true; enter(); });
-  }
-
-  private text(value: string, y: number, size: number, color: Color): void {
-    const node = new Node('text'); this.root.addChild(node); node.layer = this.root.layer;
-    node.addComponent(UITransform).setContentSize(160, 26); node.setPosition(0, y, 0);
-    const label = node.addComponent(Label); label.string = value; label.fontSize = size;
-    label.lineHeight = size + 4; label.color = color; label.isBold = true;
-    label.horizontalAlign = Label.HorizontalAlign.CENTER; label.verticalAlign = Label.VerticalAlign.CENTER;
   }
 
   setVisible(visible: boolean): void {

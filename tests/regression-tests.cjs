@@ -1042,7 +1042,7 @@ function drag(stage, from, to) {
       assert.equal(resumed.flow.wave.stage,5);assert.equal(resumed.flow.wave.round,1);
     } finally {stageEncountersEnabled=false;}
   });
-  await test('monster units arrive without modal and preserve battle result, positions, HP and board views throughout the delay',async()=>{
+  await test('monster chest waits for click and preserves battle result, positions, HP and board views before claim',async()=>{
     stageEncountersEnabled=true;
     try {
       const stage=await makeStage(createSaveV2(3,1,'legacy'));
@@ -1052,13 +1052,14 @@ function drag(stage, from, to) {
       const endSim=stage.sim,endTick=endSim.tick,endState=endSim.units.map(u=>u.snapshot(endTick)),boardViews=new Map(stage.views);
       stage.update(.1);assert.equal(stage.sim,endSim,'settlement must not recreate the opening preview');
       for(const [id,view]of boardViews)assert.equal(stage.views.get(id),view,'board views stay intact');
-      assert.equal(stage.stageRewards.pending,undefined);assert.equal(stage.session.pendingStageReward,undefined);
+      assert.equal(stage.stageRewards.pending,undefined);assert.equal(stage.session.pendingStageReward.kind,'unitBundle');
       assert.equal(stage.save.stageProgress.lastUnitDrop.value,2);
-      assert.equal(stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0),3);
+      assert.equal(stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0),1,'rewards stay in the chest before claiming');
       const preview=stage.sim;stage.update(.4);assert.equal(preview.tick,endTick);assert.deepEqual(preview.units.map(u=>u.snapshot(endTick)),endState);
       const saved=JSON.parse(storage.get(SAVE_KEY)),loaded=await makeStage(saved);
       assert.deepEqual(loaded.owned.snapshot(),stage.owned.snapshot());assert.equal(loaded.stageRewards.pending,undefined);
-      stage.update(.7);assert.equal(stage.flow.wave.round,2);assert.equal(stage.flow.phase,'prepare');
+      stage.update(.7);assert.equal(stage.flow.wave.round,1,'unclaimed chest blocks automatic progression');
+      stage.openStageReward();assert.equal(stage.flow.wave.round,2);assert.equal(stage.flow.phase,'prepare');
     }finally{stageEncountersEnabled=false;}
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);

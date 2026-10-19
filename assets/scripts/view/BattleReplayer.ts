@@ -4,18 +4,13 @@ import { BattleEvent } from '../battle/types';
 import { UnitView } from './UnitView';
 import { FloatText, FloatTextPool } from './FloatText';
 import { BoardView } from './BoardView';
-import { FX_SPRITE } from './ArtPaths';
+import { FX_SPRITE, UNIT_ART } from './ArtPaths';
+import { ShadowSkillVfx } from './ShadowSkillVfx';
+import { SunlightVfx } from './SunlightVfx';
+import { SunlightSpriteVfx } from './SunlightSpriteVfx';
 
 const { ccclass } = _decorator;
 interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: number }
-const ROLE_SKILL_FX: Record<string, { path: string; size: number; tint: [number, number, number] }> = {
-  aimed_arrow: { path: FX_SPRITE.hit, size: 0.9, tint: [255, 220, 150] },
-  piercing_shot: { path: FX_SPRITE.hit, size: 1.3, tint: [130, 235, 160] },
-  cleave: { path: FX_SPRITE.slash, size: 2.8, tint: [255, 220, 170] },
-  fireball: { path: FX_SPRITE.fireball, size: 2.8, tint: [255, 165, 90] },
-  corrupt_curse: { path: FX_SPRITE.ring, size: 1.5, tint: [190, 110, 255] },
-  divine_mend: { path: FX_SPRITE.ring, size: 1.5, tint: [130, 255, 190] },
-};
 
 /**
  * 战斗回放器：消费 sim.events，把逻辑事件映射到 UnitView 表现。
@@ -31,8 +26,16 @@ export class BattleReplayer extends Component {
   private moves = new Map<number, MoveVisual>();
   private renderTick = 0;
   private tickMs = 50;
+  private shadowFog: Node | null = null;
+  private shadowSkillVfx: ShadowSkillVfx | null = null;
+  private sunlightVfx: SunlightVfx | null = null;
+  private sunlightSprites: SunlightSpriteVfx | null = null;
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
+    this.clearShadowFog();
+    this.shadowSkillVfx?.destroy(); this.shadowSkillVfx = null;
+    this.sunlightVfx?.destroy(); this.sunlightVfx = null;
+    this.sunlightSprites?.destroy(); this.sunlightSprites = null;
     this.sim = sim;
     this.unitViews = views;
     this.cellSize = cellSize;
@@ -55,6 +58,14 @@ export class BattleReplayer extends Component {
 
   private play(e: BattleEvent) {
     switch (e.t) {
+      case 'sun_pulse':
+        if (this.fxRoot?.isValid && this.boardView) {
+          this.sunlightVfx ??= new SunlightVfx(this.fxRoot, this.cellSize, this.tickMs,
+            (x, y) => this.boardView.cellToWorld(x, y), id => this.unitViews.get(id)?.node);
+          if (e.effect !== 'board') this.sunlightVfx.play(e);
+          this.sunlightArt()?.play(e);
+        }
+        break;
       case 'battle_start': break;
       case 'move': {
         const unit = this.sim.units.find(u => u.id === e.id);
@@ -69,6 +80,12 @@ export class BattleReplayer extends Component {
         this.moves.delete(e.id);
         const uv = this.unitViews.get(e.id);
         if (uv && this.boardView) uv.node.setPosition(this.boardView.cellToWorld(e.to.x, e.to.y));
+        const unit = this.sim.units.find(unit => unit.id === e.id);
+        const path = unit && UNIT_ART[unit.cfg.artId ?? unit.cfg.id];
+        if (path?.includes('/units/shadow/') && this.boardView)
+          this.shadowVfx()?.teleport(e.id, path, this.boardView.cellToWorld(e.from.x,e.from.y), this.boardView.cellToWorld(e.to.x,e.to.y), e.tick);
+        if (path?.includes('/units/sunlight/') && this.boardView)
+          this.sunlightArt()?.teleport(this.boardView.cellToWorld(e.from.x,e.from.y),this.boardView.cellToWorld(e.to.x,e.to.y),e.tick);
         break;
       }
       case 'attack': {
@@ -82,28 +99,37 @@ export class BattleReplayer extends Component {
           );
           uv.playAttack(dir);
           const attacker = this.sim.units.find(u => u.id === e.id);
-          const skillId = attacker?.cfg.skillId;
-          if (e.area && skillId === 'susanoo_form') {
-            const pos = tv.node.position.clone();
-            // The original crescent's convex edge points down (-90 degrees).
-            const sweepAngle = Math.atan2(pos.y - uv.node.position.y, pos.x - uv.node.position.x) * 180 / Math.PI + 90;
-            this.playSpriteFx(FX_SPRITE.susanooSlash, pos, pos, 2.7, 2.7, false, false, undefined, false, sweepAngle);
-          }
-          const projectile = attacker?.cfg.basicAttackFx;
+          const shadowMelee = attacker && attacker.cfg.range <= 1 && UNIT_ART?.[attacker.cfg.artId ?? attacker.cfg.id]?.includes('/units/shadow/');
+          const sunlight = attacker && UNIT_ART?.[attacker.cfg.artId ?? attacker.cfg.id]?.includes('/units/sunlight/');
+          if (sunlight) this.sunlightArt()?.basicAttack(uv.node.position.clone(),tv.node.position.clone(),e.tick,attacker.cfg.range>1);
+          if (shadowMelee) this.shadowVfx()?.basicMelee(uv.node.position.clone(),tv.node.position.clone(),e.tick);
+          else if (e.shadow) this.playSpriteFx(FX_SPRITE.shadowProjectile, uv.node.position.clone(), tv.node.position.clone(), 1.1, 0.55, true, false, undefined, true);
+          const projectile = e.shadow || shadowMelee || sunlight ? undefined : attacker?.cfg.basicAttackFx;
           if (projectile) {
             const tint = attacker.cfg.basicAttackTint;
             this.playSpriteFx(FX_SPRITE[projectile], uv.node.position.clone(), tv.node.position.clone(),
-              projectile === 'ninjaBolt' ? 1.1 : projectile === 'arrow' ? 0.9 : 0.5,
-              projectile === 'ninjaBolt' ? 1.1 * 2 / 3 : projectile === 'arrow' ? 0.3 : 0.5,
+              projectile === 'arrow' ? 0.9 : 0.5,
+              projectile === 'arrow' ? 0.3 : 0.5,
               true, false, tint ? new Color(...tint) : undefined, true);
           }
-          if (skillId === 'rasengan' || skillId === 'sage_clone_rasengan') {
-            this.playSpriteFx(FX_SPRITE.rasenganSmall, uv.node.position.clone(), tv.node.position.clone(), 0.65, 0.65, true);
-          }
-          if (this.sim.units.find(u => u.id === e.id)?.cfg.id === 'itachi') {
-            this.playSpriteFx(FX_SPRITE.itachiRaven, uv.node.position.clone(), tv.node.position.clone(), 0.75, 0.75, true);
-          }
         }
+        break;
+      }
+      case 'shadow_board': this.showShadowFog(); break;
+      case 'shadow_pulse':
+        if (e.damage && this.boardView) this.shadowVfx()?.boardPulse(e.tick,this.boardView.boardPixelW/this.cellSize);
+        break;
+      case 'shadow_mark': break; // The snapshot owns the persistent, moving unit aura.
+      case 'skill_pulse': {
+        if (!this.boardView) break;
+        const pos = this.boardView.cellToWorld(e.center.x, e.center.y);
+        const source = this.unitViews.get(e.id)?.node.position.clone();
+        this.shadowVfx()?.play(e.effect,e.id,source??pos,pos,e.tick,e.radius,e.duration,e.selfCast);
+        break;
+      }
+      case 'fear': {
+        const view = this.unitViews.get(e.id);
+        if (view && this.fxRoot) FloatTextPool.get().show('恐惧', new Color(195, 120, 235), view.node.position.clone(), this.fxRoot);
         break;
       }
       case 'hit': {
@@ -127,14 +153,14 @@ export class BattleReplayer extends Component {
       case 'cast': {
         if (e.duration !== undefined) {
           this.unitViews.get(e.id)?.playCast(e.duration);
+          const source = this.sim.units.find(unit => unit.id === e.id);
+          const path = source && UNIT_ART[source.cfg.artId ?? source.cfg.id];
+          const view = this.unitViews.get(e.id);
+          if (path?.includes('/units/shadow/') && view) this.shadowVfx()?.charge(e.id,view.node.position.clone(),e.tick,e.duration);
+          if (path?.includes('/units/sunlight/') && view) this.sunlightArt()?.charge(e.id,view.node.position.clone(),e.tick,e.duration);
           break;
         }
         const tv = this.unitViews.get(e.target);
-        if (e.skillId === 'hybrid_bolt' && tv) {
-          const source = this.unitViews.get(e.id);
-          if (source) this.playSpriteFx(FX_SPRITE.ninjaBolt,
-            source.node.position.clone(), tv.node.position.clone(), 1.8, 1.2, true, false, undefined, true);
-        }
         if (tv) tv.playHit();
         break;
       }
@@ -148,21 +174,12 @@ export class BattleReplayer extends Component {
         if (e.equipmentId) break;
         const uv = this.unitViews.get(e.id);
         if (uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}护盾`, new Color(220, 235, 255), uv.node.position.clone(), this.fxRoot);
-        if (uv && this.sim.units.find(u => u.id === e.id)?.cfg.skillId === 'guardian_bulwark') {
-          const pos = uv.node.position.clone();
-          this.playSpriteFx(FX_SPRITE.ring, pos, pos, 1.5, 1.5, false, false, new Color(180, 215, 255));
-        }
         break;
       }
       case 'equipment_trigger': {
         const uv = this.unitViews.get(e.id);
         const name = this.sim.units.find(u => u.id === e.id)?.equipment.find(item => item.id === e.equipmentId)?.name ?? '装备触发';
         if (uv && this.fxRoot) FloatTextPool.get().show(name, new Color(255, 218, 104), uv.node.position.clone(), this.fxRoot);
-        break;
-      }
-      case 'burn': {
-        if (this.sim.units.find(u => u.id === e.source)?.cfg.skillId !== 'corrupt_curse')
-          this.unitViews.get(e.id)?.playBlackFlame(e.duration);
         break;
       }
       case 'stun': {
@@ -188,36 +205,17 @@ export class BattleReplayer extends Component {
           const pos = target.node.position.clone();
           this.playSpriteFx(FX_SPRITE.dragonBreath, pos, pos, 3.2, 3.2);
         }
-        const roleFx = ROLE_SKILL_FX[e.skillId];
-        if (roleFx && target) {
-          const pos = target.node.position.clone();
-          this.playSpriteFx(roleFx.path, pos, pos, roleFx.size, roleFx.size, false, false, new Color(...roleFx.tint));
-        }
-        if (e.skillId === 'sage_clone_rasengan' && target) {
-          const source = this.unitViews.get(e.id);
-          const direction = Math.sign(target.node.position.x - (source?.node.position.x ?? target.node.position.x)) || 1;
-          const pos = target.node.position.clone();
-          // Keep the forward-hand Rasengan on the victim; the clone stands behind it.
-          pos.x -= direction * this.cellSize * 0.65;
-          this.playSpriteFx(FX_SPRITE.sageCloneRasengan, pos, pos, 2.8, 2.8 * 2 / 3, false, direction < 0);
-        }
-        if (e.skillId === 'rasengan' && target) {
-          const pos = target.node.position.clone();
-          this.playSpriteFx(FX_SPRITE.rasenganLarge, pos, pos, 4.6, 4.6);
-        }
-        if (e.skillId === 'tsukuyomi' && target) {
-          const pos = target.node.position.clone();
-          this.playSpriteFx(FX_SPRITE.itachiVortex, pos, pos, 2.7, 1.8);
-        }
         break;
       }
       case 'death': {
         this.moves.delete(e.id);
+        this.shadowSkillVfx?.cancel(e.id);
+        this.sunlightSprites?.cancel(e.id);
         const uv = this.unitViews.get(e.id);
         if (uv) uv.playDeath();
         break;
       }
-      case 'end': break;
+      case 'end': this.clearShadowFog(); this.shadowSkillVfx?.clear(); this.sunlightVfx?.clear(); this.sunlightSprites?.clear(); break;
     }
   }
 
@@ -227,6 +225,12 @@ export class BattleReplayer extends Component {
     this.renderTick = this.sim.finished
       ? Math.max(this.renderTick, this.sim.tick) + Math.max(0, dt) * playbackSpeed * 1000 / this.tickMs
       : this.sim.tick + Math.max(0, Math.min(1, interpolation));
+    // Derive motion from the simulation clock so pause and playback speed also govern mist.
+    if (this.shadowFog?.isValid) {
+      const phase = this.renderTick * this.tickMs / 1000;
+      this.shadowFog.setScale(1 + Math.sin(phase * 1.7) * 0.018, 1 + Math.cos(phase * 1.3) * 0.018, 1);
+      this.shadowFog.getComponent(UIOpacity)!.opacity = 220 + Math.round(Math.sin(phase * 2) * 20);
+    }
     for (const u of this.sim.units) {
       const uv = this.unitViews.get(u.id);
       if (!uv) continue;
@@ -240,9 +244,54 @@ export class BattleReplayer extends Component {
         }
         uv.node.setPosition(target);
         uv.sync(u.snapshot(this.sim.tick), this.cellSize);
+        uv.animateShadowCorruption?.(this.renderTick,this.tickMs,this.cellSize);
+        uv.animateSunlight?.(this.renderTick,this.tickMs,this.cellSize);
+        const domain = uv.node.getChildByName('shadowDomain');
+        if (domain?.active) {
+          const breath = 1 + Math.sin(this.renderTick*this.tickMs/280)*.025;
+          domain.setScale(breath,breath,1);
+          domain.getComponent(UIOpacity)!.opacity = 160+Math.round(Math.sin(this.renderTick*this.tickMs/400)*20);
+        }
       }
     }
+    this.shadowSkillVfx?.update(this.renderTick);
+    this.sunlightVfx?.update(this.renderTick);
+    this.sunlightSprites?.update(this.renderTick);
   }
+
+  private sunlightArt(): SunlightSpriteVfx | null {
+    if (!this.fxRoot?.isValid || !this.boardView) return null;
+    this.sunlightSprites ??= new SunlightSpriteVfx(this.fxRoot,this.cellSize,this.tickMs,
+      (x,y)=>this.boardView.cellToWorld(x,y),id=>this.unitViews.get(id)?.node,
+      {width:this.boardView.boardPixelW,height:this.boardView.boardPixelH},id=>{
+        const unit=this.sim.units.find(u=>u.id===id);
+        return unit ? {alive:unit.alive&&unit.hp>0,shield:unit.shield,empowered:unit.skillAttackSpeedBonus>0} : undefined;
+      });
+    return this.sunlightSprites;
+  }
+
+  private shadowVfx(): ShadowSkillVfx | null {
+    if (!this.fxRoot?.isValid) return null;
+    this.shadowSkillVfx ??= new ShadowSkillVfx(this.fxRoot,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node);
+    return this.shadowSkillVfx;
+  }
+
+  private showShadowFog(): void {
+    if (this.shadowFog?.isValid || !this.fxRoot?.isValid || !this.boardView) return;
+    const fog = new Node('shadowBoardFog');
+    fog.addComponent(UITransform).setContentSize(this.boardView.boardPixelW + 155, this.boardView.boardPixelH + 100);
+    const sprite = fog.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
+    fog.addComponent(UIOpacity).opacity = 220;
+    this.fxRoot.addChild(fog); fog.setSiblingIndex(0); fog.setPosition(0, 0, 0); this.shadowFog = fog;
+    resources.load(FX_SPRITE.shadowBoardFog, SpriteFrame, (err, frame) => { if (!err && fog.isValid) sprite.spriteFrame = frame; });
+  }
+
+  private clearShadowFog(): void {
+    if (this.shadowFog?.isValid) this.shadowFog.destroy();
+    this.shadowFog = null;
+  }
+
+  onDestroy(): void { this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; }
 
   private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
     if (!this.fxRoot?.isValid) return;

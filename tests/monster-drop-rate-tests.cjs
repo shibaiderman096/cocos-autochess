@@ -14,7 +14,7 @@ function sample(seed,level=7,emptyOneCost=false){
  const pool=new CardPool(cfg.allUnits()),owned=new OwnedUnits(),state=freshStageProgress();
  if(emptyOneCost)for(const u of cfg.allUnits().filter(u=>u.cost===1))while(pool.take(u.id)){}
  const progress=new StageProgression(rules,state,cfg,pool,owned,new EconomySystem(),new RunRandomContext(seed),9,tiers,()=>level);
- progress.settle(wave,0);assert.equal(state.pending,undefined);return {pool,state,progress,owned,costs:state.lastUnitDrop.units.map(id=>cfg.getUnit(id).cost)};
+ progress.settle(wave,0);assert.equal(state.pending.kind,'unitBundle');return {pool,state,progress,owned,costs:state.lastUnitDrop.units.map(id=>cfg.getUnit(id).cost)};
 }
 const firstCosts=[0,0,0,0,0],lengths=new Set(),patterns=new Set();
 for(let seed=1;seed<=2000;seed++){
@@ -26,5 +26,5 @@ assert.ok(lengths.size>=4,'total value does not fix the number of cards');assert
 for(let seed=1;seed<=30;seed++)assert.deepEqual(sample(seed,1).costs,[1,1,1,1,1,1],'zero-probability tiers cannot drop');
 assert.deepEqual(sample(50).state,sample(50).state,'seed and level reproduce the same bundle');
 const scarce=sample(1,1,true);assert.deepEqual(scarce.costs,[]);assert.equal(scarce.state.unitCredit,6,'do not silently substitute a zero-rate tier');
-const one=cfg.allUnits().find(u=>u.cost===1);for(let i=0;i<6;i++)scarce.pool.give(one.id);scarce.progress.collect(wave);assert.equal(scarce.state.unitCredit,0);
+const one=cfg.allUnits().find(u=>u.cost===1);for(let i=0;i<6;i++)scarce.pool.give(one.id);scarce.progress.collect(wave);assert.equal(scarce.state.unitCredit,6,'unclaimed chest retains deferred rewards');assert.ok(scarce.progress.act({type:'stageChoice',rewardId:scarce.state.pending.id,choice:'claim'},wave).ok);assert.equal(scarce.state.unitCredit,0);
 console.log('PASS weighted monster drops: 2000 seeds follow level7 first-cost rates, exact value6, variable count, 1+1+4 and 1+1+2+2, level1 zero tiers, repeat and shortage refill');

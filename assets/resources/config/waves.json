@@ -4,7 +4,7 @@
     "name": "边境哨卫",
     "enemies": [
       {
-        "unitId": "warrior",
+        "unitId": "kaeru",
         "x": 3,
         "y": 4,
         "star": 1,
@@ -17,14 +17,14 @@
     "name": "林地伏击",
     "enemies": [
       {
-        "unitId": "guardian",
+        "unitId": "helion",
         "x": 2,
         "y": 4,
         "star": 1,
         "statMultiplier": 0.85
       },
       {
-        "unitId": "scout",
+        "unitId": "bronda",
         "x": 4,
         "y": 6,
         "star": 1,
@@ -37,21 +37,21 @@
     "name": "秘法巡队",
     "enemies": [
       {
-        "unitId": "guardian",
+        "unitId": "helion",
         "x": 2,
         "y": 4,
         "star": 1,
         "statMultiplier": 1
       },
       {
-        "unitId": "ranger",
+        "unitId": "blackfeather_hunter",
         "x": 4,
         "y": 6,
         "star": 1,
         "statMultiplier": 1
       },
       {
-        "unitId": "shaman",
+        "unitId": "oris",
         "x": 6,
         "y": 7,
         "star": 1,
@@ -64,21 +64,21 @@
     "name": "铁壁军阵",
     "enemies": [
       {
-        "unitId": "champion",
+        "unitId": "aurelia",
         "x": 1,
         "y": 4,
         "star": 2,
         "statMultiplier": 1
       },
       {
-        "unitId": "duelist",
+        "unitId": "leon",
         "x": 4,
         "y": 4,
         "star": 1,
         "statMultiplier": 1.1
       },
       {
-        "unitId": "ranger",
+        "unitId": "blackfeather_hunter",
         "x": 3,
         "y": 6,
         "star": 2,
@@ -91,28 +91,28 @@
     "name": "元素突袭",
     "enemies": [
       {
-        "unitId": "duelist",
+        "unitId": "leon",
         "x": 1,
         "y": 4,
         "star": 2,
         "statMultiplier": 1
       },
       {
-        "unitId": "guardian",
+        "unitId": "helion",
         "x": 5,
         "y": 4,
         "star": 2,
         "statMultiplier": 1
       },
       {
-        "unitId": "ranger",
+        "unitId": "blackfeather_hunter",
         "x": 2,
         "y": 6,
         "star": 2,
         "statMultiplier": 1
       },
       {
-        "unitId": "shaman",
+        "unitId": "oris",
         "x": 4,
         "y": 7,
         "star": 2,
@@ -125,35 +125,35 @@
     "name": "王城近卫",
     "enemies": [
       {
-        "unitId": "champion",
+        "unitId": "aurelia",
         "x": 1,
         "y": 4,
         "star": 2,
         "statMultiplier": 1.15
       },
       {
-        "unitId": "duelist",
+        "unitId": "leon",
         "x": 4,
         "y": 4,
         "star": 2,
         "statMultiplier": 1.15
       },
       {
-        "unitId": "ranger",
+        "unitId": "blackfeather_hunter",
         "x": 2,
         "y": 6,
         "star": 2,
         "statMultiplier": 1.15
       },
       {
-        "unitId": "scout",
+        "unitId": "bronda",
         "x": 5,
         "y": 6,
         "star": 2,
         "statMultiplier": 1.15
       },
       {
-        "unitId": "sorcerer",
+        "unitId": "blackstar_warlock",
         "x": 3,
         "y": 7,
         "star": 2,
@@ -166,42 +166,42 @@
     "name": "终焉守门者",
     "enemies": [
       {
-        "unitId": "champion",
+        "unitId": "aurelia",
         "x": 1,
         "y": 4,
         "star": 3,
         "statMultiplier": 1
       },
       {
-        "unitId": "duelist",
+        "unitId": "leon",
         "x": 5,
         "y": 4,
         "star": 2,
         "statMultiplier": 1.25
       },
       {
-        "unitId": "ranger",
+        "unitId": "blackfeather_hunter",
         "x": 2,
         "y": 6,
         "star": 2,
         "statMultiplier": 1.25
       },
       {
-        "unitId": "archer",
+        "unitId": "saiph",
         "x": 5,
         "y": 6,
         "star": 2,
         "statMultiplier": 1.25
       },
       {
-        "unitId": "shaman",
+        "unitId": "oris",
         "x": 1,
         "y": 7,
         "star": 2,
         "statMultiplier": 1.25
       },
       {
-        "unitId": "sorcerer",
+        "unitId": "blackstar_warlock",
         "x": 4,
         "y": 7,
         "star": 3,

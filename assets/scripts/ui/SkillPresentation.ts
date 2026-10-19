@@ -1,4 +1,4 @@
-import { ConfigManager, hybridSpellDamage, configuredSkillDamage, channelHealAmount, UnitConfigData, SkillConfigData } from '../core/ConfigManager';
+import { ConfigManager, hybridSpellDamage, configuredSkillDamage, channelHealAmount, configuredShieldAmount, UnitConfigData, SkillConfigData } from '../core/ConfigManager';
 
 export interface SkillStatRow {
   label: string;
@@ -22,12 +22,57 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       stars: ranks.map((u, i) => value(u, i, configs.battle.starScaling[i].skill)).join(' / '), tone });
   };
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
-  if (skill.effect === 'susanoo') {
+  const shadow = skill.shadow;
+  const sunlight = skill.sunlight;
+  if (sunlight) {
+    const hit = (label: string, values = skill.starDamage!, type = skill.dmgType, multiplier = 1) => add(label, (u, i) => String(Math.round(values[i]
+      * (1 + (type === 'physical' ? u.physicalPower ?? 0 : type === 'magic' ? u.spellPower ?? 0 : 0) / 100) * (1 + (u.damageAmp ?? 0)) * multiplier)), type);
+    const shield = (label = '护盾', values = skill.shieldAmounts!, multiplier = 1) => add(label, (u, i) => String(configuredShieldAmount(u, skill, i + 1, values) * multiplier), 'shield');
+    const heal = (values: number[]) => add('治疗', (u, i) => String(Math.round(values[i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
+    switch (sunlight.kind) {
+      case 'bulwark': shield(); hit('爆炸伤害'); break;
+      case 'arrows': hit('前两箭单箭伤害'); hit('第三箭伤害', sunlight.finalDamage); hit('贯穿伤害', sunlight.finalDamage, skill.dmgType, sunlight.pierceMultiplier); break;
+      case 'bastion': shield('自身护盾'); shield('友军护盾', sunlight.allyShields); heal(sunlight.heals); break;
+      case 'hunt': hit('每段伤害'); hit('三段总伤害', skill.starDamage, skill.dmgType, sunlight.hits); break;
+      case 'cleave': hit('伤害'); shield('单目标护盾'); shield('最高护盾', skill.shieldAmounts, sunlight.shieldTargetCap); break;
+      case 'empower': hit('附加魔法伤害'); hit('爆炸伤害', sunlight.burstDamage); break;
+      case 'crossbow': hit('首目标伤害'); hit('最低贯穿伤害', skill.starDamage, skill.dmgType, sunlight.minimum); break;
+      case 'prayer': shield(); heal(sunlight.heals); hit('伤害'); break;
+      case 'judgment': add('审判目标', (_u, i) => i + 1 >= sunlight.allEnemiesStar ? '全部' : String(sunlight.counts[i]), 'neutral'); hit('魔法伤害'); hit('真实伤害', sunlight.trueDamage, 'true'); break;
+      case 'transit': add('连击次数', (_u, i) => String(sunlight.counts[i]), 'neutral'); hit('普通段伤害'); hit('最后一击伤害', sunlight.finalDamage); break;
+    }
+  } else if (shadow) {
+    const damage = (u: UnitConfigData, i: number, values = skill.starDamage!, multiplier = 1) => String(Math.round(values[i] * power(u) * (1 + (u.damageAmp ?? 0)) * multiplier));
+    const hit = (label: string, values = skill.starDamage!, multiplier = 1) => add(label, (u, i) => damage(u, i, values, multiplier), skill.dmgType);
+    switch (shadow.kind) {
+      case 'bulwark':
+        add('护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1)), 'shield');
+        add('双抗提升', (_u, i) => number(shadow.resistanceBonuses[i]), 'shield'); hit('震击伤害'); break;
+      case 'piercing': hit('首目标伤害'); hit('后续目标伤害', shadow.secondaryDamage); break;
+      case 'domain':
+        add('自身护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1)), 'shield');
+        add('友军护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1, shadow.allyShieldAmounts)), 'shield');
+        add('攻速降低', (_u, i) => `${number(shadow.slowAmounts[i] * 100)}%`, 'speed'); break;
+      case 'flurry': hit('每段伤害'); add('三段总伤害', (u, i) => String(Number(damage(u, i)) * shadow.hits), skill.dmgType); add('法力回复', () => number(shadow.refundMana), 'neutral'); break;
+      case 'cleave': hit('基础伤害'); hit('最高伤害', skill.starDamage, 1 + shadow.missingHpBonusCap); break;
+      case 'empower':
+        hit('附加魔法伤害'); hit('爆炸伤害', shadow.burstDamage);
+        add('攻击速度', (_u, i) => `+${number(skill.attackSpeedBonuses![i] * 100)}%`, 'speed'); break;
+      case 'execute': hit('基础伤害'); hit('处决伤害', skill.starDamage, shadow.damageMultiplier); break;
+      case 'lanterns': hit('单盏伤害'); hit('重复命中伤害', skill.starDamage, shadow.repeatMultiplier);
+        add('恐惧时间', (_u, i) => `${number(shadow.fearSeconds[i])}秒`, 'neutral'); break;
+      case 'blackstars':
+        add('黑星数量', (_u, i) => number(shadow.counts[i]), 'neutral'); hit('每颗伤害');
+        hit('重复命中伤害', skill.starDamage, shadow.repeatMultiplier); hit('坍缩伤害', shadow.collapseDamage); break;
+      case 'void':
+        add('跃迁次数', (_u, i) => number(shadow.counts[i]), 'neutral'); hit('每次跃迁伤害'); hit('虚痕爆炸伤害', shadow.markDamage); break;
+    }
+  } else if (skill.effect === 'susanoo') {
     add('持续时间', (u, i) => `${number(skill.formDurations![i] * (1 + (u.physicalPower ?? 0) / 100))}秒`, 'neutral');
     add('伤害减免', (_u, i) => `${number(skill.formReductions![i] * 100)}%`, 'shield');
     add('额外伤害', (u, i) => String(Math.round(skill.formBonusDamage![i] * (1 + (u.physicalPower ?? 0) / 100) * (1 + (u.damageAmp ?? 0)))), 'physical');
   } else if (skill.effect === 'selfShield') {
-    add('护盾', (u, i) => String(Math.round(skill.shieldAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'shield');
+    add('护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1)), 'shield');
   } else if (skill.effect === 'healAlly') {
     add('治疗', (u, i) => String(Math.round(skill.healAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
   } else if (skill.effect === 'healChannel') {
@@ -45,7 +90,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     add('基础物理伤害', (_u, i) => number(skill.hybrid!.physicalDamage[i]), 'physical');
     add('基础魔法伤害', (_u, i) => number(skill.hybrid!.magicDamage[i]), 'magic');
   }
-  if (skill.attackSpeedBonuses) add('攻击速度', (_u, i) => `+${number(skill.attackSpeedBonuses![i] * 100)}%`, 'speed');
+  if (skill.attackSpeedBonuses && !shadow) add('攻击速度', (_u, i) => `+${number(skill.attackSpeedBonuses![i] * 100)}%`, 'speed');
   if (skill.stunSeconds) add('眩晕时间', (_u, i) => `${number(skill.stunSeconds![i])}秒`, 'neutral');
   if (skill.guard) {
     add('伤害减免', (_u, i) => `${number(skill.guard!.reductions[i] * 100)}%`, 'shield');
@@ -93,8 +138,25 @@ export function unitRoleLabel(role?: string, damageType?: 'physical' | 'magic'):
 /** Resolve the configuration template from the same current stats used by the skill rows. */
 function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: number): Record<string, string | number> {
   const current = (label: string) => rows.find(row => row.label === label)?.current ?? '';
+  const kind = skill.shadow?.kind;
+  const damageLabels: Record<string, string> = { bulwark:'震击伤害', piercing:'首目标伤害', flurry:'每段伤害', cleave:'基础伤害',
+    empower:'附加魔法伤害', execute:'基础伤害', lanterns:'单盏伤害', blackstars:'每颗伤害', void:'每次跃迁伤害' };
+  if (skill.sunlight) {
+    const labels: Record<string, string> = { bulwark:'爆炸伤害', arrows:'前两箭单箭伤害', hunt:'每段伤害', cleave:'伤害', empower:'附加魔法伤害', crossbow:'首目标伤害', prayer:'伤害', judgment:'魔法伤害', transit:'普通段伤害' };
+    return { dmg: current(labels[skill.sunlight.kind]), shield: current('护盾') || current('自身护盾') || current('单目标护盾'),
+      allyShield: current('友军护盾'), heal: current('治疗'), final: current('最后一击伤害') || current('第三箭伤害'), pierce: current('贯穿伤害'), total: current('三段总伤害'),
+      maximumShield: current('最高护盾'), burst: current('爆炸伤害'), minimumDamage: current('最低贯穿伤害'),
+      trueDamage: current('真实伤害'), count: current('审判目标') || current('连击次数') || current('跃迁次数'),
+      aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0, stun: skill.stunSeconds?.[star - 1] ?? 0 };
+  }
   return {
-    dmg: rows[0]?.current ?? '0', shield: current('护盾'), heal: current('每次治疗') || current('治疗'),
+    dmg: kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', shield: current('护盾') || current('自身护盾'), heal: current('每次治疗') || current('治疗'),
+    resists: current('双抗提升'), secondary: current('后续目标伤害'), allyShield: current('友军护盾'),
+    total: current('三段总伤害'), refund: current('法力回复'), maximum: current('最高伤害') || current('处决伤害'),
+    burst: current('爆炸伤害'), repeat: current('重复命中伤害'), collapse: current('坍缩伤害'), mark: current('虚痕爆炸伤害'),
+    count: current('黑星数量') || current('跃迁次数'),
+    slow: skill.shadow?.kind === 'domain' ? skill.shadow.slowAmounts[star - 1] : 0,
+    fear: skill.shadow?.kind === 'lanterns' ? skill.shadow.fearSeconds[star - 1] : 0,
     basePhysical: current('基础物理伤害'), baseMagic: current('基础魔法伤害'),
     burn: current('每秒生命伤害'), aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0,
     stun: skill.stunSeconds?.[star - 1] ?? 0,

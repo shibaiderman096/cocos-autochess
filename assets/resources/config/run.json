@@ -2,7 +2,7 @@
   "roundsPerStage": 5,
   "roundsPerStageGrowth": 1,
   "maxRoundsPerStage": 10,
-  "starterUnitId": "warrior",
+  "starterUnitId": "helion",
   "starterSelection": "random-one-cost",
   "monsterTemplate": {
     "hp": 175,

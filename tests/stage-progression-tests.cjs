@@ -19,28 +19,33 @@ function choose(s,choice,index){return s.act({type:'stageChoice',rewardId:s.pend
 function jump(s,kind){const wave=s.waves.find(w=>w.stage===4&&w.encounterKind===kind);assert.ok(s.debugJump(4,wave.round));return wave;}
 let first=make();
 for(let round=1;round<=3;round++){
- win(first);assert.equal(first.pendingStageReward,undefined,'monster drops never open a popup');assert.equal(first.save.stageProgress.lastUnitDrop.value,2);
+ const materials=units=>units.map(({uid,unitId,star,equipment})=>({uid,unitId,star,equipment}));const ownedBefore=materials(first.owned.snapshot());
+ win(first);assert.equal(first.pendingStageReward.kind,'unitBundle','every monster victory leaves a chest');assert.deepEqual(materials(first.owned.snapshot()),ownedBefore,'unclaimed chest does not consume or grant units');assert.equal(first.save.stageProgress.lastUnitDrop.value,2);
  assert.equal(first.save.stageProgress.lastUnitDrop.units.reduce((n,id)=>n+first.cfg.getUnit(id).cost,0),2);
- assert.equal(first.canAdvanceWave(),true,'automatic drops do not block progression');assertLegalSession(first);
+ assert.equal(first.canAdvanceWave(),false,'chest must be claimed before advancement');assert.equal(first.nextWave(),false);assertLegalSession(first);
  const before=first.snapshot(),restored=make(before);assert.deepEqual(restored.pendingStageReward,first.pendingStageReward);
- assert.deepEqual(restored.pool.snapshot(),first.pool.snapshot(),'reload preserves automatic reward stock');assert.deepEqual(restored.owned.snapshot(),first.owned.snapshot());assert.equal(choose(restored,'claim').ok,false);assertLegalSession(restored);
+ assert.deepEqual(restored.pool.snapshot(),first.pool.snapshot(),'reload preserves automatic reward stock');assert.deepEqual(restored.owned.snapshot(),first.owned.snapshot());const rewardId=restored.pendingStageReward.id;assert.equal(choose(restored,'claim').ok,true);assert.equal(restored.act({type:'stageChoice',rewardId,choice:'claim'}).ok,false,'chest cannot be claimed twice');assert.equal(restored.canAdvanceWave(),true);assertLegalSession(restored);
  assert.ok(restored.nextWave());assert.equal(restored.state.stage,round===3?2:1);first=restored;
 }
-console.log('PASS first monster stage: 3 automatic value2 drops, no popup, reload without duplicate units and immediate advancement');
+console.log('PASS first monster stage: 3 value2 chests, explicit claim, reload persistence, no duplicate units and advancement gate');
 
 for(const mode of ['legacy','budget-v1']){
  for(const stage of [2,3]){
   const early=make(undefined,mode),waves=early.waves.filter(w=>w.stage===stage);
-  assert.equal(waves.filter(w=>w.encounterKind==='monster').length,1);assert.equal(waves.filter(w=>w.encounterKind==='specialShop').length,stage===3?1:0);
+  assert.equal(waves.filter(w=>w.encounterKind==='monster').length,1);assert.equal(waves.filter(w=>w.encounterKind==='specialShop').length,1);
   assert.ok(waves.every(w=>w.encounterKind!=='boss'&&w.encounterKind!=='elite'));
   const monster=waves.find(w=>w.encounterKind==='monster');assert.ok(early.debugJump(stage,monster.round));win(early);
-  assert.equal(early.pendingStageReward,undefined);assert.equal(early.save.stageProgress.lastUnitDrop.value,stage*2);assertLegalSession(early);
-  if(stage===3){const shopWave=waves.find(w=>w.encounterKind==='specialShop');assert.ok(early.debugJump(stage,shopWave.round));assert.equal(early.pendingStageReward.kind,'specialShop');assert.equal(early.pendingStageReward.offers.length,5);assert.ok(choose(early,'continue').ok);assertLegalSession(early);}
+  assert.equal(early.pendingStageReward.kind,'unitBundle');assert.equal(early.pendingStageReward.value,stage*2);assertLegalSession(early);assert.ok(choose(early,'claim').ok);
+  {const shopWave=waves.find(w=>w.encounterKind==='specialShop');assert.ok(early.debugJump(stage,shopWave.round));assert.equal(early.pendingStageReward.kind,'specialShop');assert.equal(early.pendingStageReward.offers.length,5);assert.ok(choose(early,'continue').ok);assertLegalSession(early);}
  }
  const s=make(undefined,mode);for(let stage=4;stage<=6;stage++){
   const waves=s.waves.filter(w=>w.stage===stage);for(const kind of ['monster','elite','specialShop','boss'])assert.equal(waves.filter(w=>w.encounterKind===kind).length,1);
   assert.equal(waves.at(-1).encounterKind,'boss');assert.equal(waves.find(w=>w.encounterKind==='specialShop').enemies.length,0);
-  assert.ok(waves.find(w=>w.encounterKind==='monster').enemies.every(e=>inputs.run.monsters.some(m=>m.id===e.unitId)));
+  const monster=waves.find(w=>w.encounterKind==='monster');
+  assert.ok(monster.enemies.every(e=>inputs.run.monsters.some(m=>m.id===e.unitId)));
+  const monsterSession=make(undefined,mode);assert.ok(monsterSession.debugJump(stage,monster.round));win(monsterSession);
+  assert.equal(monsterSession.pendingStageReward.kind,'unitBundle');assert.equal(monsterSession.pendingStageReward.value,Math.min(inputs.run.stageEncounters.monsterReward.maxValue,stage*2));
+  assert.equal(monsterSession.canAdvanceWave(),false);assert.ok(choose(monsterSession,'claim').ok);assertLegalSession(monsterSession);
  }
  jump(s,'boss');win(s);assert.equal(s.pendingStageReward.kind,'bossChoice');assert.equal(s.pendingEquipmentReward,undefined,'old automatic equipment reward is disabled');
  const stale=s.pendingStageReward.id;assert.ok(choose(s,'equipment').ok);assert.equal(s.pendingStageReward.kind,'equipmentChoice');
@@ -67,10 +72,10 @@ const full=make();full.moveUnit(1,{location:'board',x:3,y:3});
 for(const card of full.cfg.allUnits().filter(u=>u.id!==full.owned.onBoard()[0].unitId).slice(0,9)){
  for(let i=0;i<9;i++)assert.ok(full.pool.take(card.id));assert.ok(full.owned.addToBench(card.id,9,-1,3));
 }
-jump(full,'monster');win(full);assert.equal(full.pendingStageReward,undefined);assert.ok(full.save.stageProgress.unitReserve.length>0);assertLegalSession(full);
+jump(full,'monster');win(full);assert.equal(full.pendingStageReward.kind,'unitBundle');assert.ok(full.save.stageProgress.unitReserve.length>0);assertLegalSession(full);
 const legacyPopup=full.snapshot(),drop=legacyPopup.stageProgress.lastUnitDrop;
 legacyPopup.stageProgress.pending={kind:'unitBundle',id:`stage-encounters-v1:${legacyPopup.runSeed}:${drop.waveId}:units`,...drop};
-const migratedPopup=make(legacyPopup);assert.equal(migratedPopup.pendingStageReward,undefined);assertLegalSession(migratedPopup);
+const migratedPopup=make(legacyPopup);assert.deepEqual(migratedPopup.pendingStageReward,full.pendingStageReward,'restored chest remains unclaimed');assertLegalSession(migratedPopup);assert.ok(choose(full,'claim').ok);
 const reloadFull=make(full.snapshot());assert.deepEqual(reloadFull.save.stageProgress.unitReserve,full.save.stageProgress.unitReserve);assertLegalSession(reloadFull);
 assert.ok(reloadFull.nextWave());const reserveBefore=reloadFull.save.stageProgress.unitReserve.length;
 assert.ok(reloadFull.act({type:'sell',uid:reloadFull.owned.inBench()[0].uid}).ok);assert.ok(reloadFull.save.stageProgress.unitReserve.length<reserveBefore);assertLegalSession(reloadFull);
@@ -79,11 +84,11 @@ console.log('PASS full bench: reserved warehouse, exact card conservation throug
 const scarce=make();jump(scarce,'monster');
 for(const unit of scarce.cfg.allUnits())while(scarce.pool.take(unit.id)){}
 win(scarce);assert.equal(scarce.save.stageProgress.lastUnitDrop.units.length,0);assert.equal(scarce.save.stageProgress.lastUnitDrop.deferredValue,8);
-assert.equal(scarce.save.stageProgress.unitCredit,8);assert.equal(scarce.pendingStageReward,undefined);
-const priorWarriors=scarce.owned.all().filter(u=>u.unitId==='warrior').reduce((n,u)=>n+3**(u.star-1),0);
-for(let i=0;i<8;i++)scarce.pool.give('warrior');scarce.snapshot();
+assert.equal(scarce.save.stageProgress.unitCredit,8);assert.equal(scarce.pendingStageReward.kind,'unitBundle');assert.ok(choose(scarce,'claim').ok);
+const priorWarriors=scarce.owned.all().filter(u=>u.unitId==='helion').reduce((n,u)=>n+3**(u.star-1),0);
+for(let i=0;i<8;i++)scarce.pool.give('helion');scarce.snapshot();
 assert.equal(scarce.save.stageProgress.unitCredit,0);
-assert.equal(scarce.owned.all().filter(u=>u.unitId==='warrior').reduce((n,u)=>n+3**(u.star-1),0),priorWarriors+8);
+assert.equal(scarce.owned.all().filter(u=>u.unitId==='helion').reduce((n,u)=>n+3**(u.star-1),0),priorWarriors+8);
 console.log('PASS exhausted card pool: claim stays available, unit value is retained and automatically delivered after restocking');
 
 const report=runSimulation(inputs,{...deps,runSeed:12,stageCount:6,maxStage:4,bot:'medium'});
