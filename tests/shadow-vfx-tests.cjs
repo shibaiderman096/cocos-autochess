@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),ts=require('typescript');
-require('tsx/cjs');const {FX_SPRITE}=require('../assets/scripts/view/ArtPaths.ts');
+require('tsx/cjs');const {FX_SPRITE,UNIT_ART}=require('../assets/scripts/view/ArtPaths.ts');
 const pending=[];
 class Vec3 {constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z});}clone(){return new Vec3(this.x,this.y,this.z);}static lerp(out,a,b,t){out.x=a.x+(b.x-a.x)*t;out.y=a.y+(b.y-a.y)*t;}}
 class Node {
@@ -15,7 +15,7 @@ const cc={Component,Node,Vec3,Sprite,UITransform,UIOpacity,SpriteFrame:class{},C
   Tween:{stopAllByTarget(){}},_decorator:{ccclass:()=>T=>T},
   resources:{load:(path,T,callback)=>pending.push({path,callback})},
   tween:target=>({to(){return this;},call(fn){this.done=fn;return this;},start(){}})};
-function load(file){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./ArtPaths'?{FX_SPRITE}:name==='./HealthBar'?{healthBarSegments:()=>({health:1,shield:0})}:{},exports);return exports;}
+function load(file){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./ArtPaths'?{FX_SPRITE,UNIT_ART}:name==='./HealthBar'?{healthBarSegments:()=>({health:1,shield:0})}:{},exports);return exports;}
 const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts');
 const {UnitView}=load('assets/scripts/view/UnitView.ts');
 const root=new Node('fx'),source={node:new Node('source'),playAttack(){}},target={node:new Node('target')};

@@ -4,7 +4,7 @@ import { loadSaveV2, writeSaveV2, freshSaveV2, SAVE_KEY } from '../core/ShopSave
 import { freshRunSeed } from '../core/RunRandomContext';
 import { RunConfig, DEFAULT_STAGE_COUNT, normalizeStageCount, runRoundCount } from '../core/RunSetup';
 import { UNIT_ART } from '../view/ArtPaths';
-import { setUISkin } from './UISkin';
+import { setSkyBackground } from '../view/SkyBackgroundAnimation';
 
 const { ccclass } = _decorator;
 const GOLD = new Color(204, 174, 109), TEAL = new Color(89, 203, 176), MUTED = new Color(133, 161, 164);
@@ -60,7 +60,7 @@ export class MainMenu extends Component {
       g.ellipse(0, 60, 610 - i * 55, 320 - i * 35); g.fill();
     }
     background.getComponent(UITransform)!.setContentSize(1280, 720);
-    setUISkin(background, 'arena_sky', g, sprite => { sprite.color = new Color(105, 130, 150); });
+    setSkyBackground(background, g, new Color(105, 130, 150));
     label(this.node, '浮 空 棋 境', 0, 239, 48, GOLD, 660);
     label(this.node, '远征', 0, 190, 17, TEAL, 360);
     const card = panel(this.node, 'runSetup', 0, -5, 520, 330, undefined, GOLD, 'panel_modal');
@@ -103,7 +103,7 @@ export class MainMenu extends Component {
       this.loading = false;
       if (this.isValid) this.status.string = '战斗场景加载失败，请重试';
     };
-    const accepted = director.loadScene('scene', error => { if (error) fail(); });
+    const accepted = director.loadScene('floating-ruins', error => { if (error) fail(); });
     if (!accepted) fail();
   }
 }

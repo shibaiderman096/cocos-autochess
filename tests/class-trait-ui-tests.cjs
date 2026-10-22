@@ -11,7 +11,7 @@ const visible=all.filter(state=>state.count>0);
 assert.equal(ui.traitPanel.rows.children.length,visible.length);
 for(const row of ui.traitPanel.rows.children) {
   const height=row.getComponent(UITransform).contentSize.height;
-  assert.ok(Math.abs(row.position.y)+height/2<=195,'seven compact rows fit their panel');
+  assert.ok(-row.position.y+height/2<=ui.traitPanel.rows.getComponent(UITransform).contentSize.height,'all rows fit scroll content');
   assert.equal(row.children.find(node=>node.name==='traitArt').getComponent(UITransform).contentSize.width,34);
 }
 for(const state of visible.filter(state=>state.config.selector)) {

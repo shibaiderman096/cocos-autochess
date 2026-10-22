@@ -22,7 +22,7 @@ function firstHit(id, star, changes = {}) {
   throw new Error(`${id}: no hit`);
 }
 
-const damagingUnits = cfg.allUnits().filter(unit => {const skill=cfg.getSkill(unit.skillId);return !['bulwark','domain','bastion','prayer','empower'].includes(skill.shadow?.kind??skill.sunlight?.kind);});
+const damagingUnits = cfg.allUnits().filter(unit => {const skill=cfg.getSkill(unit.skillId);return !['hydraulicBulwark','lowestHealthHeal','spiderLeap','furnaceDash','stellarBulwark'].includes(skill.effect) && !['bulwark','domain','bastion','prayer','empower'].includes(skill.shadow?.kind??skill.sunlight?.kind);});
 for (const { id } of damagingUnits) for (const star of [1, 2, 3]) {
   const low = firstHit(id, star, { atk: 40 });
   const high = firstHit(id, star, { atk: 800 });

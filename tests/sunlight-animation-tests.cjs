@@ -54,7 +54,7 @@ const disposed=fixture();disposed.fx.play({...base,effect:'judgment'});const dea
 // The actual replay dispatch preserves right-facing arrows and right-convex crescents in all directions.
 for(const effect of ['bolt','slash'])for(const [x,y] of [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]]){
  const parent=new N('board'),root=new N('fx');parent.addChild(root);const replay=new BattleReplayer(),unit=new N('owner');
- const sim={tick:12,finished:false,units:[{id:1,alive:true,hp:100,shield:0,skillAttackSpeedBonus:0}],events:[{...base,effect,...(effect==='slash'?{kind:'transit',finisher:true}:{}),from:{x:3,y:3},center:{x:3+x,y:3+y}}]};
+ const sim={tick:12,finished:false,units:[{id:1,cfg:{id:"helion",artId:"helion"},alive:true,hp:100,shield:0,skillAttackSpeedBonus:0}],events:[{...base,effect,...(effect==='slash'?{kind:'transit',finisher:true}:{}),from:{x:3,y:3},center:{x:3+x,y:3+y}}]};
  replay.bind(sim,new Map([[1,{node:unit}]]),50,{boardPixelW:600,boardPixelH:350,cellToWorld:project});replay.setFxRoot(root);replay.consumeEvents();flush();replay.sunlightSprites.update(12);
  const layer=replay.sunlightSprites.slots.find(s=>s.layer?.motion===(effect==='bolt'?'travel':'slash')).layer;
  assert.equal(layer.angle,Math.atan2(y*30,x*50)*180/Math.PI,effect+' direction at the real callsite');

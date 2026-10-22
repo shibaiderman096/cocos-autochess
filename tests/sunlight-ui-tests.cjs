@@ -1,10 +1,16 @@
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs'),ts=require('typescript');
-const {load,Node,Label,UITransform,pending}=require('./helpers/ui-harness.cjs');
+const {load,Node,Sprite,Label,UITransform,pending}=require('./helpers/ui-harness.cjs');
 const {BattleUI}=load(path.join(__dirname,'../assets/scripts/ui/BattleUI.ts'));
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
 const trait=require('../assets/resources/config/battle.json').traits.find(t=>t.id==='sunlight'),roster=require('../assets/resources/config/units.json');
+const {UNIT_PORTRAIT}=load(path.join(__dirname,'../assets/scripts/view/ArtPaths.ts'));
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();};
+const offers=trait.members.map(id=>({...roster.find(u=>u.id===id),unitId:id,price:1,poolLeft:10}));
+const framePath=id=>UNIT_PORTRAIT[id];
+// Before any head textures are cached, reuse every slot while the old requests are pending.
+ui.refreshShop(offers.slice(0,5));ui.refreshShop(offers.slice(5));flush();
+ui.shopSlots.forEach((card,i)=>assert.equal(card.portrait.spriteFrame.name,framePath(offers[5+i].unitId),'old portrait callback cannot replace a reused slot'));
 for(const count of [1,3,5,7,10]){
  const state=resolveTraits([trait],trait.members.slice(0,count),roster)[0];ui.refreshTraits([state],roster);flush();
  ui.traitPanel.rows.getChildByName('trait_sunlight').events.get('end')();
@@ -14,6 +20,7 @@ for(const count of [1,3,5,7,10]){
  const size=card.getComponent(UITransform).contentSize;
  for(const n of [...rows,...card.children.filter(n=>n.name.startsWith('traitOwner_'))])assert.ok(Math.abs(n.position.y)+n.getComponent(UITransform).contentSize.height/2<=size.height/2);
  assert.equal(card.children.filter(n=>n.name.startsWith('traitOwner_')).length,10);
+ for(const id of trait.members)assert.equal(card.getChildByName(`traitOwner_${id}`).children.find(n=>n.getComponent(Sprite)).getComponent(Sprite).spriteFrame.name,UNIT_PORTRAIT[id]);
  const intro=[...card.getChildByName('sunlightDescription').components.values()].find(c=>c.string!==undefined);
  assert.equal(intro.string.replace(/<[^>]+>/g,''),trait.description,'intro comes from the configured description');
  assert.ok(intro.string.includes("src='sun_shield'"));
@@ -27,6 +34,17 @@ for(const count of [1,3,5,7,10]){
 ui.traitPanel.rows.getChildByName('trait_sunlight').events.get('end')();ui.traitPanel.hideDetail();flush();assert.equal(ui.traitPanel.detail,null);
 assert.equal(trait.description,'日辉棋子获取太阳的力量。战斗开始时，日辉棋子获得护盾。');
 assert.equal(trait.glyph,'日','badge uses the same single-character convention as other traits');
+// Shop cards reuse the same cropped heads as trait owners, including slot reuse and buying.
+for(let page=0;page<2;page++){
+ ui.refreshShop(offers.slice(page*5,page*5+5));flush();
+ ui.shopSlots.forEach((card,i)=>assert.equal(card.portrait.spriteFrame.name,framePath(offers[page*5+i].unitId)));
+}
+let bought;ui.onBuy=slot=>bought=slot;ui.setShopVisible(true);ui.shopSlots[2].node.events.get('end')();assert.equal(bought,2);
+ui.refreshShop(offers.slice(0,5));ui.refreshShop(offers.slice(5));flush();
+ui.shopSlots.forEach((card,i)=>assert.equal(card.portrait.spriteFrame.name,framePath(offers[5+i].unitId),'old portrait callback cannot replace a reused slot'));
+ui.refreshShop([]);flush();assert.ok(ui.shopSlots.every(card=>!card.portrait.node.active&&card.portrait.spriteFrame===null));
+ui.refreshCombatStats([{id:-3,name:'日辉羁绊',side:0,star:3,sourceKind:'sunlightJudgment',damage:200,taken:0,healing:0,shielding:0,damageByType:{physical:0,magic:0,true:200},takenByType:{physical:0,magic:0,true:0}}]);
+assert.equal(ui.combatStatBars[0].name.string,'日辉羁绊 3★');assert.equal(ui.combatStatBars[0].value.string,'200');
 ui.refreshCombatStats([{id:-3,name:'日辉羁绊',side:0,star:4,sourceKind:'sunlightJudgment',damage:1234,taken:0,healing:0,shielding:0,damageByType:{physical:0,magic:0,true:1234},takenByType:{physical:0,magic:0,true:0}}]);
 assert.equal(ui.combatStatBars[0].name.string,'日辉羁绊 4★');assert.equal(ui.combatStatBars[0].value.string,'1234');
 for(const metric of ['taken','healing']){ui.combatStatMetric=metric;ui.renderCombatStats();assert.ok(ui.combatStatBars.every(b=>!b.node.active));}

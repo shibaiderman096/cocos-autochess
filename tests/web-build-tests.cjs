@@ -16,8 +16,10 @@ function findTraitResolver(node) {
 }
 findTraitResolver(source);assert.ok(traitResolver,'compiled trait resolver exists');
 const compiledResolve=new Function('return ('+traitResolver+')')();
-const trait=require('../assets/resources/config/battle.json').traits[0];
-assert.equal(compiledResolve([trait],trait.members.slice(0,3))[0].active.power,15,'compiled game activates three unique ninjas');
+// The live roster removed ninjas; test the authored mechanical thresholds through real compiled code.
+const trait=require('../assets/resources/config/battle.json').traits.find(t=>t.id==='mechanical_pioneer');
+assert.ok(trait);assert.deepEqual(trait.breakpoints.map(b=>b.count),[3,5,7]);
+for(const breakpoint of trait.breakpoints)assert.deepEqual(compiledResolve([trait],trait.members.slice(0,breakpoint.count))[0].active,breakpoint,'compiled game selects the exact authored tier for unique mechanical units');
 assert.equal(compiledResolve([trait],[trait.members[0],trait.members[0],trait.members[1]])[0].active,null,'compiled game ignores duplicate copies');
 const helpers={};
 const chunksRoot=path.join(buildRoot,'src/chunks');
@@ -26,11 +28,11 @@ new Function('System',fs.readFileSync(path.join(chunksRoot,chunksFile),'utf8'))(
   const factory=args[args.length-1],definition=factory((name,value)=>typeof name==='object'?Object.assign(helpers,name):helpers[name]=value,{});
   definition.execute();
 }});
-function method(name,dependencies) {
-  dependencies={_createForOfIteratorHelperLoose:helpers.createForOfIteratorHelperLoose,...dependencies};
+function method(name,dependencies,fragment='') {
+  dependencies={_createForOfIteratorHelperLoose:helpers.createForOfIteratorHelperLoose,_extends:helpers.extends,...dependencies};
   let compiled;
   function visit(node){
-    if(ts.isBinaryExpression(node)&&ts.isPropertyAccessExpression(node.left)&&node.left.name.text===name&&ts.isFunctionExpression(node.right))compiled=node.right.getText(source);
+    if(ts.isBinaryExpression(node)&&ts.isPropertyAccessExpression(node.left)&&node.left.name.text===name&&ts.isFunctionExpression(node.right)&&node.right.getText(source).includes(fragment))compiled=node.right.getText(source);
     ts.forEachChild(node,visit);
   }
   visit(source);assert.ok(compiled,'compiled method '+name+' exists');
@@ -101,3 +103,30 @@ const cssFile=html.match(/href="\.\/([^"\s]+\.css)"/)[1];
 const css=fs.readFileSync(path.join(buildRoot,cssFile),'utf8');
 assert.match(css,/width:\s*100vw\s*!important/);assert.match(css,/height:\s*100vh\s*!important/);
 console.log('PASS actual web build: monster loading, deduplication, shop iterator conversion, attributes and fullscreen container');
+
+// Run real Creator-compiled Set/Map consumers, not just the TypeScript source.
+const {ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
+const {BattleSim}=require('../assets/scripts/battle/BattleSim.ts');
+const {hexDist}=require('../assets/scripts/battle/HexMath.ts');
+const roster=require('../assets/resources/config/units.json'),skills=require('../assets/resources/config/skills.json');
+function combat(id){
+ const cfg=new ConfigManager();cfg.setUnits(roster);cfg.setSkills(skills);cfg.setBattle({...require('../assets/resources/config/battle.json'),traits:[]});cfg.setEquipment(require('../assets/resources/config/equipment.json'));
+ const sim=new BattleSim(cfg,[{cfg:cfg.getUnit(id),side:0,x:0,y:0},{cfg:cfg.getUnit('abyss_iron_guard'),side:1,x:1,y:0},{cfg:cfg.getUnit('abyss_iron_guard'),side:1,x:2,y:0}],{seed:123});
+ return {sim,cfg,source:sim.units[0],ability:sim.shadowSkills,skill:cfg.getSkill(cfg.getUnit(id).skillId)};
+}
+function piercing(compiled){const f=combat('blackfeather_hunter');if(compiled)f.ability.activate=method('activate',{hexDist},"case 'piercing'");f.ability.activate(f.source,f.skill,f.sim.units[1].id);f.sim.resolveDamage();return f.sim.events;}
+const compiledPiercing=piercing(true);assert.deepEqual(compiledPiercing,piercing(false),'compiled piercing retains the complete source damage/event trace');
+assert.deepEqual(compiledPiercing.find(e=>e.t==='skill_pulse'&&e.effect==='piercing').center,{x:6,y:0},'compiled Set conversion emits the board-edge endpoint');
+function marks(compiled){const f=combat('voidscar_reaver');if(compiled)f.ability.finishChannel=method('finishChannel',{},"'voidMark'");f.ability.finishChannel({source:f.source,skill:f.skill,targetId:-1,remaining:0,next:0,lastTarget:null,marked:new Set([f.sim.units[2].id,f.sim.units[1].id,f.sim.units[2].id])});f.sim.resolveDamage();return f.sim.events;}
+const compiledMarks=marks(true);assert.deepEqual(compiledMarks,marks(false),'compiled marks retain unique sorted targets and complete source trace');
+assert.equal(compiledMarks.filter(e=>e.t==='skill_pulse'&&e.effect==='voidMark').length,2,'compiled void pays every distinct marked target exactly once');
+const {EnemyFormation}=require('../assets/scripts/core/EnemyFormation.ts'),{EnemyPowerModel}=require('../assets/scripts/core/EnemyPowerModel.ts');
+const {formationSettings}=require('../assets/scripts/core/FormationPolicy.ts'),{snapshotIdentity}=require('../assets/scripts/core/EnemyRoles.ts');
+const {compatibilityFormation}=require('../assets/scripts/core/EnemyFormation.ts');
+const formationConfig=require('../assets/resources/config/enemy-formation.json'),roles=require('../assets/resources/config/enemy-roles.json');
+const solver=new EnemyFormation(formationConfig,roles,roster,skills,new EnemyPowerModel(require('../assets/resources/config/enemy-power.json')),run.enemyProgression.cells);
+const formationContext={runSeed:12345,globalWaveId:40,stage:7,round:2,roundsInStage:10,waveKind:'normal',settings:formationSettings(formationConfig,7,2,10,'normal','L2'),enemies:['abyss_iron_guard','blackfeather_hunter','helion'].map((unitId,index)=>({unitId,star:1,equipment:[],statMultiplier:1,damageAmp:0,damageReduction:0,...run.enemyProgression.cells[index]}))};
+const expectedFormation=solver.solve(formationContext);
+const compiledFormation=method('solve',{compatibilityFormation,snapshotIdentity},'templateSlotsMatched').call(solver,formationContext);
+assert.deepEqual(compiledFormation,expectedFormation,'compiled formation enumerates Map assignments and preserves exact placements/diagnostics');
+console.log('PASS actual web build: piercing endpoint, unique void marks, and formation Map diagnostics match source execution');

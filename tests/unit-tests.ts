@@ -19,8 +19,9 @@ function assert(cond: boolean, msg: string): void {
 
 const root = resolve(__dirname, '..');
 const cfg = new ConfigManager();
-cfg.setUnits(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/units.json'), 'utf8')) as UnitConfigData[]);
-cfg.setSkills(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/skills.json'), 'utf8')));
+// Real original M1 inputs, exported unchanged from commit 40b0421; not the live shop roster.
+const originalM1 = JSON.parse(readFileSync(resolve(process.cwd(), 'tests/fixtures/m1-40b0421.json'), 'utf8'));
+cfg.setUnits(originalM1.units as UnitConfigData[]); cfg.setSkills(originalM1.skills);
 cfg.setBattle({ boardWidth: 8, boardHeight: 6, maxTicks: 1200, tickMs: 50 });
 
 console.log('=== M1 单元测试（六边形版）===\n');
@@ -30,16 +31,16 @@ console.log('[1] 伤害公式');
 {
   const w = cfg.getUnit('warrior');
   const expectedPhys = Math.max(1, Math.round(w.atk * 100 / (100 + w.armor)));
-  assert(expectedPhys === 33, `40 攻击对 20 护甲，物理伤害应为 33，得 ${expectedPhys}`);
+  assert(expectedPhys === 39, `原始 M1 的55攻击对40护甲，物理伤害应为39，得 ${expectedPhys}`);
 
   const a = cfg.getUnit('archer');
   const m = cfg.getUnit('mage');
   const expectedArchMage = Math.max(1, Math.round(a.atk * 100 / (100 + m.armor)));
-  assert(expectedArchMage === 36, `archer vs mage 物理伤害应为 36，得 ${expectedArchMage}`);
+  assert(expectedArchMage === 55, `原始 M1 的60攻击对10护甲，物理伤害应为55，得 ${expectedArchMage}`);
 
   const sk = cfg.getSkill('fireball');
   const expectedMagic = Math.max(1, Math.round(configuredSkillDamage(sk, 1) * 100 / (100 + m.mr)));
-  assert(expectedMagic === 150, `fireball vs mage 一星设定伤害应为 150，得 ${expectedMagic}`);
+  assert(expectedMagic === 169, `原始 M1 的220法伤对30魔抗，一星伤害应为169，得 ${expectedMagic}`);
 
   const trueDmg = Math.max(1, Math.round(100 * 100 / (100 + 0)));
   assert(trueDmg === 100, `真实伤害 100 应为 100，得 ${trueDmg}`);

@@ -28,13 +28,11 @@ for (const unit of all) {
 }
 const waves = buildRunWaves(5, run, templates, units);
 for (const wave of waves) for (const enemy of wave.enemies) assert.ok(all.some(u => u.id === enemy.unitId), `Unknown wave unit: ${enemy.unitId}`);
-const reused = {red_guard: 'warrior_enemy', red_archer: 'archer_enemy', red_mage: 'mage_enemy'};
-for (const [id, source] of Object.entries(reused)) {
-  assert.ok(!playableIds.has(id), 'Monsters must not enter the shop roster');
-  assert.equal(art.UNIT_ART[id], `art/units/${source}/spriteFrame`);
-  const monster = monsters.find(u => u.id === id);
-  assert.ok(monster, `Unused monster art: ${source}`);
-  assert.deepEqual([monster.hp, monster.atk, monster.armor, monster.mr, monster.maxMana], [175, 30, 10, 10, 0]);
-  assert.ok(waves.find(w => w.stage === 1 && w.round === 3).enemies.some(e => e.unitId === id), `Intro encounter must use ${id}`);
+assert.equal(monsters.length, 30);
+for (const monster of monsters) {
+  assert.ok(!playableIds.has(monster.id), 'Monsters must not enter the shop roster');
+  assert.equal(art.UNIT_ART[monster.artId], `art/units/monsters/${monster.id}/spriteFrame`);
+  if (monster.monsterTier !== 'strong') assert.deepEqual(
+    [monster.hp, monster.atk, monster.armor, monster.mr, monster.maxMana], [175, 30, 10, 10, 0]);
 }
-console.log(`PASS resources: ${paths.size} registered textures and SpriteFrames, ${units.length} playable units, ${monsters.length} monsters, wave/skill references and 3 reused monster assets`);
+console.log(`PASS resources: ${paths.size} registered textures and SpriteFrames, ${units.length} playable units, ${monsters.length} monsters, enemy-only roster and wave/skill references`);

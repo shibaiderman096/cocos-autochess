@@ -150,7 +150,17 @@ export class OwnedUnits {
   /** Deferred copies stay intact until the owning session leaves combat. */
   mergeAll(): void {
     if (!this.canMerge()) return;
-    for (const id of [...new Set(this.list.map(unit => unit.unitId))].sort()) this.tryMerge(id);
+    for (const id of Array.from(new Set(this.list.map(unit => unit.unitId))).sort()) this.tryMerge(id);
+  }
+
+  /** Preview the extra upgrade earned by one purchased 1-star copy, without consuming real materials. */
+  purchaseUpgradeStar(unitId: string): 2 | 3 | null {
+    const projected = new OwnedUnits(this.snapshot(), this.nextUid);
+    // Existing combat-deferred groups are not an upgrade earned by this purchase.
+    projected.tryMerge(unitId);
+    projected.forceAdd(unitId);
+    const result = projected.tryMerge(unitId);
+    return result ? result.star as 2 | 3 : null;
   }
 
   /**

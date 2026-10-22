@@ -16,6 +16,23 @@ export interface BattleClockState {
   overtimeProgress: number;
 }
 export type TraitTier = 'bronze' | 'silver' | 'gold' | 'prismatic';
+export interface SpiderLeapConfig { airborneSeconds: number; missingHealthFractions: number[]; }
+export interface SpiderLeapRuntime { landTick: number; targetId: number; }
+export interface FurnaceDashConfig { speedMultiplier: number; trailDamage: number[]; knockupSeconds: number; targetRange: number; }
+export interface FurnaceDashRuntime { from: Pos; to: Pos; startTick: number; endTick: number; targetId: number; hitIds: Set<number>; }
+export interface StellarBulwarkConfig { distance: number; speedMultiplier: number; shieldSeconds: number; knockupSeconds: number; }
+export interface StellarChargeRuntime { from: Pos; to: Pos; startTick: number; endTick: number; hitIds: Set<number>; }
+export interface AtlasMissilesConfig { targetCounts: number[]; manaReductionPerCast: number; maxManaReduction: number; }
+export interface HydraulicBulwarkConfig {
+  durationSeconds: number;
+  resistanceBonuses: number[];
+  healAmounts: number[];
+}
+export interface HydraulicBulwarkRuntime {
+  untilTick: number;
+  resistanceBonus: number;
+  healAmount: number;
+}
 export interface TraitStatBonus {
   armor?: number;
   mr?: number;
@@ -31,7 +48,7 @@ export interface TraitStatBonus {
   executeThreshold?: number;
 }
 export interface TraitSelector {
-  role: 'tank' | 'marksman' | 'assassin';
+  role: 'tank' | 'marksman' | 'assassin' | 'warrior' | 'caster';
   damageType?: 'physical' | 'magic';
 }
 export interface TraitFormationBonus {
@@ -53,13 +70,69 @@ export interface TraitBreakpoint {
   stats?: TraitStatBonus;
   shadow?: ShadowTraitEffect;
   sunlight?: SunlightTraitEffect;
+  conqueror?: ConquerorTraitEffect;
+  spellblade?: SpellbladeTraitEffect;
+  spellchanter?: SpellchanterTraitEffect;
+  swiftmartialist?: SwiftmartialistTraitEffect;
+  mechanicalPioneer?: MechanicalPioneerTraitEffect;
+  astral?: AstralTraitEffect;
+}
+export interface AstralTraitEffect {
+  cellCount: number | 'all';
+  /** Percentage points added to both physical and spell power. */
+  power: number;
+  maxHpBonus: number;
+  memberMultiplier: number;
+  meteor?: { intervalSeconds: number; damage: number; radius: number };
+}
+export interface AstralField {
+  side: Side;
+  cells: Pos[];
+  effect: AstralTraitEffect;
+}
+export interface MechanicalPioneerTraitEffect {
+  /** Absolute attacks/second while overclocked; never multiplies base speed. */
+  attackSpeedBonus: number;
+  /** Fraction of final maximum HP restored each full second of overclock. */
+  regenPerSecond: number;
+  durationSeconds: number;
+  /** Initial wait and the wait after overclock ends. */
+  cooldownSeconds: number;
+  /** Once per member per battle; strict threshold, cannot rescue lethal hits. */
+  lowHealthThreshold?: number;
+}
+export interface SwiftmartialistTraitEffect {
+  /** Percentage points, additive with base/equipment physical power. */
+  physicalPower: number;
+  /** Absolute attacks/second earned on each cast. */
+  attackSpeedPerCast: number;
+  maxStacks: number;
+}
+export interface SpellchanterTraitEffect {
+  /** Percentage points, additive with base/equipment spell power. */
+  spellPower: number;
+  manaOnTakedown: number;
+}
+export interface ConquerorTraitEffect {
+  damageAmp: number;
+  lifesteal: number;
+  lowHealthThreshold: number;
+  lowHealthMultiplier: number;
+  protection?: { threshold: number; healMaxHpFraction: number; damageReduction: number; durationSeconds: number };
+}
+export interface SpellbladeTraitEffect {
+  spellPower: number;
+  attackSpeedBonus: number;
+  damageReduction: number;
+  durationSeconds: number;
+  empoweredAttacks?: { count: number; damage: number };
 }
 export interface SunlightTraitEffect {
   shieldMaxHpFraction: number;
   battlefield?: boolean;
   formation?: { delaySeconds: number; frontReduction: number; backAmp: number };
   judgment?: { intervalSeconds: number; damage: number; stunSeconds: number;
-    targetMaxHpFraction?: number; independentStatistics?: boolean };
+    targetMaxHpFraction?: number; independentStatistics?: boolean; statisticsStar?: number };
 }
 export type SunlightSkillData =
   | { kind: 'bulwark'; durationSeconds: number }
@@ -71,7 +144,8 @@ export type SunlightSkillData =
   | { kind: 'crossbow'; penetration: number; minimum: number }
   | { kind: 'prayer'; durationSeconds: number; heals: number[] }
   | { kind: 'judgment'; counts: number[]; allEnemiesStar: number; delaySeconds: number; trueDamage: number[] }
-  | { kind: 'transit'; counts: number[]; intervalSeconds: number; finalDamage: number[] };
+  | { kind: 'transit'; counts: number[]; intervalSeconds: number; finalDamage: number[];
+      recastDamageLoss: number; recastDamageLossCap: number };
 export type SunlightPulse = 'shield' | 'burst' | 'judgment' | 'warning' | 'formation' | 'board' | 'prayer' | 'bolt' | 'slash' | 'flare';
 export interface ShadowTraitEffect {
   resistanceReduction: number;
@@ -154,6 +228,8 @@ export interface Pos { x: number; y: number }
 export type DmgType = 'physical' | 'magic' | 'true';
 
 export interface BurnRuntime {
+  untilBattleEnd?: boolean;
+  fixed?: boolean;
   sourceId: number;
   skillId: string;
   nextTick: number;
@@ -175,6 +251,7 @@ export interface CombatAttributes {
 }
 
 export type BattleEvent =
+  | { t: 'astral_meteor'; tick: number; side: Side; center: Pos; radius: number }
   | { t: 'sun_pulse'; tick: number; id: number; effect: SunlightPulse; center: Pos; from?: Pos; radius: number; duration: number;
       kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean }
   | { t: 'battle_start'; tick: number }
@@ -186,8 +263,11 @@ export type BattleEvent =
   | { t: 'shadow_pulse'; tick: number; side: Side; damage?: boolean; attackSpeed?: boolean }
   | { t: 'skill_pulse'; tick: number; id: number; skillId: string; effect: ShadowPulseEffect; center: Pos; radius: number; duration?: number; selfCast?: boolean }
   | { t: 'fear'; tick: number; id: number; source: number; duration: number }
-  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; critical?: boolean; executed?: boolean }
+  | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; critical?: boolean; executed?: boolean }
   | { t: 'heal';   tick: number; id: number; source: number; amount: number; hp: number }
+  | { t: 'trait_mana'; tick: number; id: number; amount: number; mana: number }
+  | { t: 'swiftmartialist_stack'; tick: number; id: number; stacks: number; maxStacks: number; attackSpeedBonus: number }
+  | { t: 'mechanical_overclock'; tick: number; id: number; untilTick: number; emergency: boolean }
   | { t: 'shield'; tick: number; id: number; source?: number; equipmentId?: string; amount: number; shield: number }
   | { t: 'equipment_trigger'; tick: number; id: number; equipmentId: string; shield: number }
   | { t: 'cast';   tick: number; id: number; skillId: string; target: number; duration?: number }
@@ -196,6 +276,9 @@ export type BattleEvent =
   | { t: 'knockup'; tick: number; id: number; source: number; duration: number }
   | { t: 'guard'; tick: number; id: number; duration: number; reduction: number }
   | { t: 'skill_impact'; tick: number; id: number; target: number; skillId: string }
+  | { t: 'rail_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'dash'; tick: number; id: number; from: Pos; to: Pos; durationTicks: number }
+  | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'death';  tick: number; id: number }
   | { t: 'end';    tick: number; winner: Side | -1 };
 
@@ -207,7 +290,7 @@ export interface BattleResult {
 }
 
 export interface CombatStatRow {
-  sourceKind?: 'shadowBoard' | 'sunlightJudgment';
+  sourceKind?: 'shadowBoard' | 'sunlightJudgment' | 'astralMeteor';
   id: number; name: string; side: Side; star: number;
   damage: number; taken: number; healing: number;
   /** Total shields granted, counted at acquisition rather than absorption. */
@@ -217,6 +300,9 @@ export interface CombatStatRow {
 }
 
 export interface UnitRuntime {
+  atlasBurning?: boolean;
+  spiderAirborne?: boolean;
+  hydraulicBulwarkActive?: boolean;
   sunlightShield?: number;
   domainRadius?: number;
   shadowCorrupted?: boolean;

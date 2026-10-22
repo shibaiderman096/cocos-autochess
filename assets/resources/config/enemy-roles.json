@@ -1,6 +1,15 @@
 {
   "version": "enemy-roles-v1",
   "units": {
+"milu":{"role":"assassin","tags":["teleport"],"source":"explicit","confidence":"high","reason":"弥露：1费魔法刺客，星跃位移1格并单体魔法打击。"},
+    "star_armor_guard":{"role":"tank","tags":["shield","durable","control"],"source":"explicit","confidence":"high","reason":"星铠守卫：1费物理重甲坦克，恒星壁垒获得护盾并冲刺击飞沿途敌人。"},
+    "turbo_fist_tiger": {"role":"melee_dps","tags":["healing"],"source":"explicit","confidence":"high","reason":"物理征战者，击杀技能回血。"},
+    "arc_repairer": {"role":"support","tags":["healing"],"source":"explicit","confidence":"high","reason":"全场按生命比例治疗友军。"},
+    "rail_hunter_07": {"role":"ranged_dps","tags":[],"source":"explicit","confidence":"high","reason":"远程物理术士，蓄力单体爆发。"},
+    "ripsaw_spider": {"role":"assassin","tags":["teleport"],"source":"explicit","confidence":"high","reason":"物理刺客，跳向最远目标造成收割伤害。"},
+    "furnace_executioner": {"role":"melee_dps","tags":["control","aoe"],"source":"explicit","confidence":"high","reason":"魔剑士冲刺、沿途魔法伤害与主目标击飞。"},
+    "atlas": {"role":"mage","tags":["aoe"],"source":"explicit","confidence":"high","reason":"远程物理术士，多目标导弹与永久灼烧。"},
+    "bao_zero": { "role": "tank", "tags": ["durable", "healing"], "source": "explicit", "confidence": "high", "reason": "堡零：用户明确指定物理重甲坦克，液压壁垒增加双抗并结束回血。" },
     "abyss_iron_guard": {
       "role": "tank",
       "tags": [

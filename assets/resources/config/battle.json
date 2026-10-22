@@ -40,6 +40,92 @@
   "legendaryThreeStarBonusHp": 5000,
   "traits": [
     {
+      "id": "astral",
+      "name": "星穹",
+      "glyph": "星",
+      "description": "激活后，己方棋盘随机生成星穹格。战斗开始时，位于星穹格上的己方棋子获得物理加成、法术加成与最大生命值，星穹棋子获得双倍。",
+      "members": ["oris", "blackstar_warlock", "star_armor_guard", "milu"],
+      "pendingMembers": false,
+      "breakpoints": [
+        { "count": 3, "tier": "bronze", "astral": { "cellCount": 7, "power": 15, "maxHpBonus": 0.1, "memberMultiplier": 2 } },
+        { "count": 5, "tier": "silver", "astral": { "cellCount": 14, "power": 30, "maxHpBonus": 0.2, "memberMultiplier": 2 } },
+        { "count": 7, "tier": "gold", "astral": { "cellCount": 21, "power": 50, "maxHpBonus": 0.3, "memberMultiplier": 2 } },
+        { "count": 10, "tier": "prismatic", "astral": { "cellCount": "all", "power": 100, "maxHpBonus": 0.6, "memberMultiplier": 2,
+          "meteor": { "intervalSeconds": 5, "damage": 3000, "radius": 1 } } }
+      ]
+    },
+    {
+      "id": "mechanical_pioneer",
+      "name": "机械先驱",
+      "glyph": "械",
+      "description": "机械棋子在等待后进入持续6秒的超频状态，获得攻速与生命回复。超频结束后重新等待。",
+      "members": ["bao_zero", "turbo_fist_tiger", "arc_repairer", "rail_hunter_07", "ripsaw_spider", "furnace_executioner", "atlas"],
+      "pendingMembers": false,
+      "breakpoints": [
+        { "count": 3, "tier": "bronze", "mechanicalPioneer": { "attackSpeedBonus": 0.4, "regenPerSecond": 0.02, "durationSeconds": 6, "cooldownSeconds": 6 } },
+        { "count": 5, "tier": "silver", "mechanicalPioneer": { "attackSpeedBonus": 0.6, "regenPerSecond": 0.03, "durationSeconds": 6, "cooldownSeconds": 6, "lowHealthThreshold": 0.5 } },
+        { "count": 7, "tier": "gold", "mechanicalPioneer": { "attackSpeedBonus": 0.9, "regenPerSecond": 0.05, "durationSeconds": 6, "cooldownSeconds": 3, "lowHealthThreshold": 0.5 } }
+      ]
+    },
+    {
+      "id": "swiftmartialist",
+      "name": "迅武师",
+      "glyph": "武",
+      "description": "迅武师通过不断释放技能进入战斗节奏。每次施放技能都会获得可叠加的攻击速度，持续至战斗结束。",
+      "members": [],
+      "selector": { "role": "caster", "damageType": "physical" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "swiftmartialist": { "physicalPower": 15, "attackSpeedPerCast": 0.05, "maxStacks": 5 } },
+        { "count": 4, "tier": "silver", "swiftmartialist": { "physicalPower": 30, "attackSpeedPerCast": 0.08, "maxStacks": 5 } },
+        { "count": 6, "tier": "gold", "swiftmartialist": { "physicalPower": 50, "attackSpeedPerCast": 0.12, "maxStacks": 5 } },
+        { "count": 8, "tier": "prismatic", "swiftmartialist": { "physicalPower": 80, "attackSpeedPerCast": 0.18, "maxStacks": 5 } }
+      ]
+    },
+    {
+      "id": "spellchanter",
+      "name": "法咏者",
+      "glyph": "咏",
+      "description": "法咏者以魔法持续压制敌人，参与击杀后回复法力，使其能够连续释放技能。",
+      "members": [],
+      "selector": { "role": "caster", "damageType": "magic" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "spellchanter": { "spellPower": 15, "manaOnTakedown": 8 } },
+        { "count": 4, "tier": "silver", "spellchanter": { "spellPower": 30, "manaOnTakedown": 12 } },
+        { "count": 6, "tier": "gold", "spellchanter": { "spellPower": 50, "manaOnTakedown": 16 } },
+        { "count": 8, "tier": "prismatic", "spellchanter": { "spellPower": 80, "manaOnTakedown": 20 } }
+      ]
+    },
+    {
+      "id": "conqueror",
+      "name": "征战者",
+      "glyph": "征",
+      "description": "征战者获得伤害增幅和全能吸血。\n生命低于50%时，由征战者羁绊获得的伤害增幅翻倍。",
+      "members": [],
+      "selector": { "role": "warrior", "damageType": "physical" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "conqueror": { "damageAmp": 0.08, "lifesteal": 0.08, "lowHealthThreshold": 0.5, "lowHealthMultiplier": 2 } },
+        { "count": 4, "tier": "silver", "conqueror": { "damageAmp": 0.15, "lifesteal": 0.15, "lowHealthThreshold": 0.5, "lowHealthMultiplier": 2 } },
+        { "count": 6, "tier": "gold", "conqueror": { "damageAmp": 0.25, "lifesteal": 0.25, "lowHealthThreshold": 0.5, "lowHealthMultiplier": 2 } },
+        { "count": 8, "tier": "prismatic", "conqueror": { "damageAmp": 0.4, "lifesteal": 0.35, "lowHealthThreshold": 0.5, "lowHealthMultiplier": 2,
+          "protection": { "threshold": 0.3, "healMaxHpFraction": 0.15, "damageReduction": 0.2, "durationSeconds": 5 } } }
+      ]
+    },
+    {
+      "id": "spellblade",
+      "name": "魔剑士",
+      "glyph": "剑",
+      "description": "魔剑士获得法术加成。\n施放技能后获得持续4秒的攻击速度和伤害减免，重复施法刷新持续时间。",
+      "members": [],
+      "selector": { "role": "warrior", "damageType": "magic" },
+      "breakpoints": [
+        { "count": 2, "tier": "bronze", "spellblade": { "spellPower": 15, "attackSpeedBonus": 0.15, "damageReduction": 0.05, "durationSeconds": 4 } },
+        { "count": 4, "tier": "silver", "spellblade": { "spellPower": 30, "attackSpeedBonus": 0.3, "damageReduction": 0.1, "durationSeconds": 4 } },
+        { "count": 6, "tier": "gold", "spellblade": { "spellPower": 50, "attackSpeedBonus": 0.5, "damageReduction": 0.15, "durationSeconds": 4 } },
+        { "count": 8, "tier": "prismatic", "spellblade": { "spellPower": 80, "attackSpeedBonus": 0.75, "damageReduction": 0.25, "durationSeconds": 4,
+          "empoweredAttacks": { "count": 3, "damage": 70 } } }
+      ]
+    },
+    {
       "id": "armored_tank",
       "name": "重甲坦克",
       "glyph": "甲",
@@ -373,7 +459,9 @@
             "judgment": {
               "intervalSeconds": 5,
               "damage": 200,
-              "stunSeconds": 1
+              "stunSeconds": 1,
+              "independentStatistics": true,
+              "statisticsStar": 3
             }
           }
         },
@@ -393,7 +481,8 @@
               "damage": 1000,
               "stunSeconds": 1,
               "targetMaxHpFraction": 0.1,
-              "independentStatistics": true
+              "independentStatistics": true,
+              "statisticsStar": 4
             }
           }
         }

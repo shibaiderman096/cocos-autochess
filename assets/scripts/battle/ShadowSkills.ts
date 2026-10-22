@@ -86,7 +86,7 @@ export class ShadowSkills {
         const victims = this.enemies(source).filter(unit => cells.has(`${unit.x},${unit.y}`))
           .sort((a, b) => hexDist(source.pos, a.pos) - hexDist(source.pos, b.pos) || a.id - b.id);
         victims.forEach((unit, i) => this.host.damage(source, unit, i === 0 ? baseDamage : spec.secondaryDamage[rank], skill.dmgType));
-        const last = [...cells].pop()?.split(',').map(Number);
+        const last = Array.from(cells).pop()?.split(',').map(Number);
         this.pulse(source, skill, 'piercing', last ? { x: last[0], y: last[1] } : target.pos, 0);
         break;
       }
@@ -146,7 +146,7 @@ export class ShadowSkills {
       this.host.units.find(unit => unit.id === id)!.skillAttackSpeedBonus = 0; this.empowers.delete(id);
     }
     this.updateDomainSlows();
-    for (const channel of [...this.channels.values()]) if (this.tick >= channel.next) this.advanceChannel(channel);
+    for (const channel of Array.from(this.channels.values())) if (this.tick >= channel.next) this.advanceChannel(channel);
     for (const job of [...this.barrages]) if (job.remaining > 0 && this.tick >= job.next) this.advanceBarrage(job);
     this.barrages = this.barrages.filter(job => job.remaining > 0);
     this.refunds = this.refunds.filter(watch => watch.source.alive && this.tick <= watch.end);
@@ -228,7 +228,7 @@ export class ShadowSkills {
     const { source, skill } = channel, spec = skill.shadow!;
     this.channels.delete(source.id); source.skillUntargetable = false; source.atkCd = this.host.cooldown(source);
     if (spec.kind === 'flurry') this.refunds.push({ source, targetId: channel.targetId, end: this.tick + this.ticks(spec.refundWindowSeconds), amount: spec.refundMana });
-    if (spec.kind === 'void') for (const id of [...channel.marked].sort((a, b) => a - b)) {
+    if (spec.kind === 'void') for (const id of Array.from(channel.marked).sort((a, b) => a - b)) {
       const target = this.host.units.find(unit => unit.id === id && this.host.targetable(unit));
       if (!target) continue;
       this.host.damage(source, target, spec.markDamage[this.rank(source)], skill.dmgType);

@@ -21,8 +21,7 @@ for(const n of [3,5,7,10]) {
   assert.ok(texts[3].includes('全体友军每秒 +20%攻速（最多 +200%）'));
   assert.ok(texts[3].includes('暗影笼罩整个棋盘，侵蚀所有敌军'));
   assert.ok(texts[3].includes('被侵蚀的敌军每0.5秒受到 100真实伤害'));
-  assert.equal(textOf(card.getChildByName('shadowStackingNote')).trim(),'各效果累加');
-  assert.ok(card.getChildByName('shadowStackingNote').position.y>card.getChildByName('shadowDescription').position.y);
+  assert.equal(card.getChildByName('shadowStackingNote'),undefined,'auxiliary stacking hint removed');
   assert.ok(!card.children.map(textOf).join(' ').includes('暗影英雄'));
   assert.ok(card.children.map(textOf).join(' ').includes('侵蚀持续至战斗结束'));
   for(const row of rows) {
@@ -45,4 +44,4 @@ for(const n of [3,5,7,10]) {
 }
 // Closing before asynchronous image completion must leave the next card untouched.
 panel.rows.getChildByName('trait_shadow').events.get('end')();panel.hideDetail();flush();assert.equal(panel.detail,null);
-console.log('PASS shadow UI: exact icon-rich tier copy, cumulative header, async close safety, 10 fitted portraits directly below effects');
+console.log('PASS shadow UI: exact icon-rich tier copy, auxiliary hint removed, async close safety, 10 fitted portraits directly below effects');

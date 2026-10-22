@@ -160,7 +160,7 @@ export class EnemyFormation {
     const score=evaluate(positions);
     if(keys.length&&units.some(u=>u.role.role==='tank')&&score.cover<1)p.fallback.push('PARTIAL_COVER_KEEP_ROLE_DIRECTION');
     if(context.settings.level!=='L1'&&violations)p.fallback.push('SPACING_SOFT_CONSTRAINT_RETAIN_LEGAL_ROLE_CELLS');
-    const matched=[...p.assignments].filter(([unit,cell])=>positions[unit]===cell).length;
+    const matched=Array.from(p.assignments).filter(([unit,cell])=>positions[unit]===cell).length;
     const roleCounts:Record<string,number>={};for(const u of units)roleCounts[u.role.role]=(roleCounts[u.role.role]??0)+1;
     return {placements:context.enemies.map((e,i)=>({...JSON.parse(JSON.stringify(e)),...this.cells[positions[i]]})),level:p.settings.level,strength:p.settings.strength,version:c.version,
       diagnostics:{roleCounts,spacingViolations:violations,fallbackSteps:p.fallback,templateId:p.templateId,templateUsed:matched>0,templateSlotsMatched:matched,templateSlotsAvailable:p.templateSize,

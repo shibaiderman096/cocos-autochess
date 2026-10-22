@@ -30,7 +30,7 @@
 | 艾蕾娅 | 蓄力法印收拢，宽大日光天枪沿贯穿射线飞行 | [截图](evidence/sunlight-animations/skill-aurelia.png) |
 | 瑟琳 | 覆盖技能范围的旋转太阳法阵、柔光光柱，祷言结束时扩散光环 | [截图](evidence/sunlight-animations/skill-celine.png) |
 | 奥瑞斯 | 目标脚下出现预告法印，延迟后落下多道大审判光柱 | [截图](evidence/sunlight-animations/skill-oris.png) |
-| 塞拉菲尔 | 锁定目标连续弧光，末击使用更大的弧光和法印；初次施法与击杀追击时出现跃迁残光 | 旧截图不代表本次连击与末击效果，待重新预览 |
+| 塞拉菲尔 | 锁定目标连续弧光，末击使用更大的弧光和法印；初次施法与击杀追击时出现跃迁残光 | [连击与追击预览](seraphiel-combo.md#实际预览) |
 
 ## 羁绊与场地
 

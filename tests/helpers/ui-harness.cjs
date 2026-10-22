@@ -8,7 +8,7 @@ class Node {
   set name(value) { if(!value.includes('/')) this.nodeName=value; }
   get name() { return this.nodeName; }
   constructor(name) { this.name=name; this.children=[]; this.components=new Map(); this.events=new Map(); this.active=true; }
-  static EventType = { TOUCH_START:'start', TOUCH_END:'end', TOUCH_MOVE:'move', TOUCH_CANCEL:'cancel', MOUSE_ENTER:'enter', MOUSE_LEAVE:'leave' };
+  static EventType = { TOUCH_START:'start', TOUCH_END:'end', TOUCH_MOVE:'move', TOUCH_CANCEL:'cancel', MOUSE_ENTER:'enter', MOUSE_LEAVE:'leave', MOUSE_WHEEL:'wheel' };
   addChild(n) { n.parent=this; this.children.push(n); }
   getChildByName(name) { return this.children.find(n=>n.name===name); }
   addComponent(T) {
@@ -24,6 +24,7 @@ class Node {
   destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
 }
 class UITransform {
+  contentSize={width:100,height:100};
   anchorPoint={x:.5,y:.5};
   setContentSize(width,height) { this.contentSize={width,height}; }
   setAnchorPoint(x,y) { this.anchorPoint={x,y}; }
@@ -42,13 +43,34 @@ class Sprite {
   set fillRange(v) { if(this.type===2&&!this.spriteFrame) throw Error('filled range before image'); this.range=v; }
   get fillRange() { return this.range; }
 }
-class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {} }
+function textLines(text,width,size) {
+  return text.replace(/<br\s*\/>/g,'\n').replace(/<img[^>]*\/>/g,'图').replace(/<[^>]+>/g,'').split('\n')
+    .reduce((sum,line)=>sum+Math.max(1,Math.ceil([...line].reduce((n,c)=>n+(c.charCodeAt(0)>255?1:.55),0)*size/width)),0);
+}
+class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {
+  if(this.overflow===3){const t=this.node.getComponent(UITransform);t.setContentSize(t.contentSize.width,textLines(this.string,t.contentSize.width,this.fontSize)*this.lineHeight);}
+} }
+class RichText {
+  set string(value){this.copy=value;const t=this.node.getComponent(UITransform);t.setContentSize(this.maxWidth,textLines(value,this.maxWidth,this.fontSize)*this.lineHeight);}
+  get string(){return this.copy;}
+}
 class Color {
   constructor(r=0,g=0,b=0,a=255) { Object.assign(this,{r,g,b,a}); }
   fromHEX() {} static WHITE=new Color(255,255,255);
 }
 class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} roundRect(...args){this.roundedRect=args;} ellipse(){} }
-class Mask { static Type={GRAPHICS_STENCIL:2}; }
+class Mask { static Type={GRAPHICS_RECT:0,GRAPHICS_STENCIL:2}; }
+class Vec2 { constructor(x=0,y=0){Object.assign(this,{x,y});} }
+// Geometry-only ScrollView double: actual input/inertia is checked in the browser.
+class ScrollView {
+  static EventType={SCROLL_BEGAN:'scroll-began',SCROLL_ENDED:'scroll-ended'};
+  getScrollOffset(){return new Vec2(0,this.content.position.y-this.content.parent.getComponent(UITransform).contentSize.height/2);}
+  getMaxScrollOffset(){return new Vec2(0,Math.max(0,this.content.getComponent(UITransform).contentSize.height-this.content.parent.getComponent(UITransform).contentSize.height));}
+  scrollToOffset(offset){this.content.setPosition(0,this.content.parent.getComponent(UITransform).contentSize.height/2+offset.y,0);}
+  stopAutoScroll(){this.moving=false;}
+  isScrolling(){return !!this.moving;}
+  isAutoScrolling(){return !!this.moving;}
+}
 class Rect { constructor(x,y,width,height){Object.assign(this,{x,y,width,height});} }
 class Size { constructor(width,height){Object.assign(this,{width,height});} }
 const inputListeners=[];
@@ -58,7 +80,7 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText:class{},Color,Graphics,Mask,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   input,Input,
   ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},

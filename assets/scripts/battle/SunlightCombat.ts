@@ -9,13 +9,13 @@ interface Host {
   now(): number; width(): number; height(): number;
   targetable(unit: Unit): boolean;
   damage(source: Unit, target: Unit, raw: number, type: DmgType, skillId: string): void;
-  fixedDamage(source: Unit, target: Unit, raw: number, sunlightJudgmentSide?: Side): void;
+  fixedDamage(source: Unit, target: Unit, raw: number, sunlightJudgmentSide?: Side, sunlightJudgmentStar?: number): void;
   stun(source: Unit, target: Unit, seconds: number): void;
   randomIndex(length: number): number;
   cooldown(unit: Unit): number;
 }
 interface Shield { source: Unit; target: Unit; skill: SkillConfigData; remaining: number; end: number; heal: boolean }
-interface Channel { source: Unit; skill: SkillConfigData; targetId: number; next: number; index: number }
+interface Channel { source: Unit; skill: SkillConfigData; targetId: number; next: number; index: number; recasts: number }
 interface Army { side: Side; source: Unit; members: Array<{ unit: Unit; front: boolean }>; spec: SunlightTraitEffect; buffed: boolean }
 
 /** All timers use simulation ticks. The shield ledger tracks only this faction's layers. */
@@ -81,7 +81,7 @@ export class SunlightCombat {
       this.host.stun(army.source, target, spec.stunSeconds);
       this.pulse(army.source, 'judgment', target.pos, 0, .7, undefined, { trait: true, targetId: target.id });
       this.host.fixedDamage(army.source, target, spec.damage + target.cfg.hp * (spec.targetMaxHpFraction ?? 0),
-        spec.independentStatistics ? army.side : undefined);
+        spec.independentStatistics ? army.side : undefined, spec.independentStatistics ? (spec.statisticsStar ?? 4) : undefined);
     }
     for (const shield of [...this.shields]) if (this.tick >= shield.end) this.endShield(shield, true);
     for (const [id, buff] of this.empowers) if (this.tick >= buff.end) {
@@ -91,7 +91,7 @@ export class SunlightCombat {
       this.host.units.find(u => u.id === id)!.skillAttackSpeedBonus -= buff.amount; this.speedBuffs.delete(id);
     }
     for (const [id, watch] of this.huntWatches) if (watch.tick < this.tick) this.huntWatches.delete(id);
-    for (const channel of [...this.channels.values()]) {
+    for (const channel of Array.from(this.channels.values())) {
       if (!channel.source.alive) this.interrupt(channel.source);
       else if (this.tick >= channel.next && this.tick >= channel.source.stunnedUntilTick && this.tick >= channel.source.fearUntilTick) this.advance(channel);
     }
@@ -155,7 +155,7 @@ export class SunlightCombat {
         this.pulse(source, 'formation', source.pos, 0, spec.durationSeconds, undefined, { kind: spec.kind }); break;
       case 'arrows': case 'hunt': case 'transit': {
         if (!target || spec.kind === 'transit' && !this.teleportCell(source, target)) break;
-        const job: Channel = { source, skill, targetId: target.id, next: this.tick, index: 0 };
+        const job: Channel = { source, skill, targetId: target.id, next: this.tick, index: 0, recasts: 0 };
         this.channels.set(source.id, job);
         if (spec.kind === 'hunt' || spec.kind === 'transit') this.teleport(source, target);
         this.advance(job); break;
@@ -198,13 +198,14 @@ export class SunlightCombat {
     if (!target) { this.finish(job); return; }
     if (recast) {
       if (!this.teleportCell(source, target)) { this.finish(job); return; }
-      this.teleport(source, target); job.targetId = target.id;
+      this.teleport(source, target); job.targetId = target.id; job.recasts++;
       this.host.events.push({ t: 'cast', tick: this.tick, id: source.id, skillId: skill.id, target: target.id, duration: 0 });
     }
     const finisher = spec.kind === 'transit' && job.index === spec.counts[rank] - 1;
     let raw = skill.starDamage![rank];
     if (spec.kind === 'arrows' && job.index === 2) raw = spec.finalDamage[rank];
     if (spec.kind === 'transit' && finisher) raw = spec.finalDamage[rank];
+    if (spec.kind === 'transit') raw *= 1 - Math.min(spec.recastDamageLossCap, job.recasts * spec.recastDamageLoss);
     if (spec.kind === 'hunt') {
       if (job.index === 0 && target.shield > 0) raw *= 1 + spec.shieldBonus;
       this.huntWatches.set(source.id, { skill, tick: this.tick });

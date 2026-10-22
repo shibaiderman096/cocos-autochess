@@ -1,0 +1,226 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "b9490501-e22b-480d-8e17-10c73ce76108",
+  "files": [],
+  "subMetas": {
+    "43757": {
+      "importer": "gltf-mesh",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@43757",
+      "displayName": "",
+      "id": "43757",
+      "name": "SM_Chest_Base_Mesh.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 484
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "eb7b8": {
+      "importer": "gltf-mesh",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@eb7b8",
+      "displayName": "",
+      "id": "eb7b8",
+      "name": "SM_Chest_Lid_Mesh.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 608
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7eebf9": {
+      "importer": "gltf-scene",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@7eebf9",
+      "displayName": "",
+      "id": "7eebf9",
+      "name": "ruins-chest.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7dbdf": {
+      "importer": "gltf-embeded-image",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@7dbdf",
+      "displayName": "",
+      "id": "7dbdf",
+      "name": "T_Encounter_BaseColor.image",
+      "userData": {
+        "gltfIndex": 0,
+        "fixAlphaTransparencyArtifacts": true,
+        "hasAlpha": true,
+        "type": "texture"
+      },
+      "ver": "1.0.3",
+      "imported": true,
+      "files": [
+        ".json",
+        ".png"
+      ],
+      "subMetas": {}
+    },
+    "de7d9": {
+      "importer": "gltf-embeded-image",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@de7d9",
+      "displayName": "",
+      "id": "de7d9",
+      "name": "T_Encounter_ORM.image",
+      "userData": {
+        "gltfIndex": 1,
+        "fixAlphaTransparencyArtifacts": true,
+        "hasAlpha": true,
+        "type": "texture"
+      },
+      "ver": "1.0.3",
+      "imported": true,
+      "files": [
+        ".json",
+        ".png"
+      ],
+      "subMetas": {}
+    },
+    "3effa": {
+      "importer": "texture",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@3effa",
+      "displayName": "",
+      "id": "3effa",
+      "name": "UnnamedTexture-0.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "linear",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "b9490501-e22b-480d-8e17-10c73ce76108@7dbdf"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "221a5": {
+      "importer": "texture",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@221a5",
+      "displayName": "",
+      "id": "221a5",
+      "name": "UnnamedTexture-1.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "linear",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "b9490501-e22b-480d-8e17-10c73ce76108@de7d9"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6275c": {
+      "importer": "gltf-material",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@6275c",
+      "displayName": "",
+      "id": "6275c",
+      "name": "M_Encounter_Trim.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9c987": {
+      "importer": "gltf-scene",
+      "uuid": "b9490501-e22b-480d-8e17-10c73ce76108@9c987",
+      "displayName": "",
+      "id": "9c987",
+      "name": "ruins-chest.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "T_Encounter_BaseColor",
+        "uri": "b9490501-e22b-480d-8e17-10c73ce76108@7dbdf"
+      },
+      {
+        "name": "T_Encounter_ORM",
+        "uri": "b9490501-e22b-480d-8e17-10c73ce76108@de7d9"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "b9490501-e22b-480d-8e17-10c73ce76108@eb7b8",
+        "b9490501-e22b-480d-8e17-10c73ce76108@43757"
+      ],
+      "skeletons": [],
+      "textures": [
+        "b9490501-e22b-480d-8e17-10c73ce76108@3effa",
+        "b9490501-e22b-480d-8e17-10c73ce76108@221a5"
+      ],
+      "materials": [
+        "b9490501-e22b-480d-8e17-10c73ce76108@6275c"
+      ],
+      "scenes": [
+        "b9490501-e22b-480d-8e17-10c73ce76108@9c987"
+      ]
+    }
+  }
+}

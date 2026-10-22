@@ -4,7 +4,7 @@
 
 | 项目 | 1星 | 2星 | 3星 |
 | --- | --- | --- | --- |
-| 每轮攻击次数（含末击） | 5 | 7 | 20 |
+| 每轮攻击次数（含末击） | 2 | 4 | 10 |
 | 普通段基础魔法伤害 | 110 | 165 | 1600 |
 | 末击基础魔法伤害 | 550 | 825 | 8000 |
 | 相邻两次攻击间隔 | 0.2秒 | 0.2秒 | 0.2秒 |
@@ -13,9 +13,19 @@
 
 只有本轮技能实际击杀目标才触发追击；普通段和末击都能触发。在下一个0.2秒攻击时点，选择距离施法者最近的存活、可选取敌人，距离相同按单位ID排序，跃迁至其相邻空格并免费重开完整连击。每次追击不扣除法力。没有目标，或最近目标周围没有可用落点时结束，不跳过该目标去追击更远的敌人。
 
+本次连锁内，每次击杀重放累计降低20%原始技能伤害，至多降低40%：初次100%、第一次重放80%、第二次及以后60%。普通段和末击均衰减，再按现有法强、增伤、魔抗和减伤公式结算；不修改普通攻击或角色的通用伤害增幅。下次正常满蓝施法创建新连锁，恢复100%伤害。
+
 击杀依据护盾与保命装备结算后的生命值变化判定。队友击杀、自己的其他伤害、同一Tick中打到已被击杀的目标、触发余烬命核但未死亡，均不触发追击。目标失效、施法者死亡或控制打断时结束。取消技能原有的不可选取。
 
-## 自动验证
+## 本次削弱验证
+
+2026-10-19：连击从5/7/20改为2/4/10；基础伤害和0.2秒间隔保持不变。配置增加单次重放衰减与上限，正文从同一配置读取20%和40%，底部表同步2/4/10。此为真实机制变化，已有存档的旧技能配置标识会被拒绝，需开始新一局。
+
+专项覆盖三个星级、双方阵营、100%→80%→60%→60%连锁、普通段与末击、法强/增伤组合、正常满蓝施法重置，以及原有亲自击杀、护盾、保命、控制打断和最近目标判定。技能和日辉等11组相关测试、资源检查及TypeScript检查通过，记录见[本轮验证](evidence/seraphiel-nerf/validation-summary.json)。通用设计校验为6 ERROR、66 WARN：原有4项设计例外保持；新增2项为校验器要求正文变量recastLoss/recastCap也有星级属性表，两者是全星级固定的连锁规则，保留在正文并从实际配置读取，不添加重复属性行。
+
+浏览器使用默认667×654视口核对了[1星两连击与正文](evidence/seraphiel-nerf/01-skill-1star.png)、[3星十连击](evidence/seraphiel-nerf/03-skill-3star.png)。[一星首次追击](evidence/seraphiel-nerf/02-first-recast-88.png)显示88魔法伤害，统计合计688＝首目标有效伤害600＋追击88；证明追击使用110×80%。控制台无error。40%上限和正常施法重置由战斗测试覆盖。未执行全量测试、平衡资格验证或设备运行。
+
+## 此前版本验证记录
 
 以下11组相关测试通过：`seraphiel-tests`、`sunlight-tests`、`sunlight-animation-tests`、`sunlight-ui-tests`、`skill-presentation-tests`、`skill-attack-isolation-tests`、`skill-layout-save-tests`、`combat-statistics-tests`、`combat-attributes-tests`、`totem-tests`、`shadow-roster-tests`。
 
@@ -29,7 +39,7 @@ Cocos项目脚本诊断及最终 `npx tsc --noEmit -p tsconfig.json` 无错误�
 
 使用现有独立 `sunlight-preview.scene`，种子1019，选择“塞拉菲尔·技能特写”。不创建RunSession，不读取或修改玩家存档。首次预览发现编辑器仍使用旧资源缓存，刷新本次配置和脚本后重新验证，以下截图均为刷新后的版本。
 
-- [1星技能面板](evidence/seraphiel-combo/skill-1star.jpg)、[3星技能面板](evidence/seraphiel-combo/skill-3star.jpg)：三行数值、法强图标、当前星级正文、可选取/可打断说明无裁切。
+- [1星技能面板](evidence/seraphiel-combo/skill-1star.jpg)、[3星技能面板](evidence/seraphiel-combo/skill-3star.jpg)：记录三行数值与法强图标的排版。截图早于最终文案简化，旧操作说明已从当前技能正文移除，不能作为最终文案截图。
 - [1星普通段](evidence/seraphiel-combo/ordinary-hit.jpg)、[1星末击](evidence/seraphiel-combo/finisher-1star.jpg)、[1星击杀追击](evidence/seraphiel-combo/kill-recast-1star.jpg)：首个目标600生命，末击后消失，追击下一目标后累计有效伤害由600变为710。
 - [3星末击](evidence/seraphiel-combo/finisher-3star.jpg)、[3星击杀追击](evidence/seraphiel-combo/kill-recast-3star.jpg)：首个目标32000生命，击杀后重开普通段，累计伤害由32000变为33600。
 - [3星追击结束](evidence/seraphiel-combo/chain-end-3star.jpg)：6个目标全部击杀，有效伤害192000，结束时弧光与落点法印已清理。浏览器本轮控制台无error/warn。

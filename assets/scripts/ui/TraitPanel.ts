@@ -1,9 +1,9 @@
-import { Node, Sprite, Label, RichText, SpriteAtlas, UITransform, Color } from 'cc';
+import { Node, Sprite, Label, RichText, SpriteAtlas, UITransform, Color, Graphics, Mask, ScrollView, Vec2 } from 'cc';
 import type { UnitConfigData } from '../core/ConfigManager';
 import type { TraitState } from '../battle/Traits';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
 import { UNIT_ART, UNIT_PORTRAIT, M2_UI_SPRITE, FX_SPRITE } from '../view/ArtPaths';
-import { panel, label, button } from './BattleUI';
+import { panel, label, button, paintPanel } from './BattleUI';
 import { sunlightTierText } from './SunlightPresentation';
 
 const TEXT = new Color(234, 231, 215), MUTED = new Color(138, 153, 164);
@@ -47,6 +47,9 @@ function statBonus(parent: Node, key: keyof typeof M2_UI_SPRITE, value: string, 
 export class TraitPanel {
   readonly root: Node;
   private rows: Node;
+  private scrollView: ScrollView;
+  private readonly viewportHeight = 330;
+  private readonly rowSpacing = 56;
   private detail: Node | null = null;
   private selected: string | null = null;
   private states: TraitState[] = [];
@@ -55,7 +58,20 @@ export class TraitPanel {
 
   constructor(private parent: Node) {
     this.root = panel(parent, 'traits', -510, 45, 192, 390);
-    this.rows = new Node('traitRows'); this.root.addChild(this.rows);
+    const viewport = new Node('traitViewport');
+    viewport.addComponent(UITransform).setContentSize(184, this.viewportHeight);
+    this.root.addChild(viewport); viewport.setPosition(0, 0, 0);
+    viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
+    this.rows = new Node('traitRows');
+    const content = this.rows.addComponent(UITransform);
+    content.setAnchorPoint(.5, 1); content.setContentSize(178, this.viewportHeight);
+    viewport.addChild(this.rows); this.rows.setPosition(0, this.viewportHeight / 2, 0);
+    this.scrollView = viewport.addComponent(ScrollView);
+    this.scrollView.horizontal = false; this.scrollView.vertical = true;
+    this.scrollView.inertia = true; this.scrollView.brake = .65;
+    this.scrollView.elastic = false; this.scrollView.cancelInnerEvents = true;
+    this.scrollView.content = this.rows;
+    viewport.on(ScrollView.EventType.SCROLL_BEGAN, () => this.hideDetail());
   }
 
   refresh(states: TraitState[], roster: UnitConfigData[]): void {
@@ -63,34 +79,95 @@ export class TraitPanel {
     const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds]));
     if (key === this.key) return;
     this.key = key;
+    const offset = this.scrollView.getScrollOffset().y;
+    this.scrollView.stopAutoScroll();
     this.closeCard();
     for (const node of [...this.rows.children]) { node.active = false; node.destroy(); }
-    const compact = this.states.length > 4;
-    const crowded = this.states.length > 7;
-    const spacing = crowded ? 350 / this.states.length : 49;
+    this.rows.getComponent(UITransform)!.setContentSize(178,
+      Math.max(this.viewportHeight, this.states.length * this.rowSpacing - 6));
     this.states.forEach((state, i) => {
-      const row = panel(this.rows, `trait_${state.config.id}`, 0, crowded ? (this.states.length - 1) * spacing / 2 - i * spacing : compact ? 136 - i * 49 : 109 - i * 74, 178, crowded ? spacing - 4 : compact ? 44 : 66,
+      const row = panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
         new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85), null);
-      badge(row, state, compact ? -61 : -58, compact ? 3 : 0, compact ? 34 : 50);
-      left(row, state.config.name, compact ? -35 : -23, compact ? 7 : 8, compact ? 14 : 16, 110, state.active ? TEXT : MUTED).isBold = true;
+      badge(row, state, -61, 3, 34);
+      left(row, state.config.name, -35, 9, 14, 110, state.active ? TEXT : MUTED).isBold = true;
       state.config.breakpoints.forEach((tier, index) => {
-        const item = label(row, String(tier.count), (compact ? -22 : -10) + index * (compact ? 25 : 28), compact ? -13 : -17, compact ? 10 : 11,
+        const item = label(row, String(tier.count), -22 + index * 25, -13, 11,
           state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, 24);
         item.isBold = state.active?.count === tier.count;
       });
       row.on(Node.EventType.TOUCH_END, () => {
+        if (this.scrollView.isScrolling() || this.scrollView.isAutoScrolling()) return;
         if (this.selected === state.config.id && this.detail?.active) this.hideDetail();
         else this.showDetail(state.config.id);
       });
-      row.on(Node.EventType.MOUSE_ENTER, () => { if (!this.selected) this.renderDetail(state); });
+      row.on(Node.EventType.MOUSE_ENTER, () => {
+        if (!this.selected && !this.scrollView.isScrolling() && !this.scrollView.isAutoScrolling()) this.renderDetail(state);
+      });
       row.on(Node.EventType.MOUSE_LEAVE, () => { if (!this.selected) this.closeCard(); });
     });
+    // Preserve fractional pixel offsets across roster refreshes; never snap to a row.
+    this.scrollView.scrollToOffset(new Vec2(0, Math.max(0, Math.min(offset, this.scrollView.getMaxScrollOffset().y))));
     if (this.selected) this.showDetail(this.selected);
   }
 
-  setVisible(visible: boolean): void { this.root.active = visible; if (!visible) this.hideDetail(); }
+  setVisible(visible: boolean): void {
+    this.root.active = visible;
+    if (!visible) { this.scrollView.stopAutoScroll(); this.hideDetail(); }
+  }
   hideDetail(): void { this.selected = null; this.closeCard(); }
   private closeCard(): void { if (this.detail) { this.detail.active = false; this.detail.destroy(); this.detail = null; } }
+  /** Measure rendered text, then place effects and a shared four-column portrait grid. */
+  private fitDetail(card: Node, state: TraitState): void {
+    if (this.detail !== card) return;
+    const transform = card.getComponent(UITransform)!;
+    const width = transform.contentSize.width;
+    const rows = card.children.filter(n => /^(trait|mechanical|sunlight|astral)Breakpoint$/.test(n.name));
+    const portraits = card.children.filter(n => n.name.startsWith('traitOwner_'));
+    const description = card.children.find(n => /^(trait|shadow|sunlight)Description$/.test(n.name))!;
+    const headers = card.children.filter(n => n !== description && !rows.includes(n) && !portraits.includes(n));
+    const heightOf = (node: Node): number => {
+      const text = node.getComponent(Label);
+      return text ? text.lineHeight : node.getComponent(UITransform)?.contentSize.height ?? 0;
+    };
+    const headerTop = Math.max(...headers.map(n => n.position.y + heightOf(n) / 2));
+    const headerBottom = Math.min(...headers.map(n => n.position.y - heightOf(n) / 2));
+    const descLabel = description.getComponent(Label);
+    if (descLabel) {
+      descLabel.overflow = Label.Overflow.RESIZE_HEIGHT;
+      descLabel.updateRenderData(true);
+    }
+    const descHeight = description.getComponent(UITransform)!.contentSize.height;
+    const heights = rows.map(row => Math.max(32, ...row.children.map(n =>
+      2 * Math.abs(n.position.y) + heightOf(n) + 12)));
+    const portraitHeight = portraits.length ? portraits[0].getComponent(UITransform)!.contentSize.height : 0;
+    const portraitRows = Math.ceil(portraits.length / 4);
+    const height = 28 + (headerTop - headerBottom) + 10 + descHeight + 12
+      + heights.reduce((sum, h) => sum + h, 0) + Math.max(0, rows.length - 1) * 6
+      + (portraitRows ? 12 + portraitHeight + (portraitRows - 1) * 52 : 0);
+    const oldTop = card.position.y + transform.contentSize.height / 2;
+    const top = height / 2;
+    const headerDelta = top - 14 - headerTop;
+    headers.forEach(n => n.setPosition(n.position.x, n.position.y + headerDelta, 0));
+    let cursor = top - 14 - (headerTop - headerBottom) - 10;
+    description.setPosition(description.position.x, cursor - descHeight / 2, 0);
+    cursor -= descHeight + 12;
+    rows.forEach((row, i) => {
+      const t = row.getComponent(UITransform)!, g = row.getComponent(Graphics)!;
+      t.setContentSize(t.contentSize.width, heights[i]);
+      const edge = g.strokeColor;
+      paintPanel(g, t.contentSize.width, heights[i], g.fillColor, new Color(edge.r, edge.g, edge.b));
+      row.setPosition(0, cursor - heights[i] / 2, 0);
+      cursor -= heights[i] + (i < rows.length - 1 ? 6 : 0);
+    });
+    cursor -= 12;
+    const spacing = (width - 40) / 4;
+    portraits.forEach((portrait, i) => portrait.setPosition((i % 4 - 1.5) * spacing,
+      cursor - portraitHeight / 2 - Math.floor(i / 4) * 52, 0));
+    transform.setContentSize(width, height);
+    paintPanel(card.getComponent(Graphics)!, width, height,
+      new Color(13, 20, 30, 252), COLORS[state.active?.tier ?? 'inactive']);
+    card.setPosition(card.position.x, Math.max(-344 + top, Math.min(oldTop - top, 344 - top)), 0);
+  }
   private showDetail(id: string): void {
     const state = this.states.find(item => item.config.id === id);
     if (!state) { this.hideDetail(); return; }
@@ -98,12 +175,17 @@ export class TraitPanel {
   }
   private renderDetail(state: TraitState): void {
     this.closeCard();
+    if (state.config.breakpoints.some(t => !!t.astral)) { this.renderAstralDetail(state); return; }
+    if (state.config.breakpoints.some(t => !!t.mechanicalPioneer)) { this.renderMechanicalDetail(state); return; }
     if (state.config.breakpoints.some(tier => !!tier.sunlight)) { this.renderSunlightDetail(state); return; }
     const formation = state.config.breakpoints.some(tier => !!tier.formation);
     const shadow = state.config.breakpoints.some(tier => !!tier.shadow);
-    const tall = formation || shadow;
-    const headerY = shadow ? 264 : tall ? 232 : 177;
-    const card = panel(this.parent, 'traitDetail', shadow ? -184 : -206, shadow ? 0 : tall ? 10 : 40, shadow ? 440 : 390, shadow ? 610 : tall ? 540 : 430,
+    const spellchanter = state.config.breakpoints.some(tier => !!tier.spellchanter);
+    const swift = state.config.breakpoints.some(tier => !!tier.swiftmartialist);
+    const warrior = state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
+    const tall = formation || shadow || swift;
+    const headerY = shadow || warrior ? 264 : tall ? 232 : 177;
+    const card = panel(this.parent, 'traitDetail', shadow || warrior ? -184 : -206, shadow || warrior ? 0 : tall ? 10 : 40, shadow || warrior ? 440 : 390, shadow || warrior ? 610 : tall ? 540 : 430,
       new Color(13, 20, 30, 252), COLORS[state.active?.tier ?? 'inactive'], null);
     this.detail = card; card.setSiblingIndex(this.parent.children.length - 1);
     card.on(Node.EventType.TOUCH_START, event => { event.propagationStopped = true; });
@@ -112,8 +194,7 @@ export class TraitPanel {
     left(card, state.config.name, shadow ? -137 : -110, headerY + 13, 23, 240).isBold = true;
     left(card, `${state.count}名上场 · ${state.active ? {bronze:'黄铜',silver:'白银',gold:'黄金',prismatic:'棱彩'}[state.active.tier] : '未激活'}`, shadow ? -137 : -110, headerY - 19, 14, 230, COLORS[state.active?.tier ?? 'inactive']);
     button(card, '×', shadow ? 193 : 167, headerY + 21, 26, 26, () => this.hideDetail());
-    if (shadow) left(card, '各效果累加', -72, headerY + 13, 13, 160, new Color(198, 172, 255)).node.name = 'shadowStackingNote';
-    const atlas = shadow ? new SpriteAtlas() : null;
+    const atlas = shadow || warrior || spellchanter || swift ? new SpriteAtlas() : null;
     const copies: Array<{ view: RichText; markup: string }> = [];
     const rich = (parent: Node, name: string, markup: string, x: number, y: number, width: number, size = 15): void => {
       const node = new Node(name); parent.addChild(node);
@@ -126,16 +207,41 @@ export class TraitPanel {
     if (shadow) {
       rich(card, 'shadowDescription', '<color=#eae7d7>暗影棋子的普攻会使目标<color=#c6acff><b>沾染暗影</b></color>，<br/>侵蚀持续至战斗结束。</color>', -198, 194, 396, 16);
     } else {
-      const body = left(card, state.config.description, -172, tall ? 163 : 115, 16, 344);
+      const body = left(card, state.config.description, warrior ? -198 : -172, warrior ? 185 : tall ? 163 : 115, 16, warrior ? 396 : 344);
+      body.node.name = 'traitDescription';
       body.enableWrapText = true; body.overflow = Label.Overflow.CLAMP;
-      body.node.getComponent(UITransform)!.setContentSize(344, tall ? 76 : 58);
+      body.node.getComponent(UITransform)!.setContentSize(warrior ? 396 : 344, warrior ? 90 : tall ? 76 : 58);
     }
     state.config.breakpoints.forEach((tier, index) => {
       const active = state.active?.count === tier.count;
-      const row = panel(card, 'traitBreakpoint', 0, shadow ? [123, 58, -10, -94][index] : formation ? 80 - index * 72 : 48 - index * 36, shadow ? 400 : 350, shadow ? (tier.shadow?.board ? 96 : index === 0 ? 56 : 64) : formation ? 64 : 32,
+      const row = panel(card, 'traitBreakpoint', 0, warrior ? [105, 63, 21, -49][index] : shadow ? [123, 58, -10, -94][index] : swift ? 80 - index * 60 : formation ? 80 - index * 72 : 48 - index * 36, shadow || warrior ? 400 : 350, warrior ? (index === 3 ? 88 : 36) : shadow ? (tier.shadow?.board ? 96 : index === 0 ? 56 : 64) : swift ? 56 : formation ? 64 : 32,
         active ? new Color(39, 43, 57) : new Color(15, 23, 34), active ? COLORS[tier.tier] : new Color(30, 42, 52), null);
-      left(row, `(${tier.count})`, shadow ? -188 : -163, 0, shadow ? 18 : 16, 42, active ? COLORS[tier.tier] : MUTED).isBold = shadow;
-      if (tier.shadow) {
+      left(row, `(${tier.count})`, shadow || warrior ? -188 : -163, 0, shadow || warrior ? 18 : 16, 42, active ? COLORS[tier.tier] : MUTED).isBold = shadow || warrior;
+      if (tier.swiftmartialist) {
+        const e = tier.swiftmartialist, reached = state.count >= tier.count;
+        const number = (value: string, tone: string) => `<color=${reached ? tone : '#8a99a4'}><b>${value}</b></color>`;
+        const percent = Number((e.attackSpeedPerCast * 100).toFixed(2));
+        rich(row, 'swiftmartialistEffect', `<color=${reached ? '#eae7d7' : '#8a99a4'}><img src='attr_phys_bonus' width=16 height=16 align=center offset=4/> ${number(`+${e.physicalPower}%`, '#ff9740')}物理加成<br/>每次施法 ${number(`+${percent}%`, '#f2d04b')}攻速，最多${number(`${e.maxStacks}层`, '#b57fe6')}</color>`, -120, 0, 288, 14);
+      } else if (tier.spellchanter) {
+        const e = tier.spellchanter, reached = state.count >= tier.count;
+        const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;
+        rich(row, 'spellchanterEffect', `<color=${reached ? '#eae7d7' : '#8a99a4'}><img src='attr_spell_bonus' width=16 height=16 align=center offset=4/> ${number(`+${e.spellPower}%`, '#50b4ff')}法术加成  参与击杀${number(`+${e.manaOnTakedown}`, '#50b4ff')}法力</color>`, -120, 0, 288, 14);
+      } else if (tier.conqueror || tier.spellblade) {
+        const percent = (value: number) => `${Number((value * 100).toFixed(2))}%`;
+        const number = (value: string, tone: string) => `<color=${state.count >= tier.count ? tone : '#8a99a4'}><b>${value}</b></color>`;
+        const icon = (key: string) => `<img src='${key}' width=16 height=16 align=center offset=4/>`;
+        let text = '';
+        if (tier.conqueror) {
+          const e = tier.conqueror, p = e.protection;
+          text = `${icon('attr_dmg_amp')} ${number(`+${percent(e.damageAmp)}`, '#ff9740')}增伤  ${icon('attr_lifesteal')} ${number(`+${percent(e.lifesteal)}`, '#7bf59a')}全能吸血`;
+          if (p) text += `<br/>首次低于${number(percent(p.threshold), '#ff9740')}生命时，回复${number(percent(p.healMaxHpFraction), '#7bf59a')}最大生命<br/>并获得${number(percent(p.damageReduction), '#50b4ff')}减伤，持续${number(`${p.durationSeconds}秒`, '#b57fe6')}`;
+        } else {
+          const e = tier.spellblade!;
+          text = `${icon('attr_spell_bonus')} ${number(`+${e.spellPower}`, '#50b4ff')}法强  ${icon('attr_aspd')} ${number(`+${percent(e.attackSpeedBonus)}`, '#f2d04b')}攻速  ${number(percent(e.damageReduction), '#50b4ff')}减伤`;
+          if (e.empoweredAttacks) text += `<br/>施法后接下来${number(`${e.empoweredAttacks.count}次`, '#b57fe6')}普攻，每次额外造成<br/>${number(`${e.empoweredAttacks.damage}`, '#50b4ff')}${icon('attr_spell_bonus')}魔法伤害，再次施法重置次数`;
+        }
+        rich(row, 'warriorEffect', `<color=${state.count >= tier.count ? '#eae7d7' : '#8a99a4'}>${text}</color>`, -140, 0, 330, 14);
+      } else if (tier.shadow) {
         const effect = tier.shadow;
         const percent = (value: number) => Number((value * 100).toFixed(2));
         const reached = state.count >= tier.count;
@@ -179,10 +285,10 @@ export class TraitPanel {
         if (tier.regenPerSecond) statBonus(row, 'stat_hp', `+${tier.regenPerSecond * 100}%/s`, 86, HEALING, active);
       }
     });
-    if (shadow) {
+    if (shadow || warrior || spellchanter || swift) {
       const icons = { attr_armor: M2_UI_SPRITE.attr_armor, attr_mr: M2_UI_SPRITE.attr_mr,
         attr_phys_bonus: M2_UI_SPRITE.attr_phys_bonus, attr_spell_bonus: M2_UI_SPRITE.attr_spell_bonus,
-        attr_dmg_amp: M2_UI_SPRITE.attr_dmg_amp, attr_aspd: M2_UI_SPRITE.attr_aspd, shadow_damage: FX_SPRITE.shadowProjectile };
+        attr_dmg_amp: M2_UI_SPRITE.attr_dmg_amp, attr_aspd: M2_UI_SPRITE.attr_aspd, attr_lifesteal: M2_UI_SPRITE.attr_lifesteal, shadow_damage: FX_SPRITE.shadowProjectile };
       let remaining = Object.keys(icons).length;
       Object.entries(icons).forEach(([key, path]) => loadArtSprite(path, (error, frame) => {
         if (this.detail !== card) return;
@@ -191,12 +297,13 @@ export class TraitPanel {
           if (view.isValid === false) continue;
           view.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (tag, key: string) => atlas!.spriteFrames[key] ? tag : '');
         }
+        if (remaining === 0) this.fitDetail(card, state);
       }));
     }
     const members = state.config.members.map(id => this.roster.find(unit => unit.id === id)).filter((unit): unit is UnitConfigData => !!unit);
     members.forEach((unit, index) => {
-      const x = shadow ? -152 + index % 5 * 76 : -129 + index % 4 * 86;
-      const y = (shadow ? -176 : formation ? -166 : -114) - Math.floor(index / (shadow ? 5 : 4)) * 52;
+      const x = -129 + index % 4 * 86;
+      const y = -114 - Math.floor(index / 4) * 52;
       const deployed = state.memberIds.includes(unit.id);
       const portrait = panel(card, `traitOwner_${unit.id}`, x, y, 44, 44,
         new Color(17, 28, 40), deployed ? COLORS[state.active?.tier ?? 'bronze'] : new Color(56, 65, 74), null);
@@ -204,6 +311,74 @@ export class TraitPanel {
       art(portrait, UNIT_PORTRAIT[artId] ?? UNIT_ART[artId] ?? UNIT_ART[unit.id], 0, 0, 40)
         .color = deployed ? Color.WHITE : new Color(165, 177, 188, 220);
     });
+    this.fitDetail(card, state);
+  }
+
+  private renderAstralDetail(state: TraitState): void {
+    const card = panel(this.parent, 'traitDetail', -184, 0, 462, 610, new Color(13, 20, 30, 252), COLORS[state.active?.tier ?? 'inactive'], null);
+    this.detail = card; card.setSiblingIndex(this.parent.children.length - 1);
+    card.on(Node.EventType.TOUCH_START, e => { e.propagationStopped = true; });
+    card.on(Node.EventType.TOUCH_END, e => { e.propagationStopped = true; });
+    badge(card, state, -190, 255, 56);
+    left(card, state.config.name, -148, 268, 24, 280).isBold = true;
+    left(card, `${state.count}名上场 · ${state.active ? '已激活' : '未激活'}`, -148, 236, 14, 280, COLORS[state.active?.tier ?? 'inactive']);
+    button(card, '×', 204, 276, 26, 26, () => this.hideDetail());
+    const intro = left(card, state.config.description, -210, 183, 15, 420);
+    intro.node.name = 'traitDescription'; intro.enableWrapText = true;
+    intro.lineHeight = 23; intro.overflow = Label.Overflow.RESIZE_HEIGHT;
+    state.config.breakpoints.forEach((tier, i) => {
+      const e = tier.astral!, reached = state.count >= tier.count;
+      const row = panel(card, 'astralBreakpoint', 0, 95 - i * 64, 426, e.meteor ? 112 : 54,
+        reached ? new Color(29, 36, 59) : new Color(15, 23, 34), state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, null);
+      left(row, `(${tier.count})`, -200, 0, 18, 40, reached ? COLORS[tier.tier] : MUTED).isBold = true;
+      const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;
+      const node = new Node('astralEffect'); row.addChild(node);
+      node.addComponent(UITransform).setAnchorPoint(0, .5); node.setPosition(-153, 0);
+      const text = node.addComponent(RichText); text.fontSize = 14; text.lineHeight = 22; text.maxWidth = 354; text.handleTouchEvent = false;
+      const cells = e.cellCount === 'all' ? '整个己方棋盘' : `${e.cellCount}个星穹格`;
+      text.string = `<color=${reached ? '#eae7d7' : '#8a99a4'}>${number(cells, '#c6acff')}<br/>${number(`+${e.power}%`, '#ff9740')}物理加成、${number(`+${e.power}%`, '#50b4ff')}法术加成、${number(`+${Math.round(e.maxHpBonus * 100)}%`, '#7bf59a')}最大生命${e.meteor ? `<br/>每${number(`${e.meteor.intervalSeconds}秒`, '#c6acff')}陨星轰击敌人最密集区域<br/>中心及周围${e.meteor.radius}格，每个敌人${number(`${e.meteor.damage}`, '#50b4ff')}魔法伤害` : ''}</color>`;
+    });
+    state.config.members.forEach((id, i) => {
+      const unit = this.roster.find(u => u.id === id); if (!unit) return;
+      const portrait = panel(card, `traitOwner_${id}`, -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52, 44, 44,
+        new Color(17, 28, 40), state.memberIds.includes(id) ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
+      art(portrait, UNIT_PORTRAIT[unit.artId ?? id] ?? UNIT_ART[unit.artId ?? id], 0, 0, 40);
+    });
+    this.fitDetail(card, state);
+  }
+
+  private renderMechanicalDetail(state: TraitState): void {
+    const card = panel(this.parent, 'traitDetail', -184, 0, 440, 610, new Color(13, 20, 30, 252), COLORS[state.active?.tier ?? 'inactive'], null);
+    this.detail = card; card.setSiblingIndex(this.parent.children.length - 1);
+    card.on(Node.EventType.TOUCH_START, e => { e.propagationStopped = true; });
+    card.on(Node.EventType.TOUCH_END, e => { e.propagationStopped = true; });
+    badge(card, state, -174, 255, 56);
+    left(card, state.config.name, -132, 268, 24, 260).isBold = true;
+    left(card, `${state.count}名上场 · ${state.active ? '已激活' : '未激活'}`, -132, 236, 14, 260, COLORS[state.active?.tier ?? 'inactive']);
+    button(card, '×', 193, 276, 26, 26, () => this.hideDetail());
+    const intro = left(card, state.config.description, -198, 182, 15, 396);
+    intro.node.name = 'traitDescription';
+    intro.enableWrapText = true; intro.overflow = Label.Overflow.CLAMP;
+    intro.node.getComponent(UITransform)!.setContentSize(396, 68);
+    state.config.breakpoints.forEach((tier, i) => {
+      const e = tier.mechanicalPioneer!, reached = state.count >= tier.count;
+      const row = panel(card, 'mechanicalBreakpoint', 0, 95 - i * 103, 400, 96,
+        reached ? new Color(29, 43, 52) : new Color(15, 23, 34), state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, null);
+      left(row, `(${tier.count})`, -188, 0, 18, 40, reached ? COLORS[tier.tier] : MUTED).isBold = true;
+      const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;
+      const percent = (n: number) => `${Number((n * 100).toFixed(2))}%`;
+      const node = new Node('mechanicalEffect'); row.addChild(node);
+      node.addComponent(UITransform).setAnchorPoint(0, .5); node.setPosition(-140, 0);
+      const text = node.addComponent(RichText); text.fontSize = 14; text.lineHeight = 22; text.maxWidth = 330; text.handleTouchEvent = false;
+      text.string = `<color=${reached ? '#eae7d7' : '#8a99a4'}>超频：${number(`+${percent(e.attackSpeedBonus)}`, '#f2d04b')}攻速，每秒回复${number(percent(e.regenPerSecond), '#7bf59a')}最大生命<br/>首次及结束后等待${number(`${e.cooldownSeconds}秒`, '#50dcff')}，持续${number(`${e.durationSeconds}秒`, '#b57fe6')}${e.lowHealthThreshold ? `<br/>每场首次低于${number(percent(e.lowHealthThreshold), '#ff9740')}生命，立即触发或刷新超频` : ''}</color>`;
+    });
+    const members = state.config.members.map(id => this.roster.find(u => u.id === id)).filter((u): u is UnitConfigData => !!u);
+    members.forEach((unit, i) => {
+      const portrait = panel(card, `traitOwner_${unit.id}`, -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52, 44, 44,
+        new Color(17, 28, 40), state.memberIds.includes(unit.id) ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
+      art(portrait, UNIT_PORTRAIT[unit.artId ?? unit.id] ?? UNIT_ART[unit.artId ?? unit.id], 0, 0, 40);
+    });
+    this.fitDetail(card, state);
   }
 
   private renderSunlightDetail(state: TraitState): void {
@@ -245,13 +420,15 @@ export class TraitPanel {
         if (view.isValid === false) continue;
         view.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (tag, key: string) => atlas.spriteFrames[key] ? tag : '');
       }
+      if (remaining === 0) this.fitDetail(card, state);
     }));
     state.config.members.forEach((id, i) => {
       const unit = this.roster.find(u => u.id === id); if (!unit) return;
       const deployed = state.memberIds.includes(id);
-      const portrait = panel(card, `traitOwner_${id}`, -168 + i % 5 * 84, -222 - Math.floor(i / 5) * 57, 46, 46,
+      const portrait = panel(card, `traitOwner_${id}`, -129 + i % 4 * 86, -222 - Math.floor(i / 4) * 52, 46, 46,
         new Color(17, 28, 40), deployed ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
       art(portrait, UNIT_PORTRAIT[id] ?? UNIT_ART[id], 0, 0, 42).color = deployed ? Color.WHITE : new Color(160, 160, 160);
     });
+    this.fitDetail(card, state);
   }
 }

@@ -16,8 +16,14 @@ try{
   const original=buildCalibrationCases(archivedInputs.units,archivedInputs.equipment.map(item=>item.id));
   assert.equal(original.length,971,'the published four-item experiment retains its original matrix');
   const counts=Object.fromEntries(['mirror','unit','star','single','combo','team'].map(k=>[k,cases.filter(c=>c.category===k).length]));
-  assert.equal(cases.length,1533);
-  assert.deepEqual(counts,{mirror:368,unit:240,star:48,single:480,combo:320,team:77});
+  // Current roster has no retired archetype IDs: no fabricated old team rows.
+  assert.equal(inputs.units.length,29);assert.equal(inputs.equipment.length,10);
+  assert.equal(cases.length,3016);
+  assert.deepEqual(counts,{mirror:667,unit:812,star:87,single:870,combo:580,team:0});
+  const archivedTeams=original.filter(c=>c.category==='team');assert.ok(archivedTeams.length>0,'historical team fixtures must remain present');
+  const authored=require('./fixtures/content-c001e20.json').configs,historicalCfg=new ConfigManager();historicalCfg.setUnits(authored.units);historicalCfg.setSkills(authored.skills);historicalCfg.setBattle(authored.battle);historicalCfg.setEquipment(authored.equipment);
+  for(const team of archivedTeams)for(let environment=0;environment<3;environment++)for(const flip of [false,true])for(const reverse of [false,true])assert.ok(placementsFor(historicalCfg,team,environment,flip,reverse).placements.length>=4);
+  const historicalTeam=archivedTeams[0],observed=sampleCase(historicalCfg,historicalTeam,prov,1,4);assert.equal(observed.actual,16);assert.deepEqual(observed.data,sampleCase(historicalCfg,historicalTeam,prov,1,4).data,'archived team composition runs real deterministic battles with authored compatible skills');
   for(const unit of inputs.units)for(const item of inputs.equipment)for(const star of [1,2,3]) {
    assert.ok(cases.some(c=>c.category==='single'&&c.b[0].unitId===unit.id&&c.b[0].star===star&&c.b[0].equipment[0]===item.id));
   }

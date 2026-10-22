@@ -91,7 +91,8 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   if (strong && (!Number.isSafeInteger(strong.startStage) || strong.startStage < 4
     || !Number.isSafeInteger(strong.everyStages) || strong.everyStages < 1
     || !Number.isFinite(strong.statGrowth) || strong.statGrowth < 0
-    || !config.monsters.some(m => m.id === strong.unitId && m.monsterTier === 'strong')))
+    || !Array.isArray(strong.unitIds) || !strong.unitIds.length || new Set(strong.unitIds).size !== strong.unitIds.length
+    || strong.unitIds.some(id => !config.monsters.some(m => m.id === id && m.monsterTier === 'strong'))))
     throw new Error('Invalid strong monster encounter configuration');
   const encounterRandom = new RunRandomContext(generation?.runSeed ?? 1);
   const decorate = (wave: WaveConfig): WaveConfig => {
@@ -101,7 +102,10 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     if (kind === 'specialShop') return { ...result, name: '特殊商店', enemies: [], budget: undefined };
     if (kind === 'monster' && wave.stage! > 1) {
       if (strong && wave.stage! >= strong.startStage && (wave.stage! - strong.startStage) % strong.everyStages === 0) {
-        return { ...result, name: '末影巨龙巢穴', budget: undefined, enemies: [{ unitId: strong.unitId,
+        const rng = encounterRandom.stream('encounter', wave.id, 4502);
+        const unitId = strong.unitIds[rng.int(0, strong.unitIds.length - 1)];
+        const monster = config.monsters.find(m => m.id === unitId)!;
+        return { ...result, name: `${monster.name}巢穴`, budget: undefined, enemies: [{ unitId,
           x: 3, y: 6, star: 1, statMultiplier: 1 + (wave.stage! - strong.startStage) * strong.statGrowth }] };
       }
       const rng = encounterRandom.stream('encounter', wave.id, 4501);

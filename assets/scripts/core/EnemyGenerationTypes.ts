@@ -76,12 +76,21 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
     if (!skill || typeof skill !== 'object' || Array.isArray(skill)) throw new Error('Invalid skill identity');
     return [id, Object.fromEntries(Object.entries(skill).filter(([key]) => key !== 'description' && key !== 'statRows'))];
   }));
-  const battle = value.battle as { traits?: Array<{ pendingMembers?: boolean; members?: unknown[]; selector?: unknown }> } | undefined;
+  const battle = value.battle as { traits?: Array<{ id?: string; pendingMembers?: boolean; members?: unknown[]; selector?: unknown;
+    breakpoints?: Array<{ sunlight?: { judgment?: Record<string, unknown> } }> }> } | undefined;
   // A reserved trait with no possible members cannot change a battle. Assigning any member
   // restores normal identity checking, including all configured combat values.
   const battleIdentity = battle && Array.isArray(battle.traits) ? { ...battle, traits: battle.traits.filter(trait =>
     !(trait.pendingMembers === true && trait.members?.length === 0 && !trait.selector))
-    .map(trait => Object.fromEntries(Object.entries(trait).filter(([key]) => key !== 'description'))) } : battle;
+    .map(trait => {
+      const identity = Object.fromEntries(Object.entries(trait).filter(([key]) => key !== 'description'));
+      // Judgment attribution and its displayed stars do not change damage, targets or RNG.
+      if (trait.id === 'sunlight' && trait.breakpoints) identity.breakpoints = trait.breakpoints.map(tier => !tier.sunlight?.judgment ? tier : {
+        ...tier, sunlight: { ...tier.sunlight, judgment: Object.fromEntries(Object.entries(tier.sunlight.judgment)
+          .filter(([key]) => key !== 'independentStatistics' && key !== 'statisticsStar')) },
+      });
+      return identity;
+    }) } : battle;
   return stableEnemyJson({ ...value, ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
     ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
 }

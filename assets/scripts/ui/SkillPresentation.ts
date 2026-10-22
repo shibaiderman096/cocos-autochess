@@ -1,4 +1,4 @@
-import { ConfigManager, hybridSpellDamage, configuredSkillDamage, channelHealAmount, configuredShieldAmount, UnitConfigData, SkillConfigData } from '../core/ConfigManager';
+import { ConfigManager, hybridSpellDamage, configuredSkillDamage, channelHealAmount, configuredShieldAmount, hydraulicBulwarkValues, UnitConfigData, SkillConfigData } from '../core/ConfigManager';
 
 export interface SkillStatRow {
   label: string;
@@ -67,12 +67,36 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       case 'void':
         add('跃迁次数', (_u, i) => number(shadow.counts[i]), 'neutral'); hit('每次跃迁伤害'); hit('虚痕爆炸伤害', shadow.markDamage); break;
     }
+  } else if (skill.effect === 'hydraulicBulwark') {
+    add('双抗提升', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).resistanceBonus), 'physical');
+    add('结束治疗', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).healAmount), 'healing');
+    add('持续时间', () => `${number(skill.hydraulicBulwark!.durationSeconds)}秒`, 'neutral');
   } else if (skill.effect === 'susanoo') {
     add('持续时间', (u, i) => `${number(skill.formDurations![i] * (1 + (u.physicalPower ?? 0) / 100))}秒`, 'neutral');
     add('伤害减免', (_u, i) => `${number(skill.formReductions![i] * 100)}%`, 'shield');
     add('额外伤害', (u, i) => String(Math.round(skill.formBonusDamage![i] * (1 + (u.physicalPower ?? 0) / 100) * (1 + (u.damageAmp ?? 0)))), 'physical');
   } else if (skill.effect === 'selfShield') {
     add('护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1)), 'shield');
+  } else if (skill.effect === 'atlasMissiles') {
+    add('导弹伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('目标数量',(_u,i)=>String(skill.atlasMissiles!.targetCounts[i]),'neutral');
+    add('每次蓝条降低',()=>String(skill.atlasMissiles!.manaReductionPerCast),'neutral');
+    add('最多降低',()=>String(skill.atlasMissiles!.maxManaReduction),'neutral');
+  } else if (skill.effect === 'stellarBulwark') {
+    add('护盾',(u,i)=>String(configuredShieldAmount(u,skill,i+1)),'shield');
+    add('护盾持续',()=>`${number(skill.stellarBulwark!.shieldSeconds)}秒`,'neutral');
+    add('冲刺距离',()=>`${skill.stellarBulwark!.distance}格`,'neutral');
+    add('击飞时间',()=>`${number(skill.stellarBulwark!.knockupSeconds)}秒`,'neutral');
+  } else if (skill.effect === 'furnaceDash') {
+    add('目标伤害', (u,i) => String(Math.round(skill.starDamage![i] * power(u) * (1+(u.damageAmp??0)))), 'magic');
+    add('沿途伤害', (u,i) => String(Math.round(skill.furnaceDash!.trailDamage[i] * power(u) * (1+(u.damageAmp??0)))), 'magic');
+    add('击飞时间', () => `${number(skill.furnaceDash!.knockupSeconds)}秒`, 'neutral');
+  } else if (skill.effect === 'strikeHealOnKill') {
+    add('伤害', (u, i) => String(Math.round(configuredSkillDamage(skill, i + 1) * power(u) * (1 + (u.damageAmp ?? 0)))), 'physical');
+    add('击杀治疗', (u, i) => String(Math.round(skill.healAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
+  } else if (skill.effect === 'lowestHealthHeal') {
+    add('单目标治疗', (u, i) => String(Math.round(skill.healAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
+    add('治疗目标', (_u, i) => String(skill.healTargetCounts![i]), 'neutral');
   } else if (skill.effect === 'healAlly') {
     add('治疗', (u, i) => String(Math.round(skill.healAmounts![i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
   } else if (skill.effect === 'healChannel') {
@@ -80,18 +104,24 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     add('生命比例', (_u, i) => `${number(skill.heal!.maxHpFractions[i] * 100)}%`, 'healing');
     if (skill.heal!.bonusAmounts) add('额外治疗', (u, i) => number(skill.heal!.bonusAmounts![i] * (1 + (u.spellPower ?? 0) / 100)), 'healing');
   } else {
-    add(skill.effect === 'splitPhysical' ? '平摊总伤害' : skill.effect === 'teleportEmpower' ? '强化普攻' : '伤害', (u, i, scale) => {
+    add(skill.effect === 'spiderLeap' ? '基础伤害' : skill.effect === 'splitPhysical' ? '平摊总伤害' : skill.effect === 'teleportEmpower' ? '强化普攻' : '伤害', (u, i, scale) => {
       if (skill.effect === 'hybridSpell') return String(Math.round(hybridSpellDamage(u, skill, i + 1) * (1 + (u.damageAmp ?? 0))));
       const raw = configuredSkillDamage(skill, i + 1, scale);
       return String(Math.round(raw * power(u) * (1 + (u.damageAmp ?? 0))));
     }, skill.dmgType);
   }
+  if (skill.effect === 'starLeap') add('位移距离',()=>`${skill.starLeap!.distance}格`,'neutral');
   if (skill.hybrid) {
     add('基础物理伤害', (_u, i) => number(skill.hybrid!.physicalDamage[i]), 'physical');
     add('基础魔法伤害', (_u, i) => number(skill.hybrid!.magicDamage[i]), 'magic');
   }
   if (skill.attackSpeedBonuses && !shadow) add('攻击速度', (_u, i) => `+${number(skill.attackSpeedBonuses![i] * 100)}%`, 'speed');
   if (skill.stunSeconds) add('眩晕时间', (_u, i) => `${number(skill.stunSeconds![i])}秒`, 'neutral');
+  if (skill.effect === 'railShot') add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+  if (skill.effect === 'spiderLeap') {
+    add('已损失生命伤害', (_u, i) => `${number(skill.spiderLeap!.missingHealthFractions[i] * 100)}%`, 'physical');
+    add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+  }
   if (skill.guard) {
     add('伤害减免', (_u, i) => `${number(skill.guard!.reductions[i] * 100)}%`, 'shield');
     add('减免持续', (_u, i) => `${number(skill.guard!.durations[i])}秒`, 'neutral');
@@ -99,14 +129,14 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   if (skill.burn) {
     add('每秒生命伤害', u => {
       const bonus = skill.burn!.dmgType === 'magic' ? u.spellPower ?? 0 : skill.burn!.dmgType === 'physical' ? u.physicalPower ?? 0 : 0;
-      return `${number(skill.burn!.maxHpFraction * 100 * (1 + bonus / 100) * (1 + (u.damageAmp ?? 0)))}%`;
+      return `${number(skill.burn!.maxHpFraction * 100 * (skill.burn!.untilBattleEnd ? 1 : (1 + bonus / 100) * (1 + (u.damageAmp ?? 0))))}%`;
     }, skill.burn.dmgType);
-    add('持续时间', () => `${number(skill.burn!.durationSeconds)}秒`, 'neutral');
+    if (!skill.burn.untilBattleEnd) add('持续时间', () => `${number(skill.burn!.durationSeconds)}秒`, 'neutral');
   }
   if (!rich) return rows;
   const values = skillCurrentValues(skill, rows, star);
   return rows.map((row, i) => ({ ...row,
-    currentRich: skill.statRows?.[i] ? formatSkillTokens(skill.statRows[i].value, values, true, 1) : undefined }));
+    currentRich: skill.statRows?.[i] ? formatSkillTokens(skill.statRows[i].value, values, true, 1, skill.effect === 'hydraulicBulwark' ? 'physical' : 'magic') : undefined }));
 }
 
 export function skillParagraphs(text: string): string {
@@ -147,20 +177,26 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
       allyShield: current('友军护盾'), heal: current('治疗'), final: current('最后一击伤害') || current('第三箭伤害'), pierce: current('贯穿伤害'), total: current('三段总伤害'),
       maximumShield: current('最高护盾'), burst: current('爆炸伤害'), minimumDamage: current('最低贯穿伤害'),
       trueDamage: current('真实伤害'), count: current('审判目标') || current('连击次数') || current('跃迁次数'),
+      recastLoss: skill.sunlight.kind === 'transit' ? number(skill.sunlight.recastDamageLoss * 100) : 0,
+      recastCap: skill.sunlight.kind === 'transit' ? number(skill.sunlight.recastDamageLossCap * 100) : 0,
       aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0, stun: skill.stunSeconds?.[star - 1] ?? 0 };
   }
   return {
-    dmg: kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', shield: current('护盾') || current('自身护盾'), heal: current('每次治疗') || current('治疗'),
+    dmg: kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', trail:current('沿途伤害'), knockup:skill.stellarBulwark?.knockupSeconds??skill.furnaceDash?.knockupSeconds??0, shield: current('护盾') || current('自身护盾'), heal: current('单目标治疗') || current('击杀治疗') || current('结束治疗') || current('每次治疗') || current('治疗'),
+    chargeDistance:skill.stellarBulwark?.distance??0,shieldDuration:skill.stellarBulwark?.shieldSeconds??0,leapDistance:skill.starLeap?.distance??0,
     resists: current('双抗提升'), secondary: current('后续目标伤害'), allyShield: current('友军护盾'),
     total: current('三段总伤害'), refund: current('法力回复'), maximum: current('最高伤害') || current('处决伤害'),
     burst: current('爆炸伤害'), repeat: current('重复命中伤害'), collapse: current('坍缩伤害'), mark: current('虚痕爆炸伤害'),
-    count: current('黑星数量') || current('跃迁次数'),
+    count: current('目标数量') || current('治疗目标') || current('黑星数量') || current('跃迁次数'),
+    manaReduction: current('每次蓝条降低'), manaCap:current('最多降低'),
     slow: skill.shadow?.kind === 'domain' ? skill.shadow.slowAmounts[star - 1] : 0,
     fear: skill.shadow?.kind === 'lanterns' ? skill.shadow.fearSeconds[star - 1] : 0,
     basePhysical: current('基础物理伤害'), baseMagic: current('基础魔法伤害'),
     burn: current('每秒生命伤害'), aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0,
     stun: skill.stunSeconds?.[star - 1] ?? 0,
     formDuration: current('持续时间').replace(/秒$/, ''),
+    castDuration: skill.castSeconds ?? 0,
+    missingHealth: current('已损失生命伤害'),
     formReduction: current('伤害减免'), formBonus: current('额外伤害'),
     guardDuration: skill.guard?.durations[star - 1] ?? 0,
     guardReduction: current('伤害减免'),
@@ -168,14 +204,14 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
   };
 }
 
-function formatSkillTokens(template: string, values: Record<string, string | number>, rich: boolean, iconOffset = 5): string {
+function formatSkillTokens(template: string, values: Record<string, string | number>, rich: boolean, iconOffset = 5, healingScaling: 'physical' | 'magic' = 'magic'): string {
     return template.replace(/\{(物理|魔法|真实|治疗|攻速|控制)(\+{0,2}):([A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?%?)\}/g,
       (_match, type: string, plus: string, key: string) => {
         const raw = values[key] ?? key;
         const value = type === '攻速' && typeof raw === 'number' ? `${number(raw * 100)}%` : String(raw);
         if (!rich) return value;
         const icons = plus.length === 2 ? ['attr_phys_bonus', 'attr_spell_bonus']
-          : plus ? [type === '物理' ? 'attr_phys_bonus' : 'attr_spell_bonus'] : [];
+          : plus ? [type === '物理' || (type === '治疗' && healingScaling === 'physical') ? 'attr_phys_bonus' : 'attr_spell_bonus'] : [];
         return `<color=${TOKEN_COLORS[type]}>${value}</color>`
           + (icons.length ? `（${icons.map(icon => `<img src='${icon}' width=16 height=16 align=center offset=${iconOffset} />`).join('')}）` : '');
       });
@@ -186,5 +222,5 @@ export function buildSkillDescription(configs: ConfigManager, unit: UnitConfigDa
   if (!unit.skillId) return unit.description ?? '无主动技能';
   const skill = configs.getSkill(unit.skillId);
   const rows = buildSkillStatRows(configs, unit, star, skillScale);
-  return formatSkillTokens(skill.description ?? '', skillCurrentValues(skill, rows, star), rich);
+  return formatSkillTokens(skill.description ?? '', skillCurrentValues(skill, rows, star), rich, 5, skill.effect === 'hydraulicBulwark' ? 'physical' : 'magic');
 }

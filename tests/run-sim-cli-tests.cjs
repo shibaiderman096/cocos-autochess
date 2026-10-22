@@ -47,7 +47,7 @@ try {
     const a=path.join(output,'budget-a.json'),b=path.join(output,'budget-b.json');
     for(const file of [a,b])assert.equal(run(['--enemy-mode','budget-v1','--seed','12345','--stages','3','--json',file]).status,0);
     assert.equal(hash(a),hash(b));const report=JSON.parse(fs.readFileSync(a,'utf8'));assert.equal(report.enemyGenerationMode,'budget-v1');
-    const monster=report.waves.find(w=>w.stage===2);assert.equal(monster.encounterKind,'monster');assert.equal(monster.enemyBudget,null);
+    const monster=report.waves.find(w=>w.stage===2&&w.encounterKind==='monster');assert.ok(monster);assert.equal(monster.encounterKind,'monster');assert.equal(monster.enemyBudget,null);
     const wave=report.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.equal(wave.actualBudget,wave.enemyBudget.actualBudget);assert.equal(wave.budgetWaveIndex,wave.waveId-3);assert.equal(wave.enemyGenerationMode,'budget-v1');
     assert.equal(run(['--enemy-mode','unknown']).status,1);
     const p=spawnSync(process.execPath,['--require','tsx/cjs','tools/run-sim.ts','--max-waves','1','--json',a],{cwd:root,encoding:'utf8',timeout:30000});
@@ -68,8 +68,9 @@ try {
     assert.equal(hash(files[0]),hash(files[1]));const report=JSON.parse(fs.readFileSync(files[0],'utf8'));
     assert.equal(report.enemyEquipmentVersion,'equipment-policy-v1');assert.equal(report.stageRewardVersion,'stage-encounters-v1');
     assert.equal(report.waves.filter(w=>w.unitDrop).length,5);
-    assert.equal(report.waves.filter(w=>w.stageReward?.kind==='specialShop').length,1);
-    assert.ok(report.waves.every(w=>!w.actions.some(a=>a.action.type==='stageChoice'&&a.action.choice==='claim')),'early monster drops need no claim action');
+    assert.deepEqual(report.waves.filter(w=>w.stageReward?.kind==='specialShop').map(w=>w.stage),[2,3],'seeded early layout has one shop in each stage 2 and 3');
+    assert.equal(report.waves.filter(w=>w.encounterKind==='monster').length,5);
+    for(const wave of report.waves.filter(w=>w.encounterKind==='monster')){const claims=wave.actions.filter(a=>a.action.type==='stageChoice'&&a.action.choice==='claim');assert.equal(claims.length,1,'each monster chest must be claimed exactly once through the public action');assert.equal(claims[0].result.ok,true);}
     assert.ok(report.waves.every(w=>!w.rewardChoice),'legacy equipment drops are replaced by Boss choice from stage4');
     const none=path.join(output,'none.json');assert.equal(run(['--enemy-mode','budget-v1','--equipment-policy','none','--stages','3','--json',none]).status,0);
     assert.equal(JSON.parse(fs.readFileSync(none,'utf8')).equipmentRewardVersion,'none');

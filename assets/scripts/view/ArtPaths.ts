@@ -8,6 +8,15 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  milu: 'art/units/astral/milu/spriteFrame',
+  star_armor_guard: 'art/units/astral/star_armor_guard/spriteFrame',
+  turbo_fist_tiger: 'art/units/mechanical/turbo_fist_tiger/spriteFrame',
+  arc_repairer: 'art/units/mechanical/arc_repairer/spriteFrame',
+  rail_hunter_07: 'art/units/mechanical/rail_hunter_07/spriteFrame',
+  ripsaw_spider: 'art/units/mechanical/ripsaw_spider/spriteFrame',
+  furnace_executioner: 'art/units/mechanical/furnace_executioner/spriteFrame',
+  atlas: 'art/units/mechanical/atlas/spriteFrame',
+  bao_zero: 'art/units/mechanical/bao_zero/spriteFrame',
   helion: 'art/units/sunlight/helion/spriteFrame',
   saiph: 'art/units/sunlight/saiph/spriteFrame',
   bronda: 'art/units/sunlight/bronda/spriteFrame',
@@ -28,14 +37,13 @@ export const UNIT_ART: Record<string, string> = {
   nether_lantern_witch: 'art/units/shadow/nether_lantern_witch/spriteFrame',
   blackstar_warlock: 'art/units/shadow/blackstar_warlock/spriteFrame',
   voidscar_reaver: 'art/units/shadow/voidscar_reaver/spriteFrame',
-  red_guard: 'art/units/warrior_enemy/spriteFrame',
-  red_archer: 'art/units/archer_enemy/spriteFrame',
-  red_mage: 'art/units/mage_enemy/spriteFrame',
-  ender_dragon: 'art/units/monsters/ender_dragon/spriteFrame',
-  zombie: 'art/units/monsters/zombie/spriteFrame',
-  skeleton_archer: 'art/units/monsters/skeleton_archer/spriteFrame',
-  silverfish: 'art/units/monsters/silverfish/spriteFrame',
-  red_eye_spider: 'art/units/monsters/red_eye_spider/spriteFrame',
+  ...Object.fromEntries([
+    'undead_swordsman', 'undead_archer', 'undead_mage', 'undead_knight', 'undead_reaper', 'undead_bone_dragon',
+    'forest_slime', 'forest_mushroom', 'forest_boar', 'forest_treant', 'forest_stag', 'forest_ancient',
+    'lava_slime', 'lava_wolf', 'lava_golem', 'lava_giant', 'lava_behemoth', 'lava_titan',
+    'ice_slime', 'ice_wolf', 'ice_golem', 'ice_axe_giant', 'ice_king', 'ice_dragon',
+    'shadow_wisp', 'shadow_wolf', 'shadow_reaper', 'shadow_void_beast', 'shadow_eye', 'shadow_dragon',
+  ].map(id => [id, `art/units/monsters/${id}/spriteFrame`])),
 };
 
 export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
@@ -46,6 +54,13 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
+  milu:'795,170,360,360',
+  star_armor_guard:'470,160,340,340',
+  turbo_fist_tiger:'570,390,400,400', arc_repairer:'380,90,400,400', rail_hunter_07:'300,25,400,400',
+  ripsaw_spider:'400,500,400,400',
+  furnace_executioner:'410,30,400,400',
+  atlas:'300,440,450,450',
+  bao_zero:'360,220,400,400',
   helion:'290,100,400,400', saiph:'270,210,360,360', bronda:'290,260,360,360', kaeru:'480,140,360,360', leon:'280,100,400,400',
   phinia:'450,70,340,340', aurelia:'260,140,360,360', celine:'350,140,360,360', oris:'360,170,360,360', seraphiel:'340,180,360,360',
   abyss_iron_guard: '360,40,400,400', blackfeather_hunter: '450,160,350,350',
@@ -65,9 +80,18 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  stellarBarrier: 'art/fx/stellar_barrier/spriteFrame',
+  stellarRush: 'art/fx/stellar_rush/spriteFrame',
+  miluStarTrail: 'art/fx/milu_star_trail/spriteFrame',
+  miluStarImpact: 'art/fx/milu_star_impact/spriteFrame',
+  astralTile: 'art/fx/astral_tile/spriteFrame',
+  astralRing: 'art/fx/astral_ring/spriteFrame',
+  astralMeteor: 'art/fx/astral_meteor/spriteFrame',
+  astralImpact: 'art/fx/astral_impact/spriteFrame',
+  mechanicalSkills: 'art/fx/mechanical_skills/spriteFrame',
   sunlightBarrier: 'art/fx/sunlight_barrier/spriteFrame',
   sunlightArrow: 'art/fx/sunlight_arrow/spriteFrame',
-  sunlightSlash: 'art/fx/sunlight_slash/spriteFrame',
+  sunlightSlash: 'art/ui_m2/sunlight_slash/spriteFrame',
   sunlightSigil: 'art/fx/sunlight_sigil/spriteFrame',
   sunlightJudgment: 'art/fx/sunlight_judgment/spriteFrame',
   sunlightField: 'art/fx/sunlight_field/spriteFrame',
@@ -78,7 +102,7 @@ export const FX_SPRITE = {
   shadowProjectile: 'art/fx/shadow_projectile/spriteFrame',
   shadowBoardFog: 'art/fx/shadow_board_fog/spriteFrame',
   shadowCorruption: 'art/fx/shadow_corruption/spriteFrame',
-  dragonBreath: 'art/fx/dragon_breath/spriteFrame',
+  monsterBlast: 'art/fx/monster_blast/spriteFrame',
   arrow:    'art/fx/fx_arrow/spriteFrame',
   fireball: 'art/fx/fx_fireball/spriteFrame',
   hit:      'art/fx/fx_hit/spriteFrame',
@@ -92,13 +116,9 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
   return `${cfgId}_${suffix}`;
 }
 
-/** Full-color, text-free objects placed directly on the board. */
-export const BOARD_ENCOUNTER_SPRITE = {
-  shop: 'art/ui/board_shop/spriteFrame',
-  chest: 'art/ui/board_boss_chest/spriteFrame',
-} as const;
-
 /** Current M2 interface textures. */
+export const SKY_BACKGROUND_SPRITE = { loop: 'art/arena/sky_islands_30/spriteFrame' };
+
 export const M2_UI_SPRITE = {
   attr_phys_atk: 'art/ui_m2/attr_phys_atk/spriteFrame',
   attr_armor: 'art/ui_m2/attr_armor/spriteFrame',
@@ -111,8 +131,7 @@ export const M2_UI_SPRITE = {
   attr_lifesteal: 'art/ui_m2/attr_lifesteal/spriteFrame',
   attr_dmg_amp: 'art/ui_m2/attr_dmg_amp/spriteFrame',
   attr_dmg_reduce: 'art/ui_m2/attr_dmg_reduce/spriteFrame',
-  arena_board: 'art/arena/floating_board/spriteFrame',
-  arena_sky: 'art/arena/sky_background/spriteFrame',
+  arena_sky: 'art/arena/sky_islands_30_poster/spriteFrame',
   panel_ink: 'art/ui_m2/panel_ink/spriteFrame',
   panel_side: 'art/ui_m2/panel_side/spriteFrame',
   panel_dock: 'art/ui_m2/panel_dock/spriteFrame',

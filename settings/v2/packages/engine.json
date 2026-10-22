@@ -24,7 +24,7 @@
             "_value": false
           },
           "3d": {
-            "_value": false
+            "_value": true
           },
           "meshopt": {
             "_value": false
@@ -190,8 +190,13 @@
             "_value": false
           }
         },
+        "flags": {
+          "LOAD_BULLET_MANUALLY": false,
+          "LOAD_SPINE_MANUALLY": false
+        },
         "includeModules": [
           "2d",
+          "3d",
           "affine-transform",
           "animation",
           "audio",
@@ -217,10 +222,13 @@
         "noDeprecatedFeatures": {
           "value": false,
           "version": ""
-        },
-        "flags": {}
+        }
       }
     },
-    "globalConfigKey": "defaultConfig"
+    "globalConfigKey": "defaultConfig",
+    "graphics": {
+      "pipeline": "custom-pipeline",
+      "custom-pipeline-post-process": false
+    }
   }
 }

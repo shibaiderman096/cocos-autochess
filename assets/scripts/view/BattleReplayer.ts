@@ -8,6 +8,9 @@ import { FX_SPRITE, UNIT_ART } from './ArtPaths';
 import { ShadowSkillVfx } from './ShadowSkillVfx';
 import { SunlightVfx } from './SunlightVfx';
 import { SunlightSpriteVfx } from './SunlightSpriteVfx';
+import { MechanicalVfx } from './MechanicalVfx';
+import { AstralVfx } from './AstralVfx';
+import { AstralUnitVfx } from './AstralUnitVfx';
 
 const { ccclass } = _decorator;
 interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: number }
@@ -30,9 +33,17 @@ export class BattleReplayer extends Component {
   private shadowSkillVfx: ShadowSkillVfx | null = null;
   private sunlightVfx: SunlightVfx | null = null;
   private sunlightSprites: SunlightSpriteVfx | null = null;
+  private mechanicalSprites: MechanicalVfx | null = null;
+  private astralVfx: AstralVfx | null = null;
+  private astralUnitVfx: AstralUnitVfx | null = null;
+  private stellarKnockups = new Map<number, {tick:number;duration:number}>();
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
+    this.astralUnitVfx?.destroy();this.astralUnitVfx=null;
+    this.clearStellar();
+    this.astralVfx?.clear(); this.astralVfx = null;
     this.clearShadowFog();
+    this.mechanicalSprites?.destroy(); this.mechanicalSprites = null;
     this.shadowSkillVfx?.destroy(); this.shadowSkillVfx = null;
     this.sunlightVfx?.destroy(); this.sunlightVfx = null;
     this.sunlightSprites?.destroy(); this.sunlightSprites = null;
@@ -45,7 +56,15 @@ export class BattleReplayer extends Component {
     this.moves.clear(); this.renderTick = sim.tick;
   }
 
-  setFxRoot(root: Node): void { this.fxRoot = root; }
+  setFxRoot(root: Node): void {
+    this.fxRoot = root;
+    if(this.sim?.units.some(u=>u.cfg.skillId==='stellar_bulwark'||u.cfg.skillId==='milu_star_leap'))
+      this.astralUnitVfx=new AstralUnitVfx(root,this.cellSize,this.tickMs,
+        (x,y)=>this.boardView.cellToWorld(x,y),id=>this.unitViews.get(id)?.node,
+        id=>this.sim.units.find(u=>u.id===id)?.cfg.skillId);
+    if (this.sim?.astralFields?.some(field => field.effect.meteor))
+      this.astralVfx = new AstralVfx(root, this.boardView, this.tickMs);
+  }
 
   consumeEvents() {
     if (!this.sim) return;
@@ -57,7 +76,15 @@ export class BattleReplayer extends Component {
   }
 
   private play(e: BattleEvent) {
+    this.astralUnitVfx?.play(e);
+    this.mechanicalArt()?.play(e);
     switch (e.t) {
+      case 'astral_meteor':
+        if (this.fxRoot?.isValid && this.boardView) {
+          this.astralVfx ??= new AstralVfx(this.fxRoot, this.boardView, this.tickMs);
+          this.astralVfx.play(e);
+        }
+        break;
       case 'sun_pulse':
         if (this.fxRoot?.isValid && this.boardView) {
           this.sunlightVfx ??= new SunlightVfx(this.fxRoot, this.cellSize, this.tickMs,
@@ -86,6 +113,10 @@ export class BattleReplayer extends Component {
           this.shadowVfx()?.teleport(e.id, path, this.boardView.cellToWorld(e.from.x,e.from.y), this.boardView.cellToWorld(e.to.x,e.to.y), e.tick);
         if (path?.includes('/units/sunlight/') && this.boardView)
           this.sunlightArt()?.teleport(this.boardView.cellToWorld(e.from.x,e.from.y),this.boardView.cellToWorld(e.to.x,e.to.y),e.tick);
+        break;
+      }
+      case 'dash': {
+        if (this.boardView) this.moves.set(e.id,{from:this.boardView.cellToWorld(e.from.x,e.from.y),to:this.boardView.cellToWorld(e.to.x,e.to.y),startTick:e.tick,durationTicks:e.durationTicks});
         break;
       }
       case 'attack': {
@@ -164,6 +195,22 @@ export class BattleReplayer extends Component {
         if (tv) tv.playHit();
         break;
       }
+      case 'trait_mana': {
+        const uv = this.unitViews.get(e.id);
+        if (uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}法力`, new Color(80, 180, 255), uv.node.position.clone(), this.fxRoot);
+        break;
+      }
+      case 'mechanical_overclock': {
+        const uv = this.unitViews.get(e.id);
+        if (uv && this.fxRoot) FloatTextPool.get().show(e.emergency ? '应急超频' : '超频', new Color(80, 220, 255), uv.node.position.clone(), this.fxRoot);
+        break;
+      }
+      case 'swiftmartialist_stack': {
+        const uv = this.unitViews.get(e.id);
+        const bonus = Number((e.attackSpeedBonus * 100).toFixed(2));
+        if (uv && this.fxRoot) FloatTextPool.get().show(`${e.stacks}/${e.maxStacks}层 +${bonus}%攻速`, new Color(242, 208, 75), uv.node.position.clone(), this.fxRoot);
+        break;
+      }
       case 'heal': {
         const uv = this.unitViews.get(e.id);
         if (uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}`, new Color(89, 203, 176), uv.node.position.clone(), this.fxRoot);
@@ -190,7 +237,9 @@ export class BattleReplayer extends Component {
       }
       case 'knockup': {
         const uv = this.unitViews.get(e.id);
-        uv?.playKnockup(e.duration);
+        if(this.sim.units.find(u=>u.id===e.source)?.cfg.skillId==='stellar_bulwark')
+          this.stellarKnockups.set(e.id,{tick:e.tick,duration:e.duration*1000/this.tickMs});
+        else uv?.playKnockup(e.duration);
         if (uv && this.fxRoot) FloatTextPool.get().show('击飞', new Color(240, 210, 135), uv.node.position.clone(), this.fxRoot);
         break;
       }
@@ -201,13 +250,14 @@ export class BattleReplayer extends Component {
       }
       case 'skill_impact': {
         const target = this.unitViews.get(e.target);
-        if (e.skillId === 'dragon_breath' && target) {
+        if (e.skillId === 'monster_blast' && target) {
           const pos = target.node.position.clone();
-          this.playSpriteFx(FX_SPRITE.dragonBreath, pos, pos, 3.2, 3.2);
+          this.playSpriteFx(FX_SPRITE.monsterBlast, pos, pos, 3.2, 3.2);
         }
         break;
       }
       case 'death': {
+        this.stellarKnockups.delete(e.id);
         this.moves.delete(e.id);
         this.shadowSkillVfx?.cancel(e.id);
         this.sunlightSprites?.cancel(e.id);
@@ -215,7 +265,7 @@ export class BattleReplayer extends Component {
         if (uv) uv.playDeath();
         break;
       }
-      case 'end': this.clearShadowFog(); this.shadowSkillVfx?.clear(); this.sunlightVfx?.clear(); this.sunlightSprites?.clear(); break;
+      case 'end': this.clearStellar(); this.astralVfx?.clear(); this.boardView?.stopAstralAnimation?.(); this.clearShadowFog(); this.shadowSkillVfx?.clear(); this.sunlightVfx?.clear(); this.sunlightSprites?.clear(); break;
     }
   }
 
@@ -244,8 +294,13 @@ export class BattleReplayer extends Component {
         }
         uv.node.setPosition(target);
         uv.sync(u.snapshot(this.sim.tick), this.cellSize);
+        const airborne=this.stellarKnockups.get(u.id);
+        const progress=airborne?(this.renderTick-airborne.tick)/airborne.duration:1;
+        if(progress>=1)this.stellarKnockups.delete(u.id);
+        uv.animateStellar?.(!this.sim.finished&&!!u.stellarShield?.remaining,progress<1?progress:null,this.renderTick,this.tickMs);
         uv.animateShadowCorruption?.(this.renderTick,this.tickMs,this.cellSize);
         uv.animateSunlight?.(this.renderTick,this.tickMs,this.cellSize);
+        this.mechanicalSprites?.syncUnit(u.id,this.renderTick);
         const domain = uv.node.getChildByName('shadowDomain');
         if (domain?.active) {
           const breath = 1 + Math.sin(this.renderTick*this.tickMs/280)*.025;
@@ -257,6 +312,28 @@ export class BattleReplayer extends Component {
     this.shadowSkillVfx?.update(this.renderTick);
     this.sunlightVfx?.update(this.renderTick);
     this.sunlightSprites?.update(this.renderTick);
+    this.mechanicalSprites?.update(this.renderTick);
+    this.boardView.animateAstralFields?.(this.renderTick, this.tickMs);
+    this.astralVfx?.update(this.renderTick, this.sim);
+    this.astralUnitVfx?.update(this.renderTick);
+  }
+
+  private clearStellar(): void {
+    this.stellarKnockups.clear();
+    for(const view of this.unitViews.values())view.animateStellar?.(false,null,0,this.tickMs);
+  }
+
+  private mechanicalArt(): MechanicalVfx | null {
+    if(!this.fxRoot?.isValid||!this.boardView)return null;
+    if(!this.mechanicalSprites&&!this.sim.units.some(u=>UNIT_ART[u.cfg.artId??u.cfg.id]?.includes('/units/mechanical/')))return null;
+    this.mechanicalSprites ??= new MechanicalVfx(this.fxRoot,this.cellSize,this.tickMs,
+      (x,y)=>this.boardView.cellToWorld(x,y),id=>this.unitViews.get(id)?.node,id=>{
+        const u=this.sim.units.find(unit=>unit.id===id);
+        return u?{alive:u.alive&&u.hp>0,skillId:u.cfg.skillId,wall:u.hydraulicRooted,airborne:!!u.spiderLeap,
+          dashing:!!u.furnaceDash,charging:u.pendingCast?.skillId,overclockUntil:u.overclockUntilTick,
+          burning:u.burns.some(b=>b.untilBattleEnd&&b.skillId==='sky_annihilation')}:undefined;
+      });
+    return this.mechanicalSprites;
   }
 
   private sunlightArt(): SunlightSpriteVfx | null {
@@ -291,7 +368,7 @@ export class BattleReplayer extends Component {
     this.shadowFog = null;
   }
 
-  onDestroy(): void { this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; }
+  onDestroy(): void { this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
 
   private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
     if (!this.fxRoot?.isValid) return;

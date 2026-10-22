@@ -25,4 +25,4 @@ for(const unit of cfg.allUnits())for(const star of [1,2,3]){
 assert.equal(unitRoleLabel('caster','physical'),'物理术士');assert.equal(unitRoleLabel('tank','magic'),'魔法坦克');
 assert.equal(skillParagraphs('第一段。第二段。\n第三段。'),'第一段。\n\n第二段。\n\n第三段。');
 assert.ok(skillBodyHeight('长'.repeat(100))>skillBodyHeight('短说明'));
-console.log('PASS skill presentation: 20 units x 3 stars, descriptions, tables, current bonuses, base columns and shield scaling');
+console.log(`PASS skill presentation: ${cfg.allUnits().length} units x 3 stars, descriptions, tables, current bonuses, base columns and shield scaling`);

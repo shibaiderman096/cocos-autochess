@@ -51,7 +51,9 @@ export class StageRewardPanel {
       : pending.kind === 'unitBundle' ? `总价值 ${pending.value} 金币 · 按一星购买价计算` : '四件随机普通装备，选择一件放入背包';
     label(body, subtitle, 0, 193, 17, MUTED, 800);
     if (pending.kind === 'bossChoice') {
-      const options = [{ name: '棋子补给', text: `随机棋子，总价值 ${pending.value} 金币`, icon: UNIT_ART.warrior, choice: 'units' as const },
+      const supplyUnit=this.cfg.allUnits().find(unit=>unit.cost===1)??this.cfg.allUnits()[0];
+      const supplyIcon=UNIT_ART[supplyUnit?.artId??supplyUnit?.id]??ENCOUNTER_ART.monster;
+      const options = [{ name: '棋子补给', text: `随机棋子，总价值 ${pending.value} 金币`, icon: supplyIcon, choice: 'units' as const },
         { name: '装备宝匣', text: '普通装备随机四选一', icon: this.cfg.allEquipment()[0]?.icon ?? ENCOUNTER_ART.boss, choice: 'equipment' as const }];
       options.forEach((option, i) => {
         const card = panel(body, 'bossChoice', (i - .5) * 410, -45, 370, 330);

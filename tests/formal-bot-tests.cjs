@@ -39,7 +39,7 @@ test('all bot purchase/reward/formation/equipment histories preserve 3/6/99 comm
 test('all three bots claim a real Boss victory through the public port and equip its reward next wave',()=>{
  for(const bot of ['weak','medium','strong']){
   const initial=session().snapshot();initial.stageCount=6;initial.level=3;initial.exp=0;
-  initial.owned=['enderman','iron_golem','guardian'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:2+n,y:3,equipment:[]}));initial.nextOwnedUid=4;
+  initial.owned=['oris','bao_zero','helion'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:2+n,y:3,equipment:[]}));initial.nextOwnedUid=4;
   const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSkills(i.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);
   const s=new RunSession(cfg,i.run,i.waves,{save:initial,...g,...f,...e});
   const boss=s.waves.find(w=>w.stage===4&&w.encounterKind==='boss');assert.ok(s.debugJump(4,boss.round));
@@ -55,9 +55,9 @@ test('economy policies use true interest rules and spend reserves under low HP w
  assert.equal(o.catalog.xpPurchase.gold,4);assert.equal(o.catalog.refreshCost,2);assert.equal(o.catalog.maxEquipment,3);
 });
 test('Strong responds to current visible enemy flank, while basic rows do not read future information',()=>{
- const o=session().botPort().observe();o.unitCap=3;o.units=[{uid:1,unitId:'guardian',cost:1,star:2,location:'board',x:3,y:3,equipment:[]},
-  {uid:2,unitId:'mage',cost:3,star:2,location:'board',x:0,y:0,equipment:[]},{uid:3,unitId:'archer',cost:1,star:2,location:'board',x:6,y:0,equipment:[]}];
- const enemy=x=>[{unitId:'enderman',star:2,x,y:4,statMultiplier:1,equipment:[]}];o.currentEnemyPreview=enemy(0);const left=formationCells(o,configs.strong);o.currentEnemyPreview=enemy(6);assert.notDeepEqual(formationCells(o,configs.strong),left);
+ const o=session().botPort().observe();o.unitCap=3;o.units=[{uid:1,unitId:'helion',cost:1,star:2,location:'board',x:3,y:3,equipment:[]},
+  {uid:2,unitId:'celine',cost:4,star:2,location:'board',x:0,y:0,equipment:[]},{uid:3,unitId:'saiph',cost:1,star:2,location:'board',x:6,y:0,equipment:[]}];
+ const enemy=x=>[{unitId:'kaeru',star:2,x,y:4,statMultiplier:1,equipment:[]}];o.currentEnemyPreview=enemy(0);const left=formationCells(o,configs.strong);o.currentEnemyPreview=enemy(6);assert.notDeepEqual(formationCells(o,configs.strong),left);
  o.currentEnemyPreview=enemy(0);const basic=formationCells(o,configs.weak);o.currentEnemyPreview=enemy(6);assert.deepEqual(formationCells(o,configs.weak),basic);
 });
 test('metrics have Wilson 95% intervals, explicit zero denominators and censored star timing coverage',()=>{

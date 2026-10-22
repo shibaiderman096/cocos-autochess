@@ -2,12 +2,13 @@ import { loadArtSprite } from '../view/ArtSpriteLoader';
 import { TraitPanel } from './TraitPanel';
 import { WaveTransition } from './WaveTransition';
 import type { TraitState } from '../battle/Traits';
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, input, Input, SpriteAtlas } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, input, Input, SpriteAtlas, isValid } from 'cc';
 import { UNIT_SPRITE, UNIT_ART, UNIT_PORTRAIT, UI_SPRITE, UISkinKey, M2_UI_SPRITE, ENCOUNTER_SPRITE } from '../view/ArtPaths';
 import { setUISkin, setStarBadge } from './UISkin';
 import { SHOP_DROP_AREA, SHOP_CARDS, containsShopDrop } from './BattleUILayout';
 import { EquipmentDisplayItem, equipmentStatRows, equipmentEffectText } from './EquipmentPresentation';
 import { healthBarSegments } from '../view/HealthBar';
+import { projectGroundPoint } from '../view/BoardPresentation';
 import { createHealthBarClip } from '../view/HealthBarClip';
 import { ManaRegenBadge } from '../view/ManaRegenBadge';
 import { drawFactionRing } from '../view/FactionRing';
@@ -72,7 +73,7 @@ function polygon(g: Graphics, points: number[][], fill: Color, stroke?: Color): 
   g.close(); g.fillColor = fill; g.fill();
   if (stroke) { g.strokeColor = stroke; g.lineWidth = 1; g.stroke(); }
 }
-function paintPanel(g: Graphics, w: number, h: number, fill = INK, edge = GOLD): void {
+export function paintPanel(g: Graphics, w: number, h: number, fill = INK, edge = GOLD): void {
   g.clear(); const x = w / 2, y = h / 2, cut = 7;
   polygon(g, [[-x + cut, -y], [x - cut, -y], [x, -y + cut], [x, y - cut], [x - cut, y], [-x + cut, y], [-x, y - cut], [-x, -y + cut]], fill, edge);
   g.strokeColor = new Color(edge.r, edge.g, edge.b, 60);
@@ -99,6 +100,7 @@ function picture(parent: Node, key: UISkinKey, x: number, y: number, w: number, 
 @ccclass('BattleUI')
 export class BattleUI extends Component {
   private rewardStorage: Label;
+  get rewardStorageAnchor(): Node | null { return this.rewardStorage?.node ?? null; }
   setRewardStorage(count: number, credit: number): void {
     if (!this.rewardStorage) this.rewardStorage = label(this.node, '', -510, -176, 12, GOLD, 200);
     this.rewardStorage.node.active = count > 0 || credit > 0;
@@ -289,7 +291,7 @@ export class BattleUI extends Component {
     this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 220);
     this.waveTrack = panel(this.node, 'waveTrack', 0, 260, RUN_PROGRESS_WIDTH, 44, INK, GOLD, 'stage_track_panel');
     picture(this.node, 'icon_life', 414, 320, 24);
-    this.capLabel = label(this.node, '0 / 1', 0, 88, 86, new Color(91, 184, 255, 240), 380);
+    this.capLabel = label(this.node, '0 / 1', 0, 55, 110, new Color(24, 91, 157), 440);
     this.capLabel.isBold = true; this.capLabel.horizontalAlign = Label.HorizontalAlign.CENTER;
     this.capLabel.node.setRotationFromEuler(0, 0, 0);
     this.capLabel.node.addComponent(UIOpacity).opacity = 150;
@@ -389,6 +391,9 @@ export class BattleUI extends Component {
       drawFactionRing(base.addComponent(Graphics), 62, 0);
       const stars = new Node('starBadge'); stars.addComponent(UITransform).setContentSize(48, 16);
       n.addChild(stars); stars.setPosition(-51, -8, 0); setStarBadge(stars, 1);
+      const upgrade = panel(n, 'upgradeBadge', 55, 35, 52, 24, new Color(48, 34, 9, 245), new Color(255, 213, 80), null);
+      const upgradeText = label(upgrade, '', 0, 0, 17, new Color(255, 231, 117), 50);
+      upgradeText.node.name = 'text'; upgradeText.isBold = true; upgrade.active = false;
       const card: ShopCard = { node: n, portrait: sprite, name: label(n, '', -19, -28, 17, TEXT, 110),
         price: label(n, '', 57, -28, 16, GOLD, 40), role: label(n, '', -49, 21, 10, MUTED, 65),
         border: n.getComponent(Graphics)!, lockOverlay: picture(n, 'card_lock_overlay', 0, 0, 164, 104).node, unitId: null };
@@ -426,7 +431,7 @@ export class BattleUI extends Component {
   }
   private buildUnitDetails(): void {
     // Keep the full detail panel above the command dock, including equipment.
-    this.unitPanel = panel(this.node, 'unitDetail', 450, 35, 280, 490, INK, GOLD, 'tooltip_panel');
+    this.unitPanel = panel(this.node, 'unitDetail', 450, 35, 280, 478, INK, GOLD, 'tooltip_panel');
     const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(70, 70);
     this.unitPanel.addChild(portrait); portrait.setPosition(-92, 165, 0);
     this.unitPortrait = portrait.addComponent(Sprite); this.unitPortrait.sizeMode = Sprite.SizeMode.CUSTOM;
@@ -527,7 +532,7 @@ export class BattleUI extends Component {
     this.unitDetail.horizontalAlign = Label.HorizontalAlign.LEFT;
     this.unitDetail.verticalAlign = Label.VerticalAlign.TOP;
     this.detailPopup.active = false;
-    const equipmentRoot = panel(this.unitPanel, 'equipment', 0, -205, 252, 72, INK, GOLD, 'tooltip_panel');
+    const equipmentRoot = panel(this.unitPanel, 'equipment', 0, -202, 252, 72, INK, GOLD, 'tooltip_panel');
     for (let slot = 0; slot < 3; slot++) {
       const node = button(equipmentRoot, '', (slot - 1) * 78, 0, 64, 64, () => { this.hideEquipmentTooltip(); if (this.equipmentEditable) this.onEquipment(slot); });
       node.getChildByName('text')!.destroy();
@@ -622,10 +627,12 @@ export class BattleUI extends Component {
   private buildBackpack(): void {
     const root = panel(this.node, 'backpack', -510, 45, 192, 390, INK, GOLD, 'panel_side');
     this.backpackRoot = root;
-    this.backpackCaption = label(root, '', 0, 145, 11, MUTED, 180);
-    for (let i = 0; i < 24; i++) {
-      const node = button(root, '', -66 + (i % 4) * 44, 112 - Math.floor(i / 4) * 44, 36, 36, () => {});
-      const child = new Node('backpackIcon'); child.addComponent(UITransform).setContentSize(24, 24); node.addChild(child);
+    this.backpackCaption = label(root, '', 0, -176, 10, MUTED, 102);
+    this.backpackCaption.overflow = Label.Overflow.CLAMP;
+    this.backpackCaption.node.getComponent(UITransform)!.setContentSize(102, 30);
+    for (let i = 0; i < 8; i++) {
+      const node = button(root, '', -40 + (i % 2) * 80, 112 - Math.floor(i / 2) * 80, 72, 72, () => {});
+      const child = new Node('backpackIcon'); child.addComponent(UITransform).setContentSize(52, 52); node.addChild(child);
       const icon = child.addComponent(Sprite); icon.sizeMode = Sprite.SizeMode.CUSTOM;
       const slot = { node, icon, text: node.getChildByName('text')!.getComponent(Label)!, index: -1, iconPath: '' };
       this.backpackSlots.push(slot);
@@ -639,12 +646,12 @@ export class BattleUI extends Component {
         const point = event.getUILocation(); const local = root.getComponent(UITransform)!.convertToNodeSpaceAR({ x: point.x, y: point.y, z: 0 } as any);
         node.setPosition(local.x, local.y, 0); node.setSiblingIndex(root.children.length - 1);
       });
-      const home = () => node.setPosition(-66 + (i % 4) * 44, 112 - Math.floor(i / 4) * 44, 0);
+      const home = () => node.setPosition(-40 + (i % 2) * 80, 112 - Math.floor(i / 2) * 80, 0);
       node.on(Node.EventType.TOUCH_END, (event) => { this.hideEquipmentTooltip(); home(); if (this.backpackEditable && slot.index >= 0) this.onBackpack(slot.index, moved ? event : undefined); });
       node.on(Node.EventType.TOUCH_CANCEL, () => { this.hideEquipmentTooltip(); home(); });
     }
-    button(root, '‹', -67, -155, 28, 24, () => { this.backpackPage = Math.max(0, this.backpackPage - 1); this.refreshBackpack(this.backpackData, this.backpackEditable); });
-    button(root, '›', 67, -155, 28, 24, () => { this.backpackPage++; this.refreshBackpack(this.backpackData, this.backpackEditable); });
+    button(root, '‹', -67, -179, 28, 24, () => { this.backpackPage = Math.max(0, this.backpackPage - 1); this.refreshBackpack(this.backpackData, this.backpackEditable); });
+    button(root, '›', 67, -179, 28, 24, () => { this.backpackPage++; this.refreshBackpack(this.backpackData, this.backpackEditable); });
     this.equipmentTooltip = panel(this.node, 'equipmentTooltip', -216, 45, 360, 300,
       new Color(14, 20, 29, 250), new Color(119, 112, 76), null);
     this.equipmentTooltipHeader = new Node('equipmentHeader'); this.equipmentTooltip.addChild(this.equipmentTooltipHeader);
@@ -827,10 +834,11 @@ export class BattleUI extends Component {
   }
   refreshBackpack(items: BackpackItem[], editable: boolean): void {
     this.backpackData = items; this.backpackEditable = editable;
-    const pages = Math.max(1, Math.ceil(items.length / 24)); this.backpackPage = Math.min(this.backpackPage, pages - 1);
-    this.backpackCaption.string = `${items.length}件 · ${this.backpackPage + 1}/${pages}页 · ${editable ? '拖到棋子装备' : '战斗中锁定'}`;
+    const pageSize = this.backpackSlots.length;
+    const pages = Math.max(1, Math.ceil(items.length / pageSize)); this.backpackPage = Math.min(this.backpackPage, pages - 1);
+    this.backpackCaption.string = `${items.length}件 · ${this.backpackPage + 1}/${pages}页\n${editable ? '拖到棋子装备' : '战斗中锁定'}`;
     this.backpackSlots.forEach((slot, i) => {
-      const index = this.backpackPage * 24 + i, item = items[index]; slot.index = item ? index : -1;
+      const index = this.backpackPage * pageSize + i, item = items[index]; slot.index = item ? index : -1;
       slot.text.string = ''; slot.icon.node.active = !!item;
       const iconPath = item?.icon ?? '';
       if (slot.iconPath !== iconPath) {
@@ -965,37 +973,29 @@ export class BattleUI extends Component {
     this.node.parent?.addChild(this.backdrop); this.backdrop.setSiblingIndex(0);
     const g = this.backdrop.addComponent(Graphics);
     g.fillColor = new Color(8, 20, 29); g.rect(-1600, -1000, 3200, 2000); g.fill();
-    for (let i = 0; i < 7; i++) {
-      g.fillColor = new Color(14 + i * 2, 31 + i * 3, 38 + i * 3);
-      g.ellipse(0, 66, 620 - i * 35, 305 - i * 23); g.fill();
-    }
-    polygon(g, [[-398, -155], [398, -155], [370, 288], [-370, 288]], new Color(18, 34, 39), new Color(60, 79, 73));
-    for (const side of [-1, 1]) {
-      polygon(g, [[side * 373, -147], [side * 414, -158], [side * 387, 277], [side * 350, 270]], new Color(39, 58, 57), new Color(108, 104, 73));
-      for (let i = 0; i < 6; i++) {
-        const x = side * (386 - i * 4), y = -115 + i * 64;
-        polygon(g, [[x - 9, y], [x, y + 7], [x + 9, y], [x, y - 7]], new Color(67, 107, 100), new Color(114, 132, 98));
-      }
-      for (let i = 0; i < 4; i++) {
-        const x = side * (582 - (i % 2) * 27), y = 231 - i * 65;
-        polygon(g, [[x, y], [x + side * 21, y + 44], [x - side * 10, y + 69], [x - side * 29, y + 12]], new Color(21, 53 + i * 4, 52), new Color(43, 82, 73));
-      }
-    }
-    g.strokeColor = new Color(101, 92, 63); g.lineWidth = 1;
-    g.moveTo(-586, 281); g.lineTo(586, 281); g.stroke();
-    g.moveTo(-588, -230); g.lineTo(588, -230); g.stroke();
     this.backdrop.getComponent(UITransform)!.setContentSize(1280, 720);
-    setUISkin(this.backdrop, 'arena_sky', g, sprite => { sprite.color = new Color(185, 200, 215); });
   }
 
   onDestroy(): void {
     this.waveTransition?.stop();
     for (const type of [Input.EventType.TOUCH_START, Input.EventType.TOUCH_MOVE, Input.EventType.MOUSE_DOWN, Input.EventType.KEY_DOWN] as const) input.off(type, this.noteActivity, this);
-    this.backdrop?.destroy();
+    if (isValid(this.backdrop, true)) this.backdrop.destroy();
   }
   noteActivity(): void { this.waveIdle = 0; if (this.waveTrack) this.waveTrack.active = true; }
   setBoardCenter(x: number, y: number): void {
     this.capLabel.node.setPosition(x, y + 28, 0);
+  }
+  /** Ground inscription below pieces/highlights; the board parent owns zoom and placement. */
+  bindBoardPopulation(board: Node): void {
+    const node = this.capLabel.node;
+    node.parent = board; node.layer = board.layer; node.setSiblingIndex(0);
+    const ground = {x: 0, y: 0, z: 1.15};
+    const center = projectGroundPoint(ground);
+    const right = projectGroundPoint({...ground, x: 1});
+    const forward = projectGroundPoint({...ground, z: ground.z - .01});
+    node.setPosition(center.x, center.y, 0);
+    node.setScale((right.x - center.x) / 100, (forward.y - center.y), 1);
+    node.getComponent(UIOpacity)!.opacity = 105;
   }
   playWaveTransition(onCovered: () => WaveConfig, onComplete: () => void): void {
     this.closeUnitDetail(); this.traitPanel.hideDetail(); this.hideEquipmentTooltip();
@@ -1071,12 +1071,12 @@ export class BattleUI extends Component {
     if (!this.capLabel) return;
     this.capLabel.string = `${population} / ${this.cap}`;
     const underCap = population < this.cap;
-    this.capLabel.color = population > this.cap ? new Color(229, 121, 112, 240)
-      : underCap ? new Color(91, 184, 255, 240) : new Color(233, 231, 210, 230);
+    this.capLabel.color = population > this.cap ? new Color(164, 48, 40)
+      : underCap ? new Color(24, 91, 157) : new Color(110, 92, 49);
     this.capLabel.node.active = !this.shopEncounter && (this.dragging || (!this.combatActive && this.shopAvailable && population !== this.cap));
   }
 
-  refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number; artId?: string; role?: string; damageType?: 'physical' | 'magic'; tint?: string }>): void {
+  refreshShop(slots: Array<{ unitId: string | null; name: string; cost: number; price: number; poolLeft: number; artId?: string; role?: string; damageType?: 'physical' | 'magic'; tint?: string; upgradeStar?: 2 | 3 | null }>): void {
     this.shopSlots.forEach((card, i) => {
       const data = slots[i], id = data?.unitId ?? null; card.unitId = id;
       card.node.getComponent(UIOpacity)!.opacity = id ? 255 : 95;
@@ -1085,12 +1085,16 @@ export class BattleUI extends Component {
       const tint = new Color(255, 255, 255); if (data?.tint) tint.fromHEX(data.tint); card.portrait.color = tint;
       card.portrait.node.active = !!id;
       card.node.getChildByName('starBadge')!.active = !!id;
+      const upgrade = card.node.getChildByName('upgradeBadge')!;
+      const rank = data?.upgradeStar;
+      upgrade.active = !!id && (rank === 2 || rank === 3);
+      upgrade.getChildByName('text')!.getComponent(Label)!.string = upgrade.active ? '★'.repeat(rank!) : '';
       paintPanel(card.border, 164, 104, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
       const key: UISkinKey = id ? `card_cost${Math.max(1, Math.min(5, data.cost))}` as UISkinKey : 'card_empty';
       setUISkin(card.node, key, card.border);
       card.portrait.spriteFrame = null;
       const artId = data?.artId ?? id ?? '';
-      const portrait = UNIT_ART[artId]?.includes('/units/shadow/') ? UNIT_PORTRAIT[artId] : undefined;
+      const portrait = UNIT_PORTRAIT[artId];
       if (id) loadArtSprite(portrait ?? UNIT_SPRITE[`${artId}_ally`], (err, sf) => {
         if (!err && card.portrait.isValid && card.unitId === id) card.portrait.spriteFrame = sf;
       });
@@ -1216,7 +1220,7 @@ export class BattleUI extends Component {
     const art = `${data.artId}_${data.side === 0 ? 'ally' : 'enemy'}`;
     if (this.detailArt !== art) {
       this.detailArt = art; this.unitPortrait.spriteFrame = null;
-      const portrait = UNIT_ART[data.artId]?.includes('/units/shadow/') ? UNIT_PORTRAIT[data.artId] : undefined;
+      const portrait = UNIT_PORTRAIT[data.artId];
       loadArtSprite(portrait ?? UNIT_SPRITE[art], (err, frame) => {
         if (!err && this.unitPortrait.isValid && this.detailArt === art) this.unitPortrait.spriteFrame = frame;
       });

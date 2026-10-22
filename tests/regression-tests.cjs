@@ -17,16 +17,20 @@ const { migrateSaveV2, freshSaveV2: createSaveV2, SAVE_KEY } = core('ShopSave');
 const freshSaveV2=(stages,seed)=>createSaveV2(stages,seed,'legacy');
 const sceneLoads = [];
 const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
+const {projectBoardPoint,unprojectBoardPoint,projectGroundPoint,benchGroundPoint}=require('../assets/scripts/view/BoardPresentation.ts');
 const { SHOP_DROP_AREA, containsShopDrop } = require('../assets/scripts/ui/BattleUILayout.ts');
 const shopDrop = () => new Vec3(SHOP_DROP_AREA.x, SHOP_DROP_AREA.y - 60);
-const units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
-const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
-const legacyRun = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/run.json'), 'utf8')); delete legacyRun.stageEncounters; delete legacyRun.starterSelection;
+const authored=require('./fixtures/content-c001e20.json').configs;
+let currentContentEnabled=false;
+let units = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
+let skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
+let legacyRun = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/run.json'), 'utf8')); delete legacyRun.stageEncounters; delete legacyRun.starterSelection;
+units=authored.units;skills=authored.skills;legacyRun=JSON.parse(JSON.stringify(authored.run));delete legacyRun.stageEncounters;delete legacyRun.starterSelection;
 let stageEncountersEnabled = false;
 let passed = 0, failed = 0;
 async function test(name, run) {
   try { await run(); passed++; console.log('PASS ' + name); }
-  catch (e) { failed++; console.error('FAIL ' + name + ': ' + e.message); }
+  catch (e) { failed++; console.error('FAIL ' + name + ': ' + e.stack); }
 }
 
 class Vec3 {
@@ -44,12 +48,14 @@ class Node {
   getComponent(T) { return this.components.get(T); }
   setPosition(x, y, z) { this.position = typeof x === 'object' ? x.clone() : new Vec3(x, y, z); }
   setScale() {}
+  setSiblingIndex(i) { const list=this.parent.children;list.splice(list.indexOf(this),1);list.splice(i,0,this); }
   removeFromParent() { if (this.parent) this.parent.children = this.parent.children.filter(n => n !== this); this.parent = null; }
   on(type, fn, context) { this.events.set(type, { fn, context }); }
   off(type) { this.events.delete(type); }
   destroy() { if (this.parent) this.parent.children = this.parent.children.filter(n => n !== this); }
 }
 class UITransform {
+  setAnchorPoint(x,y) { this.anchorPoint={x,y}; }
   setContentSize(w, h) { this.contentSize = { width: w, height: h }; }
   convertToNodeSpaceAR(p) {
     const local=p.clone();
@@ -58,9 +64,11 @@ class UITransform {
   }
 }
 class Color { constructor(...rgba) { this.rgba = rgba; } static WHITE = new Color(255, 255, 255); }
-class Graphics { rect() {} roundRect() {} fill() {} stroke() {} }
+class Sprite {static SizeMode={CUSTOM:0};isValid=true;}
+class Graphics { ellipse() {} rect() {} roundRect() {} fill() {} stroke() {} }
 class Label {}
 class BoardView {
+  showAstralFields(fields) { this.astralFields = fields; }
   highlightTarget(cell,allowed=true) { this.highlighted=cell;this.highlightAllowed=allowed; }
   boardPixelW = 530; boardPixelH = 342;
   initialize(w, h, size) {
@@ -70,15 +78,22 @@ class BoardView {
   }
   cellToWorld(x, y) {
     const c = this.geometry.cells.find(c => c.x === x && c.y === y).center;
-    return new Vec3(c.x, c.y);
+    const p=projectBoardPoint(c);
+    return new Vec3(p.x, p.y);
   }
   worldToCell(x, y) {
-    const c = this.geometry.cellAt(x, y);
+    const p=unprojectBoardPoint({x,y});
+    const c = this.geometry.cellAt(p.x, p.y);
     return c ? { x: c.x, y: c.y } : null;
+  }
+  benchPosition(slot) {
+    const p=projectGroundPoint(benchGroundPoint(slot,this.benchSlots,this.boardPixelH));
+    return new Vec3(p.x,p.y);
   }
   isOwnCell(y) { return y >= 0 && y < this.boardHeight / 2; }
 }
 class UnitView {
+  setVitalsVisible(visible) { this.vitalsVisible=visible; }
   setup(cfgId, side, unitId, cellSize, artId, tint, portraitScale=.82) { Object.assign(this, { cfgId, side, unitId, portraitScale }); this.star = 1; }
   setEquipment(items) { this.equipment = items; }
   setStar(star) { this.star = star; }
@@ -90,12 +105,16 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
+  setShopEncounter(visible) { this.shopEncounter=visible; }
+  setNextWaveVisible(visible) { this.nextWaveVisible=visible; }
+  playWaveTransition(covered,complete) { covered();complete(); }
   setRewardStorage(count,credit) { this.rewardStorage={count,credit}; }
   showEquipmentReward(items) { this.rewardItems=items; }
   hideEquipmentReward() { this.rewardItems=null; }
   configureDebug(data) { this.debugData=data; }
   refreshDebugState(...args) { this.debugState=args; }
   setBoardCenter(x,y) { this.boardCenter={x,y}; }
+  bindBoardPopulation(board) { this.populationBoard=board; }
   init() { this.node.addComponent(UITransform); } hideFightBtn() {} showFightBtn() {}
   refreshTop(gold, floor, lv, rates) { this.top = { gold, floor, level: lv.level, exp: lv.exp, cap: lv.unitCap }; this.rates=rates; }
   refreshFormation() {}
@@ -110,6 +129,7 @@ class BattleUI {
   updateUnitVitals(...args) { this.vitals=args; }
   refreshCombatStats(rows) { this.combatStats=rows; }
   setCombatActive(v) { this.combatActive=v; }
+  setBattleTimer(clock) { this.clock=clock; }
   setCombatCountdown(seconds) { this.countdown=seconds; }
   hideResult() {} showResult() {} showWarn(msg) { this.warn = msg; }
   refreshShop(slots) { this.slots = slots; }
@@ -120,14 +140,27 @@ const code = ts.transpileModule(fs.readFileSync(stageFile, 'utf8'), { compilerOp
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, experimentalDecorators: true,
 } }).outputText;
 const stageExports = {};
-const viewMocks = { './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/StageRewardPanel':{StageRewardPanel:class{constructor(parent,cfg,choose){this.choose=choose;}show(pending,gold){this.pending=pending;this.gold=gold;}hide(){this.pending=undefined;}}}, '../ui/UISkin': { setUISkin() {} } };
-new Function('require', 'exports', code)(id => {
-  if (id === 'cc') return { Component, Node, Vec3, UITransform, Graphics, Label, Color, JsonAsset: class {},
-    director: { loadScene: name => { sceneLoads.push(name); return true; } },
-    _decorator: { ccclass: () => c => c, property: () => () => {} },
-    resources: { load: (name, T, cb) => cb(null, { json: name==='config/run'&&!stageEncountersEnabled?JSON.parse(JSON.stringify(legacyRun)):JSON.parse(fs.readFileSync(path.join(root, 'assets/resources', name + '.json'), 'utf8')) }) } };
-  return viewMocks[id] ?? require(path.resolve(path.dirname(stageFile), id) + '.ts');
-}, stageExports);
+const viewMocks = { './ArtSpriteLoader':{loadArtSprite:(name,cb)=>{assert.equal(typeof name,'string');const file=path.join(root,'assets/resources',name.split('#')[0].replace(/\/spriteFrame$/,'.png'));assert.ok(fs.existsSync(file),file);cb(null,{name});}}, './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/StageRewardPanel':{StageRewardPanel:class{constructor(parent,cfg,choose){this.choose=choose;}show(pending,gold){this.pending=pending;this.gold=gold;}hide(){this.pending=undefined;}}}, '../ui/UISkin': { setUISkin() {} } };
+// This suite verifies progression; rendering duration is exercised in the dedicated flight suite/browser.
+let deferRewardFlights=false, pendingRewardFlight=null;
+viewMocks['./ChestRewardFlight']={ChestRewardFlight:class{play(origin,targets,done){this.targets=targets;if(deferRewardFlights)pendingRewardFlight=done;else done();}cancel(){}}};
+const cc={Component,Node,Vec3,UITransform,Graphics,Label,Color,Sprite,JsonAsset:class{},
+ director:{loadScene:name=>{sceneLoads.push(name);return true;}},
+ _decorator:{ccclass:()=>c=>c,property:()=>()=>{}},
+ resources:{load:(name,T,cb)=>{
+   const key=name.replace('config/','');
+   const json=key==='run'&&!stageEncountersEnabled?legacyRun:!currentContentEnabled&&['units','skills'].includes(key)?authored[key]:JSON.parse(fs.readFileSync(path.join(root,'assets/resources',name+'.json'),'utf8'));
+   cb(null,{json:JSON.parse(JSON.stringify(json))});
+ }}};
+const viewCache=new Map();
+function loadView(file){
+ if(viewCache.has(file))return viewCache.get(file);
+ const out={};viewCache.set(file,out);
+ const text=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,experimentalDecorators:true}}).outputText;
+ new Function('require','exports',text)(id=>id==='cc'?cc:viewMocks[id]??require(path.resolve(path.dirname(file),id)+'.ts'),out);
+ return out;
+}
+new Function('require','exports',code)(id=>id==='cc'?cc:viewMocks[id]??(id==='./ShopVisitor'?loadView(path.resolve(path.dirname(stageFile),id)+'.ts'):require(path.resolve(path.dirname(stageFile),id)+'.ts')),stageExports);
 const storage = new Map();
 global.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) };
 async function makeStage(saved) {
@@ -194,11 +227,11 @@ function drag(stage, from, to) {
     const slots=stage.boardNode.getChildByName('units').children.filter(node=>node.name.startsWith('bench_'));
     assert.equal(slots.length,9,'the connected platform retains nine usable slots');
     assert.ok(slots.every(node=>!node.getComponent(Graphics)),'do not paint separate floating slot frames over the connected platform');
-    assert.equal(stage.ownedViews.get(1).portraitScale,.82);
+    assert.equal(stage.ownedViews.get(1).portraitScale,.82*1.3);
     stage.owned.move(1,{location:'board',x:3,y:3});stage.refreshOwnedViews();
     assert.equal(stage.ownedViews.get(1).portraitScale,1.3);
     stage.owned.move(1,{location:'bench',x:-1,y:0});stage.refreshOwnedViews();
-    assert.equal(stage.ownedViews.get(1).portraitScale,.82);
+    assert.equal(stage.ownedViews.get(1).portraitScale,.82*1.3);
   });
   await test('drag highlights valid cells, rejects over-cap/enemy cells, and clears on cancel',async()=>{
     const stage=await makeStage(twoUnitSave()),bv=stage.boardNode.getComponent(BoardView);
@@ -208,7 +241,7 @@ function drag(stage, from, to) {
     stage.onTouchStart(touch(stage.benchSlotWorld(1)));stage.onTouchMove(touch(bv.cellToWorld(3,2)));
     assert.equal(bv.highlightAllowed,false);stage.onTouchMove(touch(bv.cellToWorld(3,5)));assert.equal(bv.highlightAllowed,false);
     stage.onTouchEnd({...touch(bv.cellToWorld(3,5)),type:Node.EventType.TOUCH_CANCEL});assert.equal(bv.highlighted,null);
-    assert.deepEqual(stage.ui.boardCenter,{x:0,y:60});
+    assert.equal(stage.ui.populationBoard,stage.boardNode);
   });
   await test('one second preparation uses real time and never ticks early or charges twice', async () => {
     const stage=await makeStage({...freshSaveV2(),gold:20});stage.owned.move(1,{location:'board',x:3,y:3});
@@ -696,7 +729,8 @@ function drag(stage, from, to) {
     const combatViews=new Map(stage.views),snapshot=sim.units.map(u=>u.snapshot()),events=sim.events.map(e=>({...e}));
     const battleId=stage.battleIds.get(2);
     stage.buyFromShop(0);
-    assert.equal(stage.owned.get(1).star,2);assert.equal(stage.owned.get(2),undefined);
+    assert.equal(stage.owned.get(1).star,1);assert.equal(stage.owned.get(2).star,1);
+    assert.equal(stage.owned.all().filter(u=>u.unitId==='warrior').length,3,'all three cards remain owned during combat');
     assert.equal(stage.views.get(stage.battleIds.get(1)).star,1,'upgrade is applied next combat');
     assert.equal(sim.units.find(u=>u.id===battleId).star,1);
     stage.showBattleDetail(battleId);assert.equal(stage.ui.detail.star,1);assert.equal(stage.ui.detail.hp,sim.units.find(u=>u.id===battleId).hp);
@@ -731,7 +765,8 @@ function drag(stage, from, to) {
       {uid:2,unitId:'warrior',star:1,location:'board',x:3,y:3}];
     saved.shop=['warrior',null,null,null,null].map(unitId=>({unitId}));
     const stage=await makeStage(saved);stage.startFight();const sim=stage.sim;stage.buyFromShop(0);
-    assert.equal(stage.owned.get(1),undefined);assert.equal(stage.owned.get(2).star,2);
+    assert.equal(stage.owned.get(1).star,1);assert.equal(stage.owned.get(2).star,1);
+    assert.equal(stage.owned.all().filter(u=>u.unitId==='warrior').length,3);
     assert.equal(stage.owned.get(2).location,'board');assert.equal(stage.owned.get(2).x,3);
     assert.equal(stage.sim,sim);assert.equal(sim.units.find(u=>u.side===0).star,1);
   });
@@ -935,6 +970,10 @@ function drag(stage, from, to) {
       stage.restart();session.nextWave();assert.deepEqual(stage.session.snapshot(),session.snapshot());
     }
   });
+  // Current production content remains covered by the same real stage/headless adapter below.
+  currentContentEnabled=true;
+  units=require('../assets/resources/config/units.json');skills=require('../assets/resources/config/skills.json');
+  legacyRun=JSON.parse(JSON.stringify(require('../assets/resources/config/run.json')));delete legacyRun.stageEncounters;delete legacyRun.starterSelection;
   await test('budget-v1: new Cocos sessions and headless sessions consume the same generated enemies and real combat', async () => {
     const {RunSession}=core('RunSession'),{ConfigManager}=core('ConfigManager');
     const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
@@ -958,7 +997,7 @@ function drag(stage, from, to) {
   });
   await test('P2: Cocos loads versioned formation resources and shows fixed L2 preview before L3 locks at battle start',async()=>{
     const saved=createSaveV2(3,12345);saved.formationOverride='L3';saved.level=3;
-    saved.owned=[{uid:1,unitId:'guardian',star:1,location:'board',x:3,y:3},{uid:2,unitId:'mage',star:2,location:'board',x:0,y:0},{uid:3,unitId:'archer',star:2,location:'board',x:1,y:0}];
+    saved.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3},{uid:2,unitId:'celine',star:2,location:'board',x:0,y:0},{uid:3,unitId:'saiph',star:2,location:'board',x:1,y:0}];
     const stage=await makeStage(saved);stage.ui.onDebugStage(14,10);const base=stage.session.formation,seed=stage.session.battleSeed,shop=stage.shop.snapshot();
     assert.equal(base.level,'L2');assert.equal(base.diagnostics.playerSnapshotUsed,false);
     for(let n=0;n<20;n++)stage.resetBattle(false);assert.deepEqual(stage.session.formation,base);assert.deepEqual(stage.shop.snapshot(),shop);
@@ -993,7 +1032,7 @@ function drag(stage, from, to) {
     const ticket=createSaveV2(10,12345,'budget-v1',true),stage=await makeStage(ticket);
     assert.equal(stage.save.enemyEquipmentVersion,'equipment-policy-v1');
     stage.levelSys.addExp(10000);const starter=stage.owned.all()[0];stage.owned.remove(starter.uid);
-    for(const [index,id]of ['guardian','mage','archer'].entries()){
+    for(const [index,id]of ['helion','celine','saiph'].entries()){
       stage.ui.onDebugUnit(id,3);const unit=stage.owned.all().find(u=>u.unitId===id);assert.ok(unit);stage.owned.move(unit.uid,{location:'board',x:1+index*2,y:index?1:3});
     }
     stage.ui.onDebugStage(3,6);stage.startFight();assert.equal(stage.sim.run().winner,0);stage.update(.1);
@@ -1012,22 +1051,24 @@ function drag(stage, from, to) {
   await test('new stage UI persists purchases, skips noncombat shop, blocks unclaimed Boss reward and resumes after four-choice claim',async()=>{
     stageEncountersEnabled=true;
     try {
-      const stage=await makeStage(createSaveV2(6,1,'legacy'));
+      const ticket=createSaveV2(6,1,'legacy');ticket.level=10;
+      ticket.owned=['helion','bao_zero','atlas','oris','seraphiel','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:n%7,y:2+Math.floor(n/7),equipment:[]}));ticket.nextOwnedUid=11;
+      const stage=await makeStage(ticket);
       stage.ui.onDebugGold(100);stage.ui.onDebugStage(4,3);
       const shopReward=stage.session.pendingStageReward;assert.equal(shopReward.kind,'specialShop');
-      assert.equal(stage.stageRewards.pending.id,shopReward.id);const gold=stage.economy.gold;
+      stage.openStageReward();assert.equal(stage.stageRewards.pending.id,shopReward.id);const gold=stage.economy.gold;
       stage.chooseStageReward({type:'stageChoice',rewardId:shopReward.id,choice:'buy',index:0});
       assert.equal(stage.economy.gold,gold-shopReward.offers[0].price);
       const saved=JSON.parse(storage.get(SAVE_KEY));assert.equal(saved.stageProgress.pending.offers[0].bought,true);
-      const resumed=await makeStage(saved);assert.equal(resumed.stageRewards.pending.offers[0].bought,true);
-      resumed.chooseStageReward({type:'stageChoice',rewardId:shopReward.id,choice:'continue'});
+      const resumed=await makeStage(saved);resumed.openStageReward();assert.equal(resumed.stageRewards.pending.offers[0].bought,true);
+      resumed.ui.onNextWave();
       assert.equal(resumed.flow.wave.stage,4);assert.equal(resumed.flow.wave.round,4);assert.equal(resumed.flow.phase,'prepare');
       resumed.ui.onDebugStage(4,7);resumed.owned.move(resumed.owned.all()[0].uid,{location:'board',x:3,y:3});
       resumed.startFight();
       resumed.preparationRemaining=0; // The real battle has already consumed its preparation countdown.
-      for(const u of resumed.sim.units){u.cfg.skillId=undefined;u.cfg.maxMana=0;u.cfg.critChance=0;if(u.side===0){u.cfg.atk=100000;u.cfg.hp=100000;u.hp=100000;}else{u.cfg.atk=0;u.hp=1;}}
+      // Win with actual authored three-star cards; no combat stat overrides.
       assert.equal(resumed.sim.run().winner,0);resumed.update(.1);
-      const boss=resumed.session.pendingStageReward;assert.equal(boss.kind,'bossChoice');assert.equal(resumed.stageRewards.pending.kind,'bossChoice');
+      const boss=resumed.session.pendingStageReward;assert.equal(boss.kind,'bossChoice');resumed.openStageReward();assert.equal(resumed.stageRewards.pending.kind,'bossChoice');
       resumed.update(5);assert.equal(resumed.flow.wave.round,7,'pending choice blocks auto advance');
       resumed.chooseStageReward({type:'stageChoice',rewardId:boss.id,choice:'equipment'});
       const four=resumed.session.pendingStageReward;assert.equal(four.candidates.length,4);
@@ -1045,9 +1086,10 @@ function drag(stage, from, to) {
   await test('monster chest waits for click and preserves battle result, positions, HP and board views before claim',async()=>{
     stageEncountersEnabled=true;
     try {
-      const stage=await makeStage(createSaveV2(3,1,'legacy'));
+      const ticket=createSaveV2(3,1,'legacy');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
+      const stage=await makeStage(ticket);
       stage.owned.move(stage.owned.all()[0].uid,{location:'board',x:3,y:3});stage.startFight();stage.preparationRemaining=0;
-      for(const u of stage.sim.units){u.cfg.skillId=undefined;u.cfg.maxMana=0;u.cfg.critChance=0;if(u.side===0){u.cfg.atk=100000;u.cfg.hp=100000;u.hp=100000;}else{u.cfg.atk=0;u.hp=1;}}
+      // The authored one-star Helion must beat the actual opening monster.
       assert.equal(stage.sim.run().winner,0);
       const endSim=stage.sim,endTick=endSim.tick,endState=endSim.units.map(u=>u.snapshot(endTick)),boardViews=new Map(stage.views);
       stage.update(.1);assert.equal(stage.sim,endSim,'settlement must not recreate the opening preview');
@@ -1061,6 +1103,20 @@ function drag(stage, from, to) {
       stage.update(.7);assert.equal(stage.flow.wave.round,1,'unclaimed chest blocks automatic progression');
       stage.openStageReward();assert.equal(stage.flow.wave.round,2);assert.equal(stage.flow.phase,'prepare');
     }finally{stageEncountersEnabled=false;}
+  });
+  await test('reward flight commits once, holds transition until arrival, and reload keeps already awarded units',async()=>{
+    stageEncountersEnabled=true;deferRewardFlights=true;
+    try {
+      const ticket=createSaveV2(3,1,'legacy');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
+      const stage=await makeStage(ticket);stage.startFight();stage.preparationRemaining=0;assert.equal(stage.sim.run().winner,0);stage.update(.1);
+      const before=stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0),count=stage.session.pendingStageReward.units.length;
+      stage.openStageReward();assert.ok(stage.rewardFlight);assert.equal(stage.session.pendingStageReward,undefined);
+      const total=stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0);assert.equal(total,before+count);
+      stage.update(20);stage.restart();stage.startFight();assert.equal(stage.flow.wave.round,1,'arrival is a presentation gate');
+      const persisted=JSON.parse(storage.get(SAVE_KEY));const restored=await makeStage(persisted);
+      assert.equal(restored.owned.all().reduce((n,u)=>n+3**(u.star-1),0),total,'reload neither loses nor duplicates committed units');
+      const finish=pendingRewardFlight;pendingRewardFlight=null;finish();assert.equal(stage.rewardFlight,null);assert.equal(stage.flow.wave.round,2);
+    }finally{stageEncountersEnabled=false;deferRewardFlights=false;pendingRewardFlight=null;}
   });
   console.log(`Regression: ${passed} passed, ${failed} failed`);
   process.exitCode = failed ? 1 : 0;

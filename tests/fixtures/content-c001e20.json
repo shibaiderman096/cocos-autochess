@@ -1,0 +1,2739 @@
+{
+  "sourceCommit": "c001e20bf81cb65764a7ca1cb579742cd5943e8a",
+  "sourcePath": "assets/resources/config/*.json",
+  "purpose": "Exact authored pre-retirement content for legacy runtime regressions; never used by the game.",
+  "configs": {
+    "units": [
+      {
+        "id": "warrior",
+        "cost": 1,
+        "name": "漩涡鸣人",
+        "hp": 500,
+        "atk": 40,
+        "armor": 20,
+        "mr": 20,
+        "atkSpeed": 0.7,
+        "range": 4,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "rasengan",
+        "artId": "warrior",
+        "role": "caster",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "physical"
+      },
+      {
+        "id": "archer",
+        "cost": 1,
+        "name": "弓手",
+        "hp": 450,
+        "atk": 50,
+        "armor": 20,
+        "mr": 20,
+        "atkSpeed": 0.9,
+        "range": 4,
+        "moveTicks": 6,
+        "maxMana": 50,
+        "startMana": 0,
+        "manaPerHit": 10,
+        "artId": "archer",
+        "role": "marksman",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "skillId": "aimed_arrow",
+        "basicAttackFx": "arrow",
+        "basicAttackTint": [
+          255,
+          220,
+          150
+        ],
+        "damageType": "physical"
+      },
+      {
+        "id": "mage",
+        "cost": 3,
+        "name": "法师",
+        "hp": 560,
+        "atk": 40,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.7,
+        "range": 4,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "fireball",
+        "artId": "mage",
+        "role": "caster",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "basicAttackFx": "fireball",
+        "basicAttackTint": [
+          255,
+          165,
+          90
+        ],
+        "damageType": "magic"
+      },
+      {
+        "id": "scout",
+        "name": "学员鸣人",
+        "cost": 1,
+        "artId": "scout",
+        "role": "tank",
+        "hp": 650,
+        "atk": 25,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.6,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 60,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "academy_shield",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "magic"
+      },
+      {
+        "id": "guardian",
+        "name": "卫士",
+        "cost": 1,
+        "artId": "guardian",
+        "role": "tank",
+        "hp": 700,
+        "atk": 30,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.55,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 60,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "skillId": "guardian_bulwark",
+        "damageType": "physical"
+      },
+      {
+        "id": "duelist",
+        "name": "剑客",
+        "cost": 2,
+        "artId": "duelist",
+        "role": "warrior",
+        "hp": 750,
+        "atk": 60,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.8,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 70,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "cleave",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "physical"
+      },
+      {
+        "id": "ranger",
+        "name": "游侠",
+        "cost": 2,
+        "artId": "ranger",
+        "role": "marksman",
+        "hp": 550,
+        "atk": 55,
+        "armor": 30,
+        "mr": 30,
+        "atkSpeed": 0.95,
+        "range": 4,
+        "moveTicks": 6,
+        "maxMana": 50,
+        "startMana": 0,
+        "manaPerHit": 10,
+        "skillId": "piercing_shot",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "basicAttackFx": "arrow",
+        "basicAttackTint": [
+          130,
+          235,
+          160
+        ],
+        "damageType": "physical"
+      },
+      {
+        "id": "shaman",
+        "name": "祭司",
+        "cost": 2,
+        "artId": "shaman",
+        "role": "caster",
+        "hp": 550,
+        "atk": 35,
+        "armor": 30,
+        "mr": 30,
+        "atkSpeed": 0.7,
+        "range": 3,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "divine_mend",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "basicAttackFx": "fireball",
+        "basicAttackTint": [
+          130,
+          255,
+          190
+        ],
+        "damageType": "magic"
+      },
+      {
+        "id": "sorcerer",
+        "name": "术士",
+        "cost": 3,
+        "artId": "sorcerer",
+        "role": "caster",
+        "hp": 650,
+        "atk": 40,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.75,
+        "range": 3,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "corrupt_curse",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "basicAttackFx": "fireball",
+        "basicAttackTint": [
+          190,
+          110,
+          255
+        ],
+        "damageType": "magic"
+      },
+      {
+        "id": "champion",
+        "name": "仙人鸣人",
+        "cost": 3,
+        "artId": "champion",
+        "role": "marksman",
+        "hp": 700,
+        "atk": 60,
+        "armor": 40,
+        "mr": 40,
+        "atkSpeed": 0.9,
+        "range": 3,
+        "moveTicks": 6,
+        "maxMana": 50,
+        "startMana": 0,
+        "manaPerHit": 10,
+        "skillId": "sage_clone_rasengan",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "physical"
+      },
+      {
+        "id": "enderman",
+        "name": "末影人",
+        "cost": 5,
+        "artId": "enderman",
+        "role": "assassin",
+        "description": "穿梭末影的物理刺客，寻找三格内生命值最低的敌人。",
+        "hp": 900,
+        "atk": 90,
+        "armor": 50,
+        "mr": 50,
+        "atkSpeed": 1,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 40,
+        "startMana": 0,
+        "manaPerHit": 10,
+        "skillId": "ender_ambush",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "physical"
+      },
+      {
+        "id": "sasuke",
+        "name": "宇智波佐助",
+        "cost": 4,
+        "artId": "sasuke",
+        "role": "warrior",
+        "description": "以黑炎追击敌人的物理战士。",
+        "hp": 1100,
+        "atk": 70,
+        "armor": 60,
+        "mr": 60,
+        "atkSpeed": 0.8,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 70,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "black_flame",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "physical"
+      },
+      {
+        "id": "sakura",
+        "name": "少女小樱",
+        "cost": 2,
+        "artId": "sakura",
+        "role": "tank",
+        "hp": 800,
+        "atk": 30,
+        "armor": 50,
+        "mr": 50,
+        "atkSpeed": 0.6,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 60,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "healing_channel",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "magic"
+      },
+      {
+        "id": "young_sasuke",
+        "name": "少年佐助",
+        "cost": 2,
+        "artId": "young_sasuke",
+        "role": "marksman",
+        "basicAttackFx": "ninjaBolt",
+        "hp": 550,
+        "atk": 40,
+        "armor": 30,
+        "mr": 30,
+        "atkSpeed": 1,
+        "range": 4,
+        "moveTicks": 6,
+        "maxMana": 50,
+        "startMana": 0,
+        "manaPerHit": 10,
+        "skillId": "hybrid_bolt",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "magic"
+      },
+      {
+        "id": "itachi",
+        "name": "宇智波鼬",
+        "cost": 4,
+        "artId": "itachi",
+        "role": "caster",
+        "hp": 650,
+        "atk": 45,
+        "armor": 50,
+        "mr": 50,
+        "atkSpeed": 0.8,
+        "range": 3,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "skillId": "tsukuyomi",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "damageType": "magic"
+      },
+      {
+        "id": "iron_golem",
+        "name": "铁傀儡",
+        "cost": 4,
+        "artId": "iron_golem",
+        "role": "tank",
+        "hp": 1400,
+        "atk": 45,
+        "armor": 70,
+        "mr": 70,
+        "atkSpeed": 0.6,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 60,
+        "startMana": 20,
+        "manaPerHit": 10,
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0,
+        "skillId": "iron_uppercut",
+        "damageType": "physical"
+      },
+      {
+        "id": "madara",
+        "name": "宇智波斑",
+        "cost": 5,
+        "role": "tank",
+        "damageType": "physical",
+        "artId": "madara",
+        "hp": 1600,
+        "atk": 50,
+        "armor": 70,
+        "mr": 60,
+        "atkSpeed": 0.6,
+        "range": 1,
+        "moveTicks": 6,
+        "maxMana": 100,
+        "startMana": 30,
+        "manaPerHit": 10,
+        "skillId": "susanoo_form",
+        "physicalPower": 0,
+        "spellPower": 0,
+        "critChance": 0.25,
+        "lifesteal": 0,
+        "damageAmp": 0,
+        "damageReduction": 0
+      }
+    ],
+    "skills": {
+      "fireball": {
+        "id": "fireball",
+        "name": "爆裂火球",
+        "description": "施法0.3秒后，对当前目标及其1格内所有敌人各造成{魔法+:dmg}点魔法伤害。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 1,
+        "targeting": "nearest",
+        "effect": "delayedArea",
+        "castSeconds": 0.3,
+        "starDamage": [
+          210,
+          315,
+          500
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "210/315/500"
+          }
+        ]
+      },
+      "cleave": {
+        "id": "cleave",
+        "name": "回旋斩",
+        "description": "施法0.2秒后，对当前目标及其1格内所有敌人各造成{物理+:dmg}点物理伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 1,
+        "targeting": "nearest",
+        "effect": "delayedArea",
+        "castSeconds": 0.2,
+        "starDamage": [
+          190,
+          285,
+          450
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "190/285/450"
+          }
+        ]
+      },
+      "piercing_shot": {
+        "id": "piercing_shot",
+        "name": "猎杀箭",
+        "description": "施法0.25秒后，对射程内生命比例最低的敌人造成{物理+:dmg}点物理伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "lowestHp",
+        "effect": "delayedDamage",
+        "castSeconds": 0.25,
+        "starDamage": [
+          260,
+          390,
+          600
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "260/390/600"
+          }
+        ]
+      },
+      "lightning": {
+        "name": "雷击",
+        "description": "对最近敌人及其周围1格敌人各造成{魔法+:dmg}点魔法伤害。",
+        "dmgType": "magic",
+        "power": 170,
+        "radius": 1,
+        "targeting": "nearest",
+        "id": "lightning",
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "170/306/551"
+          }
+        ]
+      },
+      "arcane_burst": {
+        "name": "奥术爆发",
+        "description": "对最近敌人及其周围1格敌人各造成{魔法+:dmg}点魔法伤害。",
+        "dmgType": "magic",
+        "power": 260,
+        "radius": 1,
+        "targeting": "nearest",
+        "id": "arcane_burst",
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "260/468/842"
+          }
+        ]
+      },
+      "judgment": {
+        "name": "裁决",
+        "description": "对射程内生命比例最低的敌人造成{真实:dmg}点真实伤害。",
+        "dmgType": "true",
+        "power": 180,
+        "radius": 0,
+        "targeting": "lowestHp",
+        "id": "judgment",
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{真实:dmg}",
+            "stars": "180/324/583"
+          }
+        ]
+      },
+      "ender_ambush": {
+        "id": "ender_ambush",
+        "name": "末影突袭",
+        "description": "传送至三格内生命值最低的敌人旁，接下来3次普攻各造成{物理+:dmg}点物理伤害，并获得{攻速:aspd}攻击速度。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "lowestHp",
+        "effect": "teleportEmpower",
+        "castSeconds": 0.3,
+        "targetRange": 3,
+        "empoweredAttacks": 3,
+        "attackSpeedBonuses": [
+          0.5,
+          1,
+          4
+        ],
+        "manaLockDuringEmpower": true,
+        "permanentEmpowerStar": 3,
+        "mechanics": [
+          "三星首次施法后，本场战斗永久保持强化普攻、攻速加成和回蓝锁定。",
+          "攻速加成按次/秒直接相加，最终攻速上限500%。"
+        ],
+        "statRows": [
+          {
+            "label": "强化普攻",
+            "value": "{物理+:dmg}",
+            "stars": "250/400/12000"
+          },
+          {
+            "label": "攻击速度",
+            "value": "+{攻速:aspd}",
+            "stars": "50%/100%/400%"
+          }
+        ],
+        "starDamage": [
+          250,
+          400,
+          12000
+        ]
+      },
+      "black_flame": {
+        "id": "black_flame",
+        "name": "黑炎",
+        "description": "施法0.5秒后，对当前目标造成{物理+:dmg}点物理伤害。\n\n施加5秒灼烧，每秒造成目标最大生命值{真实:burn}的真实伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "damageBurn",
+        "castSeconds": 0.5,
+        "burn": {
+          "durationSeconds": 5,
+          "intervalSeconds": 1,
+          "maxHpFraction": 0.02,
+          "dmgType": "true"
+        },
+        "mechanics": [
+          "同一施法者再次命中刷新灼烧。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "300/500/2000"
+          },
+          {
+            "label": "每秒生命伤害",
+            "value": "{真实:burn}",
+            "stars": "2%/2%/2%"
+          },
+          {
+            "label": "持续时间",
+            "value": "{控制:burnDuration}秒",
+            "stars": "5/5/5秒"
+          }
+        ],
+        "starDamage": [
+          300,
+          500,
+          2000
+        ]
+      },
+      "healing_channel": {
+        "id": "healing_channel",
+        "name": "掌仙术",
+        "description": "持续施法1.5秒，每0.5秒回复自身{治疗:healPercent}最大生命值＋{治疗+:healBonus}点生命值，共3次。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "healChannel",
+        "castSeconds": 1.5,
+        "heal": {
+          "intervalSeconds": 0.5,
+          "maxHpFractions": [
+            0.02,
+            0.025,
+            0.04
+          ],
+          "bonusAmounts": [
+            10,
+            15,
+            20
+          ]
+        },
+        "mechanics": [
+          "施法期间停止攻击和移动。"
+        ],
+        "statRows": [
+          {
+            "label": "每次治疗",
+            "value": "{治疗:heal}",
+            "stars": "26/51/124"
+          },
+          {
+            "label": "生命比例",
+            "value": "{治疗:healPercent}",
+            "stars": "2%/2.5%/4%"
+          },
+          {
+            "label": "额外治疗",
+            "value": "{治疗+:healBonus}",
+            "stars": "10/15/20"
+          }
+        ]
+      },
+      "hybrid_bolt": {
+        "id": "hybrid_bolt",
+        "name": "忍术飞弹",
+        "description": "对当前目标造成{魔法++:dmg}点魔法伤害。",
+        "dmgType": "magic",
+        "power": 100,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "hybridSpell",
+        "hybrid": {
+          "physicalDamage": [
+            20,
+            30,
+            50
+          ],
+          "magicDamage": [
+            100,
+            150,
+            250
+          ]
+        },
+        "mechanics": [
+          "物理部分与法术部分分别计算对应加成。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法++:dmg}",
+            "stars": "120/180/300"
+          },
+          {
+            "label": "基础物理伤害",
+            "value": "{物理:basePhysical}",
+            "stars": "20/30/50"
+          },
+          {
+            "label": "基础魔法伤害",
+            "value": "{魔法:baseMagic}",
+            "stars": "100/150/250"
+          }
+        ]
+      },
+      "tsukuyomi": {
+        "id": "tsukuyomi",
+        "name": "月读",
+        "description": "施法0.45秒后，对当前目标造成{魔法+:dmg}点魔法伤害，并眩晕{控制:stun}秒。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "damageStun",
+        "castSeconds": 0.45,
+        "stunSeconds": [
+          0.5,
+          1,
+          3
+        ],
+        "mechanics": [
+          "眩晕打断施法。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "500/750/3000"
+          },
+          {
+            "label": "眩晕时间",
+            "value": "{控制:stun}秒",
+            "stars": "0.5/1/3秒"
+          }
+        ],
+        "starDamage": [
+          500,
+          750,
+          3000
+        ]
+      },
+      "iron_uppercut": {
+        "id": "iron_uppercut",
+        "name": "铁壁重拳",
+        "description": "施法0.3秒后击飞当前目标0.5秒，造成{物理+:dmg}点物理伤害。\n\n自身获得{控制:guardDuration}秒{控制:guardReduction}伤害减免。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "knockupGuard",
+        "castSeconds": 0.3,
+        "knockupSeconds": 0.5,
+        "guard": {
+          "durations": [
+            3,
+            4,
+            6
+          ],
+          "reductions": [
+            0.3,
+            0.4,
+            0.6
+          ]
+        },
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "250/400/1500"
+          },
+          {
+            "label": "伤害减免",
+            "value": "{控制:guardReduction}",
+            "stars": "30%/40%/60%"
+          },
+          {
+            "label": "减免持续",
+            "value": "{控制:guardDuration}秒",
+            "stars": "3/4/6秒"
+          }
+        ],
+        "starDamage": [
+          250,
+          400,
+          1500
+        ]
+      },
+      "academy_shield": {
+        "id": "academy_shield",
+        "name": "护身术",
+        "description": "施法0.5秒后，自身获得{魔法+:shield}点护盾。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "selfShield",
+        "castSeconds": 0.5,
+        "shieldAmounts": [
+          70,
+          80,
+          100
+        ],
+        "statRows": [
+          {
+            "label": "护盾",
+            "value": "{魔法+:shield}",
+            "stars": "70/80/100"
+          }
+        ]
+      },
+      "rasengan": {
+        "id": "rasengan",
+        "name": "螺旋丸",
+        "description": "施法0.1秒后，对目标及其2格内敌人造成总计{物理+:dmg}点物理伤害，由命中敌人平摊。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 2,
+        "targeting": "nearest",
+        "effect": "splitPhysical",
+        "castSeconds": 0.1,
+        "splitDamage": [
+          240,
+          360,
+          600
+        ],
+        "mechanics": [
+          "每个敌人分别计算护甲减伤。"
+        ],
+        "statRows": [
+          {
+            "label": "平摊总伤害",
+            "value": "{物理+:dmg}",
+            "stars": "240/360/600"
+          }
+        ]
+      },
+      "sage_clone_rasengan": {
+        "id": "sage_clone_rasengan",
+        "name": "影分身·螺旋丸",
+        "description": "施法0.1秒后，召唤短暂影分身攻击当前目标造成{物理+:dmg}点物理伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "delayedDamage",
+        "castSeconds": 0.1,
+        "starDamage": [
+          280,
+          420,
+          700
+        ],
+        "mechanics": [
+          "影分身不占格，攻击后消散。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "280/420/700"
+          }
+        ]
+      },
+      "aimed_arrow": {
+        "id": "aimed_arrow",
+        "name": "蓄力箭",
+        "description": "施法0.15秒后，对当前目标造成{物理+:dmg}点物理伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "delayedDamage",
+        "castSeconds": 0.15,
+        "starDamage": [
+          150,
+          225,
+          350
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{物理+:dmg}",
+            "stars": "150/225/350"
+          }
+        ]
+      },
+      "guardian_bulwark": {
+        "id": "guardian_bulwark",
+        "name": "坚守",
+        "description": "施法0.25秒后，自身获得{魔法+:shield}点护盾。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "selfShield",
+        "castSeconds": 0.25,
+        "shieldAmounts": [
+          160,
+          240,
+          360
+        ],
+        "mechanics": [
+          "护盾持续至被击破。"
+        ],
+        "statRows": [
+          {
+            "label": "护盾",
+            "value": "{魔法+:shield}",
+            "stars": "160/240/360"
+          }
+        ]
+      },
+      "corrupt_curse": {
+        "id": "corrupt_curse",
+        "name": "腐蚀诅咒",
+        "description": "施法0.25秒后，对当前目标造成{魔法+:dmg}点魔法伤害。\n\n诅咒目标5秒，每秒造成目标最大生命值{魔法+:burn}的魔法伤害。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "damageBurn",
+        "castSeconds": 0.25,
+        "starDamage": [
+          140,
+          210,
+          330
+        ],
+        "burn": {
+          "durationSeconds": 5,
+          "intervalSeconds": 1,
+          "maxHpFraction": 0.015,
+          "dmgType": "magic"
+        },
+        "mechanics": [
+          "重复施放刷新诅咒。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "140/210/330"
+          },
+          {
+            "label": "每秒生命伤害",
+            "value": "{魔法+:burn}",
+            "stars": "1.5%/1.5%/1.5%"
+          },
+          {
+            "label": "持续时间",
+            "value": "{控制:burnDuration}秒",
+            "stars": "5/5/5秒"
+          }
+        ]
+      },
+      "divine_mend": {
+        "id": "divine_mend",
+        "name": "圣愈术",
+        "description": "施法0.3秒后，治疗自身3格内生命比例最低的受伤友军，回复{治疗:heal}点生命值。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 0,
+        "targeting": "nearest",
+        "effect": "healAlly",
+        "castSeconds": 0.3,
+        "healAmounts": [
+          180,
+          270,
+          420
+        ],
+        "targetRange": 3,
+        "mechanics": [
+          "可治疗自己。",
+          "治疗受法术加成影响，不超过最大生命值。",
+          "没有受伤友军时保留法力。"
+        ],
+        "statRows": [
+          {
+            "label": "治疗",
+            "value": "{治疗:heal}",
+            "stars": "180/270/420"
+          }
+        ]
+      },
+      "dragon_breath": {
+        "id": "dragon_breath",
+        "name": "末影吐息",
+        "description": "蓄力0.6秒后，向当前目标喷吐紫焰，对目标及其1格内所有敌人各造成{魔法+:dmg}点魔法伤害。",
+        "dmgType": "magic",
+        "power": 0,
+        "radius": 1,
+        "targeting": "nearest",
+        "effect": "delayedArea",
+        "castSeconds": 0.6,
+        "starDamage": [
+          320,
+          320,
+          320
+        ],
+        "mechanics": [
+          "野怪专属技能，巨龙固定1星，不进入商店或共享卡池。"
+        ],
+        "statRows": [
+          {
+            "label": "伤害",
+            "value": "{魔法+:dmg}",
+            "stars": "320/320/320"
+          }
+        ]
+      },
+      "susanoo_form": {
+        "id": "susanoo_form",
+        "name": "须佐能乎",
+        "description": "召唤蓝色半身须佐作战，持续{物理+:formDuration}秒，期间免疫控制并获得{物理:formReduction}伤害减免。\n\n强化期间，普攻释放半月横扫，对目标及其1格内所有敌人造成普攻伤害和{物理+:formBonus}点额外物理伤害。",
+        "dmgType": "physical",
+        "power": 0,
+        "radius": 1,
+        "targeting": "nearest",
+        "effect": "susanoo",
+        "castSeconds": 0,
+        "formDurations": [
+          2,
+          3,
+          99
+        ],
+        "mechanics": [
+          "须佐为自身强化，不生成额外占格单位。",
+          "持续期间不重复释放；同一普攻仅回蓝一次。"
+        ],
+        "statRows": [
+          {
+            "label": "持续时间",
+            "value": "{物理+:formDuration}秒",
+            "stars": "2/3/99秒"
+          },
+          {
+            "label": "伤害减免",
+            "value": "{物理:formReduction}",
+            "stars": "50%/70%/99%"
+          },
+          {
+            "label": "额外伤害",
+            "value": "{物理+:formBonus}",
+            "stars": "60/100/10000"
+          }
+        ],
+        "formReductions": [
+          0.5,
+          0.7,
+          0.99
+        ],
+        "formBonusDamage": [
+          60,
+          100,
+          10000
+        ]
+      }
+    },
+    "battle": {
+      "boardWidth": 7,
+      "boardHeight": 8,
+      "ownRows": 4,
+      "maxTicks": 900,
+      "tickMs": 50,
+      "combatSeconds": 30,
+      "overtime": {
+        "seconds": 15,
+        "attackSpeedBonus": 1,
+        "damageAmp": 1
+      },
+      "preparationSeconds": 1,
+      "nextWaveDelaySeconds": 1,
+      "initialHealth": 20,
+      "lossPerEnemy": 2,
+      "starScaling": [
+        {
+          "hp": 1,
+          "atk": 1,
+          "skill": 1
+        },
+        {
+          "hp": 1.8,
+          "atk": 1.8,
+          "skill": 1.8
+        },
+        {
+          "hp": 3.24,
+          "atk": 3.24,
+          "skill": 3.24
+        }
+      ],
+      "criticalMultiplier": 1.5,
+      "attackSpeedCap": 5,
+      "roleMana": {
+        "casterPerSecond": 2,
+        "damageTakenFraction": 0.1
+      },
+      "legendaryThreeStarBonusHp": 5000,
+      "traits": [
+        {
+          "id": "naruto",
+          "name": "火影忍者",
+          "glyph": "火",
+          "description": "忍者们之间的羁绊为他们带来双攻提升。",
+          "members": [
+            "scout",
+            "warrior",
+            "champion",
+            "young_sasuke",
+            "sasuke",
+            "sakura",
+            "itachi",
+            "madara"
+          ],
+          "breakpoints": [
+            {
+              "count": 3,
+              "tier": "bronze",
+              "power": 15
+            },
+            {
+              "count": 5,
+              "tier": "silver",
+              "power": 30
+            },
+            {
+              "count": 7,
+              "tier": "gold",
+              "power": 50
+            },
+            {
+              "count": 10,
+              "tier": "prismatic",
+              "power": 80,
+              "regenPerSecond": 0.02
+            }
+          ]
+        },
+        {
+          "id": "native",
+          "name": "原住民",
+          "glyph": "原",
+          "description": "原住民适应赖以生存的环境。\n开战时，前两排提升生命与减伤，后两排提升攻速与增伤。",
+          "members": [
+            "archer",
+            "guardian",
+            "duelist",
+            "ranger",
+            "shaman",
+            "mage",
+            "sorcerer"
+          ],
+          "breakpoints": [
+            {
+              "count": 3,
+              "tier": "bronze",
+              "formation": {
+                "maxHpBonus": 0.2,
+                "damageReduction": 0.08,
+                "attackSpeedBonus": 0.15,
+                "damageAmp": 0.1
+              }
+            },
+            {
+              "count": 5,
+              "tier": "silver",
+              "formation": {
+                "maxHpBonus": 0.35,
+                "damageReduction": 0.12,
+                "attackSpeedBonus": 0.3,
+                "damageAmp": 0.16
+              }
+            },
+            {
+              "count": 7,
+              "tier": "gold",
+              "formation": {
+                "maxHpBonus": 0.55,
+                "damageReduction": 0.18,
+                "attackSpeedBonus": 0.45,
+                "damageAmp": 0.24
+              }
+            }
+          ]
+        },
+        {
+          "id": "armored_tank",
+          "name": "重甲坦克",
+          "glyph": "甲",
+          "description": "重甲坦克获得额外护甲和魔抗。",
+          "members": [],
+          "selector": {
+            "role": "tank",
+            "damageType": "physical"
+          },
+          "breakpoints": [
+            {
+              "count": 2,
+              "tier": "bronze",
+              "stats": {
+                "armor": 25,
+                "mr": 25
+              }
+            },
+            {
+              "count": 4,
+              "tier": "silver",
+              "stats": {
+                "armor": 50,
+                "mr": 50
+              }
+            },
+            {
+              "count": 6,
+              "tier": "gold",
+              "stats": {
+                "armor": 80,
+                "mr": 80
+              }
+            },
+            {
+              "count": 8,
+              "tier": "prismatic",
+              "stats": {
+                "armor": 120,
+                "mr": 120
+              }
+            }
+          ]
+        },
+        {
+          "id": "brawler",
+          "name": "斗士",
+          "glyph": "斗",
+          "description": "斗士获得额外最大生命值。",
+          "members": [],
+          "selector": {
+            "role": "tank",
+            "damageType": "magic"
+          },
+          "breakpoints": [
+            {
+              "count": 2,
+              "tier": "bronze",
+              "stats": {
+                "maxHpBonus": 0.2
+              }
+            },
+            {
+              "count": 4,
+              "tier": "silver",
+              "stats": {
+                "maxHpBonus": 0.35
+              }
+            },
+            {
+              "count": 6,
+              "tier": "gold",
+              "stats": {
+                "maxHpBonus": 0.55
+              }
+            },
+            {
+              "count": 8,
+              "tier": "prismatic",
+              "stats": {
+                "maxHpBonus": 0.85
+              }
+            }
+          ]
+        },
+        {
+          "id": "swift_marksman",
+          "name": "迅捷射手",
+          "glyph": "迅",
+          "description": "迅捷射手获得额外攻速。",
+          "members": [],
+          "selector": {
+            "role": "marksman",
+            "damageType": "magic"
+          },
+          "breakpoints": [
+            {
+              "count": 2,
+              "tier": "bronze",
+              "stats": {
+                "attackSpeedBonus": 0.2
+              }
+            },
+            {
+              "count": 3,
+              "tier": "silver",
+              "stats": {
+                "attackSpeedBonus": 0.35
+              }
+            },
+            {
+              "count": 4,
+              "tier": "gold",
+              "stats": {
+                "attackSpeedBonus": 0.55
+              }
+            },
+            {
+              "count": 5,
+              "tier": "prismatic",
+              "stats": {
+                "attackSpeedBonus": 0.8
+              }
+            }
+          ]
+        },
+        {
+          "id": "sharpshooter",
+          "name": "神射手",
+          "glyph": "射",
+          "description": "神射手获得物理加成，普攻追加固定基础物理伤害。",
+          "members": [],
+          "selector": {
+            "role": "marksman",
+            "damageType": "physical"
+          },
+          "breakpoints": [
+            {
+              "count": 2,
+              "tier": "bronze",
+              "stats": {
+                "physicalPower": 15,
+                "attackDamage": 10
+              }
+            },
+            {
+              "count": 4,
+              "tier": "silver",
+              "stats": {
+                "physicalPower": 30,
+                "attackDamage": 20
+              }
+            },
+            {
+              "count": 6,
+              "tier": "gold",
+              "stats": {
+                "physicalPower": 50,
+                "attackDamage": 35
+              }
+            },
+            {
+              "count": 8,
+              "tier": "prismatic",
+              "stats": {
+                "physicalPower": 80,
+                "attackDamage": 55
+              }
+            }
+          ]
+        },
+        {
+          "id": "assassin",
+          "name": "刺客",
+          "glyph": "刺",
+          "description": "刺客技能可以暴击，并获得暴击率。\n命中后斩杀低于血线的目标。",
+          "members": [],
+          "selector": {
+            "role": "assassin"
+          },
+          "breakpoints": [
+            {
+              "count": 2,
+              "tier": "bronze",
+              "stats": {
+                "skillCanCrit": true,
+                "critChance": 0.15,
+                "executeThreshold": 0.08
+              }
+            },
+            {
+              "count": 3,
+              "tier": "silver",
+              "stats": {
+                "skillCanCrit": true,
+                "critChance": 0.25,
+                "executeThreshold": 0.12
+              }
+            },
+            {
+              "count": 4,
+              "tier": "gold",
+              "stats": {
+                "skillCanCrit": true,
+                "critChance": 0.4,
+                "executeThreshold": 0.16
+              }
+            },
+            {
+              "count": 5,
+              "tier": "prismatic",
+              "stats": {
+                "skillCanCrit": true,
+                "critChance": 0.6,
+                "executeThreshold": 0.2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "run": {
+      "roundsPerStage": 5,
+      "roundsPerStageGrowth": 1,
+      "maxRoundsPerStage": 10,
+      "starterUnitId": "warrior",
+      "starterSelection": "random-one-cost",
+      "monsterTemplate": {
+        "hp": 175,
+        "atk": 30,
+        "armor": 10,
+        "mr": 10,
+        "atkSpeed": 0.75,
+        "critChance": 0.25
+      },
+      "monsters": [
+        {
+          "id": "zombie",
+          "name": "腐衣僵尸",
+          "description": "青衣破碎的绿色亡者，伸出双臂缓慢逼近，以近身挥击攻击。无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 1,
+          "moveTicks": 6,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "zombie",
+          "role": "frontline",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "id": "skeleton_archer",
+          "name": "白骨弓手",
+          "description": "手持木弓的骷髅射手，从后排发射箭矢；射程4格，近身仍可普通攻击。无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 4,
+          "moveTicks": 6,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "skeleton_archer",
+          "role": "ranged",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "id": "silverfish",
+          "name": "岩隙蠹虫",
+          "description": "灰色分节甲壳的小型蠹虫，贴地爬行，迅速靠近后啃咬目标。周围碎石仅为外观，无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 1,
+          "moveTicks": 5,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "silverfish",
+          "role": "frontline",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "id": "red_eye_spider",
+          "name": "赤瞳巨蛛",
+          "description": "红眼发光的深褐色巨蛛，八足快速逼近，以近身撕咬攻击。无毒、无控制效果，无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 1,
+          "moveTicks": 4,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "red_eye_spider",
+          "role": "frontline",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "id": "red_guard",
+          "name": "赤衣卫士",
+          "description": "持盾佩剑的赤衣卫士，以近身挥斩攻击。无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 1,
+          "moveTicks": 6,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "red_guard",
+          "role": "frontline",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        },
+        {
+          "id": "red_archer",
+          "name": "赤衣弓手",
+          "description": "背负箭囊的赤衣弓手，从后排发射箭矢，射程4格。无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 4,
+          "moveTicks": 6,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "red_archer",
+          "role": "ranged",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0,
+          "basicAttackFx": "arrow"
+        },
+        {
+          "id": "red_mage",
+          "name": "赤衣法师",
+          "description": "手持蓝色法杖的赤衣法师，发射魔法弹进行普通攻击，射程3格。无主动技能。",
+          "hp": 175,
+          "atk": 30,
+          "armor": 10,
+          "mr": 10,
+          "atkSpeed": 0.75,
+          "range": 3,
+          "moveTicks": 6,
+          "maxMana": 0,
+          "startMana": 0,
+          "manaPerHit": 0,
+          "artId": "red_mage",
+          "role": "ranged",
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0,
+          "basicAttackFx": "fireball"
+        },
+        {
+          "id": "ender_dragon",
+          "name": "末影巨龙",
+          "description": "盘踞末地的强力野怪，以利爪攻击近敌，并喷吐覆盖目标周围的紫焰。",
+          "monsterTier": "strong",
+          "hp": 4500,
+          "atk": 90,
+          "armor": 60,
+          "mr": 60,
+          "atkSpeed": 0.65,
+          "range": 3,
+          "moveTicks": 8,
+          "maxMana": 100,
+          "startMana": 40,
+          "manaPerHit": 10,
+          "skillId": "dragon_breath",
+          "artId": "ender_dragon",
+          "role": "caster",
+          "damageType": "magic",
+          "basicAttackFx": "fireball",
+          "basicAttackTint": [
+            180,
+            70,
+            255
+          ],
+          "physicalPower": 0,
+          "spellPower": 0,
+          "critChance": 0.25,
+          "lifesteal": 0,
+          "damageAmp": 0,
+          "damageReduction": 0
+        }
+      ],
+      "introWaves": [
+        {
+          "id": 1,
+          "name": "腐衣墓地",
+          "enemies": [
+            {
+              "unitId": "zombie",
+              "x": 3,
+              "y": 4,
+              "star": 1,
+              "statMultiplier": 1
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "岩隙虫群",
+          "enemies": [
+            {
+              "unitId": "silverfish",
+              "x": 2,
+              "y": 4,
+              "star": 1,
+              "statMultiplier": 1
+            },
+            {
+              "unitId": "silverfish",
+              "x": 4,
+              "y": 4,
+              "star": 1,
+              "statMultiplier": 1
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "赤衣营地",
+          "enemies": [
+            {
+              "unitId": "red_guard",
+              "x": 2,
+              "y": 4,
+              "star": 1,
+              "statMultiplier": 1
+            },
+            {
+              "unitId": "red_mage",
+              "x": 3,
+              "y": 5,
+              "star": 1,
+              "statMultiplier": 1
+            },
+            {
+              "unitId": "red_archer",
+              "x": 4,
+              "y": 4,
+              "star": 1,
+              "statMultiplier": 1
+            }
+          ]
+        }
+      ],
+      "monsterStatScale": 0.25,
+      "enemyProgression": {
+        "cells": [
+          {
+            "y": 4,
+            "x": 3
+          },
+          {
+            "y": 4,
+            "x": 2
+          },
+          {
+            "y": 4,
+            "x": 4
+          },
+          {
+            "y": 4,
+            "x": 1
+          },
+          {
+            "y": 4,
+            "x": 5
+          },
+          {
+            "y": 5,
+            "x": 3
+          },
+          {
+            "y": 5,
+            "x": 2
+          },
+          {
+            "y": 5,
+            "x": 4
+          },
+          {
+            "y": 5,
+            "x": 1
+          },
+          {
+            "y": 5,
+            "x": 5
+          }
+        ],
+        "damageAmpPerStage": 0.05,
+        "damageReductionPerStage": 0.05,
+        "initialPopulation": 1,
+        "tiers": [
+          {
+            "stage": 2,
+            "star": 1,
+            "cost": 1
+          },
+          {
+            "stage": 4,
+            "star": 1,
+            "cost": 2
+          },
+          {
+            "stage": 6,
+            "star": 2,
+            "cost": 3
+          },
+          {
+            "stage": 8,
+            "star": 2,
+            "cost": 5
+          },
+          {
+            "stage": 10,
+            "star": 3,
+            "cost": 5
+          }
+        ],
+        "lateStartStage": 10,
+        "damageReductionCap": 0.8,
+        "populationEveryRounds": 3,
+        "populationCap": 10
+      },
+      "monsterAttackSpeed": 0.75,
+      "stageEncounters": {
+        "version": "stage-encounters-v1",
+        "startStage": 4,
+        "monsterStatGrowth": 0.5,
+        "monsterReward": {
+          "initialValue": 2,
+          "valuePerStage": 2,
+          "maxValue": 10
+        },
+        "shop": {
+          "slots": 5,
+          "equipmentPrices": {
+            "basic": 3,
+            "advanced": 6,
+            "special": 8
+          }
+        },
+        "basicEquipmentIds": [
+          "guinsoo",
+          "jeweled_gauntlet",
+          "infinity_edge",
+          "arcane_sovereignty",
+          "crimson_bloodclaw",
+          "abyssal_plate",
+          "divine_judgment",
+          "arcane_veil"
+        ],
+        "strongMonster": {
+          "unitId": "ender_dragon",
+          "startStage": 4,
+          "everyStages": 3,
+          "statGrowth": 0.25
+        }
+      }
+    },
+    "waves": [
+      {
+        "id": 1,
+        "name": "边境哨卫",
+        "enemies": [
+          {
+            "unitId": "warrior",
+            "x": 3,
+            "y": 4,
+            "star": 1,
+            "statMultiplier": 0.7
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "林地伏击",
+        "enemies": [
+          {
+            "unitId": "guardian",
+            "x": 2,
+            "y": 4,
+            "star": 1,
+            "statMultiplier": 0.85
+          },
+          {
+            "unitId": "scout",
+            "x": 4,
+            "y": 6,
+            "star": 1,
+            "statMultiplier": 0.85
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "秘法巡队",
+        "enemies": [
+          {
+            "unitId": "guardian",
+            "x": 2,
+            "y": 4,
+            "star": 1,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "ranger",
+            "x": 4,
+            "y": 6,
+            "star": 1,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "shaman",
+            "x": 6,
+            "y": 7,
+            "star": 1,
+            "statMultiplier": 0.9
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name": "铁壁军阵",
+        "enemies": [
+          {
+            "unitId": "champion",
+            "x": 1,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "duelist",
+            "x": 4,
+            "y": 4,
+            "star": 1,
+            "statMultiplier": 1.1
+          },
+          {
+            "unitId": "ranger",
+            "x": 3,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 0.9
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "元素突袭",
+        "enemies": [
+          {
+            "unitId": "duelist",
+            "x": 1,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "guardian",
+            "x": 5,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "ranger",
+            "x": 2,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "shaman",
+            "x": 4,
+            "y": 7,
+            "star": 2,
+            "statMultiplier": 1
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "name": "王城近卫",
+        "enemies": [
+          {
+            "unitId": "champion",
+            "x": 1,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1.15
+          },
+          {
+            "unitId": "duelist",
+            "x": 4,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1.15
+          },
+          {
+            "unitId": "ranger",
+            "x": 2,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 1.15
+          },
+          {
+            "unitId": "scout",
+            "x": 5,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 1.15
+          },
+          {
+            "unitId": "sorcerer",
+            "x": 3,
+            "y": 7,
+            "star": 2,
+            "statMultiplier": 1.15
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "name": "终焉守门者",
+        "enemies": [
+          {
+            "unitId": "champion",
+            "x": 1,
+            "y": 4,
+            "star": 3,
+            "statMultiplier": 1
+          },
+          {
+            "unitId": "duelist",
+            "x": 5,
+            "y": 4,
+            "star": 2,
+            "statMultiplier": 1.25
+          },
+          {
+            "unitId": "ranger",
+            "x": 2,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 1.25
+          },
+          {
+            "unitId": "archer",
+            "x": 5,
+            "y": 6,
+            "star": 2,
+            "statMultiplier": 1.25
+          },
+          {
+            "unitId": "shaman",
+            "x": 1,
+            "y": 7,
+            "star": 2,
+            "statMultiplier": 1.25
+          },
+          {
+            "unitId": "sorcerer",
+            "x": 4,
+            "y": 7,
+            "star": 3,
+            "statMultiplier": 1
+          }
+        ]
+      }
+    ],
+    "equipment": [
+      {
+        "id": "guinsoo",
+        "name": "炽轮战刃",
+        "spellPower": 10,
+        "attackSpeedBonus": 0.1,
+        "attackSpeedPerAttack": 0.05,
+        "description": "+10%法术加成，+0.1次/秒攻速。\n每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
+        "effectDescription": "每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
+        "icon": "art/equipment/guinsoo/spriteFrame"
+      },
+      {
+        "id": "totem_of_undying",
+        "name": "余烬命核",
+        "hp": 200,
+        "armor": 10,
+        "mr": 10,
+        "spellPower": 0,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "description": "+200生命，+10护甲，+10魔抗。\n每场战斗一次：生命低于5%时触发，致命伤害保留1点生命。\n不可选中0.3秒，获得最大生命值10%的护盾，并在5秒内回复最大生命值的10%。\n多件仅叠加属性，仍只触发一次。",
+        "effectDescription": "每场战斗一次：生命低于5%时触发，致命伤害保留1点生命。\n不可选中0.3秒，获得最大生命值10%的护盾，并在5秒内回复最大生命值的10%。\n多件仅叠加属性，仍只触发一次。",
+        "lowHealthProtection": {
+          "threshold": 0.05,
+          "untargetableSeconds": 0.3,
+          "shieldMaxHpFraction": 0.1,
+          "healMaxHpFraction": 0.1,
+          "healSeconds": 5
+        },
+        "icon": "art/equipment/totem_of_undying/spriteFrame"
+      },
+      {
+        "id": "jeweled_gauntlet",
+        "name": "星棱法印",
+        "spellPower": 20,
+        "critChance": 0.35,
+        "skillCanCrit": true,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "description": "+20%法术加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+        "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+        "icon": "art/equipment/jeweled_gauntlet/spriteFrame"
+      },
+      {
+        "id": "infinity_edge",
+        "name": "裂星锋刃",
+        "physicalPower": 20,
+        "spellPower": 0,
+        "critChance": 0.35,
+        "skillCanCrit": true,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "description": "+20%物理加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+        "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
+        "icon": "art/equipment/infinity_edge/spriteFrame"
+      },
+      {
+        "id": "arcane_sovereignty",
+        "name": "奥术君权",
+        "spellPower": 50,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "spellPowerDamageAmp": {
+          "step": 20,
+          "bonus": 0.01,
+          "cap": 0.1
+        },
+        "description": "+50%法术加成。\n携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
+        "effectDescription": "携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
+        "icon": "art/equipment/arcane_sovereignty/spriteFrame"
+      },
+      {
+        "id": "crimson_bloodclaw",
+        "name": "猩红噬血爪",
+        "spellPower": 10,
+        "physicalPower": 10,
+        "armor": 10,
+        "mr": 10,
+        "lifesteal": 0.2,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "missingHpLifesteal": {
+          "step": 0.1,
+          "bonus": 0.01
+        },
+        "description": "+20%全能吸血，+10护甲，+10魔抗，+10%物理加成，+10%法术加成。\n每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
+        "effectDescription": "每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
+        "icon": "art/equipment/crimson_bloodclaw/spriteFrame"
+      },
+      {
+        "id": "abyssal_plate",
+        "name": "深渊重铠",
+        "spellPower": 0,
+        "armor": 60,
+        "hp": 100,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "armorDamageReduction": {
+          "threshold": 100,
+          "bonus": 0.05
+        },
+        "description": "+60护甲，+100生命。\n携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
+        "effectDescription": "携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
+        "icon": "art/equipment/abyssal_plate/spriteFrame"
+      },
+      {
+        "id": "divine_judgment",
+        "name": "神圣裁决",
+        "spellPower": 0,
+        "physicalPower": 50,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "lowTargetDamageAmp": {
+          "threshold": 0.5,
+          "bonus": 0.1
+        },
+        "description": "+50%物理加成。\n每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
+        "effectDescription": "每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
+        "icon": "art/equipment/divine_judgment/spriteFrame"
+      },
+      {
+        "id": "arcane_veil",
+        "name": "秘法帷幕",
+        "spellPower": 0,
+        "mr": 60,
+        "hp": 100,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "magicDamageReduction": 0.15,
+        "description": "+60魔抗，+100生命。\n受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
+        "effectDescription": "受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
+        "icon": "art/equipment/arcane_veil/spriteFrame"
+      },
+      {
+        "id": "forest_sanctuary",
+        "name": "森灵庇护",
+        "spellPower": 0,
+        "hp": 500,
+        "maxHpBonus": 0.2,
+        "attackSpeedBonus": 0,
+        "attackSpeedPerAttack": 0,
+        "lowHealthRegen": {
+          "threshold": 0.5,
+          "intervalSeconds": 1,
+          "maxHpFraction": 0.015
+        },
+        "description": "+500生命，额外获得20%最大生命。\n每场战斗生命首次严格低于50%时，直到本场战斗结束，每秒回复1.5%最大生命。\n回血后高于50%仍持续回复；死亡停止，下一场重新触发。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
+        "effectDescription": "每场战斗生命首次严格低于50%时，直到本场战斗结束，每秒回复1.5%最大生命。\n回血后高于50%仍持续回复；死亡停止，下一场重新触发。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
+        "icon": "art/equipment/forest_sanctuary/spriteFrame"
+      }
+    ],
+    "enemy-difficulty": {
+      "version": "budget-v1",
+      "powerModelVersion": "enemy-power-v1",
+      "calibrationHash": "fb31829c87670bdba73af786d39ca99cda9aa875f1ffb609fd1e072e66e00b3d",
+      "growthRate": 1.04,
+      "waveKindMultipliers": {
+        "normal": 1,
+        "elite": 1.15,
+        "boss": 1.35
+      },
+      "classification": {
+        "elite": {
+          "enabled": true,
+          "minRounds": 5,
+          "roundFromEnd": 2
+        },
+        "boss": {
+          "enabled": true,
+          "roundFromEnd": 1
+        }
+      },
+      "stageRecovery": {
+        "min": 0.05,
+        "target": 0.06,
+        "max": 0.08
+      },
+      "costUnlock": [
+        {
+          "stage": 2,
+          "maxCost": 1
+        },
+        {
+          "stage": 4,
+          "maxCost": 2
+        },
+        {
+          "stage": 6,
+          "maxCost": 3
+        },
+        {
+          "stage": 7,
+          "maxCost": 4
+        },
+        {
+          "stage": 8,
+          "maxCost": 5
+        }
+      ],
+      "starPolicy": {
+        "twoStarUnlockStage": 6,
+        "threeStarUnlockStage": 10,
+        "maxThreeStars": {
+          "normal": 0,
+          "elite": 0,
+          "boss": 1
+        },
+        "twoStarTargets": [
+          {
+            "stage": 2,
+            "ratio": 0
+          },
+          {
+            "stage": 6,
+            "ratio": 0.3333333333333333
+          },
+          {
+            "stage": 7,
+            "ratio": 0.6666666666666666
+          },
+          {
+            "stage": 8,
+            "ratio": 1
+          }
+        ]
+      },
+      "maxPopulation": 10,
+      "optimizer": {
+        "maxIterations": 100,
+        "topK": 3,
+        "pairTopK": 6,
+        "targetDeviation": 0.05,
+        "starPenalty": 0.03,
+        "diversityPenalty": 0.005,
+        "concentrationPenalty": 0.005
+      },
+      "attributeAdjustment": {
+        "min": 0.95,
+        "max": 1.05,
+        "enabled": false
+      },
+      "saturationPolicy": "feasible-stage-envelope"
+    },
+    "enemy-formation": {
+      "version": "formation-v1",
+      "roles": {
+        "tank": {
+          "priority": 0,
+          "preferredDepth": [
+            4
+          ],
+          "allowedDepth": [
+            4,
+            5
+          ],
+          "flank": false
+        },
+        "melee_dps": {
+          "priority": 1,
+          "preferredDepth": [
+            4,
+            5
+          ],
+          "allowedDepth": [
+            4,
+            5,
+            6
+          ],
+          "flank": false
+        },
+        "assassin": {
+          "priority": 2,
+          "preferredDepth": [
+            4,
+            5
+          ],
+          "allowedDepth": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "flank": true
+        },
+        "mage": {
+          "priority": 3,
+          "preferredDepth": [
+            6
+          ],
+          "allowedDepth": [
+            5,
+            6,
+            7
+          ],
+          "flank": false
+        },
+        "ranged_dps": {
+          "priority": 4,
+          "preferredDepth": [
+            6,
+            7
+          ],
+          "allowedDepth": [
+            5,
+            6,
+            7
+          ],
+          "flank": false
+        },
+        "support": {
+          "priority": 5,
+          "preferredDepth": [
+            7
+          ],
+          "allowedDepth": [
+            6,
+            7
+          ],
+          "flank": false
+        }
+      },
+      "weights": {
+        "role": 1,
+        "cover": 0.4,
+        "spacing": 0.65,
+        "flank": 0.2,
+        "counter": 0.6,
+        "template": 1
+      },
+      "keyRoles": [
+        "mage",
+        "ranged_dps",
+        "support"
+      ],
+      "highPowerFraction": 0.8,
+      "spacingDistance": 2,
+      "coverDistance": 2,
+      "maxIterations": 40,
+      "tieTopK": 3,
+      "tieTolerance": 1e-9,
+      "progression": [
+        {
+          "stage": 2,
+          "role": 0,
+          "spacing": 0,
+          "counter": 0
+        },
+        {
+          "stage": 4,
+          "role": 0.6,
+          "spacing": 0,
+          "counter": 0
+        },
+        {
+          "stage": 6,
+          "role": 1,
+          "spacing": 0.6,
+          "counter": 0
+        },
+        {
+          "stage": 8,
+          "role": 1,
+          "spacing": 1,
+          "counter": 0.35
+        },
+        {
+          "stage": 10,
+          "role": 1,
+          "spacing": 1,
+          "counter": 0.6
+        },
+        {
+          "stage": 14,
+          "role": 1,
+          "spacing": 1,
+          "counter": 1
+        }
+      ],
+      "kindBonus": {
+        "elite": 0.05,
+        "boss": 0.1
+      },
+      "counterKinds": [
+        "boss"
+      ],
+      "templates": {
+        "enabled": true,
+        "kinds": [
+          "boss"
+        ]
+      }
+    },
+    "enemy-roles": {
+      "version": "enemy-roles-v1",
+      "units": {
+        "warrior": {
+          "role": "mage",
+          "tags": [
+            "aoe"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range-4 physical caster; rasengan splits physical damage among enemies within 2 hexes of the target."
+        },
+        "guardian": {
+          "role": "tank",
+          "tags": [
+            "shield",
+            "durable"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range-1 defensive tank with a self shield."
+        },
+        "champion": {
+          "role": "ranged_dps",
+          "tags": [
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "medium",
+          "reason": "Range-3 physical archer; sage_clone_rasengan deals delayed single-target physical damage."
+        },
+        "duelist": {
+          "role": "melee_dps",
+          "tags": [
+            "aoe"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Melee fighter with radius-1 physical cleave."
+        },
+        "sasuke": {
+          "role": "melee_dps",
+          "tags": [
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Existing fighter with single-target physical attack and burn; no teleport."
+        },
+        "enderman": {
+          "role": "assassin",
+          "tags": [
+            "teleport",
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Existing ender_ambush teleportEmpower; targetRange remains 3 and is not extended by formation."
+        },
+        "archer": {
+          "role": "ranged_dps",
+          "tags": [
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range-4 archer with a charged physical arrow."
+        },
+        "scout": {
+          "role": "tank",
+          "tags": [],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range 1 magic tank; academy_shield grants a spell-scaled self shield."
+        },
+        "ranger": {
+          "role": "ranged_dps",
+          "tags": [
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range-4 marksman targeting the lowest health ratio."
+        },
+        "young_sasuke": {
+          "role": "ranged_dps",
+          "tags": [
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Existing magicArcher, range 4, hybrid_bolt single target."
+        },
+        "mage": {
+          "role": "mage",
+          "tags": [
+            "aoe"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Range-4 caster with radius-1 magic fireball."
+        },
+        "shaman": {
+          "role": "support",
+          "tags": [
+            "healing"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Ranged healer prioritizing injured allies within 3 hexes."
+        },
+        "sorcerer": {
+          "role": "mage",
+          "tags": [
+            "damage-over-time"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Magic curse with five periodic magic damage pulses."
+        },
+        "itachi": {
+          "role": "mage",
+          "tags": [
+            "control",
+            "burst"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Tsukuyomi single-target damageStun; no AoE radius."
+        },
+        "sakura": {
+          "role": "tank",
+          "tags": [
+            "healing",
+            "durable"
+          ],
+          "source": "explicit",
+          "confidence": "high",
+          "reason": "Magic tank; healing_channel heals herself for max-health fraction plus a spell-scaled flat amount."
+        },
+        "iron_golem": {
+          "role": "tank",
+          "tags": [
+            "control",
+            "damage-reduction"
+          ],
+          "confidence": "high",
+          "reason": "4费近战坦克，以护甲加成重拳击飞目标并获得限时减伤。"
+        },
+        "madara": {
+          "role": "tank",
+          "tags": [
+            "aoe",
+            "damage-reduction",
+            "control-immunity"
+          ],
+          "confidence": "high",
+          "reason": "5费物理坦克，须佐期间免控、减伤并强化范围普攻。"
+        }
+      }
+    },
+    "equipment-policy": {
+      "enemyVersion": "equipment-policy-v1",
+      "rewardVersion": "equipment-reward-v1",
+      "tiers": {
+        "guinsoo": "advanced",
+        "totem_of_undying": "special",
+        "jeweled_gauntlet": "advanced",
+        "infinity_edge": "advanced",
+        "arcane_sovereignty": "advanced",
+        "crimson_bloodclaw": "advanced",
+        "abyssal_plate": "advanced",
+        "divine_judgment": "advanced",
+        "arcane_veil": "advanced",
+        "forest_sanctuary": "special"
+      },
+      "enemy": {
+        "calibratedItems": [
+          "guinsoo",
+          "infinity_edge",
+          "jeweled_gauntlet",
+          "totem_of_undying"
+        ],
+        "tierUnlock": {
+          "basic": 1,
+          "advanced": 3,
+          "special": 8
+        },
+        "maxEquipmentCandidatesPerUnit": 12,
+        "topKSingle": 2,
+        "topKCombination": 2,
+        "quotas": {
+          "normal": [
+            {
+              "stage": 1,
+              "maxEquippedUnits": 0,
+              "maxItemsPerUnit": 0,
+              "targetItems": 0
+            }
+          ],
+          "elite": [
+            {
+              "stage": 1,
+              "maxEquippedUnits": 0,
+              "maxItemsPerUnit": 0,
+              "targetItems": 0
+            },
+            {
+              "stage": 3,
+              "maxEquippedUnits": 1,
+              "maxItemsPerUnit": 1,
+              "targetItems": 1
+            },
+            {
+              "stage": 6,
+              "maxEquippedUnits": 2,
+              "maxItemsPerUnit": 1,
+              "targetItems": 2
+            }
+          ],
+          "boss": [
+            {
+              "stage": 1,
+              "maxEquippedUnits": 0,
+              "maxItemsPerUnit": 0,
+              "targetItems": 0
+            },
+            {
+              "stage": 3,
+              "maxEquippedUnits": 1,
+              "maxItemsPerUnit": 1,
+              "targetItems": 1
+            },
+            {
+              "stage": 6,
+              "maxEquippedUnits": 1,
+              "maxItemsPerUnit": 2,
+              "targetItems": 2
+            },
+            {
+              "stage": 10,
+              "maxEquippedUnits": 2,
+              "maxItemsPerUnit": 3,
+              "targetItems": 3
+            }
+          ]
+        },
+        "rolePreferences": {
+          "tank": [
+            "totem_of_undying",
+            "guinsoo"
+          ],
+          "melee_dps": [
+            "infinity_edge",
+            "guinsoo"
+          ],
+          "ranged_dps": [
+            "guinsoo",
+            "infinity_edge"
+          ],
+          "mage": [
+            "jeweled_gauntlet",
+            "guinsoo"
+          ],
+          "assassin": [
+            "guinsoo",
+            "infinity_edge"
+          ],
+          "support": [
+            "totem_of_undying",
+            "jeweled_gauntlet"
+          ]
+        },
+        "targetPenalty": 0.04,
+        "corePenalty": 0.01
+      },
+      "reward": {
+        "tierUnlock": {
+          "basic": 1,
+          "advanced": 4,
+          "special": 8
+        },
+        "eliteChance": 0.5,
+        "bossChance": 1,
+        "choices": 3,
+        "emptyBasicFallbackIds": [
+          "guinsoo",
+          "jeweled_gauntlet"
+        ],
+        "insufficientPool": "fewer-choices",
+        "guarantee": "last-eligible-victory"
+      }
+    }
+  }
+}

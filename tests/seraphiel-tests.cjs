@@ -10,7 +10,7 @@ const skills = require('../assets/resources/config/skills.json');
 const battle = require('../assets/resources/config/battle.json');
 const equipment = require('../assets/resources/config/equipment.json');
 const clone = x => JSON.parse(JSON.stringify(x));
-const normal = [110, 165, 1600], final = [550, 825, 8000], counts = [5, 7, 20];
+const normal = [110, 165, 1600], final = [550, 825, 8000], counts = [2, 4, 10];
 function fixture({star = 1, side = 0, bonuses = {}, enemies = [{x:3,y:5},{x:6,y:7}], ally = false, friends = []} = {}) {
   const c = new ConfigManager(); c.setUnits(clone(units)); c.setSkills(clone(skills));
   c.setBattle({...clone(battle), traits:[]}); c.setEquipment(clone(equipment));
@@ -49,20 +49,22 @@ for (const side of [0,1]) for (const star of [1,2,3]) for (const spellPower of [
   assert.equal(rows[2].current,String(hits(f).at(-1).dmg));
   const text=buildSkillDescription(f.c,f.src.cfg,star,f.src.skillScale,true);
   assert.ok(text.includes(rows[2].current));assert.match(text,/attr_spell_bonus/);assert.doesNotMatch(text,/\{[^}]+\}/);
+  assert.equal(rows[0].current,String(counts[star-1]));assert.equal(rows[0].stars,'2 / 4 / 10');
+  assert.match(buildSkillDescription(f.c,f.src.cfg,star,f.src.skillScale),/每次重放降低20%伤害（至多40%）/);
 }
 // Killing during an ordinary hit or on the finisher restarts from hit zero, without mana.
-for(const lethalHp of [150,600]){
+for(const lethalHp of [100,600]){
   const f=fixture({enemies:[{x:3,y:5},{x:0,y:7},{x:4,y:5},{x:2,y:5}]});
   f.targets[0].hp=lethalHp;f.targets[3].skillUntargetable=true;f.src.mana=17;
-  activate(f);const killTick=lethalHp===150?4:16;advance(f,killTick);
+  activate(f);const killTick=lethalHp===100?0:4;advance(f,killTick);
   assert.equal(f.targets[0].alive,false);assert.equal(casts(f).length,0);
   const nearest=f.targets.filter(u=>u.alive&&!u.skillUntargetable).sort((a,b)=>hexDist(f.src.pos,a.pos)-hexDist(f.src.pos,b.pos)||a.id-b.id)[0];
   advance(f,3);assert.equal(casts(f).length,0);advance(f,1);
   assert.equal(casts(f)[0].target,nearest.id);assert.equal(casts(f)[0].duration,0);
-  assert.equal(hits(f).at(-1).dmg,110);assert.equal(hits(f).at(-1).id,nearest.id);
+  assert.equal(hits(f).at(-1).dmg,88);assert.equal(hits(f).at(-1).id,nearest.id);
   assert.equal(hexDist(f.src.pos,nearest.pos),1);assert.equal(f.src.mana,17);
   assert.equal(f.s.events.filter(e=>e.t==='teleport').length,2);
-  advance(f,16);assert.deepEqual(hits(f).filter(e=>e.id===nearest.id).map(e=>e.dmg),[110,110,110,110,550]);
+  advance(f,4);assert.deepEqual(hits(f).filter(e=>e.id===nearest.id).map(e=>e.dmg),[88,440]);
   assert.equal(f.s.sunlight.busy(f.src),false);
 }
 // A complete kill chain terminates and contributes only effective HP damage to statistics.
@@ -73,6 +75,20 @@ function chain(side){const f=fixture({side,enemies:[{x:3,y:4},{x:2,y:6},{x:4,y:6
   statistics.consume(f.s.events);assert.equal(statistics.snapshot().find(r=>r.id===f.src.id).damage,3);
   return f.s.events;}
 for(const side of [0,1])assert.deepEqual(chain(side),chain(side),'fixed-seed chain is deterministic');
+// Recasts lose 20 percentage points of base skill damage, cap at 40%, and affect finishers too.
+for(const side of [0,1])for(const star of [1,2,3]){
+ const f=fixture({side,star,bonuses:{spellPower:50,damageAmp:.2},enemies:[{x:3,y:4},{x:1,y:5},{x:5,y:5},{x:2,y:7},{x:4,y:7}]});
+ f.targets.forEach(u=>u.hp=1);activate(f);advance(f,12);
+ f.targets.find(u=>u.alive).hp=1000000;advance(f,4+(counts[star-1]-1)*4);
+ const multiplier=1.5*1.2;
+ assert.deepEqual(hits(f).slice(0,5).map(e=>e.dmg),[1,.8,.6,.6,.6].map(r=>Math.round(normal[star-1]*r*multiplier)));
+ const survivor=hits(f).at(-1).id,combo=hits(f).filter(e=>e.id===survivor);
+ assert.equal(combo.length,counts[star-1]);assert.equal(combo.at(-1).dmg,Math.round(final[star-1]*.6*multiplier));
+ assert.equal(f.s.sunlight.busy(f.src),false);assert.equal(f.src.cfg.damageAmp,.2,'recast loss never mutates general damage amplification');
+ // Enter a new cast through the actual mana/skill path, without rebuilding the battle.
+ f.src.mana=f.src.cfg.maxMana;f.src.atkCd=0;f.s.step();
+ assert.equal(casts(f).at(-1).skillId,f.sk.id);assert.equal(hits(f).at(-1).dmg,Math.round(normal[star-1]*multiplier),'normal paid cast starts at full damage');
+}
 // Equal-distance enemies use stable ID ordering.
 {
  const f=fixture({enemies:[{x:3,y:5},{x:2,y:5},{x:4,y:5}]});activate(f);
@@ -93,7 +109,7 @@ for(const sameSource of [false,true]){
  for(const hp of [1,600]){
   const p=fixture({enemies:[{x:3,y:5,equipment:['totem_of_undying']},{x:6,y:7}]});
   p.targets[0].cfg.hp=1000;p.targets[0].cfg.mr=0;p.targets[0].hp=hp;
-  activate(p);if(hp===600)advance(p,16);
+  activate(p);if(hp===600)advance(p,4);
   assert.equal(p.targets[0].hp,1);assert.equal(p.targets[0].alive,true);
   assert.equal(p.s.events.filter(e=>e.t==='equipment_trigger').length,1);advance(p,4);
   assert.equal(casts(p).length,0);assert.equal(p.s.sunlight.busy(p.src),false);
@@ -101,8 +117,8 @@ for(const sameSource of [false,true]){
 }
 // A final hit blocked during resolution still ends the channel rather than leaving it busy forever.
 {
- const f=fixture();activate(f);advance(f,12);f.s.tick+=4;f.s.sunlight.update();f.targets[0].skillUntargetable=true;settle(f);
- assert.equal(hits(f).length,4);assert.equal(f.s.sunlight.busy(f.src),false);
+ const f=fixture();activate(f);f.s.tick+=4;f.s.sunlight.update();f.targets[0].skillUntargetable=true;settle(f);
+ assert.equal(hits(f).length,1);assert.equal(f.s.sunlight.busy(f.src),false);
 }
 // No invulnerability: real enemy damage and stun can kill or interrupt this combo.
 for(const action of ['damage','stun','fear']){
@@ -121,5 +137,9 @@ for(const action of ['damage','stun','fear']){
 for(const value of [undefined,[1,2],[550,825,NaN],[110,825,8000]]){
  const bad=clone(skills);bad.corona_transit.sunlight.finalDamage=value;
  assert.throws(()=>new ConfigManager().setSkills(bad),/Invalid sunlight/);
+}
+for(const [key,value] of [['recastDamageLoss',undefined],['recastDamageLoss',NaN],['recastDamageLoss',-.1],['recastDamageLoss',1.1],
+ ['recastDamageLossCap',undefined],['recastDamageLossCap',NaN],['recastDamageLossCap',-.1],['recastDamageLossCap',.1],['recastDamageLossCap',1.1]]){
+ const bad=clone(skills);bad.corona_transit.sunlight[key]=value;assert.throws(()=>new ConfigManager().setSkills(bad),/Invalid sunlight/);
 }
 console.log('PASS Seraphiel: 3-star combos/finishers, both sides, spell scaling/panels, fixed timing, personal kill attribution, nearest free recasts, effective statistics, deterministic chains, shields/totem, target loss, interruption/death, no untargetability and invalid configuration');

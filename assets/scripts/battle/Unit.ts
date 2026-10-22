@@ -1,5 +1,7 @@
-import { BurnRuntime, Side, EquipmentConfigData, ShadowTraitEffect, ShadowCorruption } from './types';
+import { BurnRuntime, Side, EquipmentConfigData, ShadowTraitEffect, ShadowCorruption, ConquerorTraitEffect, SpellbladeTraitEffect, SpellchanterTraitEffect, SwiftmartialistTraitEffect } from './types';
 import { UnitConfigData } from '../core/ConfigManager';
+import type { MechanicalPioneerTraitEffect } from './types';
+import type { HydraulicBulwarkRuntime, SpiderLeapRuntime, FurnaceDashRuntime } from './types';
 
 export class Unit {
   hp: number;
@@ -8,11 +10,46 @@ export class Unit {
   traitRegenPerSecond = 0;
   traitAttackDamage = 0;
   traitExecuteThreshold = 0;
+  conqueror?: ConquerorTraitEffect;
+  conquerorProtectionUsed = false;
+  conquerorProtectionUntilTick = 0;
+  spellblade?: SpellbladeTraitEffect;
+  spellbladeUntilTick = 0;
+  spellbladeAttacks = 0;
+  spellchanter?: SpellchanterTraitEffect;
+  spellchanterPendingMana = 0;
+  swiftmartialist?: SwiftmartialistTraitEffect;
+  swiftmartialistStacks = 0;
+  mechanicalPioneer?: MechanicalPioneerTraitEffect;
+  overclockUntilTick = 0;
+  overclockNextTick = 0;
+  overclockHealTick = 0;
+  overclockEmergencyUsed = false;
+  /** Updated by the fixed battle clock before any unit acts. */
+  combatTick = 0;
+  get conquerorDamageAmp(): number {
+    const effect = this.conqueror;
+    return effect ? effect.damageAmp * (this.hp < this.cfg.hp * effect.lowHealthThreshold ? effect.lowHealthMultiplier : 1) : 0;
+  }
+  traitDamageReductionAt(tick: number): number {
+    return (tick < this.conquerorProtectionUntilTick ? this.conqueror?.protection?.damageReduction ?? 0 : 0)
+      + (tick < this.spellbladeUntilTick ? this.spellblade?.damageReduction ?? 0 : 0);
+  }
   shadowAttack?: ShadowTraitEffect;
   shadowCorruption?: ShadowCorruption;
   shadowAttackSpeedBonus = 0;
   sunlightShield = 0;
   skillArmorBonus = 0;
+  hydraulicBulwark: HydraulicBulwarkRuntime | null = null;
+  spiderLeap: SpiderLeapRuntime | null = null;
+  furnaceDash: FurnaceDashRuntime | null = null;
+  atlasManaReduction = 0;
+  get hydraulicResistanceBonus(): number {
+    return this.alive && this.hydraulicBulwark && this.combatTick < this.hydraulicBulwark.untilTick ? this.hydraulicBulwark.resistanceBonus : 0;
+  }
+  get hydraulicRooted(): boolean {
+    return this.alive && !!this.hydraulicBulwark && this.combatTick < this.hydraulicBulwark.untilTick;
+  }
   skillMrBonus = 0;
   skillAttackSpeedBonus = 0;
   skillAttackSpeedPenalty = 0;
@@ -21,8 +58,8 @@ export class Unit {
   domainRadius = 0;
   fearUntilTick = 0;
   fearOrigin = { x: 0, y: 0 };
-  get armor(): number { return (this.cfg.armor + this.skillArmorBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
-  get mr(): number { return (this.cfg.mr + this.skillMrBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.hydraulicResistanceBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.hydraulicResistanceBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
   gainMana(amount: number): void {
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
@@ -48,7 +85,7 @@ export class Unit {
   attackSpeedBonus = 0;
   overtimeAttackSpeedBonus = 0;
   overtimeDamageAmp = 0;
-  get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp - (this.shadowCorruption?.damageAmpLoss ?? 0); }
+  get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp + this.conquerorDamageAmp - (this.shadowCorruption?.damageAmpLoss ?? 0); }
   equipment: EquipmentConfigData[] = [];
   equipmentAttackStacks = 0;
   get equipmentAttackSpeedBonus(): number {
@@ -63,9 +100,11 @@ export class Unit {
   susanooReduction = 0;
   damageReductionAt(tick: number): number {
     return Math.min(1, (this.cfg.damageReduction ?? 0) + (tick < this.guardUntilTick ? this.guardReduction : 0)
-      + (tick < this.susanooUntilTick ? this.susanooReduction : 0));
+      + (tick < this.susanooUntilTick ? this.susanooReduction : 0) + this.traitDamageReductionAt(tick));
   }
   shield = 0;
+  stellarShield: { remaining: number; untilTick: number } | null = null;
+  stellarCharge: import('./types').StellarChargeRuntime | null = null;
   untargetableUntilTick = 0;
   lowHealthProtectionUsed = false;
   equipmentRegen: { startTick: number; durationTicks: number; total: number; delivered: number } | null = null;
@@ -74,14 +113,17 @@ export class Unit {
 
   get lifesteal(): number {
     const missing = Math.max(0, 1 - this.hp / this.cfg.hp);
-    return Math.min(1, (this.cfg.lifesteal ?? 0) + this.equipment.reduce((sum, item) => {
+    return Math.min(1, (this.cfg.lifesteal ?? 0) + (this.conqueror?.lifesteal ?? 0) + this.equipment.reduce((sum, item) => {
       const effect = item.missingHpLifesteal;
       return sum + (effect ? Math.floor(missing / effect.step + 1e-9) * effect.bonus : 0);
     }, 0));
   }
 
   get attackSpeed(): number {
-    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - this.skillAttackSpeedPenalty;
+    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - this.skillAttackSpeedPenalty
+      + (this.combatTick < this.spellbladeUntilTick ? this.spellblade?.attackSpeedBonus ?? 0 : 0)
+      + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
+      + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0);
     return Math.min(this.attackSpeedCap, this.skillAttackSpeedPenalty > 0 ? Math.max(.1, speed) : speed);
   }
 
@@ -101,6 +143,7 @@ export class Unit {
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */
   snapshot(tick = 0) {
     return {
+      hydraulicBulwarkActive: this.alive && !!this.hydraulicBulwark && tick < this.hydraulicBulwark.untilTick,
       ...(this.shadowCorruption ? { shadowCorrupted: this.alive } : {}),
       ...(this.domainRadius ? { domainRadius: this.alive && tick < this.domainUntilTick ? this.domainRadius : 0 } : {}),
       susanooActive: this.alive && tick < this.susanooUntilTick,
@@ -119,7 +162,9 @@ export class Unit {
       alive: this.alive,
       shield: this.shield,
       sunlightShield: this.sunlightShield,
-      untargetable: this.skillUntargetable || tick < this.untargetableUntilTick,
+      spiderAirborne: this.alive && !!this.spiderLeap,
+      atlasBurning: this.alive && this.burns.some(b=>b.untilBattleEnd),
+      untargetable: !!this.spiderLeap || this.skillUntargetable || tick < this.untargetableUntilTick,
     };
   }
 }

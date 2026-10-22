@@ -24,6 +24,7 @@ class Node {
   destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
 }
 class UITransform {
+  contentSize={width:100,height:100};
   anchorPoint={x:.5,y:.5};
   setContentSize(width,height) { this.contentSize={width,height}; }
   setAnchorPoint(x,y) { this.anchorPoint={x,y}; }
@@ -35,20 +36,41 @@ class Sprite {
     this.frame=frame;
     // Creator automatically applies an equipment texture's 64px dimensions
     // unless CUSTOM was selected before assigning its frame.
-    if(frame?.name?.startsWith('art/equipment/')&&this.sizeMode!==Sprite.SizeMode.CUSTOM) this.node.getComponent(UITransform).setContentSize(64,64);
+    if(frame?.name?.startsWith('art/equipment/')&&this.sizeMode!==Sprite.SizeMode.CUSTOM) this.node.getComponent(UITransform).setContentSize(frame.rect.width,frame.rect.height);
   }
   get spriteFrame() { return this.frame; }
   isValid=true;
   set fillRange(v) { if(this.type===2&&!this.spriteFrame) throw Error('filled range before image'); this.range=v; }
   get fillRange() { return this.range; }
 }
-class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {} }
+function textLines(text,width,size) {
+  return text.replace(/<br\s*\/>/g,'\n').replace(/<img[^>]*\/>/g,'图').replace(/<[^>]+>/g,'').split('\n')
+    .reduce((sum,line)=>sum+Math.max(1,Math.ceil([...line].reduce((n,c)=>n+(c.charCodeAt(0)>255?1:.55),0)*size/width)),0);
+}
+class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {
+  if(this.overflow===3){const t=this.node.getComponent(UITransform);t.setContentSize(t.contentSize.width,textLines(this.string,t.contentSize.width,this.fontSize)*this.lineHeight);}
+} }
+class RichText {
+  set string(value){this.copy=value;const t=this.node.getComponent(UITransform);t.setContentSize(this.maxWidth,textLines(value,this.maxWidth,this.fontSize)*this.lineHeight);}
+  get string(){return this.copy;}
+}
 class Color {
   constructor(r=0,g=0,b=0,a=255) { Object.assign(this,{r,g,b,a}); }
   fromHEX() {} static WHITE=new Color(255,255,255);
 }
 class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} roundRect(...args){this.roundedRect=args;} ellipse(){} }
-class Mask { static Type={GRAPHICS_STENCIL:2}; }
+class Mask { static Type={GRAPHICS_RECT:0,GRAPHICS_STENCIL:2}; }
+class Vec2 { constructor(x=0,y=0){Object.assign(this,{x,y});} }
+// Geometry-only ScrollView double: actual input/inertia is checked in the browser.
+class ScrollView {
+  static EventType={SCROLL_BEGAN:'scroll-began',SCROLL_ENDED:'scroll-ended'};
+  getScrollOffset(){return new Vec2(0,this.content.position.y-this.content.parent.getComponent(UITransform).contentSize.height/2);}
+  getMaxScrollOffset(){return new Vec2(0,Math.max(0,this.content.getComponent(UITransform).contentSize.height-this.content.parent.getComponent(UITransform).contentSize.height));}
+  scrollToOffset(offset){this.content.setPosition(0,this.content.parent.getComponent(UITransform).contentSize.height/2+offset.y,0);}
+  stopAutoScroll(){this.moving=false;}
+  isScrolling(){return !!this.moving;}
+  isAutoScrolling(){return !!this.moving;}
+}
 class Rect { constructor(x,y,width,height){Object.assign(this,{x,y,width,height});} }
 class Size { constructor(width,height){Object.assign(this,{width,height});} }
 const inputListeners=[];
@@ -58,8 +80,8 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,RichText:class{},Color,Graphics,Mask,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
-  input,Input,
+const cc={Node,UITransform,Sprite,Label,RichText,LabelOutline:class{},Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+  input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
   ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
   resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:name.includes('trait_badges')?2172:1536,height:name.includes('trait_badges')?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
@@ -104,17 +126,21 @@ assert.deepEqual(ui.combatStatsLegend.filter(l=>l.node.active).map(l=>l.string),
 ui.combatMetricButtons[0].events.get('end')();
 assert.equal(ui.combatStatsPanel.active,true);
 ui.closeUnitDetail();assert.equal(ui.combatStatsPanel.active,true);
-assert.deepEqual(ui.backdrop.getChildByName('skin').getComponent(UITransform).contentSize,{width:1280,height:720},'battle sky uses the full viewport, not the default Graphics transform');
+assert.deepEqual(ui.backdrop.getComponent(UITransform).contentSize,{width:1280,height:720},'3D battle loading backdrop fills the viewport without a retired 2D board image');
 assert.deepEqual(screenSetup,{width:1280,height:720,policy:0,resize:true},'battle fills the viewport and follows resize');
-assert.deepEqual(JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/project.json'),'utf8')).general.designResolution,{width:1280,height:720},'project and UI design sizes match');
+assert.deepEqual(JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/project.json'),'utf8')).general.designResolution,{width:1280,height:720,fitHeight:true},'project and UI design sizes match with height fitting');
 ui.setBoardCenter(0,60);assert.equal(ui.capLabel.isBold,true);assert.equal(ui.capLabel.horizontalAlign,1);
-assert.deepEqual(ui.capLabel.node.position,{x:0,y:60,z:0});
+// docs/combat-hud-overtime.md: population is 28px above the board center.
+assert.deepEqual(ui.capLabel.node.position,{x:0,y:88,z:0});
+ui.setBoardCenter(17,-40);assert.deepEqual(ui.capLabel.node.position,{x:17,y:-12,z:0});
+ui.setBoardCenter(0,60);
 assert.equal(ui.preparationBar.parent,ui.node.getChildByName('roundBar'),'preparation fill lives inside the stage header');
 assert.deepEqual(ui.preparationBar.position,{x:0,y:-18,z:0});assert.equal(ui.node.getChildByName('preparationBar'),undefined,'no preparation modal covers the board');
 ui.setCombatCountdown(1);assert.equal(ui.phaseLabel.string,'准备 1.0s');assert.equal(ui.preparationBar.active,true);assert.equal(ui.preparationFill.lastRect[2],0);
 ui.setCombatCountdown(.5);assert.equal(ui.preparationFill.lastRect[2],140);
 ui.setCombatCountdown(.2);assert.equal(ui.preparationFill.lastRect[2],224);
-ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.preparationBar.active,false);
+ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'准备','finishing preparation alone does not start combat');
+ui.setCombatActive(true);ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.preparationBar.active,false);
 ui.update(2.9);assert.equal(ui.waveTrack.active,true);ui.update(.1);assert.equal(ui.waveTrack.active,false);
 inputListeners.find(l=>l.target===ui&&l.type===Input.EventType.TOUCH_START).callback.call(ui);assert.equal(ui.waveTrack.active,true);
 ui.update(3);assert.equal(ui.waveTrack.active,false);ui.refreshRun(20,20,1,14,'测试关');assert.equal(ui.waveTrack.active,true);
@@ -124,14 +150,14 @@ board.initialize(7,8,48);board.highlightTarget({x:2,y:2});
 assert.equal(board.highlight.points.length,6);assert.equal(board.highlight.fillColor.g,203);assert.equal(board.highlight.lineWidth,3);
 board.highlightTarget({x:2,y:2},false);assert.equal(board.highlight.fillColor.r,229);
 board.highlightTarget(null);assert.equal(board.highlight.points.length,0);
-ui.refreshTop(20,1,new LevelSystem({level:3,exp:2})); ui.refreshFormation([{unitId:'warrior',location:'board'}]);
-ui.refreshShop(Array.from({length:5},()=>({unitId:'warrior',name:'战士',cost:1,price:1,poolLeft:20})));
+ui.refreshTop(20,1,new LevelSystem({level:3,exp:2})); ui.refreshFormation([{unitId:'helion',location:'board'}]);
+ui.refreshShop(Array.from({length:5},()=>({unitId:'helion',name:'战士',cost:1,price:1,poolLeft:20})));
 flush(); assert.equal(ui.expFill.fillRange,2/6,'progress survives asynchronous image loading');
 assert.equal(ui.capLabel.node.active,false,'population stays hidden outside a drag');
 assert.equal(ui.node.getChildByName('formation'),undefined); assert.equal(ui.node.getChildByName('starLegend'),undefined);
 const {FloatText}=load(path.join(__dirname,'../assets/scripts/view/FloatText.ts'));
 assert.deepEqual(['physical','magic','true'].map(type=>{const c=FloatText.colorForType(type);return [c.r,c.g,c.b];}),[[255,151,64],[80,180,255],[255,255,255]]);
-const warriorDetail={name:'战士',star:1,cost:1,artId:'warrior',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,spellPower:150,critChance:.25,lifesteal:.1,damageAmp:.2,damageReduction:.3,skillName:'斩击',skillDescription:'造成伤害'};
+const warriorDetail={name:'战士',star:1,cost:1,artId:'helion',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,spellPower:150,critChance:.25,lifesteal:.1,damageAmp:.2,damageReduction:.3,skillName:'斩击',skillDescription:'造成伤害'};
 ui.showUnitDetail({...warriorDetail,physicalPower:20});
 assert.equal(ui.unitStats[0].string,'66','attack panel includes physical bonus exactly once');
 ui.showUnitDetail(warriorDetail);
@@ -170,11 +196,12 @@ const guinsoo=require('../assets/resources/config/equipment.json')[0];
 ui.showEquipment([guinsoo],true,4);flush();
 assert.equal(ui.equipmentSlots.length,3);
 assert.ok(ui.equipmentSlots[0].icon.spriteFrame);
-assert.deepEqual(ui.equipmentSlots[0].icon.node.getComponent(UITransform).contentSize,{width:24,height:24},'asynchronous equipment texture cannot replace slot dimensions');
-assert.equal(ui.equipmentSlots[1].text.string,'');
-assert.match(ui.equipmentInfo.string,/叠层：4/);
+assert.deepEqual(ui.equipmentSlots[0].icon.node.getComponent(UITransform).contentSize,{width:64,height:64},'asynchronous equipment texture cannot replace slot dimensions');
+assert.equal(ui.equipmentSlots[1].node.getChildByName('text'),undefined,'empty equipment slots have no fallback text');
+assert.equal(ui.equipmentSlots[0].stacks.string,'4');assert.equal(ui.equipmentSlots[0].stacks.node.parent.active,true);
+assert.equal(ui.equipmentSlots[1].stacks.node.parent.active,false);
 ui.refreshBackpack([{...guinsoo,kind:'equipment'}],true);flush();
-assert.equal(ui.backpackSlots[0].icon.node.getComponent(UITransform).contentSize.width,24);
+assert.equal(ui.backpackSlots[0].icon.node.getComponent(UITransform).contentSize.width,52);
 assert.ok(ui.backpackSlots[0].icon.spriteFrame);
 assert.equal(ui.backpackSlots[0].icon.node.active,true);
 assert.ok(!ui.backpackSlots[0].node.name.includes('/'),'resource paths are not used as node names');
@@ -196,7 +223,7 @@ const totem=require('../assets/resources/config/equipment.json').find(item=>item
 ui.refreshBackpack([{...totem,kind:'equipment'}],true);flush();
 assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,totem.icon);
 ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_START)();
-assert.equal(ui.equipmentTooltip.active,true);assert.equal(ui.equipmentTooltipTitle.string,'不死图腾');
+assert.equal(ui.equipmentTooltip.active,true);assert.equal(ui.equipmentTooltipTitle.string,'余烬命核');
 assert.equal(ui.equipmentTooltipText.string,totem.effectDescription);assert.match(ui.equipmentTooltipText.string,/5秒/);
 assert.deepEqual(ui.equipmentTooltipRows.filter(row=>row.node.active).map(row=>[row.name.string,row.value.string]),[['生命值','+200'],['护甲','+10'],['魔抗','+10']]);
 assert.ok(!ui.equipmentTooltipText.string.includes('+200生命'),'base stats are separate from the effect paragraph');
@@ -321,7 +348,7 @@ assert.deepEqual(ui.rateLabels.map(l=>l.string),['75%','25%','0%','0%','0%']);
 assert.equal(new Set(ui.rateLabels.map(l=>`${l.color.r},${l.color.g},${l.color.b}`)).size,5);
 let bought=0; ui.onBuy=()=>bought++;
 ui.showSellPreview('战士',1,false,4);
-assert.equal(ui.capLabel.string,'4 / 3'); assert.equal(ui.capLabel.color.r,229,'over-cap preview turns red');
+assert.equal(ui.capLabel.string,'4 / 3'); assert.equal(ui.capLabel.color.r,164,'over-cap preview turns dark red');
 assert.equal(ui.shopRoot.active,false); assert.equal(ui.economyRoot.active,false); assert.equal(ui.sellNode.active,true);
 assert.equal(ui.unitPanel.active,false); assert.equal(ui.capLabel.node.active,true);
 ui.shopSlots[0].node.events.get('end')(); assert.equal(bought,0,'hidden cards cannot purchase while dragging');
@@ -375,9 +402,9 @@ assert.ok(ui.manaRegen.node.position.x>0,'mana regeneration is labelled at the r
 assert.ok(ui.manaRegen.node.getChildByName('manaRegenIcon').getComponent(Sprite).spriteFrame,'uses the mana droplet icon');
 ui.showUnitDetail({...warriorDetail,manaPerSecond:0});assert.equal(ui.manaRegen.node.active,false);
 const unitView=new UnitView();unitView.node=new Node('unit');unitView.node.setPosition(0,0,0);
-unitView.setup('warrior',0,1,56);
+unitView.setup('helion',0,1,56);
 assert.equal(unitView.bodySprite.node.getComponent(UITransform).contentSize.width,56*.82,'reserve portraits retain their slot size');
-const boardUnit=new UnitView();boardUnit.node=new Node('boardUnit');boardUnit.setup('warrior',0,2,56,'warrior',undefined,1.3);
+const boardUnit=new UnitView();boardUnit.node=new Node('boardUnit');boardUnit.setup('helion',0,2,56,'helion',undefined,1.3);
 const boardBody=boardUnit.bodySprite.node, boardSize=boardBody.getComponent(UITransform).contentSize;
 assert.deepEqual(boardSize,{width:56*1.3,height:56*1.3},'board portraits occupy 1.3 display cells');
 assert.ok(Math.abs(boardBody.position.y-boardSize.height/2+56*.82/2)<1e-8,'enlarging preserves the original foot position');
@@ -385,9 +412,11 @@ assert.ok(boardUnit.hpBarBg.position.y>boardBody.position.y+boardSize.height/2,'
 unitView.setEquipment([guinsoo,guinsoo,guinsoo]);flush();
 assert.equal(unitView.equipmentIcons.length,3);
 for(const icon of unitView.equipmentIcons) {
- assert.equal(icon.parent,unitView.hpBarBg);assert.equal(icon.position.y,-17);
+ assert.equal(icon.parent,unitView.node,'equipment survives hidden bench vitals');assert.equal(icon.position.y,unitView.hpBarBg.position.y-17);
  assert.equal(icon.getComponent(UITransform).contentSize.width,12);assert.ok(icon.getComponent(Sprite).spriteFrame);
 }
+unitView.setVitalsVisible(false);assert.equal(unitView.hpBarBg.active,false);for(const icon of unitView.equipmentIcons){assert.equal(icon.active,true);assert.equal(icon.position.y,unitView.hpBarBg.position.y);}
+unitView.setVitalsVisible(true);assert.equal(unitView.hpBarBg.active,true);for(const icon of unitView.equipmentIcons)assert.equal(icon.position.y,unitView.hpBarBg.position.y-17);
 unitView.setEquipment([]);assert.equal(unitView.equipmentIcons.length,0);
 unitView.sync({hp:10,maxHp:100,mana:0,maxMana:0,shield:10,untargetable:true},{x:0,y:0},64,0);
 assert.equal(unitView.shieldRing.active,true);assert.equal(unitView.bodyOpacity.opacity,80);
@@ -448,14 +477,13 @@ assert.deepEqual(menu.node.getChildByName('menuBackground').getChildByName('skin
 const configIndex=pending.findIndex(f=>f.path==='config/run');pending.splice(configIndex,1)[0]();
 assert.equal(menu.ready,false,'monster images must finish loading before the run is ready');
 menu.startNewRun();assert.equal(sceneLoads.length,0,'do not enter a monster stage while its images are missing');
-assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,5,'load all ordinary and strong monster SpriteFrames');
-for(const art of ['warrior_enemy','archer_enemy','mage_enemy'])assert.ok(pending.some(f=>f.path===`art/units/${art}/spriteFrame`),`preload reused monster ${art} before entering the scene`);
+assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,30,'load all ordinary and strong monster SpriteFrames');
 flush();assert.equal(menu.ready,true);
 const setup=menu.node.getChildByName('runSetup');
 setup.getChildByName('fewerStages').events.get('end')(); assert.equal(menu.stageCount,3);
 setup.getChildByName('moreStages').events.get('end')(); assert.equal(menu.stageCount,4); assert.match(menu.summary.string,/21/);
 setup.getChildByName('startGame').events.get('end')();
-assert.deepEqual(sceneLoads,['scene']); assert.equal(loadSaveV2().stageCount,4); assert.equal(loadSaveV2().round,null);
+assert.deepEqual(sceneLoads,['floating-ruins']); assert.equal(loadSaveV2().stageCount,4); assert.equal(loadSaveV2().round,null);
 setup.getChildByName('startGame').events.get('end')(); assert.equal(sceneLoads.length,1,'double start is blocked');
 const saved=freshSaveV2(5);saved.gold=77;saved.round={phase:'prepare',waveIndex:3,health:18,result:null,lastSettlement:null};writeSaveV2(saved);
 menu=createMenu();flush(); assert.ok(menu.node.getChildByName('continueGame'));const before=storage.get(SAVE_KEY);
@@ -468,8 +496,19 @@ assert.equal(main[0]._name,'main');assert.ok(main.some(o=>o.__type__==='3d5ecIKF
 assert.ok(!main.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'menu contains no battle stage');
 const checkRefs=o=>{if(!o||typeof o!=='object')return;if('__id__'in o) assert.ok(main[o.__id__]);for(const v of Object.values(o))checkRefs(v);};main.forEach(checkRefs);
 const builder=JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/builder.json'),'utf8'));
+const assetScenes=fs.readdirSync(path.join(__dirname,'../assets'),{recursive:true}).filter(p=>/\.scene(?:\.meta)?$/.test(p)).sort();
+assert.deepEqual(assetScenes,['floating-ruins.scene','floating-ruins.scene.meta','main.scene','main.scene.meta'],'only the two production scenes and their metadata remain');
+assert.deepEqual(builder.scenes.map(s=>s.url).sort(),['db://assets/floating-ruins.scene','db://assets/main.scene']);
 assert.ok(builder.scenes.some(s=>s.uuid===builder.startScene&&s.url==='db://assets/main.scene'));
-assert.ok(builder.scenes.some(s=>s.url==='db://assets/scene.scene'));
+assert.ok(builder.scenes.some(s=>s.url==='db://assets/floating-ruins.scene'));
+assert.ok(!builder.scenes.some(s=>s.url==='db://assets/scene.scene'),'removed battle scene must not remain in a build');
+const productionScene=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/floating-ruins.scene'),'utf8'));
+const productionMeta=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/floating-ruins.scene.meta'),'utf8'));
+assert.equal(productionScene[1]._id,productionMeta.uuid);
+assert.ok(builder.scenes.some(s=>s.uuid===productionMeta.uuid&&s.url==='db://assets/floating-ruins.scene'));
+const productionRefs=o=>{if(!o||typeof o!=='object')return;if('__id__'in o)assert.ok(productionScene[o.__id__]);for(const v of Object.values(o))productionRefs(v);};productionScene.forEach(productionRefs);
+assert.ok(productionScene.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'new board uses the real battle stage');
+assert.ok(productionScene.some(o=>o.__type__==='cc.Node'&&o._name==='BoardCamera3D'),'new board contains its fixed RT camera');
 console.log('PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');
 const rewardItems=require('../assets/resources/config/equipment.json').slice(0,3),choices=[];
 ui.onClaimEquipmentReward=index=>choices.push(index);
@@ -487,15 +526,22 @@ for(let index=0;index<3;index++)assert.equal(cards[index].getChildByName('reward
 ui.hideEquipmentReward();assert.equal(ui.node.getChildByName('equipmentReward'),undefined);
 console.log('PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, modal input, choice callback and stale async protection');
 ui.onDestroy();assert.equal(inputListeners.filter(l=>l.target===ui).length,0,'scene cleanup removes all idle wake listeners');
+for(const backdrop of [{isValid:false},{isValid:true,destroyQueued:true}]){
+ const cleanupUI=new BattleUI();cleanupUI.backdrop={...backdrop,destroy(){throw Error('duplicate backdrop destroy');}};
+ cleanupUI.onDestroy();
+}
 console.log('PASS drag polygon highlight, centered bold population, animated preparation fill and idle wave visibility');
 
 const {StageRewardPanel}=load(path.join(__dirname,'../assets/scripts/ui/StageRewardPanel.ts'));
 const {ConfigManager:StageConfig}=load(path.join(__dirname,'../assets/scripts/core/ConfigManager.ts'));
 const stageCfg=new StageConfig();stageCfg.setUnits(require('../assets/resources/config/units.json'));stageCfg.setEquipment(require('../assets/resources/config/equipment.json'));
-const stageActions=[],stagePanel=new StageRewardPanel(ui.node,stageCfg,a=>stageActions.push(a));
+let stageCloses=0;
+const stageActions=[],stagePanel=new StageRewardPanel(ui.node,stageCfg,a=>stageActions.push(a),()=>{stageCloses++;stagePanel.hide();});
 stagePanel.show({id:'boss',waveId:20,kind:'bossChoice',value:8},10);flush();
 let stageBody=stagePanel.root.getChildByName('stageRewardBody');
 const bossCards=stageBody.children.filter(n=>n.name==='bossChoice');assert.equal(bossCards.length,2);
+const supplyUnit=stageCfg.allUnits().find(unit=>unit.cost===1);const {UNIT_ART:supplyArt}=load(path.join(__dirname,'../assets/scripts/view/ArtPaths.ts'));
+assert.equal(bossCards[0].getChildByName('rewardArt').getComponent(Sprite).spriteFrame.name,supplyArt[supplyUnit.artId??supplyUnit.id],'Boss unit-supply icon uses a current authored card');
 const oldBossClick=bossCards[0].children.find(n=>n.name==='button').events.get('end');oldBossClick();assert.equal(stageActions.at(-1).choice,'units');
 const basicIds=require('../assets/resources/config/run.json').stageEncounters.basicEquipmentIds.slice(0,4);
 stagePanel.show({id:'four',waveId:20,kind:'equipmentChoice',candidates:basicIds},10);flush();
@@ -516,7 +562,8 @@ stageCards[2].getChildByName('stageChoice_2').events.get('end')();assert.deepEqu
 stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'blackfeather_hunter',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
 stageBody=stagePanel.root.getChildByName('stageRewardBody');stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,5);
 stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(stageActions.at(-1).choice,'buy');
-stageBody.children.find(n=>n.name==='button').events.get('end')();assert.equal(stageActions.at(-1).choice,'continue');
+const beforeReturn=stageActions.length;
+stageBody.children.find(n=>n.getChildByName('text')?.getComponent(Label)?.string==='返回棋盘').events.get('end')();assert.equal(stageCloses,1);assert.equal(stageActions.length,beforeReturn,'returning from the shop does not advance the wave');
 stagePanel.hide();assert.equal(stagePanel.root,null);
 console.log('PASS stage reward UI: category cards, four original equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
@@ -532,9 +579,12 @@ for(const [count,tier] of [[1,'inactive'],[2,'inactive'],[3,'bronze'],[5,'silver
   assert.ok(row.children.find(node=>node.name==='traitArt').getComponent(Sprite).spriteFrame.name.includes('#rect,'));
   row.events.get('end')();flush();
   const card=ui.traitPanel.detail;
-  assert.ok(card?.active);assert.equal(card.children.filter(node=>node.name==='traitBreakpoint').length,4);
+  assert.ok(card?.active);assert.equal(card.children.filter(node=>node.name==='sunlightBreakpoint').length,4);
   assert.equal(card.children.filter(node=>node.name.startsWith('traitOwner_')).length,10);
-  assert.ok(card.children.some(node=>node.getComponent(Label)?.string.includes({inactive:'未激活',bronze:'黄铜',silver:'白银',gold:'黄金',prismatic:'棱彩'}[tier])));
+  assert.equal(state[0].active?.tier??'inactive',tier);
+  const {TRAIT_BADGES}=load(path.join(__dirname,'../assets/scripts/ui/TraitPanel.ts'));
+  assert.equal(row.getChildByName('traitArt').getComponent(Sprite).spriteFrame.name,TRAIT_BADGES[tier],'all five tier badges follow current activation');
+  assert.ok(card.children.some(node=>node.getComponent(Label)?.string===count+'名上场 · 日辉棋子获得以下效果'));
   ui.node.getChildByName('backpackTab').events.get('end')();
   assert.equal(ui.backpackRoot.active,true);assert.equal(ui.traitPanel.root.active,false);assert.equal(ui.traitPanel.detail,null);
   ui.node.getChildByName('traitsTab').events.get('end')();

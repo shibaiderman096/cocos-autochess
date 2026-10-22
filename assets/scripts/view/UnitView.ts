@@ -6,6 +6,7 @@ import { drawFactionRing } from './FactionRing';
 import { setStarBadge } from '../ui/UISkin';
 import { healthBarSegments } from './HealthBar';
 import { createHealthBarClip } from './HealthBarClip';
+import { astralSprite } from './AstralArt';
 
 const { ccclass } = _decorator;
 
@@ -22,6 +23,8 @@ export class UnitView extends Component {
   cfgId = '';
 
   private bodySprite: Sprite;
+  private bodyBaseY = 0;
+  private spiderRaised = false;
   private attackMotion: Node;
   private hpFill: Sprite;
   private shieldFill: Sprite;
@@ -39,6 +42,8 @@ export class UnitView extends Component {
   private equipmentStackLabels: Label[] = [];
   private bodyOpacity: UIOpacity;
   private shieldRing: Node;
+  private stellarAura: Node | null = null;
+  private stellarRaised = false;
   displayedStar = 1;
   private upgradeEffect: Node | null = null;
   private upgradeElapsed = 0;
@@ -111,6 +116,7 @@ export class UnitView extends Component {
     this.bodyOpacity = body.addComponent(UIOpacity);
     // Keep feet on the faction ring when the board portrait grows upward.
     body.setPosition(0, raised / 2, 0);
+    this.bodyBaseY = raised / 2;
     this.shieldRing = new Node('shieldRing');
     this.node.addChild(this.shieldRing);
     this.shieldRing.setPosition(0, raised / 2, 0);
@@ -170,7 +176,7 @@ export class UnitView extends Component {
       if (!this.isValid) return;
       if (err) { console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
-      if (path.includes('/units/shadow/') || path.includes('/units/sunlight/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
+      if (path.includes('/units/shadow/') || path.includes('/units/sunlight/') || path.includes('/units/mechanical/') || path.includes('/units/astral/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
       this.loaded = true;
       this.refreshBarsColor();
     });
@@ -272,6 +278,10 @@ export class UnitView extends Component {
     if (this.shadowView) this.shadowView.active = !!snap.shadowCorrupted;
     for (const text of this.equipmentStackLabels) text.string = String(snap.equipmentAttackStacks ?? 0);
     if (this.bodyOpacity) this.bodyOpacity.opacity = snap.untargetable ? 80 : 255;
+    if (this.bodySprite && !!snap.spiderAirborne !== this.spiderRaised) {
+      this.spiderRaised = !!snap.spiderAirborne;
+      this.bodySprite.node.setPosition(0, this.bodyBaseY + (this.spiderRaised ? this.cellSize * .8 : 0), 0);
+    }
     if (this.shieldRing) this.shieldRing.active = (snap.shield ?? 0) > 0;
     const segments = healthBarSegments(snap.hp, snap.maxHp, snap.shield);
     const barWidth = this.hpBarContent.getComponent(UITransform).contentSize.width;
@@ -294,6 +304,28 @@ export class UnitView extends Component {
           * this.hpBarBg.getComponent(UITransform).contentSize.width,
         3,
       );
+    }
+  }
+
+  /** Skill shield and airborne travel follow the replay clock, including pause. */
+  animateStellar(shielded: boolean, knockup: number | null, renderTick: number, tickMs: number): void {
+    if (shielded && !this.stellarAura) {
+      this.stellarAura = astralSprite(this.node,'stellarBarrier',FX_SPRITE.stellarBarrier,
+        this.cellSize*1.28,this.cellSize*1.35,()=>this.isValid).node;
+      this.stellarAura.setPosition(0,this.bodyBaseY+this.cellSize*.12,0);
+    }
+    if (this.stellarAura) {
+      this.stellarAura.active=shielded;
+      const phase=renderTick*tickMs/1000;
+      const scale=1+Math.sin(phase*3)*.035;
+      this.stellarAura.setScale(scale,scale,1);
+      this.stellarAura.angle=phase*18;
+      this.stellarAura.getComponent(UIOpacity)!.opacity=170+Math.round(Math.sin(phase*3)*30);
+    }
+    if (this.bodySprite && (knockup!==null || this.stellarRaised)) {
+      this.stellarRaised=knockup!==null;
+      const rise=knockup===null?0:Math.sin(Math.PI*Math.max(0,Math.min(1,knockup)))*this.cellSize*.6;
+      this.bodySprite.node.setPosition(0,this.bodyBaseY+(this.spiderRaised?this.cellSize*.8:0)+rise,0);
     }
   }
 
@@ -332,6 +364,7 @@ export class UnitView extends Component {
 
   playDeath() {
     if (!this.node.active) return;
+    this.animateStellar(false,null,0,50);
     if (this.shadowView) this.shadowView.active = false;
     if (this.domainView) this.domainView.active = false;
     if (this.sunlightAura) this.sunlightAura.active = false;

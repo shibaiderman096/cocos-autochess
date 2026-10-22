@@ -2,7 +2,7 @@
  * 配置读取（M1：units.json / skills.json / battle 基础配置）。
  * 逻辑层不 import cc：由调用方（view 或 Node 模拟器）把 JSON 喂进来。
  */
-import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig, ShadowSkillData, SunlightSkillData } from '../battle/types';
+import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig, ShadowSkillData, SunlightSkillData, HydraulicBulwarkConfig, SpiderLeapConfig } from '../battle/types';
 
 export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttributes {
   const safe = (v: number | undefined, fallback: number, max: number) => Number.isFinite(v) ? Math.max(0, Math.min(max, v!)) : fallback;
@@ -53,7 +53,15 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap';
+  starLeap?: { distance: number };
+  stellarBulwark?: import('../battle/types').StellarBulwarkConfig;
+  hydraulicBulwark?: HydraulicBulwarkConfig;
+  spiderLeap?: SpiderLeapConfig;
+  furnaceDash?: import('../battle/types').FurnaceDashConfig;
+  atlasMissiles?: import('../battle/types').AtlasMissilesConfig;
+  /** Whole-board, distinct allies sorted by current/max HP, including the caster. */
+  healTargetCounts?: number[];
   sunlight?: SunlightSkillData;
   shadow?: ShadowSkillData;
   /** Defaults to the unit's damage identity; true/fixed shields receive no power multiplier. */
@@ -81,13 +89,20 @@ export interface SkillConfigData {
   attackSpeedBonuses?: number[];
   manaLockDuringEmpower?: boolean;
   permanentEmpowerStar?: number;
-  burn?: { durationSeconds: number; intervalSeconds: number; maxHpFraction: number; dmgType: 'physical' | 'magic' | 'true' };
+  burn?: { durationSeconds: number; intervalSeconds: number; maxHpFraction: number; dmgType: 'physical' | 'magic' | 'true'; untilBattleEnd?: boolean };
 }
 
 /** Channel healing keeps its HP fraction unscaled; only the fixed bonus uses spell power. */
 export function channelHealAmount(unit: Pick<UnitConfigData, 'hp' | 'spellPower'>, skill: SkillConfigData, star: number): number {
   const rank = Math.max(0, Math.min(2, star - 1)), heal = skill.heal!;
   return Math.round(unit.hp * heal.maxHpFractions[rank] + (heal.bonusAmounts?.[rank] ?? 0) * (1 + (unit.spellPower ?? 0) / 100));
+}
+
+/** Both values use physical power only; duration and basic attack are independent. */
+export function hydraulicBulwarkValues(unit: Pick<UnitConfigData, 'physicalPower'>, skill: SkillConfigData, star: number) {
+  const e = skill.hydraulicBulwark!, rank = Math.max(0, Math.min(2, star - 1));
+  const multiplier = 1 + (unit.physicalPower ?? 0) / 100;
+  return { resistanceBonus: Math.round(e.resistanceBonuses[rank] * multiplier), healAmount: Math.round(e.healAmounts[rank] * multiplier) };
 }
 
 /** Attack is reserved for ordinary basic attacks; skills use configured values. */
@@ -151,7 +166,12 @@ function validateSunlightSkill(skill: SkillConfigData): void {
     case 'crossbow': positive(s.penetration); positive(s.minimum); if (s.penetration > 1 || s.minimum > 1) bad(); break;
     case 'prayer': triple(skill.shieldAmounts); triple(s.heals); triple(skill.starDamage); triple(skill.stunSeconds); positive(s.durationSeconds); break;
     case 'judgment': triple(s.counts); triple(s.trueDamage); triple(skill.stunSeconds); positive(s.delaySeconds); if (s.counts.some(v => !Number.isInteger(v) || v < 1) || !Number.isInteger(s.allEnemiesStar) || s.allEnemiesStar < 1 || s.allEnemiesStar > 3) bad(); break;
-    case 'transit': triple(s.counts); triple(s.finalDamage); positive(s.intervalSeconds); if (s.counts.some(v => !Number.isInteger(v) || v < 1) || s.finalDamage.some((v, i) => v <= skill.starDamage![i])) bad(); break;
+    case 'transit':
+      triple(s.counts); triple(s.finalDamage); positive(s.intervalSeconds);
+      if (s.counts.some(v => !Number.isInteger(v) || v < 1) || s.finalDamage.some((v, i) => v <= skill.starDamage![i])
+        || !Number.isFinite(s.recastDamageLoss) || s.recastDamageLoss < 0 || s.recastDamageLoss > 1
+        || !Number.isFinite(s.recastDamageLossCap) || s.recastDamageLossCap < s.recastDamageLoss || s.recastDamageLossCap > 1) bad();
+      break;
     default: bad();
   }
 }
@@ -248,6 +268,47 @@ export class ConfigManager {
       if (skill.shieldScaling !== undefined && !['physical', 'magic', 'fixed'].includes(skill.shieldScaling)) throw new Error('Invalid shield scaling');
       if (skill.effect === 'shadow') validateShadowSkill(skill);
       if (skill.effect === 'sunlight') validateSunlightSkill(skill);
+      if (skill.effect === 'hydraulicBulwark') {
+        const e = skill.hydraulicBulwark;
+        if (!e || !Number.isFinite(e.durationSeconds) || e.durationSeconds <= 0
+          || ![e.resistanceBonuses, e.healAmounts].every(values => Array.isArray(values) && values.length === 3 && values.every(v => Number.isFinite(v) && v >= 0))) throw new Error('Invalid hydraulic bulwark skill');
+      }
+      if (skill.effect === 'strikeHealOnKill' || skill.effect === 'lowestHealthHeal') {
+        const triple = (a?: number[]) => Array.isArray(a) && a.length === 3 && a.every(v => Number.isFinite(v) && v >= 0);
+        if (!triple(skill.healAmounts) || (skill.effect === 'strikeHealOnKill' && !triple(skill.starDamage))
+          || (skill.effect === 'lowestHealthHeal' && (!triple(skill.healTargetCounts) || skill.healTargetCounts!.some(v => !Number.isInteger(v) || v < 1)))) throw new Error('Invalid strike/healing skill');
+      }
+      if (skill.effect === 'railShot' && (!skill.starDamage || skill.starDamage.length !== 3 || skill.starDamage.some(v => !Number.isFinite(v) || v < 0)
+        || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0)) throw new Error('Invalid rail shot skill');
+      if (skill.effect === 'spiderLeap') {
+        const e = skill.spiderLeap;
+        if (!e || !Number.isFinite(e.airborneSeconds) || e.airborneSeconds <= 0 || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0
+          || !skill.starDamage || skill.starDamage.length !== 3 || skill.starDamage.some(v => !Number.isFinite(v) || v < 0)
+          || e.missingHealthFractions.length !== 3 || e.missingHealthFractions.some(v => !Number.isFinite(v) || v < 0 || v > 1)) throw new Error('Invalid spider leap skill');
+      }
+      if (skill.effect === 'furnaceDash') {
+        const e = skill.furnaceDash;
+        if (!e || ![e.speedMultiplier,e.knockupSeconds,e.targetRange].every(v => Number.isFinite(v) && v > 0)
+          || ![skill.starDamage,e.trailDamage].every(a => Array.isArray(a) && a.length === 3 && a.every(v => Number.isFinite(v) && v >= 0))) throw new Error('Invalid furnace dash skill');
+      }
+      if (skill.effect === 'starLeap' && (skill.starLeap?.distance!==1 || skill.dmgType!=='magic'
+        || !Array.isArray(skill.starDamage) || skill.starDamage.length!==3 || skill.starDamage.some(v=>!Number.isFinite(v)||v<0)))
+        throw new Error('Invalid star leap skill');
+      if (skill.effect === 'stellarBulwark') {
+        const e = skill.stellarBulwark;
+        if (!e || !Number.isInteger(e.distance) || e.distance < 1
+          || ![e.speedMultiplier,e.shieldSeconds,e.knockupSeconds].every(v=>Number.isFinite(v)&&v>0)
+          || !Array.isArray(skill.shieldAmounts) || skill.shieldAmounts.length!==3 || skill.shieldAmounts.some(v=>!Number.isFinite(v)||v<0))
+          throw new Error('Invalid stellar bulwark skill');
+      }
+      if (skill.effect === 'atlasMissiles') {
+        const e=skill.atlasMissiles,b=skill.burn;
+        if (!e || !b || !Number.isFinite(b.durationSeconds) || b.durationSeconds<=0 || !Number.isFinite(b.intervalSeconds) || b.intervalSeconds<=0
+          || !Number.isFinite(b.maxHpFraction) || b.maxHpFraction<0 || b.maxHpFraction>1 || !['physical','magic','true'].includes(b.dmgType)
+          || ![e.manaReductionPerCast,e.maxManaReduction].every(v=>Number.isFinite(v)&&v>=0)
+          || !Array.isArray(e.targetCounts) || e.targetCounts.length!==3 || e.targetCounts.some(v=>!Number.isInteger(v)||v<1)
+          || !skill.starDamage || skill.starDamage.length!==3 || skill.starDamage.some(v=>!Number.isFinite(v)||v<0)) throw new Error('Invalid atlas missiles skill');
+      }
     }
     this.skills = data;
   }
@@ -268,13 +329,13 @@ export class ConfigManager {
       for (const trait of data.traits) {
         if (!trait.id || ids.has(trait.id) || (!trait.members.length && !trait.selector && trait.pendingMembers !== true) || !trait.breakpoints.length
           || (trait.pendingMembers !== undefined && typeof trait.pendingMembers !== 'boolean')) throw new Error('Invalid trait configuration');
-        if (trait.selector && (!['tank', 'marksman', 'assassin'].includes(trait.selector.role)
+        if (trait.selector && (!['tank', 'marksman', 'assassin', 'warrior', 'caster'].includes(trait.selector.role)
           || (trait.selector.damageType !== undefined && !['physical', 'magic'].includes(trait.selector.damageType)))) throw new Error('Invalid trait selector');
         ids.add(trait.id);
         let previous = 0;
         for (const tier of trait.breakpoints) {
           if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
-            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight)
+            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral)
             || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
             || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
           if (tier.formation) {
@@ -291,6 +352,36 @@ export class ConfigManager {
             if ((bonus.critChance ?? 0) > 1 || (bonus.executeThreshold ?? 0) >= 1
               || (bonus.skillCanCrit !== undefined && typeof bonus.skillCanCrit !== 'boolean')) throw new Error('Invalid trait stat bonus');
           }
+          if (tier.mechanicalPioneer) {
+            const e = tier.mechanicalPioneer;
+            if (![e.attackSpeedBonus, e.regenPerSecond].every(v => Number.isFinite(v) && v >= 0)
+              || e.regenPerSecond > 1 || ![e.durationSeconds, e.cooldownSeconds].every(v => Number.isFinite(v) && v > 0)
+              || (e.lowHealthThreshold !== undefined && (!Number.isFinite(e.lowHealthThreshold) || e.lowHealthThreshold <= 0 || e.lowHealthThreshold >= 1))) throw new Error('Invalid mechanical pioneer trait');
+          }
+          if (tier.swiftmartialist) {
+            const effect = tier.swiftmartialist;
+            if (![effect.physicalPower, effect.attackSpeedPerCast].every(v => Number.isFinite(v) && v >= 0)
+              || !Number.isInteger(effect.maxStacks) || effect.maxStacks <= 0) throw new Error('Invalid swiftmartialist trait');
+          }
+          if (tier.spellchanter) {
+            const effect = tier.spellchanter;
+            if (![effect.spellPower, effect.manaOnTakedown].every(v => Number.isFinite(v) && v >= 0)) throw new Error('Invalid spellchanter trait');
+          }
+          if (tier.conqueror) {
+            const e = tier.conqueror, p = e.protection;
+            const fraction = (v: number) => Number.isFinite(v) && v >= 0 && v <= 1;
+            if (!Number.isFinite(e.damageAmp) || e.damageAmp < 0 || !fraction(e.lifesteal)
+              || !fraction(e.lowHealthThreshold) || e.lowHealthThreshold <= 0 || e.lowHealthThreshold >= 1
+              || !Number.isFinite(e.lowHealthMultiplier) || e.lowHealthMultiplier < 1
+              || (p && (!fraction(p.threshold) || p.threshold <= 0 || p.threshold >= 1 || !fraction(p.healMaxHpFraction)
+                || !fraction(p.damageReduction) || !Number.isFinite(p.durationSeconds) || p.durationSeconds <= 0))) throw new Error('Invalid conqueror trait');
+          }
+          if (tier.spellblade) {
+            const e = tier.spellblade, a = e.empoweredAttacks;
+            if (![e.spellPower, e.attackSpeedBonus, e.damageReduction].every(v => Number.isFinite(v) && v >= 0)
+              || e.damageReduction > 1 || !Number.isFinite(e.durationSeconds) || e.durationSeconds <= 0
+              || (a && (!Number.isInteger(a.count) || a.count <= 0 || !Number.isFinite(a.damage) || a.damage <= 0))) throw new Error('Invalid spellblade trait');
+          }
           if (tier.shadow) {
             const effect = tier.shadow;
             if (!Number.isFinite(effect.resistanceReduction) || effect.resistanceReduction < 0 || effect.resistanceReduction > 1
@@ -302,6 +393,14 @@ export class ConfigManager {
               || !Number.isFinite(board.damageIntervalSeconds ?? board.intervalSeconds) || (board.damageIntervalSeconds ?? board.intervalSeconds) <= 0
               || ![board.attackSpeedPerPulse, board.attackSpeedCap, board.fixedDamage].every(value => Number.isFinite(value) && value >= 0))) throw new Error('Invalid shadow board effect');
           }
+          if (tier.astral) {
+            const a = tier.astral, m = a.meteor;
+            if ((a.cellCount !== 'all' && (!Number.isSafeInteger(a.cellCount) || a.cellCount <= 0))
+              || ![a.power, a.maxHpBonus].every(v => Number.isFinite(v) && v >= 0)
+              || !Number.isFinite(a.memberMultiplier) || a.memberMultiplier < 1
+              || (m && (!Number.isFinite(m.intervalSeconds) || m.intervalSeconds <= 0
+                || !Number.isFinite(m.damage) || m.damage <= 0 || !Number.isSafeInteger(m.radius) || m.radius < 0))) throw new Error('Invalid astral trait');
+          }
           if (tier.sunlight) {
             const s = tier.sunlight, f = s.formation, j = s.judgment;
             const nonnegative = (v: number) => Number.isFinite(v) && v >= 0;
@@ -309,7 +408,8 @@ export class ConfigManager {
               || (f && (![f.delaySeconds, f.frontReduction, f.backAmp].every(nonnegative) || f.frontReduction > 1))
               || (j && (![j.damage, j.stunSeconds].every(nonnegative) || !Number.isFinite(j.intervalSeconds) || j.intervalSeconds <= 0
                 || !nonnegative(j.targetMaxHpFraction ?? 0) || (j.targetMaxHpFraction ?? 0) > 1
-                || (j.independentStatistics !== undefined && typeof j.independentStatistics !== 'boolean')))) throw new Error('Invalid sunlight trait');
+                || (j.independentStatistics !== undefined && typeof j.independentStatistics !== 'boolean')
+                || (j.statisticsStar !== undefined && (!Number.isInteger(j.statisticsStar) || j.statisticsStar < 1 || j.statisticsStar > 4))))) throw new Error('Invalid sunlight trait');
           }
           previous = tier.count;
         }

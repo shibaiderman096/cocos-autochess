@@ -21,15 +21,16 @@ export class CombatStatistics {
       if (event.t === 'hit') {
         let source = this.rows.get(event.source);
         const target = this.rows.get(event.id);
-        if (event.shadowBoardSide !== undefined || event.sunlightJudgmentSide !== undefined) {
+        if (event.shadowBoardSide !== undefined || event.sunlightJudgmentSide !== undefined || event.astralMeteorSide !== undefined) {
           // Negative IDs are reserved for team effects, separate from runtime unit IDs.
           const sunlight = event.sunlightJudgmentSide !== undefined;
-          const side = (sunlight ? event.sunlightJudgmentSide : event.shadowBoardSide)!;
-          const id = (sunlight ? -3 : -1) - side;
+          const astral = event.astralMeteorSide !== undefined;
+          const side = (astral ? event.astralMeteorSide : sunlight ? event.sunlightJudgmentSide : event.shadowBoardSide)!;
+          const id = (astral ? -5 : sunlight ? -3 : -1) - side;
           source = this.rows.get(id);
           if (!source) {
-            source = { id, name: sunlight ? '日辉羁绊' : '暗影羁绊', side, star: 4,
-              sourceKind: sunlight ? 'sunlightJudgment' : 'shadowBoard', damage: 0, taken: 0, healing: 0, shielding: 0,
+            source = { id, name: astral ? '星穹羁绊' : sunlight ? '日辉羁绊' : '暗影羁绊', side, star: sunlight ? (event.sunlightJudgmentStar ?? 4) : 4,
+              sourceKind: astral ? 'astralMeteor' : sunlight ? 'sunlightJudgment' : 'shadowBoard', damage: 0, taken: 0, healing: 0, shielding: 0,
               damageByType: { physical: 0, magic: 0, true: 0 }, takenByType: { physical: 0, magic: 0, true: 0 } };
             this.rows.set(id, source);
           }

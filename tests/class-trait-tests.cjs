@@ -6,9 +6,9 @@ const {CombatStatistics}=require('../assets/scripts/battle/CombatStatistics.ts')
 const {resolveTraits}=require('../assets/scripts/battle/Traits.ts');
 const battle=require('../assets/resources/config/battle.json'),roster=require('../assets/resources/config/units.json');
 const clone=value=>JSON.parse(JSON.stringify(value));
-const traits=battle.traits.filter(trait=>trait.selector);
+const traits=battle.traits.filter(trait=>trait.selector && trait.breakpoints.every(tier=>tier.stats));
 assert.deepEqual(traits.map(t=>t.id),['armored_tank','brawler','swift_marksman','sharpshooter','assassin']);
-const expected={armored_tank:['abyss_iron_guard','helion'],brawler:['bronda','nightmare_lamplighter'],swift_marksman:[],sharpshooter:['aurelia','blackfeather_hunter','eclipse_crossbow','saiph'],assassin:['kaeru','seraphiel','shadow_seam_assassin','voidscar_reaver']};
+const expected={armored_tank:['abyss_iron_guard','bao_zero','helion','star_armor_guard'],brawler:['bronda','nightmare_lamplighter'],swift_marksman:[],sharpshooter:['aurelia','blackfeather_hunter','eclipse_crossbow','saiph'],assassin:['kaeru','milu','ripsaw_spider','seraphiel','shadow_seam_assassin','voidscar_reaver']};
 for(const state of resolveTraits(traits,roster.map(u=>u.id),roster))assert.deepEqual(state.memberIds,expected[state.config.id]);
 const base={id:'dummy',name:'dummy',hp:1000,atk:100,armor:0,mr:0,atkSpeed:.8,range:1,moveTicks:1,maxMana:0,startMana:0,manaPerHit:0,critChance:0};
 function create(id,n,side=0,overrides={}) {

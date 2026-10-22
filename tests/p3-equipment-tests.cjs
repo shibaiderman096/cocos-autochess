@@ -1,6 +1,6 @@
 require('tsx/cjs');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs,runSimulation}=require('../tools/run-simulation.ts');
+const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs,runSimulation:simulate}=require('../tools/run-simulation.ts');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts'),{ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {EnemyGenerator}=require('../assets/scripts/core/EnemyGenerator.ts'),{EnemyPowerModel}=require('../assets/scripts/core/EnemyPowerModel.ts');
 const {RunRandomContext}=require('../assets/scripts/core/RunRandomContext.ts'),{buildRunWaves}=require('../assets/scripts/core/RunSetup.ts');
@@ -9,10 +9,13 @@ const {createEquipmentReward}=require('../assets/scripts/core/EquipmentReward.ts
 const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
 const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
 const archived=require('../docs/p4-balance/baseline/frozen.json').configs;
-const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f=loadFormationInputs(),{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
+const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f={formationConfig:archived['enemy-formation'],enemyRoles:archived['enemy-roles']},{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
-const combatInputs={...i,units:loadRunInputs().units,skills:loadRunInputs().skills};
+const authored=require('./fixtures/content-c001e20.json').configs;
+// Generator snapshots keep P4 inputs; battles use the last authored, current-schema skills for those identities.
+const combatInputs={...i,skills:authored.skills};
+const runSimulation=(inputs,options)=>simulate(inputs,{...g,...f,equipmentPolicy:p,...options});
 function config(){const cfg=new ConfigManager();cfg.setUnits(combatInputs.units);cfg.setSkills(combatInputs.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);return cfg;}
 function session(options={}){return new RunSession(config(),i.run,i.waves,{runSeed:12345,stageCount:10,...g,...f,equipmentPolicy:p,...options});}
 function strong(options={}){const seed=session(options),save=seed.snapshot();save.level=10;save.exp=0;

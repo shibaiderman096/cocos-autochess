@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 37);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,9,7,7,6]);
-assert.equal(cfg.allUnits().length,37,'monsters must stay out of shop inventory');
+assert.equal(units.length, 29);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,6,5,5,5]);
+assert.equal(cfg.allUnits().length,29,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -74,7 +74,7 @@ for(const wave of waves.filter(w=>w.stage===1)) {
     assert.equal(e.cfg[key],runConfig.monsterTemplate[key],`independent monster template ${key}`);
   }
   const allies=[{cfg:cfg.getUnit(runConfig.starterUnitId),side:0,star:1,x:3,y:3}];
-  if(wave.round>1)allies.push({cfg:cfg.getUnit('archer'),side:0,star:1,x:2,y:2});
+  if(wave.round>1)allies.push({cfg:cfg.getUnit('saiph'),side:0,star:1,x:2,y:2});
   const sim=new BattleSim(cfg,[...enemies,...allies],{seed:42,w:7,h:8,maxTicks:rules.maxTicks});
   sim.start();sim.run();assert.equal(sim.winner,0,`starter with affordable opening recruit beats ${wave.stage}-${wave.round}`);
   for(const enemy of sim.units.filter(u=>u.side===1)) {
@@ -103,7 +103,9 @@ const run = new RoundFlow(waves, rules);
 for (let i = 0; i < waves.length; i++) {
   run.startBattle();
   const placements = run.wave.enemies.map(e => ({ cfg:cfg.getUnit(e.unitId), side:1, ...e }));
-  units.forEach((u,j) => placements.push({ cfg:u, side:0, star:3, x:j%7, y:Math.floor(j/7)+2 }));
+  const formation=['helion','bao_zero','atlas','oris','seraphiel','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map(id=>cfg.getUnit(id));
+  assert.equal(formation.length,10);
+  formation.forEach((u,j) => placements.push({ cfg:u, side:0, star:3, x:j%7, y:Math.floor(j/7)+2 }));
   const sim = new BattleSim(cfg, placements, {seed:42, w:7, h:8, maxTicks:rules.maxTicks}); sim.start(); sim.run();
   assert.equal(sim.winner, 0, `strong formation must beat wave ${i+1}`);
   run.settle(sim.winner, sim.units.filter(u => u.side===1 && u.alive).length);
@@ -112,8 +114,11 @@ for (let i = 0; i < waves.length; i++) {
 assert.equal(run.result, 'victory'); assert.equal(run.phase, 'ended'); assert.equal(run.health, 20);
 // Exercise every configured skill through the shared pipeline, including low-HP targeting.
 for (const [id, skill] of Object.entries(skills)) {
-  const caster = {...cfg.getUnit('mage'), skillId:id, range:4, maxMana:100, startMana:100};
-  const target = {...cfg.getUnit('warrior'), hp:10000, skillId:undefined, maxMana:0, startMana:0};
+  const owner=[...units,...runConfig.monsters].find(unit=>unit.skillId===id);
+  assert.ok(owner||id==='monster_blast','unexpected unowned skill: '+id); // Retained generic monster blast has no shop unit.
+  const castingBase=owner??cfg.getUnit('celine');
+  const caster = {...castingBase, skillId:id, range:4, maxMana:100, startMana:100};
+  const target = {...cfg.getUnit('helion'), hp:10000, skillId:undefined, maxMana:0, startMana:0};
   const sim = new BattleSim(cfg,[{cfg:caster,side:0,x:3,y:3},
     {cfg:target,side:1,x:3,y:4},{cfg:target,side:1,x:3,y:5}],{seed:42,w:7,h:8});
   sim.units[2].hp=500;
@@ -123,8 +128,16 @@ for (const [id, skill] of Object.entries(skills)) {
   assert.ok(cast,`${id} must start casting with full mana`);
   const shadowTarget = ['bulwark','domain','empower'].includes(skill.shadow?.kind) ? 1 : ['flurry','execute'].includes(skill.shadow?.kind) ? 3 : 2;
   const sunlightTarget = ['bulwark','bastion','empower','prayer'].includes(skill.sunlight?.kind) ? 1 : ['hunt','crossbow'].includes(skill.sunlight?.kind) ? 3 : 2;
-  assert.equal(cast.target,skill.effect==='sunlight'?sunlightTarget:skill.effect==='shadow'?shadowTarget:['susanoo','healChannel','selfShield','healAlly'].includes(skill.effect)?1:skill.targeting==='lowestHp'?3:2,id);
+  assert.equal(cast.target,skill.effect==='sunlight'?sunlightTarget:skill.effect==='shadow'?shadowTarget:['susanoo','healChannel','selfShield','healAlly','hydraulicBulwark','lowestHealthHeal'].includes(skill.effect)?1:['railShot','spiderLeap','furnaceDash'].includes(skill.effect)?3:skill.targeting==='lowestHp'?3:2,id);
   // Sunlight's shields, multihits and delayed judgments have dedicated all-star assertions.
+  if (skill.effect === 'furnaceDash') {const dash=sim.events.find(e=>e.t==='dash'&&e.id===1);assert.ok(dash);assert.ok(dash.durationTicks>0);assert.ok(sim.units[0].furnaceDash);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);while(sim.tick<=1+dash.durationTicks)sim.step();assert.ok(sim.events.some(e=>e.t==='hit'&&e.source===1&&e.dmgType===skill.dmgType),'dash must deal its actual impact damage');continue;}
+  if (skill.effect === 'hydraulicBulwark') {assert.ok(sim.units[0].hydraulicBulwark);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);continue;}
+  if (skill.effect === 'stellarBulwark') {
+    assert.ok(sim.units[0].stellarCharge);assert.ok(sim.units[0].stellarShield);
+    assert.ok(sim.events.some(e=>e.t==='shield'&&e.source===1&&e.amount===skill.shieldAmounts[0]));
+    assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0,'stellar barrier grants shield and control without skill damage');continue;
+  }
+  if (skill.effect === 'lowestHealthHeal') {assert.ok(sim.events.some(e=>e.t==='heal'&&e.source===1&&e.id===1&&e.amount>0));assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);continue;}
   if (skill.effect === 'sunlight') continue;
   if (skill.effect === 'susanoo') continue;
   if (skill.effect === 'teleportEmpower' || cast.duration > 0) {
@@ -132,11 +145,11 @@ for (const [id, skill] of Object.entries(skills)) {
     continue; // Delayed attack effects are covered by enderman-tests.cjs.
   }
   const hits=sim.events.filter(e=>e.t==='hit' && e.id!==1);
-  assert.equal(hits.length,skill.radius>0?2:1,id);
+  assert.equal(hits.length,skill.effect==='atlasMissiles'?Math.min(2,skill.atlasMissiles.targetCounts[0]):skill.radius>0?2:1,id);
   assert.ok(hits.every(e=>e.dmgType===skill.dmgType),id);
 }
 // A ninth base card must cascade into a three-star unit, preserving nine cards.
 const owned = new OwnedUnits();
-for(let i=0;i<9;i++) owned.addToBench('warrior',9);
+for(let i=0;i<9;i++) owned.addToBench('helion',9);
 assert.equal(owned.all().length,1); assert.equal(owned.all()[0].star,3);
 console.log('Shared stats, cost/star progression, special encounters, capped population and late bonuses, independent monsters, real battles, save resume and skills passed');

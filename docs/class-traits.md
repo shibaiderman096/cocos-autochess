@@ -1,9 +1,13 @@
 # 职业羁绊
 
-按棋子的 `role` 和 `damageType` 自动归属。配置入口为 `battle.json` 的 selector 和 stats；成员 ID 由当前棋子配置解析，后续新增、改变职业的棋子会自动加入或退出相应羁绊。职业羁绊可以与暗影、日辉叠加。
+按棋子的 `role` 和 `damageType` 自动归属。配置入口为 `battle.json` 的 selector、stats、conqueror、spellblade、spellchanter 和 swiftmartialist；成员 ID 由当前棋子配置解析，后续新增、改变职业的棋子会自动加入或退出相应羁绊。职业羁绊可以与暗影、日辉叠加。
 
 | 羁绊 | 归属条件 | 档位 | 初版效果 |
 | --- | --- | --- | --- |
+| 迅武师 | caster + physical | 2/4/6/8 | 物理加成 +15/30/50/80%；每次施法攻速 +0.05/0.08/0.12/0.18，最多5层，持续至战斗结束 |
+| 法咏者 | caster + magic | 2/4/6/8 | 法术加成 +15/30/50/80%；参与击杀回复8/12/16/20法力；仅近5秒造成实际生命伤害且仍存活的成员；锁蓝时暂存，解除后补回 |
+| 征战者 | warrior + physical | 2/4/6/8 | 增伤 +8/15/25/40%，全能吸血 +8/15/25/35%；低于50%生命时仅羁绊增伤翻倍；8人首次低于30%生命回复15%最大生命并减伤20%，持续5秒 |
+| 魔剑士 | warrior + magic | 2/4/6/8 | 常驻法强 +15/30/50/80；施法后4秒攻速 +0.15/0.30/0.50/0.75，减伤5/10/15/25%；8人施法后3次普攻各附加70基础魔法伤害 |
 | 重甲坦克 | tank + physical | 2/4/6/8 | 护甲、魔抗各 +25/50/80/120 |
 | 斗士 | tank + magic | 2/4/6/8 | 最大生命 +20/35/55/85% |
 | 迅捷射手 | marksman + magic | 2/3/4/5 | 攻速 +20/35/55/80% |
@@ -22,27 +26,32 @@
 
 | 羁绊 | 当前成员 | 不依赖新增内容可达档位 |
 | --- | --- | --- |
-| 重甲坦克 | 暗渊铁卫、赫利昂 | 2 人档 |
+| 迅武师 | 磁轨猎手·零七、阿特拉斯 | 2 人档 |
+| 法咏者 | 冥灯女巫、黑星咒术师、瑟琳、奥瑞斯、弧光维修姬 | 2 / 4 人档 |
+| 征战者 | 裂魂斩将、雷昂、涡轮拳虎机 | 2 人档 |
+| 魔剑士 | 幽焰刃侍、菲妮娅、熔炉行刑者 | 2 人档 |
+| 重甲坦克 | 暗渊铁卫、赫利昂、铆钉壁垒·堡零、星铠守卫 | 2 / 4 人档 |
 | 斗士 | 魇雾守灯人、布隆达 | 2 人档 |
 | 迅捷射手 | 暂无成员 | 暂不足最低门槛 |
 | 神射手 | 玄羽夜猎、蚀月弩姬、赛芙、艾蕾娅 | 2 / 4 人档 |
-| 刺客 | 影缝刺客、虚痕掠杀者、凯鲁、塞拉菲尔 | 2 / 3 / 4 人档 |
+| 刺客 | 影缝刺客、虚痕掠杀者、凯鲁、塞拉菲尔、裂齿刃蛛、流星灵狐·弥露 | 2 / 3 / 4 / 5 人档 |
 
 没有为凑门槛改变棋子职业或允许同名副本重复计数。配置中的高档效果通过合成不同 ID 成员验证，等待后续内容扩充。
 
-## 数值依据与验收
+## 数值依据与验证入口
 
 沿用上一轮用户授权，由开发方参考云顶并按本项目规则配平。[Riot 12.17 补丁](https://teamfighttactics.leagueoflegends.com/en-us/news/game-updates/teamfight-tactics-patch-12-17-notes/)中的刺客暴击率为 20/40/75%，且带额外暴击伤害；本项目改为较低暴击率阶梯和低生命斩杀，不新增暴击伤害倍率。其他数值为本项目初版；未宣称完成完整爬塔平衡资格验证。
 
-通过的自动检查：
+相关自动检查：
 
+- `swiftmartialist-trait-tests.cjs`、`swiftmartialist-trait-ui-tests.cjs`：迅武师双方全部档位、实际施法/打断、5层封顶、永久叠层、攻速上限、物理加成隔离、配置和存档，以及10条预览列表；详见[迅武师](swiftmartialist-trait.md)。
+- `spellchanter-trait-tests.cjs`、`spellchanter-trait-ui-tests.cjs`：法咏者全部档位、参与击杀5秒边界、锁蓝暂存、同步死亡、配置和存档、9条当前列表；详见[法咏者](spellchanter-trait.md)。
+- `warrior-trait-tests.cjs`、`warrior-trait-ui-tests.cjs`：征战者与魔剑士各档结算、血线、施法刷新、附伤、统计、存档和当前列表布局；详见[战士羁绊](warrior-traits.md)。
 - `class-trait-tests.cjs`：当前和未来成员自动归属，全部门槛/双方计数、重复 ID、双抗装备条件、固定物理普攻追加、技能隔离/暴击、血线严格边界、致死保护、伤害归属、存档重算、配置身份和完整事件确定性。
-- `class-trait-ui-tests.cjs`：7 条列表边界、5 个详情、图标、当前成员头像、全部阶级颜色和斩杀血线。
-- `trait-tests.cjs`、`native-trait-tests.cjs`、`native-trait-ui-tests.cjs`、`skill-crit-equipment-tests.cjs`、`combat-attributes-tests.cjs`、`combat-statistics-tests.cjs`、`advanced-equipment-tests.cjs`、`enderman-tests.cjs`。
+- `class-trait-ui-tests.cjs`：当前列表边界、5 个详情、图标、当前成员头像、全部阶级颜色和斩杀血线。
+- `trait-tests.cjs`、`skill-crit-equipment-tests.cjs`、`combat-attributes-tests.cjs`、`combat-statistics-tests.cjs`、`advanced-equipment-tests.cjs`。
 - TypeScript 检查、资源路径检查、修改范围差异空白检查。
 
-1280×720 浏览器实际验收：通过现有 Debug 菜单和商店组成测试阵容，7 个羁绊完整显示；重甲坦克 2 人档激活，卫士护甲/魔抗从 40/40 增至 65/65。逐一打开并检查 5 个职业详情的文字、图标、数值和成员头像。截图位于 `docs/evidence/class-traits/`。当前无法实际组成的高档以及迅捷、刺客激活效果使用逻辑测试，不冒充浏览器验证。
-
-实际完成一场战斗并保持 20/20 生命，自动进入 1-2，浏览器无 error/warn。验证后恢复临时浏览器分辨率。
+此前浏览器验收使用已删除成员，其截图已随过期材料清理；不作为当前成员的画面验收。当前无法组成的高档以及迅捷射手效果仍需合成不同 ID 的测试成员验证。
 
 新机制配置沿用项目原有存档身份保护，旧机制局需新开；未静默迁移。未重新构建发布包、未运行设备验收或完整爬塔平衡资格测试。

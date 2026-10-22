@@ -10,7 +10,7 @@ import type { EquipmentTier } from './EquipmentPolicyTypes';
 export interface StageEncounterRules {
   version: 'stage-encounters-v1'; startStage: number;
   monsterStatGrowth: number;
-  strongMonster?: { unitId: string; startStage: number; everyStages: number; statGrowth: number };
+  strongMonster?: { unitIds: string[]; startStage: number; everyStages: number; statGrowth: number };
   monsterReward: { initialValue: number; valuePerStage: number; maxValue: number };
   shop: { slots: number; equipmentPrices: Record<EquipmentTier, number> };
   basicEquipmentIds: string[];

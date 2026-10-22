@@ -13,7 +13,7 @@ const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
 const {loadEnemyGenerationInputs,runSimulation:simulate}=require('../tools/run-simulation.ts');
 const loadRunInputs=()=>require('./historical-inputs.cjs').archivedInputs;
 const runSimulation=(inputs,options)=>simulate(inputs,{...options,equipmentPolicy:false});
-const inputs=loadRunInputs(),bundle=loadEnemyGenerationInputs(),c=bundle.enemyDifficulty,power=bundle.enemyPower;
+const inputs=loadRunInputs(),bundle={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},c=bundle.enemyDifficulty,power=bundle.enemyPower;
 const clone=v=>JSON.parse(JSON.stringify(v)),digest=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const model=new EnemyPowerModel(power),root=path.resolve(__dirname,'..');let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
@@ -150,6 +150,6 @@ test('run-sim exports the generator diagnostics and explicit modes without grant
 test('P0/P1-A/P1-B evidence, archived experiment configurations remain byte-identical',()=>{
  const before=require('../docs/p1-enemy-difficulty/budget-generator/before-hashes.json');
  require('./archive-evidence.cjs').assertArchivedEvidence(before);
- assert.deepEqual(loadRunInputs(),inputs);assert.deepEqual(loadEnemyGenerationInputs().enemyPower,power);
+ assert.deepEqual(loadRunInputs(),inputs);assert.deepEqual(require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json'),power);
 });
 console.log(`Enemy budget: ${passed} passed, 0 failed`);

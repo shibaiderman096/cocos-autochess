@@ -6,7 +6,7 @@ const ts = require('typescript');
 const file = path.join(__dirname, '../assets/scripts/view/BattleStage.ts');
 const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.ES2020, true);
 const stageClass = source.statements.find(n => ts.isClassDeclaration(n) && n.name.text === 'BattleStage');
-const names = ['manualEncounter', 'refreshNextWaveButton', 'nextSpecialEncounter', 'scheduleNextWave', 'update', 'openStageReward', 'chooseStageReward'];
+const names = ['manualEncounter', 'refreshNextWaveButton', 'nextSpecialEncounter', 'scheduleNextWave', 'update', 'openStageReward', 'chooseStageReward', 'finishStageReward'];
 const methods = names.map(name => stageClass.members.find(n => n.name?.getText(source) === name).getText(source));
 const compiled = ts.transpileModule(`class Stage { ${methods.join('\n')} } exports.Stage=Stage;`, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
@@ -67,7 +67,10 @@ console.log('PASS encounter advancement: shop button, boss and other encounters 
 // Clicking a monster chest claims directly; failed/pending claims never skip rewards.
 for (const outcome of ['success','failed','equipment']) {
   const stage=makeStage('monster');
-  stage.session.pendingStageReward={id:'monster-chest',kind:'unitBundle'};
+  stage.session.pendingStageReward={id:'monster-chest',kind:'unitBundle',units:['helion']};
+  stage.owned={snapshot:()=>[]};
+  // This suite isolates reward/advancement gates; the actual asynchronous flight is covered by regression-tests.
+  stage.flyChestRewards=(units,before)=>{assert.deepEqual(units,['helion']);assert.deepEqual(before,[]);return false;};
   let claims=0, panels=0;
   stage.session.claimStageReward=action=>{
     claims++; assert.deepEqual(action,{type:'stageChoice',rewardId:'monster-chest',choice:'claim'});

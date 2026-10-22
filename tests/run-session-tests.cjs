@@ -87,10 +87,12 @@ test('shop, combat and preview RNG are isolated from enemy and bot streams (C/D/
 });
 test('save/load keeps shop refresh indices, UID allocation and deterministic continuation', () => {
   const a = make(12345); const bot = new MinimalBaselineBot();
-  for(let i=0;i<4;i++) {bot.prepare(a.playerPort());a.startBattle().run();a.settleBattle();bot.claimRewards(a.playerPort());a.nextWave();}
+  for(let i=0;i<4;i++) {bot.claimRewards(a.playerPort());if(a.flow.wave.encounterKind==='specialShop'){assert.equal(a.nextWave(),true);bot.claimRewards(a.playerPort());}bot.prepare(a.playerPort());a.startBattle().run();a.settleBattle();bot.claimRewards(a.playerPort());a.nextWave();}
   assert.equal(a.refreshShop().ok,true); const saved = a.snapshot();
   const b = make(12345,{save:saved}); assert.deepEqual(b.snapshot(),saved);
   for(let i=0;i<4&&a.flow.phase!=='ended';i++) {
+    assert.deepEqual(bot.claimRewards(a.playerPort()),bot.claimRewards(b.playerPort()));
+    if(a.flow.wave.encounterKind==='specialShop'){assert.equal(a.nextWave(),true);assert.equal(b.nextWave(),true);}
     assert.deepEqual(bot.prepare(a.playerPort()),bot.prepare(b.playerPort()));
     assert.deepEqual(a.startBattle().run(),b.startBattle().run());
     assert.deepEqual(a.settleBattle(),b.settleBattle());

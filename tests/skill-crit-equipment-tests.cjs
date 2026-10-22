@@ -61,16 +61,19 @@ for(const id of ids) {
   assert.ok(hits.every(hit=>hit.critical&&hit.dmg===Math.round(101*1.2*1.5*1.25*.8/2)),
     'AoE recipients independently use one final rounding and matching resistance');
 }
-cfg.setSkills(skills);
+// Historical skill semantics retain the exact pre-retirement c001e20 roster; current roster integration is tested separately.
+const historical=require('./fixtures/content-c001e20.json').configs;
+const historicalUnit=id=>{const unit=historical.units.find(u=>u.id===id);assert.ok(unit,id);return unit;};
+cfg.setSkills(historical.skills);
 for(const id of ids) {
-  const card=cfg.getUnit('young_sasuke'), skill=cfg.getSkill(card.skillId);
+  const card=historicalUnit('young_sasuke'), skill=cfg.getSkill(card.skillId);
   const sim=make([id],{...card,critChance:1,startMana:card.maxMana},{mr:100});sim.step();
   const hit=sourceHits(sim)[0];assert.equal(hit.critical,true);
   assert.equal(hit.dmg,Math.round(hybridSpellDamage(sim.units[0].cfg,skill,1)*1.5/2),
     'hybrid components receive their own bonuses, then one shared crit and MR pass');
 }
 for(const id of ids) {
-  const card=cfg.getUnit('sasuke'),skill=cfg.getSkill(card.skillId);
+  const card=historicalUnit('sasuke'),skill=cfg.getSkill(card.skillId);
   const sim=make([id],{...card,critChance:1,startMana:card.maxMana});sim.step();
   for(let i=0;i<10;i++)sim.step();sim.units[0].atkCd=10000;
   assert.equal(sourceHits(sim)[0].dmg,Math.round(skill.starDamage[0]*(id==='infinity_edge'?1.2:1)*1.5));
@@ -81,7 +84,7 @@ for(const id of ids) {
   assert.equal(sim.units[0].mana,0,'skill crit does not generate attack mana');
 }
 {
-  const card=cfg.getUnit('itachi');
+  const card=historicalUnit('itachi');
   const sim=make(['infinity_edge'],{...card,critChance:1,startMana:card.maxMana});
   sim.step();for(let i=0;i<9;i++)sim.step();
   assert.equal(sourceHits(sim)[0].critical,true,'delayed magic spell can crit with Infinity Edge');
