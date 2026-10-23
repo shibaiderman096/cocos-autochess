@@ -77,7 +77,6 @@ for(const [kind,tris] of [['chest',1092],['shop',1964]]){
  }
  const material=g.materials[0].pbrMetallicRoughness;assert.ok(material.baseColorTexture);assert.ok(material.metallicRoughnessTexture);
  assert.ok(g.images.length>=2&&g.images.every(im=>im.bufferView!==undefined),'real albedo/metal/rough image data embedded in GLB');
- const qa=JSON.parse(fs.readFileSync(root+'/docs/evidence/'+(kind==='chest'?'chest-opening/source-qa.json':'board-ui-encounters/shop-qa.json'),'utf8'));assert.equal(qa.pass,true);assert.deepEqual(qa.errors,[]);
 }
 for(const old of ['board_shop','board_boss_chest'])assert.ok(!fs.existsSync(root+'/assets/resources/art/ui/'+old+'.png'),'retired texture removed');
 console.log('PASS textured encounter GLBs, actual UI proxy/3D positions, visibility/clicks, 20 reentry/disposal cycles and late callback cleanup');

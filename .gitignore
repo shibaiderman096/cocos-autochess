@@ -34,3 +34,7 @@ docs/p4r1-bot-qualification/**/parts/*.jsonl
 # WebStorm
 #//////////////////////////
 .idea/
+
+# Local source artwork and visual evidence are retained outside Git history.
+/art-source/
+/docs/evidence/

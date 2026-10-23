@@ -25,8 +25,7 @@ function victory(s,stage=3,round=6){assert.equal(s.debugJump(stage,round),true);
 const build=(stages=99,policy=p)=>buildRunWaves(stages,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,power:g.enemyPower,difficulty:g.enemyDifficulty,equipmentPolicy:policy,equipmentRoles:f.enemyRoles});
 const waves=build(),baseline=require('../docs/p3-equipment/pre-p3-waves.json');
 
-test('P3 archived rules reproduce the old generator and retained evidence is byte protected',()=>{
- require('./archive-evidence.cjs').assertArchivedEvidence(require('../docs/p3-equipment/pre-p3-hashes.json'));
+test('P3 archived rules reproduce the old generator',()=>{
  assert.deepEqual(buildRunWaves(99,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,power:g.enemyPower,difficulty:g.enemyDifficulty}),baseline);
 });
 test('all 968 waves retain targets, population, classification and hard unlocks; normal/intro/stage1-2 have no items',()=>{

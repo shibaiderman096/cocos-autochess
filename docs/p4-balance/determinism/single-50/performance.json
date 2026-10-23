@@ -1,9 +1,0 @@
-{
-  "runs": 150,
-  "battles": 9646,
-  "workers": 1,
-  "wallMilliseconds": 103864.7454,
-  "simulationWallMilliseconds": 103094.98969999999,
-  "runsPerSecond": 1.4441858921651003,
-  "wavesPerSecond": 92.87078077216371
-}

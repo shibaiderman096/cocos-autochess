@@ -1,7 +1,0 @@
-{
-  "passed": true,
-  "method": "Assistant qualitative inspection of full action traces and public decision reasons, not a human-user approval or a win-rate-only check",
-  "seeds": [6001, 6500, 6002, 6003, 6004],
-  "supplementaryControlledDeathSeed": 5681,
-  "summary": "动作层复核通过，整体资格仍需单独检查高存款门槛。seed6001在Stage6 Boss前用5金完成可见末影人升级，目标完成后停止刷新；seed6500花64金、16次真实买经验从8升9并上阵候补，没有固定Lv7锁。seed6002/6003/6004在已满10人口、两个当前核心3星、无策略允许的目录升级时不再执行旧版本的14次无效刷新。站位、装备与奖励均为真实公共动作且逐波SHA匹配。Stage8这五局仍分别保留303、354、450、467、483金，其他非核心3星在游戏规则上仍合法，故策略目标耗尽不能替代用户的无合法转化途径例外，不能据此宣布总体资格通过。五局均为自然健康幸存局；正式样本不存在Medium-v2r1b的Stage6死亡类型，未伪造该类型。另检查受控Stage12 critical死亡seed5681：300金支出202金，升8人口，以98金战败；未继续升级是20次经验行动上限，未继续刷新是18次上限，残余金币原因和该上限的局限均明确保留。"
-}

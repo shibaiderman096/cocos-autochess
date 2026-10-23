@@ -9,9 +9,6 @@ function session(difficulty,save){const cfg=new ConfigManager();cfg.setUnits(c.u
  return new RunSession(cfg,c.run,c.waves,{runSeed:17,stageCount:3,enemyPower:c['enemy-power'],enemyDifficulty:difficulty,formationConfig:c['enemy-formation'],enemyRoles:c['enemy-roles'],equipmentPolicy:c['equipment-policy'],...(save?{save}:{})});}
 function build(d,stages=13){return buildRunWaves(stages,c.run,c.waves,c.units,{mode:'budget-v1',runSeed:17,power:c['enemy-power'],difficulty:d,equipmentPolicy:c['equipment-policy'],equipmentRoles:c['enemy-roles']});}
 
-test('P4 retained historical evidence stays byte-identical while live content evolves',()=>{
- require('./archive-evidence.cjs').assertArchivedEvidence(baseline.hashes);
-});
 test('optional budget controls default to the exact original anchors, requested/effective budgets and recovery',()=>{
  const waves=build(c['enemy-difficulty']),rows=waves.filter(w=>w.budget).map(w=>({globalWaveId:w.id,budgetWaveIndex:w.budget.budgetWaveIndex,stage:w.stage,round:w.round,rounds:waves.filter(q=>q.stage===w.stage).length,population:w.enemies.length,min:w.budget.minFeasibleBudget,max:w.budget.maxFeasibleBudget,kind:w.waveKind}));
  const b0=waves.find(w=>w.budget).budget.rawBudget;

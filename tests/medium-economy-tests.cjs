@@ -83,8 +83,4 @@ test('Weak/Strong configurations and legacy policies keep their frozen behavior 
   assert.equal(actual,original[file].replace(/\r\n/g,'\n'),file+' permits only the shared stage-reward infrastructure adapter');
  }
 });
-test('retained P4-R1 evidence is unchanged and only explicitly cleaned raw traces are absent',()=>{
- const data=require('../docs/p4r1-bot-qualification/freeze/historical-before.json');
- require('./archive-evidence.cjs').assertArchivedEvidence(data.hashes??data);
-});
 console.log(`Medium economy: ${passed} passed, 0 failed`);

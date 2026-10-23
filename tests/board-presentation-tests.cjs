@@ -70,11 +70,8 @@ for(let i=0;i<20;i++){
 const bench=readGlb(root+'/assets/resources/models/ruins-bench/ruins-bench.glb').gltf;
 assert.equal(bench.meshes.length,3);assert.equal(bench.materials.length,3);assert.ok(!bench.animations?.length);
 assert.ok(!bench.nodes.some(n=>n.name==='Cube'));
-const qa=JSON.parse(fs.readFileSync(root+'/docs/evidence/board-oblique-zoom-bench/bench-model-qa.json'));
-assert.equal(qa.pass,true);assert.deepEqual(qa.errors,[]);
 const near=P.projectGroundPoint({x:1,y:0,z:3}),far=P.projectGroundPoint({x:1,y:0,z:-3});
 assert.ok(near.x/far.x>1.5,'near tiles must visibly exceed far tiles in perspective');
 assert.equal(P.BOARD_CAMERA.pitchDegrees,45);
 const report={pass:true,cameraPitch:45,projection:'perspective',verticalFov:50,nearFarScaleRatio:near.x/far.x,zoomRange:[.64,.90],samples,maxErrorPixels:maxError,listenerLifecycleCycles:20,benchCounts:[1,9,12]};
-fs.mkdirSync(root+'/temp/board-test-reports',{recursive:true});fs.writeFileSync(root+'/temp/board-test-reports/board-presentation.json',JSON.stringify(report,null,2));
 console.log('PASS board presentation: '+JSON.stringify(report));
