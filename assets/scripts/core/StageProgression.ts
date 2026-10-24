@@ -2,7 +2,7 @@ import { ConfigManager } from './ConfigManager';
 import { CardPool } from './CardPool';
 import { OwnedUnits } from './OwnedUnits';
 import { EconomySystem } from './EconomySystem';
-import { COST_PRICE, validCost, SHOP_RATES } from './ShopConfig';
+import { COST_PRICE, validCost, SHOP_RATES, shopCostRates, rollShopCost } from './ShopConfig';
 import { RunRandomContext } from './RunRandomContext';
 import type { WaveConfig } from './RoundFlow';
 import type { EquipmentTier } from './EquipmentPolicyTypes';
@@ -10,13 +10,18 @@ import type { EquipmentTier } from './EquipmentPolicyTypes';
 export interface StageEncounterRules {
   version: 'stage-encounters-v1'; startStage: number;
   monsterStatGrowth: number;
-  strongMonster?: { unitIds: string[]; startStage: number; everyStages: number; statGrowth: number };
+  monsterFormation?: { center: { x: number; y: number }; pairs: Array<[{ x: number; y: number }, { x: number; y: number }]> };
+  strongMonster?: { unitIds: string[]; startStage: number; everyStages: number; statGrowth: number;
+    escorts?: { initialCount: number; countPerEncounter: number; maxCount: number;
+      pairs: NonNullable<StageEncounterRules['monsterFormation']>['pairs']; unitIdsByLeader: Record<string, string[]> } };
   monsterReward: { initialValue: number; valuePerStage: number; maxValue: number };
+  bossReward?: { healAmount: number };
   shop: { slots: number; equipmentPrices: Record<EquipmentTier, number> };
   basicEquipmentIds: string[];
 }
 export type StageOffer = { kind: 'unit' | 'equipment'; id: string; price: number; bought: boolean };
 export type StagePending =
+  // Serialized name retained for unopened legacy chests; claiming now rolls and delivers a random reward.
   | { id: string; waveId: number; kind: 'bossChoice'; value: number }
   | { id: string; waveId: number; kind: 'unitBundle'; value: number; units: string[]; deferredValue: number }
   | { id: string; waveId: number; kind: 'equipmentChoice'; candidates: string[] }
@@ -26,6 +31,8 @@ export interface StageProgressState {
   lastRewardWave: number; unitReserve: string[]; unitCredit: number; creditRoll: number; pending?: StagePending;
 }
 export interface StageChoice { type: 'stageChoice'; rewardId: string; choice: 'units' | 'equipment' | 'claim' | 'buy' | 'continue'; index?: number }
+export type StageRewardGrant = { kind: 'units'; units: string[] }
+  | { kind: 'equipment'; equipmentId: string } | { kind: 'health'; amount: number };
 export const freshStageProgress = (): StageProgressState => ({ lastRewardWave: 0, unitReserve: [], unitCredit: 0, creditRoll: 0 });
 
 /** Inventory and rewards only; all randomness uses persisted encounter identities. */
@@ -34,6 +41,7 @@ export class StageProgression {
     private pool: CardPool, private owned: OwnedUnits, private economy: EconomySystem, private random: RunRandomContext,
     private benchSlots: number, private tiers: Record<string, EquipmentTier>, private shopLevel: () => number = () => 1) {
     if (rules.version !== 'stage-encounters-v1' || !Number.isSafeInteger(rules.startStage) || rules.startStage < 4 || !Number.isFinite(rules.monsterStatGrowth) || rules.monsterStatGrowth < 0
+      || (rules.bossReward && (!Number.isSafeInteger(rules.bossReward.healAmount) || rules.bossReward.healAmount <= 0))
       || rules.shop.slots !== 5 || rules.basicEquipmentIds.length < 4 || new Set(rules.basicEquipmentIds).size !== rules.basicEquipmentIds.length
       || rules.basicEquipmentIds.some(id => !cfg.getEquipmentReserve([id]).length || !['basic', 'advanced'].includes(tiers[id]))
       || ![rules.monsterReward.initialValue, rules.monsterReward.valuePerStage, rules.monsterReward.maxValue, ...Object.values(rules.shop.equipmentPrices)].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid stage encounter rules');
@@ -61,14 +69,14 @@ export class StageProgression {
       case 'bossChoice': if (!value(p.value)) bad(); break;
       case 'unitBundle': if (!bundle(p)) bad(); break;
       case 'equipmentChoice':
-        if (!Array.isArray(p.candidates) || p.candidates.length !== 4 || new Set(p.candidates).size !== 4
+        if (!Array.isArray(p.candidates) || ![4, 5].includes(p.candidates.length) || new Set(p.candidates).size !== p.candidates.length
           || p.candidates.some(id => !this.rules.basicEquipmentIds.includes(id))) bad();
         break;
       case 'specialShop':
         if (!Array.isArray(p.offers) || p.offers.length !== this.rules.shop.slots || p.offers.some(o => !o
           || !positive(o.price) || typeof o.bought !== 'boolean'
           || (o.kind === 'unit' ? !roster.has(o.id) : o.kind === 'equipment' ? !equipment.has(o.id) : true))
-          || new Set(p.offers.map(o => o.id)).size !== p.offers.length) bad();
+          || new Set(p.offers.filter(o => o.kind === 'equipment').map(o => o.id)).size !== p.offers.filter(o => o.kind === 'equipment').length) bad();
         break;
       default: bad();
     }
@@ -84,7 +92,7 @@ export class StageProgression {
   private reserveCards(value: number, waveId: number, salt: number): { units: string[]; deferredValue: number } {
     const level = Math.max(1, Math.min(SHOP_RATES.length, Math.floor(this.shopLevel())));
     const rates = SHOP_RATES[level - 1];
-    const roster = this.cfg.allUnits().filter(u => rates[validCost(u.cost) - 1] > 0).slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    const roster = this.cfg.allUnits().filter(u => this.pool.canDraw(u.id) && rates[validCost(u.cost) - 1] > 0).slice().sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
     const possible = (target: number): boolean => {
       const reachable = Array(target + 1).fill(false); reachable[0] = true;
       for (const u of roster) {
@@ -111,25 +119,27 @@ export class StageProgression {
     this.state.unitReserve.push(...units); this.state.unitCredit += deferredValue;
     return { units, deferredValue };
   }
-  private bundle(wave: WaveConfig): void {
-    const value = this.value(wave.stage!);
-    this.state.pending = { id: this.id(wave, 'units'), waveId: wave.id, kind: 'unitBundle', value, ...this.reserveCards(value, wave.id, 4101) };
-  }
   enter(wave: WaveConfig): void {
     this.collect(wave);
     if (wave.encounterKind !== 'specialShop' || this.state.pending) return;
     const rng = this.random.stream('encounter', wave.id, 4201), offers: StageOffer[] = [];
-    const units = this.cfg.allUnits().filter(u => (u.cost ?? 1) <= Math.min(5, wave.stage!) && this.pool.count(u.id) > 0).sort((a, b) => a.id.localeCompare(b.id));
-    const equipment = this.cfg.allEquipment().filter(i => this.tiers[i.id] === 'basic' || (wave.stage! >= 4 && this.tiers[i.id] === 'advanced') || wave.stage! >= 8).sort((a, b) => a.id.localeCompare(b.id));
+    const units = this.cfg.allUnits().filter(u => u.specialShopUnlock && this.pool.count(u.id) > 0).sort((a, b) => a.id.localeCompare(b.id));
+    const equipment = this.cfg.allEquipment().filter(i => i.specialShopOnly || this.tiers[i.id] === 'basic' || (wave.stage! >= 4 && this.tiers[i.id] === 'advanced') || wave.stage! >= 8).sort((a, b) => a.id.localeCompare(b.id));
     const seen = new Set<string>();
+    const rates = shopCostRates(this.shopLevel(), this.cfg.allUnits()
+      .filter(u => this.pool.canDraw(u.id) && this.pool.count(u.id) > 0).map(u => validCost(u.cost)));
+    const costRng = this.random.stream('encounter', wave.id, 4202);
     for (let i = 0; i < this.rules.shop.slots; i++) {
-      let kind: StageOffer['kind'] = i === 0 ? 'unit' : i === 1 ? 'equipment' : rng.next() < .5 ? 'unit' : 'equipment';
-      let available = (kind === 'unit' ? units : equipment).filter(item => !seen.has(item.id));
-      if (!available.length) { kind = kind === 'unit' ? 'equipment' : 'unit'; available = (kind === 'unit' ? units : equipment).filter(item => !seen.has(item.id)); }
+      const cost = rollShopCost(rates, () => costRng.next());
+      const candidates = units.filter(u => validCost(u.cost) === cost
+        && offers.filter(o => o.kind === 'unit' && o.id === u.id).length < this.pool.count(u.id));
+      const kind: StageOffer['kind'] = candidates.length ? 'unit' : 'equipment';
+      // Missing exclusive fee tiers become equipment; never renormalize a 5-fee card to 100%.
+      const available = kind === 'unit' ? candidates : equipment.filter(item => !seen.has(item.id));
       const selected = available[rng.int(0, available.length - 1)];
       if (!selected) throw new Error('Insufficient special shop catalogue');
       seen.add(selected.id);
-      offers.push({ kind, id: selected.id, bought: false, price: kind === 'unit' ? COST_PRICE[validCost(this.cfg.getUnit(selected.id).cost)] : this.rules.shop.equipmentPrices[this.tiers[selected.id]] });
+      offers.push({ kind, id: selected.id, bought: false, price: kind === 'unit' ? COST_PRICE[validCost(this.cfg.getUnit(selected.id).cost)] : this.cfg.equipmentPrice(selected.id, this.rules.shop.equipmentPrices[this.tiers[selected.id]]) });
     }
     this.state.pending = { id: this.id(wave, 'shop'), waveId: wave.id, kind: 'specialShop', offers };
   }
@@ -145,13 +155,23 @@ export class StageProgression {
     }
     else if (wave.encounterKind === 'boss') this.state.pending = { id: this.id(wave, 'boss'), waveId: wave.id, kind: 'bossChoice', value: this.value(wave.stage!) };
   }
-  act(action: StageChoice, wave: WaveConfig): { ok: boolean; error?: string; completeShop?: boolean } {
+  act(action: StageChoice, wave: WaveConfig): { ok: boolean; error?: string; completeShop?: boolean; stageReward?: StageRewardGrant } {
     const p = this.state.pending;
     if (!p || p.waveId !== wave.id || p.id !== action.rewardId) return { ok: false, error: 'stale_stage_reward' };
     if (p.kind === 'bossChoice') {
-      if (action.choice === 'units') this.bundle(wave);
-      else if (action.choice === 'equipment') this.state.pending = { id: this.id(wave, 'equipment'), waveId: wave.id, kind: 'equipmentChoice', candidates: this.shuffle(this.rules.basicEquipmentIds.slice().sort(), wave.id, 4301).slice(0, 4) };
-      else return { ok: false, error: 'invalid_reward_choice' };
+      if (action.choice !== 'claim') return { ok: false, error: 'invalid_reward_choice' };
+      // Opening is one atomic action. Reloading an unopened chest keeps the same seeded outcome.
+      const kind = this.random.stream('reward', wave.id, 4300).int(0, 2);
+      let stageReward: StageRewardGrant;
+      if (kind === 0) {
+        stageReward = { kind: 'units', units: this.reserveCards(p.value, wave.id, 4101).units };
+      } else if (kind === 1) {
+        const equipmentId = this.shuffle(this.rules.basicEquipmentIds.slice().sort(), wave.id, 4301)[0];
+        this.owned.equipmentReserve.push(equipmentId);
+        stageReward = { kind: 'equipment', equipmentId };
+      } else stageReward = { kind: 'health', amount: this.rules.bossReward?.healAmount ?? 5 };
+      delete this.state.pending; this.collect(wave);
+      return { ok: true, stageReward };
     } else if (p.kind === 'unitBundle' && action.choice === 'claim') {
       delete this.state.pending; this.collect(wave);
     } else if (p.kind === 'equipmentChoice' && action.choice === 'claim' && Number.isInteger(action.index) && p.candidates[action.index!] !== undefined) {
@@ -163,7 +183,7 @@ export class StageProgression {
       if (this.economy.gold < offer.price) return { ok: false, error: 'not_enough_gold' };
       if (offer.kind === 'unit' && !this.pool.take(offer.id)) return { ok: false, error: 'unit_sold_out' };
       if (!this.economy.spend(offer.price)) { if (offer.kind === 'unit') this.pool.give(offer.id); return { ok: false, error: 'not_enough_gold' }; }
-      if (offer.kind === 'unit') this.state.unitReserve.push(offer.id); else this.owned.equipmentReserve.push(offer.id);
+      if (offer.kind === 'unit') { this.pool.unlock(offer.id); this.state.unitReserve.push(offer.id); } else this.owned.equipmentReserve.push(offer.id);
       offer.bought = true; this.collect(wave);
     } else return { ok: false, error: 'invalid_reward_choice' };
     return { ok: true };

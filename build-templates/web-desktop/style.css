@@ -9,6 +9,7 @@ html, body {
 .header, .footer { display: none; }
 #GameDiv {
   position: absolute;
+  z-index: 0;
   top: 0;
   left: 0;
   width: 100vw !important;

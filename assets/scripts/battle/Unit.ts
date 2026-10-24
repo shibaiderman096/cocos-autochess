@@ -53,13 +53,18 @@ export class Unit {
   skillMrBonus = 0;
   skillAttackSpeedBonus = 0;
   skillAttackSpeedPenalty = 0;
+  nebulaAttackSpeedPenalty = 0;
+  gravityResistanceBonus = 0;
+  tauntSourceId: number | null = null;
+  /** A taunt restricts selected enemy targets; area damage remains independent. */
+  canSelectEnemy(enemy: Unit): boolean { return this.tauntSourceId === null || enemy.id === this.tauntSourceId; }
   skillUntargetable = false;
   domainUntilTick = 0;
   domainRadius = 0;
   fearUntilTick = 0;
   fearOrigin = { x: 0, y: 0 };
-  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.hydraulicResistanceBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
-  get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.hydraulicResistanceBonus) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
   gainMana(amount: number): void {
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
@@ -74,7 +79,7 @@ export class Unit {
   alive = true;
   star = 1;
   skillScale = 1;
-  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; nextHealTick?: number } | null = null;
+  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; nextHealTick?: number; shotsRemaining?: number } | null = null;
   burns: BurnRuntime[] = [];
   empoweredAttacks = 0;
   permanentEmpower = false;
@@ -88,8 +93,25 @@ export class Unit {
   get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp + this.conquerorDamageAmp - (this.shadowCorruption?.damageAmpLoss ?? 0); }
   equipment: EquipmentConfigData[] = [];
   equipmentAttackStacks = 0;
+  equipmentDamageStacks = 0;
+  get equipmentStackResistance(): number {
+    return this.equipment.reduce((sum, item) => sum + (item.damageTakenStacks ? Math.min(this.equipmentDamageStacks, item.damageTakenStacks.maxStacks) * item.damageTakenStacks.resistancePerStack : 0), 0);
+  }
+  get equipmentStackDamageReduction(): number {
+    return this.equipment.reduce((sum, item) => sum + (item.damageTakenStacks && this.equipmentDamageStacks >= item.damageTakenStacks.maxStacks ? item.damageTakenStacks.maxStackDamageReduction : 0), 0);
+  }
+  permanentHealthGained = 0;
+  soulLampHealth = 0;
+  maxHpGrowthMultiplier = 1;
+  equipmentCastSpeedUntil = new Map<number, number>();
+  get crowdControlImmune(): boolean { return this.equipment.some(item => item.crowdControlImmune); }
+  get equipmentHealthArmor(): number {
+    return this.equipment.reduce((sum, item) => sum + (item.healthStance && this.hp < this.cfg.hp * item.healthStance.threshold ? item.healthStance.armor : 0), 0);
+  }
   get equipmentAttackSpeedBonus(): number {
-    return this.equipment.reduce((sum, item) => sum + item.attackSpeedBonus + item.attackSpeedPerAttack * this.equipmentAttackStacks, 0);
+    return this.equipment.reduce((sum, item, slot) => sum + item.attackSpeedBonus + item.attackSpeedPerAttack * this.equipmentAttackStacks
+      + (item.healthStance && this.hp >= this.cfg.hp * item.healthStance.threshold ? item.healthStance.attackSpeedBonus : 0)
+      + (this.alive && this.combatTick < (this.equipmentCastSpeedUntil.get(slot) ?? 0) ? item.castAttackSpeed?.bonus ?? 0 : 0), 0);
   }
   manaLocked = false;
   attackSpeedCap = 5;
@@ -99,12 +121,13 @@ export class Unit {
   susanooUntilTick = 0;
   susanooReduction = 0;
   damageReductionAt(tick: number): number {
-    return Math.min(1, (this.cfg.damageReduction ?? 0) + (tick < this.guardUntilTick ? this.guardReduction : 0)
+    return Math.min(1, (this.cfg.damageReduction ?? 0) + this.equipmentStackDamageReduction + (tick < this.guardUntilTick ? this.guardReduction : 0)
       + (tick < this.susanooUntilTick ? this.susanooReduction : 0) + this.traitDamageReductionAt(tick));
   }
   shield = 0;
   stellarShield: { remaining: number; untilTick: number } | null = null;
   stellarCharge: import('./types').StellarChargeRuntime | null = null;
+  starLeap: import('./types').StarLeapRuntime | null = null;
   untargetableUntilTick = 0;
   lowHealthProtectionUsed = false;
   equipmentRegen: { startTick: number; durationTicks: number; total: number; delivered: number } | null = null;
@@ -120,11 +143,12 @@ export class Unit {
   }
 
   get attackSpeed(): number {
-    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - this.skillAttackSpeedPenalty
+    const penalty = this.crowdControlImmune ? 0 : Math.max(this.skillAttackSpeedPenalty, this.nebulaAttackSpeedPenalty);
+    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - penalty
       + (this.combatTick < this.spellbladeUntilTick ? this.spellblade?.attackSpeedBonus ?? 0 : 0)
       + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
       + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0);
-    return Math.min(this.attackSpeedCap, this.skillAttackSpeedPenalty > 0 ? Math.max(.1, speed) : speed);
+    return Math.min(this.attackSpeedCap, penalty > 0 ? Math.max(.1, speed) : speed);
   }
 
   constructor(
@@ -148,6 +172,7 @@ export class Unit {
       ...(this.domainRadius ? { domainRadius: this.alive && tick < this.domainUntilTick ? this.domainRadius : 0 } : {}),
       susanooActive: this.alive && tick < this.susanooUntilTick,
       equipmentAttackStacks: this.equipmentAttackStacks,
+      equipmentStacks: this.equipment.map(item => item.damageTakenStacks ? Math.min(this.equipmentDamageStacks, item.damageTakenStacks.maxStacks) : this.equipmentAttackStacks),
       id: this.id,
       side: this.side,
       cfgId: this.cfg.id,

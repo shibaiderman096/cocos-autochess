@@ -15,7 +15,7 @@ const cc={Component,Node,Vec3,Sprite,UITransform,UIOpacity,SpriteFrame:class{},C
   Tween:{stopAllByTarget(){}},_decorator:{ccclass:()=>T=>T},
   resources:{load:(path,T,callback)=>pending.push({path,callback})},
   tween:target=>({to(){return this;},call(fn){this.done=fn;return this;},start(){}})};
-function load(file){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./ArtPaths'?{FX_SPRITE,UNIT_ART}:name==='./HealthBar'?{healthBarSegments:()=>({health:1,shield:0})}:{},exports);return exports;}
+function load(file){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./GameAudio'?{GameAudio:{play(){}}}:name==='./ArtPaths'?{FX_SPRITE,UNIT_ART}:name==='./HealthBar'?{healthBarSegments:()=>({health:1,shield:0})}:{},exports);return exports;}
 const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts');
 const {UnitView}=load('assets/scripts/view/UnitView.ts');
 const root=new Node('fx'),source={node:new Node('source'),playAttack(){}},target={node:new Node('target')};

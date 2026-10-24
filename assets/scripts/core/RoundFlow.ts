@@ -1,15 +1,18 @@
 import { Side } from '../battle/types';
 import type { EnemyGenerationMode, EnemyGenerationDiagnostics, WaveKind } from './EnemyGenerationTypes';
 import type { StageEncounterKind } from './StageEncounters';
+import type { EnemyUpgradeDiagnostics } from './EquipmentPolicyTypes';
 
 export type RoundPhase = 'prepare' | 'battle' | 'settlement' | 'ended';
 export type RunResult = 'victory' | 'defeat' | null;
-export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number; damageAmp?: number; damageReduction?: number; equipment?: string[] }
+export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number; healthMultiplier?: number; damageAmp?: number; damageReduction?: number; equipment?: string[] }
 export interface WaveConfig {
+  goldBudget?: import('./EnemyGoldArmy').EnemyGoldDiagnostics;
   id: number; name: string; enemies: WaveEnemy[];
   stage?: number; round?: number; roundsInStage?: number;
   encounterKind?: StageEncounterKind;
   waveKind?: WaveKind; enemyGenerationMode?: EnemyGenerationMode; budget?: EnemyGenerationDiagnostics;
+  enemyUpgrade?: EnemyUpgradeDiagnostics;
 }
 export interface RoundSettlement {
   waveId: number; winner: Side | -1; enemySurvivors: number;
@@ -52,6 +55,13 @@ export class RoundFlow {
   get wave(): WaveConfig { return this.waves[this.waveIndex]; }
   get result(): RunResult { return this.state.result; }
   get lastSettlement(): RoundSettlement | null { return this.state.lastSettlement ? { ...this.state.lastSettlement } : null; }
+  restoreHealth(amount: number): number {
+    if (!Number.isSafeInteger(amount) || amount <= 0 || this.health <= 0) return 0;
+    const gained = Math.min(amount, this.rules.initialHealth - this.health);
+    this.state.health += gained;
+    if (this.state.lastSettlement) this.state.lastSettlement.healthRemaining = this.health;
+    return gained;
+  }
   startBattle(): boolean {
     if (this.phase !== 'prepare') return false;
     this.state.phase = 'battle'; return true;

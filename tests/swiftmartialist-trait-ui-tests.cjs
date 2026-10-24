@@ -6,10 +6,10 @@ const battle=require('../assets/resources/config/battle.json'),roster=require('.
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();},text=n=>[...n.components.values()].find(c=>c.string!==undefined);
 const states=resolveTraits(battle.traits,roster.map(u=>u.id),roster),state=states.find(s=>s.config.id==='swiftmartialist');
-ui.refreshTraits(states,roster);flush();assert.equal(ui.traitPanel.rows.children.length,12,'four authored astral members add their real trait row');
+ui.refreshTraits(states,roster);flush();assert.equal(ui.traitPanel.rows.children.length,13,'Saiph adds the swift marksman row alongside the four factions');
 for(const tier of state.config.breakpoints) {
   ui.refreshTraits([...states.filter(s=>s!==state),{...state,count:tier.count,active:tier}],roster);flush();
-  assert.equal(ui.traitPanel.rows.children.length,12);
+  assert.equal(ui.traitPanel.rows.children.length,13);
   for(const row of ui.traitPanel.rows.children)assert.ok(-row.position.y+row.getComponent(UITransform).contentSize.height/2<=ui.traitPanel.rows.getComponent(UITransform).contentSize.height);
   ui.traitPanel.rows.getChildByName('trait_swiftmartialist').events.get('end')();flush();
   const card=ui.traitPanel.detail,rows=card.children.filter(n=>n.name==='traitBreakpoint');

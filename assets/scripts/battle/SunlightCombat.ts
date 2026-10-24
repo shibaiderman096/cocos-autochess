@@ -120,7 +120,7 @@ export class SunlightCombat {
   target(source: Unit, skill: SkillConfigData): Unit | undefined {
     const kind = skill.sunlight!.kind;
     if (['bulwark', 'bastion', 'empower', 'prayer'].includes(kind)) return this.enemies(source).length ? source : undefined;
-    let enemies = this.enemies(source);
+    let enemies = this.enemies(source).filter(u=>source.canSelectEnemy(u));
     if (kind === 'arrows' || kind === 'cleave') enemies = enemies.filter(u => hexDist(u.pos, source.pos) <= source.cfg.range);
     if (kind === 'crossbow') return enemies.sort((a, b) => this.lineTargets(source, b.pos).length - this.lineTargets(source, a.pos).length || a.id - b.id)[0];
     return enemies.sort((a, b) => (kind === 'hunt' ? -1 : 1) * (hexDist(source.pos, a.pos) - hexDist(source.pos, b.pos)) || a.id - b.id)[0];
@@ -128,7 +128,7 @@ export class SunlightCombat {
   busy(source: Unit): boolean { return this.channels.has(source.id); }
   activate(source: Unit, skill: SkillConfigData, targetId?: number): void {
     const spec = skill.sunlight!, rank = source.star - 1;
-    const target = this.enemies(source).find(u => u.id === targetId);
+    const target = this.enemies(source).find(u => u.id === (source.tauntSourceId ?? targetId));
     switch (spec.kind) {
       case 'bulwark':
         for (const s of [...this.shields]) if (s.source === source && s.skill.id === skill.id) this.endShield(s, true);
@@ -179,7 +179,7 @@ export class SunlightCombat {
         this.pulse(source, 'prayer', center, skill.radius, spec.durationSeconds, undefined, { kind: spec.kind }); break;
       }
       case 'judgment': {
-        const pool = this.enemies(source), selected: Unit[] = [];
+        const pool = this.enemies(source).filter(u=>source.canSelectEnemy(u)), selected: Unit[] = [];
         const count = source.star >= spec.allEnemiesStar ? pool.length : Math.min(pool.length, spec.counts[rank]);
         while (selected.length < count) selected.push(pool.splice(this.host.randomIndex(pool.length), 1)[0]);
         for (const unit of selected) this.pulse(source, 'warning', unit.pos, 0, spec.delaySeconds, undefined, { kind: spec.kind, targetId: unit.id });
@@ -193,9 +193,10 @@ export class SunlightCombat {
     if (spec.kind !== 'arrows' && spec.kind !== 'hunt' && spec.kind !== 'transit') return;
     const recast = spec.kind === 'transit' && job.targetId === -1;
     const target = recast
-      ? this.enemies(source).sort((a, b) => hexDist(source.pos, a.pos) - hexDist(source.pos, b.pos) || a.id - b.id)[0]
-      : this.enemies(source).find(u => u.id === job.targetId);
+      ? this.enemies(source).filter(u=>source.canSelectEnemy(u)).sort((a, b) => hexDist(source.pos, a.pos) - hexDist(source.pos, b.pos) || a.id - b.id)[0]
+      : this.enemies(source).find(u => u.id === (source.tauntSourceId ?? job.targetId));
     if (!target) { this.finish(job); return; }
+    if(source.tauntSourceId!==null)job.targetId=target.id;
     if (recast) {
       if (!this.teleportCell(source, target)) { this.finish(job); return; }
       this.teleport(source, target); job.targetId = target.id; job.recasts++;

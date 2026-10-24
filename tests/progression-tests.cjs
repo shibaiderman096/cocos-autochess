@@ -4,7 +4,7 @@ const { RoundFlow } = require('../assets/scripts/core/RoundFlow.ts');
 const { ConfigManager } = require('../assets/scripts/core/ConfigManager.ts');
 const { BattleSim } = require('../assets/scripts/battle/BattleSim.ts');
 const { OwnedUnits } = require('../assets/scripts/core/OwnedUnits.ts');
-const { buildRunWaves, buildMonsterUnits, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
+const { buildRunWaves, buildLegacyRunWaves, buildMonsterUnits, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
 const units = require('../assets/resources/config/units.json');
 const skills = require('../assets/resources/config/skills.json');
 const rules = require('../assets/resources/config/battle.json');
@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 29);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,6,5,5,5]);
-assert.equal(cfg.allUnits().length,29,'monsters must stay out of shop inventory');
+assert.equal(units.length, 28);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,5,4,6,5]);
+assert.equal(cfg.allUnits().length,28,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -27,7 +27,8 @@ assert.equal(runRoundCount(99,runConfig),longWaves.length);
 const expandedRoster=[...units,{...units[0],id:'cost4',cost:4},{...units[0],id:'cost5',cost:5}];
 const expandedWaves=buildRunWaves(10,runConfig,templates,expandedRoster);
 assert.ok(expandedWaves.filter(w=>(w.stage===8||w.stage===9)&&w.encounterKind!=='monster').every(w=>w.enemies.every(e=>expandedRoster.find(u=>u.id===e.unitId).cost===5)), 'new implemented higher costs are selected without changing base stats');
-for(const v of [-9,0,2,NaN,Infinity,undefined]) assert.equal(normalizeStageCount(v),3);
+for(const v of [-9,0,2]) assert.equal(normalizeStageCount(v),3);
+for(const v of [NaN,Infinity,undefined]) assert.equal(normalizeStageCount(v),10);
 assert.equal(normalizeStageCount(4.9),4);
 assert.deepEqual(build(3),waves,'generation is deterministic');
 const unchangedTemplates=JSON.stringify({runConfig,templates});
@@ -35,21 +36,32 @@ for(const count of [4,6,99]) {
   assert.deepEqual(build(count).slice(0,waves.length),waves,'adding stages must keep all existing encounters identical');
 }
 for(const invalid of [NaN,Infinity,-1,0]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationEveryRounds:invalid}}),/Invalid run configuration/);
-let completed=0;
+const populationWaves=buildLegacyRunWaves(10,runConfig,templates,units);
+assert.deepEqual(populationWaves.filter(w=>w.stage===2).map(w=>w.enemies.length),[3,3,3,3,4]);
+assert.deepEqual(populationWaves.filter(w=>w.stage===3).map(w=>w.enemies.length),[4,5,5,5,5,5]);
+assert.deepEqual([4,5,6,7,8,9,10].map(stage=>populationWaves.find(w=>w.stage===stage).enemies.length),[6,7,8,9,10,10,10]);
+for(const schedule of [
+  {milestones:[],perStageAfterLast:1},
+  {milestones:[{stage:2,round:1,population:3},{stage:2,round:6,population:4}],perStageAfterLast:1},
+  {milestones:[{stage:2,round:1,population:3},{stage:3,round:2,population:5},{stage:2,round:5,population:4}],perStageAfterLast:1},
+  {...runConfig.enemyProgression.populationSchedule,perStageAfterLast:-1}
+]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationSchedule:schedule}}),/Invalid run configuration/);
 for(const wave of longWaves.filter(w=>w.stage>=2)) {
   const strong=wave.encounterKind==='monster'&&wave.enemies.some(e=>cfg.getUnit(e.unitId).monsterTier==='strong');
-  assert.equal(wave.enemies.length,wave.encounterKind==='specialShop'?0:strong?1:Math.min(10,1+Math.floor(completed/3)));
-  completed++;
+  const escort=runConfig.stageEncounters.strongMonster.escorts;
+  const strongCount=1+Math.min(escort.maxCount,escort.initialCount+Math.floor((wave.stage-4)/3)*escort.countPerEncounter);
+  const population=wave.stage===2?(wave.round<5?3:4):wave.stage===3?(wave.round<2?4:5):Math.min(10,wave.stage+2);
+  assert.equal(wave.enemies.length,wave.encounterKind==='specialShop'?0:strong?strongCount:population,`${wave.stage}-${wave.round} population`);
   if(wave.encounterKind==='monster'){
     const rules=runConfig.stageEncounters;
-    assert.ok(wave.enemies.every(e=>e.star===1&&e.statMultiplier===(strong?1+(wave.stage-rules.strongMonster.startStage)*rules.strongMonster.statGrowth:1+(wave.stage-1)*rules.monsterStatGrowth)));continue;
+    for(const e of wave.enemies){const leader=cfg.getUnit(e.unitId).monsterTier==='strong';assert.equal(e.star,1);assert.equal(e.statMultiplier,leader?1+(wave.stage-rules.strongMonster.startStage)*rules.strongMonster.statGrowth:1+(wave.stage-1)*rules.monsterStatGrowth);}continue;
   }
   const expectedCost=wave.stage<4?1:wave.stage<6?2:wave.stage<8?3:5;
   const expectedStar=wave.stage<6?1:wave.stage<10?2:3;
   for(const e of wave.enemies) {
     assert.equal(e.statMultiplier,1);assert.equal(cfg.getUnit(e.unitId).cost,expectedCost);assert.equal(e.star,expectedStar);
-    assert.equal(e.damageAmp,Number((Math.max(0,wave.stage-9)*.05).toFixed(4)));
-    assert.equal(e.damageReduction,Number(Math.min(.8,Math.max(0,wave.stage-9)*.05).toFixed(4)));
+    assert.equal(e.damageAmp,Number((wave.stage < 11 ? 0 : ((wave.stage-11)*10+wave.round)*.01).toFixed(4)));
+    assert.equal(e.damageReduction,Number(Math.min(.95,Math.max(0,wave.stage-10)*.01).toFixed(4)));
     const sim=new BattleSim(cfg,[{cfg:cfg.getUnit(e.unitId),side:0,star:e.star,x:3,y:3},
       {cfg:cfg.getUnit(e.unitId),side:1,...e}]);
     for(const key of ['hp','atk','armor','mr','atkSpeed','spellPower','critChance','lifesteal'])assert.equal(sim.units[0].cfg[key],sim.units[1].cfg[key],`shared ${key}`);
@@ -87,17 +99,17 @@ for(const wave of waves.filter(w=>w.stage===1)) {
 const flow = new RoundFlow(waves, rules);
 assert.equal(flow.nextWave(), false); assert.equal(flow.settle(1, 3), null);
 assert.equal(flow.startBattle(), true); assert.equal(flow.startBattle(), false);
-assert.equal(flow.settle(1, 3).healthLost, 6); assert.equal(flow.health, 14);
-assert.equal(flow.settle(1, 3), null); assert.equal(flow.health, 14);
+assert.equal(flow.settle(1, 3).healthLost, 6); assert.equal(flow.health, rules.initialHealth - 6);
+assert.equal(flow.settle(1, 3), null); assert.equal(flow.health, rules.initialHealth - 6);
 const restored = new RoundFlow(waves, rules, flow.snapshot());
-assert.equal(restored.phase, 'settlement'); assert.equal(restored.health, 14);
+assert.equal(restored.phase, 'settlement'); assert.equal(restored.health, rules.initialHealth - 6);
 assert.equal(restored.nextWave(), true); assert.equal(restored.wave.id, 2);
 restored.startBattle();
 const interrupted = new RoundFlow(waves, rules, restored.snapshot());
-assert.equal(interrupted.phase, 'prepare'); assert.equal(interrupted.health, 14);
-restored.settle(1, 20); assert.equal(restored.health, 0); assert.equal(restored.phase, 'ended');
+assert.equal(interrupted.phase, 'prepare'); assert.equal(interrupted.health, rules.initialHealth - 6);
+restored.settle(1, 100); assert.equal(restored.health, 0); assert.equal(restored.phase, 'ended');
 assert.equal(restored.result, 'defeat'); assert.equal(restored.nextWave(), false);
-restored.restart(); assert.equal(restored.health, 20); assert.equal(restored.waveIndex, 0);
+restored.restart(); assert.equal(restored.health, 100); assert.equal(restored.waveIndex, 0);
 // Verify the entire configured run with real battles and a fully upgraded formation.
 const run = new RoundFlow(waves, rules);
 for (let i = 0; i < waves.length; i++) {
@@ -111,7 +123,7 @@ for (let i = 0; i < waves.length; i++) {
   run.settle(sim.winner, sim.units.filter(u => u.side===1 && u.alive).length);
   if(i<waves.length-1) { assert.equal(run.result,null); assert.equal(run.nextWave(), true); }
 }
-assert.equal(run.result, 'victory'); assert.equal(run.phase, 'ended'); assert.equal(run.health, 20);
+assert.equal(run.result, 'victory'); assert.equal(run.phase, 'ended'); assert.equal(run.health, 100);
 // Exercise every configured skill through the shared pipeline, including low-HP targeting.
 for (const [id, skill] of Object.entries(skills)) {
   const owner=[...units,...runConfig.monsters].find(unit=>unit.skillId===id);
@@ -126,11 +138,11 @@ for (const [id, skill] of Object.entries(skills)) {
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
   assert.ok(cast,`${id} must start casting with full mana`);
-  const shadowTarget = ['bulwark','domain','empower'].includes(skill.shadow?.kind) ? 1 : ['flurry','execute'].includes(skill.shadow?.kind) ? 3 : 2;
+  const shadowTarget = ['bulwark','domain','soulLamp','empower'].includes(skill.shadow?.kind) ? 1 : ['flurry','execute'].includes(skill.shadow?.kind) ? 3 : 2;
   const sunlightTarget = ['bulwark','bastion','empower','prayer'].includes(skill.sunlight?.kind) ? 1 : ['hunt','crossbow'].includes(skill.sunlight?.kind) ? 3 : 2;
   assert.equal(cast.target,skill.effect==='sunlight'?sunlightTarget:skill.effect==='shadow'?shadowTarget:['susanoo','healChannel','selfShield','healAlly','hydraulicBulwark','lowestHealthHeal'].includes(skill.effect)?1:['railShot','spiderLeap','furnaceDash'].includes(skill.effect)?3:skill.targeting==='lowestHp'?3:2,id);
   // Sunlight's shields, multihits and delayed judgments have dedicated all-star assertions.
-  if (skill.effect === 'furnaceDash') {const dash=sim.events.find(e=>e.t==='dash'&&e.id===1);assert.ok(dash);assert.ok(dash.durationTicks>0);assert.ok(sim.units[0].furnaceDash);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);while(sim.tick<=1+dash.durationTicks)sim.step();assert.ok(sim.events.some(e=>e.t==='hit'&&e.source===1&&e.dmgType===skill.dmgType),'dash must deal its actual impact damage');continue;}
+  if (skill.effect === 'furnaceDash' || skill.effect === 'starLeap') {const dash=sim.events.find(e=>e.t==='dash'&&e.id===1);assert.ok(dash);assert.ok(dash.durationTicks>0);assert.ok(sim.units[0].furnaceDash||sim.units[0].starLeap);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);while(sim.tick<=1+dash.durationTicks)sim.step();assert.ok(sim.events.some(e=>e.t==='hit'&&e.source===1&&e.dmgType===skill.dmgType),'dash must deal its actual impact damage');continue;}
   if (skill.effect === 'hydraulicBulwark') {assert.ok(sim.units[0].hydraulicBulwark);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);continue;}
   if (skill.effect === 'stellarBulwark') {
     assert.ok(sim.units[0].stellarCharge);assert.ok(sim.units[0].stellarShield);

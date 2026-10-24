@@ -7,6 +7,7 @@ const {resolveTraits} = require('../assets/scripts/battle/Traits.ts');
 const {astralCells, densestAstralCenter} = require('../assets/scripts/battle/Astral.ts');
 const {hexDist} = require('../assets/scripts/battle/HexMath.ts');
 const {combatConfigurationIdentity}=require('../assets/scripts/core/EnemyGenerationTypes.ts');
+const {RunSession}=require('../assets/scripts/core/RunSession.ts');
 const battle = require('../assets/resources/config/battle.json');
 const roster = require('../assets/resources/config/units.json');
 const original = battle.traits.find(t => t.id === 'astral');
@@ -33,7 +34,7 @@ function create(n=10, side=0, enemies=[{x:2,y:6},{x:3,y:6},{x:2,y:5},{x:6,y:7}])
 }
 function until(sim,tick){while(sim.tick<tick&&!sim.finished)sim.step();assert.equal(sim.tick,tick);}
 assert.equal(original.pendingMembers,false);
-assert.deepEqual(original.members,['oris','blackstar_warlock','star_armor_guard','milu']);
+assert.deepEqual(original.members,['oris','blackstar_warlock','star_armor_guard','milu','xiya','nebula_weaver','gravity_executor']);
 const authored=resolveTraits(battle.traits,['oris','blackstar_warlock','oris'],roster);
 assert.equal(authored.find(t=>t.config.id==='astral').count,2,'copies count once');
 assert.equal(authored.find(t=>t.config.id==='astral').active,null,'two members cannot activate the authored three-unit threshold');
@@ -76,7 +77,45 @@ for(const side of [0,1]) for(const n of [3,5,7,10]) {
 for(const side of [0,1]) {
   const small=astralCells(seed,side,7,8,4,7),medium=astralCells(seed,side,7,8,4,14);
   assert.ok(small.every(p=>medium.some(q=>q.x===p.x&&q.y===p.y)),'raising a tier adds tiles without rerolling old tiles');
-  assert.notDeepEqual(small,astralCells(seed+1,side,7,8,4,7),'next round seed can change tiles');
+  assert.notDeepEqual(small,astralCells(seed+1,side,7,8,4,7),'a different run layout seed can change tiles');
+}
+{
+  const run=require('../assets/resources/config/run.json'),templates=require('../assets/resources/config/waves.json');
+  const make=(runSeed=1025,save)=>{
+    const cfg=new ConfigManager();cfg.setUnits(roster);cfg.setSkills(require('../assets/resources/config/skills.json'));
+    cfg.setEquipment(require('../assets/resources/config/equipment.json'));cfg.setBattle(battle);
+    return new RunSession(cfg,run,templates,{runSeed,stageCount:6,enemyGenerationMode:'legacy',...(save?{save}:{})});
+  };
+  const initial=make(),saved=initial.snapshot();saved.level=10;saved.exp=0;
+  saved.owned=original.members.map((unitId,i)=>({uid:i+1,unitId,star:1,equipment:[],location:i<3?'board':'bench',x:i<3?i:-1,y:i<3?2:i-3}));
+  saved.nextOwnedUid=8;
+  const session=make(1025,saved),field=s=>s.createPreview().sim.astralFields.find(f=>f.side===0)?.cells??[];
+  const first=field(session);assert.equal(first.length,7);
+  assert.deepEqual(field(session),first,'repeated preparation previews retain the same field');
+  const normal=session.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.ok(session.debugJump(2,normal.round));
+  const beforeSeed=session.battleSeed;assert.deepEqual(field(session),first,'round changes preserve activation layout');
+  const actual=session.startBattle();assert.ok(actual);assert.deepEqual(actual.astralFields.find(f=>f.side===0).cells,first,'actual battle matches preparation');
+  actual.end(0);session.settleBattle();assert.ok(session.nextWave());assert.notEqual(session.battleSeed,beforeSeed);
+  assert.deepEqual(field(session),first,'natural round advancement keeps tiles despite changing combat RNG');
+  // Make saved state transitions with valid unique bench slots, independent of shop draws.
+  const deploy=n=>session.owned.all().forEach((u,i)=>Object.assign(u,{location:i<n?'board':'bench',x:i<n?i:-1,y:i<n?2:i-n}));
+  deploy(5);const medium=field(session);assert.equal(medium.length,14);
+  assert.ok(first.every(p=>medium.some(q=>q.x===p.x&&q.y===p.y)),'5 Astral adds seven tiles without rerolling');
+  deploy(7);const large=field(session);assert.equal(large.length,21);
+  assert.ok(medium.every(p=>large.some(q=>q.x===p.x&&q.y===p.y)),'7 Astral retains every lower-tier tile');
+  deploy(3);assert.deepEqual(field(session),first,'dropping a tier restores its original subset');
+  deploy(2);assert.deepEqual(field(session),[],'inactive field is hidden');
+  deploy(3);assert.deepEqual(field(session),first,'reactivation restores original tiles');
+  const restored=make(1025,session.snapshot());assert.deepEqual(field(restored),first,'save/load derives the same field from persisted runSeed');
+  const different=clone(session.snapshot());different.runSeed=1026;
+  assert.notDeepEqual(field(make(1026,different)),first,'new games may choose different layouts');
+  // The layout seed is independent for both sides and does not alter the combat RNG stream.
+  const {cfg,trait}=create(3),placements=[];
+  for(const side of [0,1])trait.members.forEach((id,i)=>placements.push({cfg:cfg.getUnit(id),side,x:i,y:side?6:1}));
+  const a=new BattleSim(cfg,placements,{seed:1,astralSeed:77}),b=new BattleSim(cfg,placements,{seed:99,astralSeed:77});
+  assert.deepEqual(a.astralFields,b.astralFields,'both armies use the fixed layout independently of wave seed');
+  const plain=new BattleSim(cfg,placements,{seed:1});
+  assert.equal(a.rng.next(),plain.rng.next(),'field layout never consumes combat RNG');
 }
 {
   const {cfg,trait}=create(3),cell=astralCells(seed,0,7,8,4,7)[0];
@@ -163,4 +202,4 @@ for(const key of ['damage','intervalSeconds','radius']) for(const value of [-1,N
   assert.throws(()=>new ConfigManager().setBattle({traits:[trait]}),/Invalid astral/);
 }
 assert.deepEqual(create().sim.run(),create().sim.run(),'deterministic complete battles');
-console.log('PASS astral: authored four-member roster and retained factions, all tiers/sides, stable unique tiles, start-only buffs, densest radius, 5s boundary, 3000 full magic damage, defenses, source isolation, statistics, death and cleanup');
+console.log('PASS astral: authored seven-member roster and retained factions, all tiers/sides, stable unique tiles, start-only buffs, densest radius, 5s boundary, 3000 full magic damage, defenses, source isolation, statistics, death and cleanup');

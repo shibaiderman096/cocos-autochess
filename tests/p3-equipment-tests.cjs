@@ -10,6 +10,10 @@ const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
 const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
 const archived=require('../docs/p4-balance/baseline/frozen.json').configs;
 const i={units:archived.units,skills:archived.skills,battle:archived.battle,run:archived.run,waves:archived.waves,equipment:archived.equipment},g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f={formationConfig:archived['enemy-formation'],enemyRoles:archived['enemy-roles']},{equipmentPolicy:p}=loadEquipmentInputs(),model=new EnemyPowerModel(g.enemyPower);
+// Historical simulations retain their authored item catalogue; new current items are tested separately.
+p.enemy=JSON.parse(JSON.stringify(archived['equipment-policy'].enemy));
+p.reward.excludedIds=(p.reward.excludedIds??[]).filter(id=>i.equipment.some(item=>item.id===id));
+p.tiers=Object.fromEntries(Object.entries(p.tiers).filter(([id])=>i.equipment.some(item=>item.id===id)));
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');let passed=0;
 function test(name,fn){fn();passed++;console.log('PASS '+name);}
 const authored=require('./fixtures/content-c001e20.json').configs;
@@ -82,10 +86,10 @@ test('only an actual battle victory creates rewards, including last-wave alive l
  assert.equal(s.flow.result,'victory','existing run completion is survival based');assert.equal(s.pendingEquipmentReward,undefined);assert.equal(s.save.lastEquipmentReward.rewardTriggered,false);
  const win=strong({stageCount:3});assert.ok(victory(win));assert.equal(win.flow.phase,'ended');
 });
-test('pending freezes the distinct two-choice early fallback, blocks all progression and rejects invalid indices',()=>{
- const s=strong(),pending=victory(s);assert.equal(pending.candidates.length,2);assert.equal(new Set(pending.candidates).size,2);assert.ok(pending.diagnostics.some(d=>d.includes('FEWER_CHOICES')));
+test('pending freezes three distinct ordinary choices, blocks all progression and rejects invalid indices',()=>{
+ const s=strong(),pending=victory(s);assert.equal(pending.candidates.length,3);assert.equal(new Set(pending.candidates).size,3);assert.ok(!pending.diagnostics.some(d=>d.includes('FEWER_CHOICES')));
  assert.equal(s.canAdvanceWave(),false);assert.equal(s.nextWave(),false);assert.equal(s.startBattle(),null);assert.equal(s.debugJump(4,1),false);
- for(const index of [-1,2,NaN,.5])assert.equal(s.claimEquipmentReward(index).ok,false);
+ for(const index of [-1,pending.candidates.length,NaN,.5])assert.equal(s.claimEquipmentReward(index).ok,false);
  const copy=s.pendingEquipmentReward;copy.candidates[0]='changed';assert.deepEqual(s.pendingEquipmentReward,pending);
 });
 test('settle x3 grants currency/XP/reward once and claim is idempotent',()=>{
@@ -134,7 +138,9 @@ test('reward RNG x1000 and enemy/formation x1000 leave all other domains and fro
  const s=strong(),pending=victory(s);for(let n=0;n<30;n++)s.createPreview();assert.deepEqual(s.pendingEquipmentReward,pending);
 });
 test('reward inventory -> original equip -> original unequip and real BattleSim Guinsuo reset',()=>{
- const s=strong(),pending=victory(s),index=pending.candidates.indexOf('guinsoo');assert.ok(index>=0);assert.equal(s.claimEquipmentReward(index).ok,true);assert.equal(s.nextWave(),true);
+ // Isolate the item under test instead of relying on its random inclusion in the expanded ordinary pool.
+ const policy=clone(p);for(const id of Object.keys(policy.tiers))policy.tiers[id]=id==='guinsoo'?'basic':'advanced';
+ const s=strong({equipmentPolicy:policy}),pending=victory(s),index=pending.candidates.indexOf('guinsoo');assert.ok(index>=0);assert.equal(s.claimEquipmentReward(index).ok,true);assert.equal(s.nextWave(),true);
  const uid=s.owned.all()[0].uid;assert.equal(s.equipItem(uid,0).ok,true);assert.equal(s.owned.equipmentReserve.length,0);
  const sim=s.startBattle(),unit=sim.units.find(u=>u.side===0&&u.cfg.id===s.owned.get(uid).unitId);assert.ok(unit);assert.equal(unit.equipmentAttackStacks,0);assert.ok(Math.abs(unit.attackSpeed-(s.cfg.getUnit(unit.cfg.id).atkSpeed+.1))<1e-9);
  sim.run();assert.ok(unit.equipmentAttackStacks>0);const fresh=s.createPreview().sim.units.find(u=>u.side===0&&u.cfg.id===unit.cfg.id);assert.equal(fresh.equipmentAttackStacks,0);

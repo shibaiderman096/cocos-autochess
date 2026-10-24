@@ -11,7 +11,7 @@ const configs=()=>{const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSk
 function fixture({gold=300,hp=8,level=7,xp=54,bench=true,kind='boss',star=2}={}){
  const s=new RunSession(configs(),i.run,i.waves,{runSeed:2001,stageCount:12,...extra});
  const save=s.snapshot();save.gold=gold;save.level=level;save.exp=xp;save.owned=[];
- const ids=star===3&&level===10?['atlas','blackstar_warlock','voidscar_reaver','oris','seraphiel','eclipse_crossbow','nether_lantern_witch','aurelia','celine','leon']:['bao_zero','seraphiel','leon','phinia','aurelia','saiph','arc_repairer','ghostflame_blade','celine','helion'];
+ const ids=star===3&&level===10?['atlas','blackstar_warlock','voidscar_reaver','oris','seraphiel','eclipse_crossbow','nether_lantern_witch','aurelia','celine','ghostflame_blade']:['bao_zero','seraphiel','ghostflame_blade','phinia','aurelia','saiph','arc_repairer','ghostflame_blade','celine','helion'];
  for(let n=0;n<level+(bench?1:0);n++)save.owned.push({uid:n+1,unitId:ids[n%ids.length],star,location:n<level?'board':'bench',x:n<level?n%7:-1,y:n<level?Math.floor(n/7):0,equipment:[]});
  save.nextOwnedUid=save.owned.length+1;save.round.health=hp;
  const session=new RunSession(configs(),i.run,i.waves,{runSeed:2001,stageCount:12,save,...extra}),base=session.botPort();
@@ -78,9 +78,10 @@ test('Weak/Strong configurations and legacy policies keep their frozen behavior 
   if(file==='equipment-policy.ts')actual=actual
    .replace("import { claimStageRewards } from './stage-rewards';\n",'')
    .replace('  const actions = claimStageRewards(player);\n','')
+   .replace(/^ {2,4}if\(player\.observe\(\)\.pendingTraitChoice\)act\(\{type:'chooseEquipmentTrait',index:0\}\);\n/gm,'')
    .replace('if(!pending)return actions;','if(!pending)return [];')
    .replace('return [...actions,{action,result:player.act(action)}];','return [{action,result:player.act(action)}];');
-  assert.equal(actual,original[file].replace(/\r\n/g,'\n'),file+' permits only the shared stage-reward infrastructure adapter');
+  assert.equal(actual,original[file].replace(/\r\n/g,'\n'),file+' permits only the shared stage-reward and mandatory trait-choice infrastructure adapters');
  }
 });
 console.log(`Medium economy: ${passed} passed, 0 failed`);

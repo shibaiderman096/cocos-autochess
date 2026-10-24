@@ -19,6 +19,7 @@ import { FORMATION_VERSION } from './EnemyFormationTypes';
 import type { FormationOverride } from './EnemyFormationTypes';
 import type { EquipmentProgress,EquipmentRewardEvent } from './EquipmentPolicyTypes';
 import type { StageProgressState } from './StageProgression';
+import { OPENING_ENCOUNTER_IDS } from './OpeningEncounter';
 
 export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'autochess_save_v2';
@@ -73,6 +74,11 @@ export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], bo
 }
 
 export interface SaveDataV2 extends SaveData {
+  unlockedUnits?: string[];
+  traitChoiceRoll?: number;
+  pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
+  equipmentTierVersion?: 'all-basic-v1';
+  openingEncounter?: import('./OpeningEncounter').OpeningEncounterState;
   stageProgress?: StageProgressState;
   balanceVersion?:string;
   enemyEquipmentVersion:string;
@@ -144,7 +150,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       while (used.has(nextUid)) nextUid++;
       const uid = Number.isSafeInteger(u.uid) && u.uid > 0 && u.uid < Number.MAX_SAFE_INTEGER && !used.has(u.uid) ? u.uid : nextUid;
       used.add(uid);
-      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
+      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
     }
   }
 
@@ -173,6 +179,16 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
   return {
     ...v1,
     version: SAVE_VERSION,
+    ...(d.unlockedUnits === undefined ? {} : { unlockedUnits: JSON.parse(JSON.stringify(d.unlockedUnits)) }),
+    traitChoiceRoll: safeInt(d.traitChoiceRoll, 0, 0, Number.MAX_SAFE_INTEGER),
+    ...(d.pendingTraitChoice === undefined ? {} : { pendingTraitChoice: JSON.parse(JSON.stringify(d.pendingTraitChoice)) }),
+    ...(d.equipmentTierVersion === 'all-basic-v1' ? { equipmentTierVersion: d.equipmentTierVersion } : {}),
+    ...(d.openingEncounter === undefined ? {} : { openingEncounter: {
+      selected: OPENING_ENCOUNTER_IDS.includes(d.openingEncounter?.selected) ? d.openingEncounter.selected : undefined,
+      ...(d.openingEncounter?.offered === undefined ? {} : { offered: JSON.parse(JSON.stringify(d.openingEncounter.offered)) }),
+      freeRefreshes: safeInt(d.openingEncounter?.freeRefreshes, 0, 0, Number.MAX_SAFE_INTEGER),
+      lastIncomeStage: safeInt(d.openingEncounter?.lastIncomeStage, 1, 1, 99),
+    } }),
     ...(d.stageProgress === undefined ? {} : { stageProgress: JSON.parse(JSON.stringify(d.stageProgress)) }),
     ...(typeof d.balanceVersion==='string'?{balanceVersion:d.balanceVersion}:{}),
     enemyEquipmentVersion:d.enemyEquipmentVersion??'none',

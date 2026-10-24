@@ -10,7 +10,7 @@ export interface ShadowSkillHost {
   width(): number;
   height(): number;
   targetable(unit: Unit): boolean;
-  damage(source: Unit, target: Unit, raw: number, type: DmgType): void;
+  damage(source: Unit, target: Unit, raw: number, type: DmgType, typeBonusApplied?: boolean): void;
   fear(source: Unit, target: Unit, seconds: number, origin: Pos): void;
   cooldown(unit: Unit): number;
 }
@@ -24,6 +24,7 @@ export class ShadowSkills {
   private serial = 0;
   private shields: TimedShield[] = [];
   private domains = new Map<number, { source: Unit; skill: SkillConfigData; end: number }>();
+  private soulLamps = new Map<number, { source: Unit; skill: SkillConfigData; end: number; next: number }>();
   private empowers = new Map<number, { skill: SkillConfigData; end: number; remaining: number }>();
   private channels = new Map<number, Channel>();
   private barrages: Barrage[] = [];
@@ -44,7 +45,7 @@ export class ShadowSkills {
 
   /** Global selectors are intentional; melee cones and straight shots retain ordinary cast range. */
   target(source: Unit, skill: SkillConfigData): Unit | undefined {
-    let enemies = this.enemies(source);
+    let enemies = this.enemies(source).filter(u=>source.canSelectEnemy(u));
     if (skill.shadow?.kind === 'piercing' || skill.shadow?.kind === 'cleave') enemies = enemies.filter(unit => hexDist(source.pos, unit.pos) <= source.cfg.range);
     return enemies.sort((a, b) => {
       if (skill.shadow?.kind === 'flurry') return hexDist(source.pos, b.pos) - hexDist(source.pos, a.pos) || a.id - b.id;
@@ -57,9 +58,15 @@ export class ShadowSkills {
   activate(source: Unit, skill: SkillConfigData, targetId?: number): void {
     const spec = skill.shadow!;
     const rank = this.rank(source);
-    const target = this.host.units.find(unit => unit.id === targetId && this.host.targetable(unit) && unit.side !== source.side);
+    const target = this.host.units.find(unit => unit.id === (source.tauntSourceId ?? targetId) && this.host.targetable(unit) && unit.side !== source.side);
     const baseDamage = skill.starDamage?.[rank] ?? 0;
     switch (spec.kind) {
+      case 'soulLamp': {
+        source.domainUntilTick = this.tick + this.ticks(spec.durationSeconds); source.domainRadius = skill.radius;
+        this.soulLamps.set(source.id, { source, skill, end: source.domainUntilTick, next: this.tick + this.ticks(spec.intervalSeconds) });
+        this.pulse(source, skill, 'domain', source.pos);
+        break;
+      }
       case 'bulwark': {
         // Recasting ends the old instance once; timed shields never remove equipment shields.
         for (const shield of [...this.shields]) if (shield.source === source && shield.bulwark) this.endShield(shield, true);
@@ -141,6 +148,18 @@ export class ShadowSkills {
   }
 
   update(): void {
+    for (const [id, lamp] of this.soulLamps) {
+      if (!lamp.source.alive || lamp.source.hp <= 0 || this.tick > lamp.end) { this.soulLamps.delete(id); continue; }
+      if (this.tick >= lamp.next) {
+        const spec = lamp.skill.shadow!;
+        if (spec.kind !== 'soulLamp') continue;
+        const rank = this.rank(lamp.source);
+        for (const enemy of this.area(lamp.source, lamp.source.pos, lamp.skill.radius))
+          this.host.damage(lamp.source, enemy, lamp.skill.starDamage![rank] * (1 + (lamp.source.cfg.spellPower ?? 0) / 100) + lamp.source.cfg.hp * spec.maxHpFractions[rank], lamp.skill.dmgType, true);
+        lamp.next += this.ticks(spec.intervalSeconds);
+      }
+      if (this.tick >= lamp.end) this.soulLamps.delete(id);
+    }
     for (const shield of [...this.shields]) if (this.tick >= shield.end) this.endShield(shield, shield.target.alive);
     for (const [id, buff] of this.empowers) if (this.tick >= buff.end) {
       this.host.units.find(unit => unit.id === id)!.skillAttackSpeedBonus = 0; this.empowers.delete(id);
@@ -158,7 +177,7 @@ export class ShadowSkills {
       if (!domain.source.alive || this.tick >= domain.end) { this.domains.delete(id); continue; }
       const spec = domain.skill.shadow!;
       if (spec.kind !== 'domain') continue;
-      for (const unit of this.area(domain.source, domain.source.pos, domain.skill.radius))
+      for (const unit of this.area(domain.source, domain.source.pos, domain.skill.radius)) if (!unit.crowdControlImmune)
         unit.skillAttackSpeedPenalty = Math.max(unit.skillAttackSpeedPenalty, spec.slowAmounts[this.rank(domain.source)]);
     }
   }
@@ -208,13 +227,13 @@ export class ShadowSkills {
     if (!source.alive) { this.interrupt(source); return; }
     if (spec.kind !== 'flurry' && spec.kind !== 'void') return;
     if (spec.kind === 'flurry') {
-      const target = this.host.units.find(unit => unit.id === channel.targetId && this.host.targetable(unit));
+      const target = this.host.units.find(unit => unit.id === (source.tauntSourceId ?? channel.targetId) && this.host.targetable(unit));
       if (target) {
         this.host.damage(source, target, skill.starDamage![this.rank(source)], skill.dmgType);
         this.pulse(source, skill, 'flurry', target.pos, 0);
       }
     } else {
-      const target = this.enemies(source).filter(unit => unit.id !== channel.lastTarget && !!this.behindCell(source, unit))
+      const target = this.enemies(source).filter(unit => source.canSelectEnemy(unit) && (source.tauntSourceId !== null || unit.id !== channel.lastTarget) && !!this.behindCell(source, unit))
         .sort((a, b) => Number(channel.marked.has(a.id)) - Number(channel.marked.has(b.id)) || a.hp / a.cfg.hp - b.hp / b.cfg.hp || a.id - b.id)[0];
       if (!target) { this.finishChannel(channel); return; }
       this.teleportBehind(source, target); channel.lastTarget = target.id; channel.marked.add(target.id);
@@ -264,6 +283,7 @@ export class ShadowSkills {
     this.interrupt(unit); this.empowers.delete(unit.id); unit.skillAttackSpeedBonus = 0;
     for (const shield of [...this.shields]) if (shield.target === unit) this.endShield(shield, false);
     this.domains.delete(unit.id);
+    this.soulLamps.delete(unit.id);
   }
 
   private behindCell(source: Unit, target: Unit): Pos | undefined {

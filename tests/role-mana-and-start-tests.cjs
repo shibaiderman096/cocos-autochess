@@ -23,7 +23,7 @@ assert.ok(legacyMonsters.every(m=>m.critChance===.25),'legacy stat scaling does 
 for(const monster of monsters.filter(m=>m.monsterTier!=='strong'))assert.deepEqual([monster.atk,monster.armor,monster.mr,monster.maxMana],[30,10,10,0]);
 assert.deepEqual(buildMonsterUnits(inputs.run,inputs.units.map(u=>({...u,hp:u.hp*10,atk:u.atk*10}))),monsters,'monster template is independent of playable unit balance');
 function battle(role,armor=0,mr=0){
- const c=cfg(),base={...c.getUnit('leon'),id:'dummy',role,hp:1000,atk:0,armor,mr,skillId:undefined,maxMana:100,startMana:0,critChance:0,manaPerHit:10};
+ const c=cfg(),base={...c.getUnit('ghostflame_blade'),id:'dummy',role,hp:1000,atk:0,armor,mr,skillId:undefined,maxMana:100,startMana:0,critChance:0,manaPerHit:10};
  const sim=new BattleSim(c,[{cfg:base,side:0,x:2,y:2},{cfg:{...base,role:'marksman',maxMana:0},side:1,x:3,y:2}]);
  for(const u of sim.units){u.atkCd=10000;u.moveCd=10000;}return sim;
 }

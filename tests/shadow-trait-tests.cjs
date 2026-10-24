@@ -19,9 +19,9 @@ function create(n, side=0, tickMs=50) {
   const sim=new BattleSim(cfg,placements,{seed:1018});
   return {sim,src:sim.units[0],friend:sim.units.at(-2),dst:sim.units.at(-1),trait};
 }
-assert.equal(shadow.pendingMembers,false);assert.equal(shadow.members.length,10);
+assert.equal(shadow.pendingMembers,false);assert.equal(shadow.members.length,8);
 assert.deepEqual(shadow.breakpoints.map(t=>t.count),[3,5,7,10]);
-assert.equal(resolveTraits([shadow],require('../assets/resources/config/units.json').map(u=>u.id))[0].active.count,10,'all ten authored members are registered');
+assert.equal(resolveTraits([shadow],require('../assets/resources/config/units.json').map(u=>u.id))[0].active.count,7,'eight retained members reach the seven-member tier');
 for(let n=1;n<=10;n++) for(const side of [0,1]) {
   const {sim,src,friend,dst,trait}=create(n,side);
   const state=resolveTraits([trait],[...trait.members.slice(0,n),...trait.members.slice(0,n)])[0];

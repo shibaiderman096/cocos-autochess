@@ -114,18 +114,23 @@ assert.equal(cfg.equipmentStats(cfg.scaleUnit({...base,hp:700},2),[FOREST]).hp,2
   assert.equal(sim.events.filter(e=>e.t==='heal').length,0,'no instant healing');
   u.stunnedUntilTick=200;advance(sim,19);assert.equal(u.hp,899);
   sim.step();assert.equal(u.hp,926,'first 1.5% pulse one second after activation');
-  u.hp=1000;advance(sim,20);assert.equal(u.hp,1027,'regeneration persists above 50% and while stunned');
-  u.hp=1799;advance(sim,20);assert.equal(u.hp,1800);
-  advance(sim,20);u.hp=1700;advance(sim,20);assert.equal(u.hp,1727,'overhealing is not banked');
-  assert.equal(triggers(sim,FOREST).length,1);
+  advance(sim,20);assert.equal(u.hp,926,'regeneration stops after recovering above 50%');
+  u.hp=900;advance(sim,20);assert.equal(u.hp,900,'exactly 50% also prevents healing');
+  hit(sim,1,'true',true);advance(sim,19);assert.equal(u.hp,899,'re-entry starts a fresh one-second interval');
+  sim.step();assert.equal(u.hp,926,'low-health healing can reactivate while stunned');
+  assert.equal(triggers(sim,FOREST).length,2);
+  u.hp=100;sim.step();advance(sim,10);u.hp=900;sim.step();
+  u.hp=100;sim.step();advance(sim,19);assert.equal(u.hp,100,'recovery cancels an incomplete healing interval');
+  sim.step();assert.equal(u.hp,127);
   const count=sim.events.filter(e=>e.t==='heal').length;hit(sim,10000,'true',true);assert.equal(u.alive,false);
   assert.equal(u.equipmentSustain.size,0);advance(sim,40);assert.equal(sim.events.filter(e=>e.t==='heal').length,count);
   const next=make([FOREST]).units[0];assert.equal(next.equipmentSustain.size,0,'next battle resets passive activation');
 }
 {
-  const sim=make([FOREST,FOREST]),u=sim.units[0];u.hp=1399;sim.step();
-  assert.equal(u.cfg.hp,2800);assert.equal(triggers(sim,FOREST).length,2);advance(sim,20);assert.equal(u.hp,1483);
-  advance(sim,20);assert.equal(u.hp,1567,'each copy continues healing independently');
+  const sim=make([FOREST,FOREST]),u=sim.units[0];u.hp=1300;sim.step();
+  assert.equal(u.cfg.hp,2800);assert.equal(triggers(sim,FOREST).length,2);advance(sim,20);assert.equal(u.hp,1384,'copies stack while below 50%');
+  advance(sim,20);assert.equal(u.hp,1426,'later copies recheck HP after an earlier copy crosses 50%');
+  advance(sim,20);assert.equal(u.hp,1426,'all copies stop above 50%');
   const fractions=make([FOREST],{hp:700});fractions.units[0].hp=100;fractions.step();advance(fractions,100);
   assert.equal(fractions.units[0].hp,208,'fractional HP pulses preserve cumulative 1.5% total');
 }
@@ -158,4 +163,4 @@ for(const [id,file] of Object.entries(originals)) {
     assert.equal(frame.rawHeight,128);
   }
 }
-console.log('PASS advanced equipment: final stats, passive stacks/caps, strict thresholds, live execute, omni lifesteal, magic-only reduction, max HP, persistent per-second healing, stun/death/reset, totem synergy, statistics, deterministic replay and all six icons');
+console.log('PASS advanced equipment: final stats, passive stacks/caps, strict thresholds, live execute, omni lifesteal, magic-only reduction, max HP, conditional per-second healing, recovery/re-entry, stun/death/reset, totem synergy, statistics, deterministic replay and all six icons');

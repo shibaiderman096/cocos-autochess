@@ -48,7 +48,7 @@ try {
     for(const file of [a,b])assert.equal(run(['--enemy-mode','budget-v1','--seed','12345','--stages','3','--json',file]).status,0);
     assert.equal(hash(a),hash(b));const report=JSON.parse(fs.readFileSync(a,'utf8'));assert.equal(report.enemyGenerationMode,'budget-v1');
     const monster=report.waves.find(w=>w.stage===2&&w.encounterKind==='monster');assert.ok(monster);assert.equal(monster.encounterKind,'monster');assert.equal(monster.enemyBudget,null);
-    const wave=report.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.equal(wave.actualBudget,wave.enemyBudget.actualBudget);assert.equal(wave.budgetWaveIndex,wave.waveId-3);assert.equal(wave.enemyGenerationMode,'budget-v1');
+    const wave=report.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.equal(wave.enemyBudget,null);assert.equal(wave.goldBudget.version,'gold-v1');assert.equal(wave.goldBudget.spentGold+wave.goldBudget.remainingGold,wave.goldBudget.totalGold);assert.equal(wave.enemyGenerationMode,'budget-v1');
     assert.equal(run(['--enemy-mode','unknown']).status,1);
     const p=spawnSync(process.execPath,['--require','tsx/cjs','tools/run-sim.ts','--max-waves','1','--json',a],{cwd:root,encoding:'utf8',timeout:30000});
     assert.equal(p.status,0,p.stderr);assert.equal(JSON.parse(fs.readFileSync(a,'utf8')).enemyGenerationMode,'budget-v1');
@@ -56,8 +56,9 @@ try {
   test('P2 CLI accepts L0/L1/L2/L3, exports snapshot diagnostics and protects P1-C evidence',()=>{
     for(const formation of ['L0','L1','L2','L3']){const file=path.join(output,'formation-'+formation+'.json'),p=run(['--enemy-mode','budget-v1','--formation',formation,'--seed','12345','--stages','3','--json',file]);
       assert.equal(p.status,0,p.stderr);const report=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(report.formationOverride,formation);assert.equal(report.waves[0].formationLevel,'L0');
-      const wave=report.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.equal(wave.formationLevel,formation);assert.equal(wave.actualBudget,wave.enemyBudget.actualBudget);
-      if(formation==='L3')assert.ok(wave.playerSnapshotHash);
+      const wave=report.waves.find(w=>w.stage===2&&w.encounterKind==='normal');
+      assert.equal(wave.formationLevel,'L0','gold armies retain their range-based rows for every legacy solver override');
+      assert.equal(wave.enemyBudget,null);assert.equal(wave.goldBudget.version,'gold-v1');
     }
     assert.equal(run(['--formation','L4']).status,1);
     const file=path.join(root,'docs/p1-enemy-difficulty/budget-generator/verification.json'),before=hash(file);assert.equal(run(['--max-waves','1','--json',file]).status,1);assert.equal(hash(file),before);

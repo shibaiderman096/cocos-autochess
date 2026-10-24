@@ -1,15 +1,119 @@
 {
   "version": "enemy-roles-v1",
   "units": {
-"milu":{"role":"assassin","tags":["teleport"],"source":"explicit","confidence":"high","reason":"弥露：1费魔法刺客，星跃位移1格并单体魔法打击。"},
-    "star_armor_guard":{"role":"tank","tags":["shield","durable","control"],"source":"explicit","confidence":"high","reason":"星铠守卫：1费物理重甲坦克，恒星壁垒获得护盾并冲刺击飞沿途敌人。"},
-    "turbo_fist_tiger": {"role":"melee_dps","tags":["healing"],"source":"explicit","confidence":"high","reason":"物理征战者，击杀技能回血。"},
-    "arc_repairer": {"role":"support","tags":["healing"],"source":"explicit","confidence":"high","reason":"全场按生命比例治疗友军。"},
-    "rail_hunter_07": {"role":"ranged_dps","tags":[],"source":"explicit","confidence":"high","reason":"远程物理术士，蓄力单体爆发。"},
-    "ripsaw_spider": {"role":"assassin","tags":["teleport"],"source":"explicit","confidence":"high","reason":"物理刺客，跳向最远目标造成收割伤害。"},
-    "furnace_executioner": {"role":"melee_dps","tags":["control","aoe"],"source":"explicit","confidence":"high","reason":"魔剑士冲刺、沿途魔法伤害与主目标击飞。"},
-    "atlas": {"role":"mage","tags":["aoe"],"source":"explicit","confidence":"high","reason":"远程物理术士，多目标导弹与永久灼烧。"},
-    "bao_zero": { "role": "tank", "tags": ["durable", "healing"], "source": "explicit", "confidence": "high", "reason": "堡零：用户明确指定物理重甲坦克，液压壁垒增加双抗并结束回血。" },
+    "gravity_executor": {
+      "role": "tank",
+      "tags": [
+        "aoe",
+        "control",
+        "durable"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "引力执行官：4费魔法斗士，自身中心2格黑洞持续伤害、区域嘲讽与按敌人数增加双抗。"
+    },
+    "nebula_weaver": {
+      "role": "mage",
+      "tags": [
+        "aoe",
+        "control"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "星云织者：3费魔法法咏者，在敌人最密集区域创造持续伤害与减攻速星云。"
+    },
+    "xiya": {
+      "role": "ranged_dps",
+      "tags": [
+        "burst"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "银月猎手：2费物理迅捷射手，锁定当前目标连续射出三箭。"
+    },
+    "milu": {
+      "role": "assassin",
+      "tags": [
+        "dash"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "流星灵狐：1费魔法刺客，星跃位移1格，抵达后造成单体魔法伤害。"
+    },
+    "star_armor_guard": {
+      "role": "tank",
+      "tags": [
+        "shield",
+        "durable",
+        "control"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "星铠守卫：1费法术坦克，斗士羁绊，恒星壁垒获得法术加成护盾并冲刺击飞沿途敌人。"
+    },
+    "turbo_fist_tiger": {
+      "role": "melee_dps",
+      "tags": [
+        "healing"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "物理征战者，击杀技能回血。"
+    },
+    "arc_repairer": {
+      "role": "support",
+      "tags": [
+        "healing"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "全场按生命比例治疗友军。"
+    },
+    "rail_hunter_07": {
+      "role": "ranged_dps",
+      "tags": [],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "远程物理术士，蓄力单体爆发。"
+    },
+    "ripsaw_spider": {
+      "role": "assassin",
+      "tags": [
+        "teleport"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "物理刺客，跳向最远目标造成收割伤害。"
+    },
+    "furnace_executioner": {
+      "role": "melee_dps",
+      "tags": [
+        "control",
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "魔剑士冲刺、沿途魔法伤害与主目标击飞。"
+    },
+    "atlas": {
+      "role": "mage",
+      "tags": [
+        "aoe"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "远程物理术士，多目标导弹与永久灼烧。"
+    },
+    "bao_zero": {
+      "role": "tank",
+      "tags": [
+        "durable",
+        "healing"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "铆钉壁垒：物理重甲坦克，液压壁垒增加双抗并结束回血。"
+    },
     "abyss_iron_guard": {
       "role": "tank",
       "tags": [
@@ -38,25 +142,6 @@
       "source": "explicit",
       "confidence": "high",
       "reason": "魇雾守灯人：用户暗影v3设计，tank/magic，显式技能基础数值。"
-    },
-    "shadow_seam_assassin": {
-      "role": "assassin",
-      "tags": [
-        "teleport",
-        "burst"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "影缝刺客：用户暗影v3设计，assassin/physical，显式技能基础数值。"
-    },
-    "soulcleaver_general": {
-      "role": "melee_dps",
-      "tags": [
-        "burst"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "裂魂斩将：用户暗影v3设计，warrior/physical，显式技能基础数值。"
     },
     "ghostflame_blade": {
       "role": "melee_dps",
@@ -124,16 +209,6 @@
       "confidence": "high",
       "reason": "Authored sunlight roster: 赛芙"
     },
-    "bronda": {
-      "role": "tank",
-      "tags": [
-        "shield",
-        "durable"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Authored sunlight roster: 布隆达"
-    },
     "kaeru": {
       "role": "assassin",
       "tags": [
@@ -143,15 +218,6 @@
       "source": "explicit",
       "confidence": "high",
       "reason": "Authored sunlight roster: 凯鲁"
-    },
-    "leon": {
-      "role": "melee_dps",
-      "tags": [
-        "aoe"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "Authored sunlight roster: 雷昂"
     },
     "phinia": {
       "role": "melee_dps",
@@ -190,14 +256,14 @@
       "reason": "Authored sunlight roster: 奥瑞斯"
     },
     "seraphiel": {
-      "role": "assassin",
+      "role": "melee_dps",
       "tags": [
         "teleport",
         "burst"
       ],
       "source": "explicit",
       "confidence": "high",
-      "reason": "Authored sunlight roster: 塞拉菲尔"
+      "reason": "塞拉菲尔：物理战士，跃迁连斩与击杀追击。"
     }
   }
 }

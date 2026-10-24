@@ -17,6 +17,10 @@ export const TRAIT_BADGES = Object.fromEntries(Object.entries({
   prismatic: '1293,141,425,414', inactive: '1731,148,405,403',
 }).map(([tier, rect]) => [tier, `art/ui/trait_badges/spriteFrame#rect,${rect}`]));
 
+/** Authored white/green/blue/purple/orange frames, indexed by unit cost. */
+export const TRAIT_PORTRAIT_FRAMES = [20, 456, 885, 1315, 1747].map(x =>
+  `art/ui/trait_portrait_frames/spriteFrame#rect,${x},128,410,410`);
+
 function art(parent: Node, path: string, x: number, y: number, size: number): Sprite {
   const node = new Node('traitArt'); node.addComponent(UITransform).setContentSize(size, size);
   parent.addChild(node); node.setPosition(x, y, 0);
@@ -29,6 +33,18 @@ function badge(parent: Node, state: TraitState, x: number, y: number, size: numb
   art(parent, TRAIT_BADGES[tier], x, y, size);
   const glyph = label(parent, state.config.glyph, x, y + size * .055, size * .4, COLORS[tier], size * .6);
   glyph.isBold = true;
+}
+function memberPortrait(parent: Node, unit: UnitConfigData, deployed: boolean, x: number, y: number, size = 44): void {
+  const portrait = new Node(`traitOwner_${unit.id}`); parent.addChild(portrait);
+  portrait.addComponent(UITransform).setContentSize(size, size); portrait.setPosition(x, y, 0);
+  const inset = new Node('portraitWindow'); portrait.addChild(inset);
+  inset.addComponent(UITransform).setContentSize(size * .78, size * .78);
+  inset.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
+  const artId = unit.artId ?? unit.id;
+  art(inset, UNIT_PORTRAIT[artId] ?? UNIT_ART[artId] ?? UNIT_ART[unit.id], 0, 0, size * .9)
+    .color = deployed ? Color.WHITE : new Color(165, 177, 188, 220);
+  const frame = art(portrait, TRAIT_PORTRAIT_FRAMES[Math.max(0, Math.min(4, (unit.cost ?? 1) - 1))], 0, 0, size);
+  frame.node.name = 'portraitRarityFrame';
 }
 function left(parent: Node, text: string, x: number, y: number, size: number, width: number, color = TEXT): Label {
   const item = label(parent, text, x, y, size, color, width);
@@ -51,6 +67,8 @@ export class TraitPanel {
   private readonly viewportHeight = 330;
   private readonly rowSpacing = 56;
   private detail: Node | null = null;
+  private catalogViewport: Node | null = null;
+  private catalogContent: Node | null = null;
   private selected: string | null = null;
   private states: TraitState[] = [];
   private roster: UnitConfigData[] = [];
@@ -115,7 +133,37 @@ export class TraitPanel {
     if (!visible) { this.scrollView.stopAutoScroll(); this.hideDetail(); }
   }
   hideDetail(): void { this.selected = null; this.closeCard(); }
-  private closeCard(): void { if (this.detail) { this.detail.active = false; this.detail.destroy(); this.detail = null; } }
+  private membersByCost(state: TraitState): UnitConfigData[] {
+    return Array.from(new Set([...state.config.members, ...state.memberIds]))
+      .map(id => this.roster.find(unit => unit.id === id))
+      .filter((unit): unit is UnitConfigData => !!unit)
+      .sort((a, b) => (a.cost ?? 1) - (b.cost ?? 1));
+  }
+  /** Reuse authored effect rows and member portraits in the home collection. */
+  inspectForCatalog(state: TraitState, roster: UnitConfigData[]): void {
+    this.roster = roster; this.selected = state.config.id; this.renderDetail(state);
+    const subtitle = this.detail?.children.map(node => node.getComponent(Label)).find(text => text?.string.includes('名上场'));
+    if (subtitle) subtitle.string = '羁绊效果 · 全部成员';
+    if (!this.detail) return;
+    const viewport = this.catalogViewport = new Node('catalogTraitViewport'); this.parent.addChild(viewport);
+    viewport.setPosition(285, -20, 0); viewport.addComponent(UITransform).setContentSize(540, 446);
+    viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
+    const content = this.catalogContent = new Node('catalogTraitContent'); viewport.addChild(content);
+    content.addComponent(UITransform).setAnchorPoint(.5, 1); content.setPosition(0, 223, 0);
+    this.detail.removeFromParent(); content.addChild(this.detail); this.fitCatalogDetail();
+    const scroll = viewport.addComponent(ScrollView); scroll.content = content;
+    scroll.horizontal = false; scroll.vertical = true; scroll.elastic = false;
+  }
+  private fitCatalogDetail(): void {
+    if (!this.detail || !this.catalogContent) return;
+    const height = this.detail.getComponent(UITransform)!.contentSize.height;
+    this.catalogContent.getComponent(UITransform)!.setContentSize(540, Math.max(446, height));
+    this.detail.setPosition(0, -height / 2, 0);
+  }
+  private closeCard(): void {
+    if (this.detail) { this.detail.active = false; this.detail.destroy(); this.detail = null; }
+    if (this.catalogViewport) { this.catalogViewport.active = false; this.catalogViewport.destroy(); this.catalogViewport = null; this.catalogContent = null; }
+  }
   /** Measure rendered text, then place effects and a shared four-column portrait grid. */
   private fitDetail(card: Node, state: TraitState): void {
     if (this.detail !== card) return;
@@ -166,7 +214,8 @@ export class TraitPanel {
     transform.setContentSize(width, height);
     paintPanel(card.getComponent(Graphics)!, width, height,
       new Color(13, 20, 30, 252), COLORS[state.active?.tier ?? 'inactive']);
-    card.setPosition(card.position.x, Math.max(-344 + top, Math.min(oldTop - top, 344 - top)), 0);
+    if (this.catalogContent && card.parent === this.catalogContent) this.fitCatalogDetail();
+    else card.setPosition(card.position.x, Math.max(-344 + top, Math.min(oldTop - top, 344 - top)), 0);
   }
   private showDetail(id: string): void {
     const state = this.states.find(item => item.config.id === id);
@@ -300,16 +349,12 @@ export class TraitPanel {
         if (remaining === 0) this.fitDetail(card, state);
       }));
     }
-    const members = state.config.members.map(id => this.roster.find(unit => unit.id === id)).filter((unit): unit is UnitConfigData => !!unit);
+    const members = this.membersByCost(state);
     members.forEach((unit, index) => {
       const x = -129 + index % 4 * 86;
       const y = -114 - Math.floor(index / 4) * 52;
       const deployed = state.memberIds.includes(unit.id);
-      const portrait = panel(card, `traitOwner_${unit.id}`, x, y, 44, 44,
-        new Color(17, 28, 40), deployed ? COLORS[state.active?.tier ?? 'bronze'] : new Color(56, 65, 74), null);
-      const artId = unit.artId ?? unit.id;
-      art(portrait, UNIT_PORTRAIT[artId] ?? UNIT_ART[artId] ?? UNIT_ART[unit.id], 0, 0, 40)
-        .color = deployed ? Color.WHITE : new Color(165, 177, 188, 220);
+      memberPortrait(card, unit, deployed, x, y);
     });
     this.fitDetail(card, state);
   }
@@ -326,6 +371,10 @@ export class TraitPanel {
     const intro = left(card, state.config.description, -210, 183, 15, 420);
     intro.node.name = 'traitDescription'; intro.enableWrapText = true;
     intro.lineHeight = 23; intro.overflow = Label.Overflow.RESIZE_HEIGHT;
+    const atlas = new SpriteAtlas();
+    const copies: Array<{ view: RichText; markup: string }> = [];
+    const icons = { attr_phys_bonus: M2_UI_SPRITE.attr_phys_bonus, attr_spell_bonus: M2_UI_SPRITE.attr_spell_bonus, stat_hp: M2_UI_SPRITE.stat_hp };
+    const fallback: Record<string, string> = { attr_phys_bonus: '物理', attr_spell_bonus: '法术', stat_hp: '生命' };
     state.config.breakpoints.forEach((tier, i) => {
       const e = tier.astral!, reached = state.count >= tier.count;
       const row = panel(card, 'astralBreakpoint', 0, 95 - i * 64, 426, e.meteor ? 112 : 54,
@@ -336,13 +385,24 @@ export class TraitPanel {
       node.addComponent(UITransform).setAnchorPoint(0, .5); node.setPosition(-153, 0);
       const text = node.addComponent(RichText); text.fontSize = 14; text.lineHeight = 22; text.maxWidth = 354; text.handleTouchEvent = false;
       const cells = e.cellCount === 'all' ? '整个己方棋盘' : `${e.cellCount}个星穹格`;
-      text.string = `<color=${reached ? '#eae7d7' : '#8a99a4'}>${number(cells, '#c6acff')}<br/>${number(`+${e.power}%`, '#ff9740')}物理加成、${number(`+${e.power}%`, '#50b4ff')}法术加成、${number(`+${Math.round(e.maxHpBonus * 100)}%`, '#7bf59a')}最大生命${e.meteor ? `<br/>每${number(`${e.meteor.intervalSeconds}秒`, '#c6acff')}陨星轰击敌人最密集区域<br/>中心及周围${e.meteor.radius}格，每个敌人${number(`${e.meteor.damage}`, '#50b4ff')}魔法伤害` : ''}</color>`;
+      const icon = (key: keyof typeof icons) => `<img src='${key}' width=18 height=18 align=center offset=4/>`;
+      const markup = `<color=${reached ? '#eae7d7' : '#8a99a4'}>${number(cells, '#c6acff')}<br/>${icon('attr_phys_bonus')} ${number(`+${e.power}%`, '#ff9740')}  ${icon('attr_spell_bonus')} ${number(`+${e.power}%`, '#50b4ff')}  ${icon('stat_hp')} ${number(`+${Math.round(e.maxHpBonus * 100)}%`, '#7bf59a')}${e.meteor ? `<br/>每${number(`${e.meteor.intervalSeconds}秒`, '#c6acff')}陨星轰击敌人最密集区域<br/>中心及周围${e.meteor.radius}格，每个敌人${number(`${e.meteor.damage}`, '#50b4ff')}魔法伤害` : ''}</color>`;
+      text.imageAtlas = atlas;
+      text.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (_tag, key: string) => fallback[key]);
+      copies.push({ view: text, markup });
     });
-    state.config.members.forEach((id, i) => {
-      const unit = this.roster.find(u => u.id === id); if (!unit) return;
-      const portrait = panel(card, `traitOwner_${id}`, -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52, 44, 44,
-        new Color(17, 28, 40), state.memberIds.includes(id) ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
-      art(portrait, UNIT_PORTRAIT[unit.artId ?? id] ?? UNIT_ART[unit.artId ?? id], 0, 0, 40);
+    let remaining = Object.keys(icons).length;
+    Object.entries(icons).forEach(([key, path]) => loadArtSprite(path, (error, frame) => {
+      if (this.detail !== card) return;
+      if (!error && frame) atlas.spriteFrames[key] = frame;
+      if (--remaining === 0) {
+        for (const { view, markup } of copies) if (view.isValid !== false)
+          view.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (tag, name: string) => atlas.spriteFrames[name] ? tag : fallback[name]);
+        this.fitDetail(card, state);
+      }
+    }));
+    this.membersByCost(state).forEach((unit, i) => {
+      memberPortrait(card, unit, state.memberIds.includes(unit.id), -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52);
     });
     this.fitDetail(card, state);
   }
@@ -356,10 +416,20 @@ export class TraitPanel {
     left(card, state.config.name, -132, 268, 24, 260).isBold = true;
     left(card, `${state.count}名上场 · ${state.active ? '已激活' : '未激活'}`, -132, 236, 14, 260, COLORS[state.active?.tier ?? 'inactive']);
     button(card, '×', 193, 276, 26, 26, () => this.hideDetail());
-    const intro = left(card, state.config.description, -198, 182, 15, 396);
-    intro.node.name = 'traitDescription';
-    intro.enableWrapText = true; intro.overflow = Label.Overflow.CLAMP;
-    intro.node.getComponent(UITransform)!.setContentSize(396, 68);
+    const atlas = new SpriteAtlas();
+    const icons = { attr_aspd: M2_UI_SPRITE.attr_aspd, stat_hp: M2_UI_SPRITE.stat_hp };
+    const fallback: Record<string, string> = { attr_aspd: '攻速', stat_hp: '生命' };
+    const copies: Array<{ view: RichText; markup: string }> = [];
+    const icon = (key: keyof typeof icons) => `<img src='${key}' width=16 height=16 align=center offset=4/>`;
+    const rich = (parent: Node, name: string, markup: string, x: number, y: number, width: number, size = 14): void => {
+      const node = new Node(name); parent.addChild(node);
+      node.addComponent(UITransform).setAnchorPoint(0, .5); node.setPosition(x, y, 0);
+      const view = node.addComponent(RichText); view.fontSize = size; view.lineHeight = 23; view.maxWidth = width;
+      view.horizontalAlign = Label.HorizontalAlign.LEFT; view.handleTouchEvent = false; view.imageAtlas = atlas;
+      view.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (_tag, key: string) => fallback[key]);
+      copies.push({ view, markup });
+    };
+    rich(card, 'traitDescription', `<color=#eae7d7>${state.config.description.replace(/攻速/g, icon('attr_aspd')).replace(/生命/g, icon('stat_hp'))}</color>`, -198, 182, 396, 15);
     state.config.breakpoints.forEach((tier, i) => {
       const e = tier.mechanicalPioneer!, reached = state.count >= tier.count;
       const row = panel(card, 'mechanicalBreakpoint', 0, 95 - i * 103, 400, 96,
@@ -367,16 +437,21 @@ export class TraitPanel {
       left(row, `(${tier.count})`, -188, 0, 18, 40, reached ? COLORS[tier.tier] : MUTED).isBold = true;
       const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;
       const percent = (n: number) => `${Number((n * 100).toFixed(2))}%`;
-      const node = new Node('mechanicalEffect'); row.addChild(node);
-      node.addComponent(UITransform).setAnchorPoint(0, .5); node.setPosition(-140, 0);
-      const text = node.addComponent(RichText); text.fontSize = 14; text.lineHeight = 22; text.maxWidth = 330; text.handleTouchEvent = false;
-      text.string = `<color=${reached ? '#eae7d7' : '#8a99a4'}>超频：${number(`+${percent(e.attackSpeedBonus)}`, '#f2d04b')}攻速，每秒回复${number(percent(e.regenPerSecond), '#7bf59a')}最大生命<br/>首次及结束后等待${number(`${e.cooldownSeconds}秒`, '#50dcff')}，持续${number(`${e.durationSeconds}秒`, '#b57fe6')}${e.lowHealthThreshold ? `<br/>每场首次低于${number(percent(e.lowHealthThreshold), '#ff9740')}生命，立即触发或刷新超频` : ''}</color>`;
+      rich(row, 'mechanicalEffect', `<color=${reached ? '#eae7d7' : '#8a99a4'}>超频：${icon('attr_aspd')} ${number(`+${percent(e.attackSpeedBonus)}`, '#f2d04b')}，每秒回复${number(percent(e.regenPerSecond), '#7bf59a')}最大${icon('stat_hp')}<br/>首次及结束后等待${number(`${e.cooldownSeconds}秒`, '#50dcff')}，持续${number(`${e.durationSeconds}秒`, '#b57fe6')}${e.lowHealthThreshold ? `<br/>每场首次低于${number(percent(e.lowHealthThreshold), '#ff9740')}${icon('stat_hp')}，立即触发或刷新超频` : ''}</color>`, -140, 0, 330);
     });
-    const members = state.config.members.map(id => this.roster.find(u => u.id === id)).filter((u): u is UnitConfigData => !!u);
+    let remaining = Object.keys(icons).length;
+    Object.entries(icons).forEach(([key, path]) => loadArtSprite(path, (error, frame) => {
+      if (this.detail !== card) return;
+      if (!error && frame) atlas.spriteFrames[key] = frame;
+      if (--remaining === 0) {
+        for (const { view, markup } of copies) if (view.isValid !== false)
+          view.string = markup.replace(/<img src='([^']+)'[^>]*\/>/g, (tag, name: string) => atlas.spriteFrames[name] ? tag : fallback[name]);
+        this.fitDetail(card, state);
+      }
+    }));
+    const members = this.membersByCost(state);
     members.forEach((unit, i) => {
-      const portrait = panel(card, `traitOwner_${unit.id}`, -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52, 44, 44,
-        new Color(17, 28, 40), state.memberIds.includes(unit.id) ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
-      art(portrait, UNIT_PORTRAIT[unit.artId ?? unit.id] ?? UNIT_ART[unit.artId ?? unit.id], 0, 0, 40);
+      memberPortrait(card, unit, state.memberIds.includes(unit.id), -129 + i % 4 * 86, -211 - Math.floor(i / 4) * 52);
     });
     this.fitDetail(card, state);
   }
@@ -422,12 +497,9 @@ export class TraitPanel {
       }
       if (remaining === 0) this.fitDetail(card, state);
     }));
-    state.config.members.forEach((id, i) => {
-      const unit = this.roster.find(u => u.id === id); if (!unit) return;
-      const deployed = state.memberIds.includes(id);
-      const portrait = panel(card, `traitOwner_${id}`, -129 + i % 4 * 86, -222 - Math.floor(i / 4) * 52, 46, 46,
-        new Color(17, 28, 40), deployed ? COLORS[state.active?.tier ?? 'bronze'] : MUTED, null);
-      art(portrait, UNIT_PORTRAIT[id] ?? UNIT_ART[id], 0, 0, 42).color = deployed ? Color.WHITE : new Color(160, 160, 160);
+    this.membersByCost(state).forEach((unit, i) => {
+      const deployed = state.memberIds.includes(unit.id);
+      memberPortrait(card, unit, deployed, -129 + i % 4 * 86, -222 - Math.floor(i / 4) * 52, 46);
     });
     this.fitDetail(card, state);
   }

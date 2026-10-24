@@ -5,9 +5,13 @@ export function claimStageRewards(player: RunPlayerPort): ActionAttempt[] {
   const actions: ActionAttempt[] = [];
   const act = (action: RunAction) => { const result = player.act(action); actions.push({ action, result }); return result.ok; };
   for (let n = 0; n < 12; n++) {
+    if (player.observe().pendingTraitChoice) {
+      if (!act({ type: 'chooseEquipmentTrait', index: 0 })) break;
+      continue;
+    }
     const o = player.observe(), p = o.pendingStageReward; if (!p) break;
     const base = { type: 'stageChoice' as const, rewardId: p.id };
-    if (p.kind === 'bossChoice') { if (!act({ ...base, choice: o.units.length < o.unitCap ? 'units' : 'equipment' })) break; }
+    if (p.kind === 'bossChoice') { if (!act({ ...base, choice: 'claim' })) break; }
     else if (p.kind === 'specialShop') {
       for (let index = 0; index < p.offers.length; index++) {
         const offer = p.offers[index];

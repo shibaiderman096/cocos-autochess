@@ -17,11 +17,16 @@ export interface BattleClockState {
 }
 export type TraitTier = 'bronze' | 'silver' | 'gold' | 'prismatic';
 export interface SpiderLeapConfig { airborneSeconds: number; missingHealthFractions: number[]; }
+export interface ArrowVolleyConfig { count: number; intervalSeconds: number; }
+export interface NebulaConfig { durationSeconds: number; intervalSeconds: number; attackSpeedPenalty: number; }
+export interface GravityConfig { durationSeconds: number; intervalSeconds: number; resistancePerEnemy: number[]; }
 export interface SpiderLeapRuntime { landTick: number; targetId: number; }
 export interface FurnaceDashConfig { speedMultiplier: number; trailDamage: number[]; knockupSeconds: number; targetRange: number; }
 export interface FurnaceDashRuntime { from: Pos; to: Pos; startTick: number; endTick: number; targetId: number; hitIds: Set<number>; }
 export interface StellarBulwarkConfig { distance: number; speedMultiplier: number; shieldSeconds: number; knockupSeconds: number; }
 export interface StellarChargeRuntime { from: Pos; to: Pos; startTick: number; endTick: number; hitIds: Set<number>; }
+export interface StarLeapConfig { distance: number; durationSeconds: number; }
+export interface StarLeapRuntime { from: Pos; to: Pos; startTick: number; endTick: number; targetId: number; }
 export interface AtlasMissilesConfig { targetCounts: number[]; manaReductionPerCast: number; maxManaReduction: number; }
 export interface HydraulicBulwarkConfig {
   durationSeconds: number;
@@ -165,6 +170,7 @@ export type ShadowSkillData =
   | { kind: 'bulwark'; durationSeconds: number; resistanceBonuses: number[] }
   | { kind: 'piercing'; secondaryDamage: number[] }
   | { kind: 'domain'; durationSeconds: number; allyShieldAmounts: number[]; allyCount: number; slowAmounts: number[] }
+  | { kind: 'soulLamp'; durationSeconds: number; intervalSeconds: number; maxHpFractions: number[]; takedownHealth: number[] }
   | { kind: 'flurry'; hits: number; intervalSeconds: number; refundMana: number; refundWindowSeconds: number }
   | { kind: 'cleave'; coneDegrees: number; missingHpBonusCap: number }
   | { kind: 'empower'; durationSeconds: number; attacks: number; burstDamage: number[] }
@@ -186,6 +192,15 @@ export interface TraitConfigData {
   breakpoints: TraitBreakpoint[];
 }
 export interface EquipmentConfigData {
+  /** Short display-only item introduction, separate from passive effects. */
+  introduction?: string;
+  /** Optional item-specific shop price; tier pricing remains the default. */
+  shopPrice?: number;
+  /** Available only from the travelling merchant, never from ordinary drops. */
+  specialShopOnly?: boolean;
+  /** Unbound emblem opens a frozen four-trait choice on first equip. */
+  traitChoice?: boolean;
+  grantedTraitId?: string;
   id: string;
   name: string;
   spellPower: number;
@@ -197,12 +212,30 @@ export interface EquipmentConfigData {
   armor?: number;
   mr?: number;
   physicalPower?: number;
+  /** Percentage points of physical power gained on each basic attack. */
+  physicalPowerPerAttack?: number;
+  manaPerSecond?: number;
+  /** Flat maximum mana change; units without a mana bar remain at zero. */
+  maxManaBonus?: number;
+  maxManaMinimum?: number;
+  /** Magic damage to the current attack target on cast, scaled by final maximum mana. */
+  castMaxManaDamage?: number;
+  /** Each copy grants absolute attack speed until its duration after the latest cast. */
+  castAttackSpeed?: { bonus: number; seconds: number };
+  /** Blocks hostile stun, knockup, fear and attack-speed slows. */
+  crowdControlImmune?: boolean;
+  /** At or above threshold grants attack speed; strictly below grants armor. */
+  healthStance?: { threshold: number; attackSpeedBonus: number; armor: number };
+  /** Positive incoming hits, including shields, grant resistance after the hit. */
+  damageTakenStacks?: { maxStacks: number; resistancePerStack: number; maxStackDamageReduction: number };
   /** Additive probability: 0.35 means +35 percentage points. */
   critChance?: number;
   skillCanCrit?: boolean;
   lifesteal?: number;
   /** Applied after all flat equipment HP; multiple copies add their percentages. */
   maxHpBonus?: number;
+  /** Each complete step of final maximum HP grants bonus armor and magic resistance. */
+  maxHpResistance?: { step: number; bonus: number };
   spellPowerDamageAmp?: { step: number; bonus: number; cap: number };
   missingHpLifesteal?: { step: number; bonus: number };
   armorDamageReduction?: { threshold: number; bonus: number };
@@ -277,7 +310,11 @@ export type BattleEvent =
   | { t: 'guard'; tick: number; id: number; duration: number; reduction: number }
   | { t: 'skill_impact'; tick: number; id: number; target: number; skillId: string }
   | { t: 'rail_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'moon_arrow'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'nebula'; tick: number; id: number; center: Pos; radius: number; durationTicks: number }
+  | { t: 'gravity_field'; tick: number; id: number; center: Pos; radius: number; durationTicks: number }
   | { t: 'dash'; tick: number; id: number; from: Pos; to: Pos; durationTicks: number }
+  | { t: 'dash_stop'; tick: number; id: number; at: Pos }
   | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'death';  tick: number; id: number }
   | { t: 'end';    tick: number; winner: Side | -1 };
@@ -307,6 +344,7 @@ export interface UnitRuntime {
   domainRadius?: number;
   shadowCorrupted?: boolean;
   equipmentAttackStacks?: number;
+  equipmentStacks?: number[];
   susanooActive?: boolean;
   manaPerSecond?: number;
   id: number;

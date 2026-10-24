@@ -11,13 +11,13 @@ const root = resolve(__dirname, '..');
 const cfg = new ConfigManager();
 cfg.setUnits(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/units.json'), 'utf8')) as UnitConfigData[]);
 cfg.setSkills(JSON.parse(readFileSync(resolve(root, 'assets/resources/config/skills.json'), 'utf8')));
-cfg.setBattle({ boardWidth: 8, boardHeight: 6, maxTicks: 1200, tickMs: 50 });
+cfg.setBattle({ boardWidth: 8, boardHeight: 6, maxTicks: 1200, combatSeconds: 45, overtime: { seconds: 15, attackSpeedBonus: 1, damageAmp: 1 }, tickMs: 50 });
 
 const placements: Placement[] = [
-  { cfg: cfg.getUnit('leon'), side: 0, x: 2, y: 2 },
+  { cfg: cfg.getUnit('ghostflame_blade'), side: 0, x: 2, y: 2 },
   { cfg: cfg.getUnit('saiph'),  side: 0, x: 4, y: 1 },
   { cfg: cfg.getUnit('celine'),    side: 0, x: 6, y: 0 },
-  { cfg: cfg.getUnit('leon'), side: 1, x: 2, y: 3 },
+  { cfg: cfg.getUnit('ghostflame_blade'), side: 1, x: 2, y: 3 },
   { cfg: cfg.getUnit('saiph'),  side: 1, x: 4, y: 4 },
   { cfg: cfg.getUnit('celine'),    side: 1, x: 6, y: 5 },
 ];

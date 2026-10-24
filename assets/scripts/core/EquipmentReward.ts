@@ -14,7 +14,7 @@ export function createEquipmentReward(c:EquipmentPolicyConfig,random:RunRandomCo
   const guarantee=round===wave.roundsInStage&&!progress.guaranteeSatisfied[stage];
   const chance=kind==='boss'?c.reward.bossChance:c.reward.eliteChance;
   const rolled=rng.next()<chance;if(!rolled&&!guarantee)return event;
-  let pool=unlockedEquipment(c,stage,c.reward.tierUnlock);
+  let pool=unlockedEquipment(c,stage,c.reward.tierUnlock).filter(id => !c.reward.excludedIds?.includes(id));
   if(!pool.length){pool=c.reward.emptyBasicFallbackIds.slice().sort();event.diagnostics.push('EMPTY_BASIC_POOL_CONFIGURED_ADVANCED_FALLBACK');}
   if(pool.length<c.reward.choices)event.diagnostics.push('INSUFFICIENT_POOL_FEWER_CHOICES:'+pool.length);
   if(!pool.length){event.diagnostics.push('EMPTY_REWARD_POOL');return event;}

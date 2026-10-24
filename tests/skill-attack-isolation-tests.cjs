@@ -30,14 +30,15 @@ for (const { id } of damagingUnits) for (const star of [1, 2, 3]) {
   const skill = cfg.getSkill(cfg.getUnit(id).skillId);
   const rows = buildSkillStatRows(cfg, high.unit.cfg, star, high.unit.skillScale);
   assert.ok(rows.some(row=>row.tone===high.hit.dmgType&&Number(row.current)===high.hit.dmg), `${id}: panel matches actual unmitigated hit`);
-  if (skill.starDamage) assert.equal(low.hit.dmg, skill.starDamage[star - 1]);
+  if (skill.starDamage) assert.equal(low.hit.dmg, Math.round(skill.starDamage[star - 1]
+    + (skill.shadow?.kind==='soulLamp' ? low.unit.cfg.hp*skill.shadow.maxHpFractions[star-1] : 0)));
 }
-assert.equal(firstHit('leon',1,{skillId:undefined,atk:100,physicalPower:20}).hit.dmg,120);
-assert.equal(firstHit('leon',1,{skillId:undefined,atk:200,physicalPower:20}).hit.dmg,240);
-for(const id of ['blackfeather_hunter','kaeru','leon']){
+assert.equal(firstHit('ghostflame_blade',1,{skillId:undefined,atk:100,physicalPower:20}).hit.dmg,120);
+assert.equal(firstHit('ghostflame_blade',1,{skillId:undefined,atk:200,physicalPower:20}).hit.dmg,240);
+for(const id of ['blackfeather_hunter','kaeru','ghostflame_blade']){
  assert.equal(firstHit(id,1,{physicalPower:100}).hit.dmg,firstHit(id,1).hit.dmg*2);
  assert.equal(firstHit(id,1,{spellPower:100}).hit.dmg,firstHit(id,1).hit.dmg);
 }
 assert.equal(firstHit('nether_lantern_witch',1,{spellPower:100}).hit.dmg,firstHit('nether_lantern_witch',1).hit.dmg*2);
-assert.equal(firstHit('leon',1,{armor:900}).hit.dmg,firstHit('leon',1).hit.dmg);
+assert.equal(firstHit('ghostflame_blade',1,{armor:900}).hit.dmg,firstHit('ghostflame_blade',1).hit.dmg);
 console.log(`PASS skill damage isolation: ${damagingUnits.length} units x 3 stars, attack/armor independence, ordinary attacks, matching bonuses and real panel/combat agreement`);

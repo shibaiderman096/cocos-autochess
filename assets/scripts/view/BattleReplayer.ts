@@ -11,6 +11,7 @@ import { SunlightSpriteVfx } from './SunlightSpriteVfx';
 import { MechanicalVfx } from './MechanicalVfx';
 import { AstralVfx } from './AstralVfx';
 import { AstralUnitVfx } from './AstralUnitVfx';
+import { GameAudio } from './GameAudio';
 
 const { ccclass } = _decorator;
 interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: number }
@@ -20,6 +21,8 @@ interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: n
  */
 @ccclass('BattleReplayer')
 export class BattleReplayer extends Component {
+  damageNumbers = true;
+  healingNumbers = true;
   private sim: BattleSim;
   private eventCursor = 0;
   private unitViews = new Map<number, UnitView>();
@@ -58,7 +61,7 @@ export class BattleReplayer extends Component {
 
   setFxRoot(root: Node): void {
     this.fxRoot = root;
-    if(this.sim?.units.some(u=>u.cfg.skillId==='stellar_bulwark'||u.cfg.skillId==='milu_star_leap'))
+    if(this.sim?.units.some(u=>['stellar_bulwark','milu_star_leap','moon_triple_arrow','nebula_tide','gravity_collapse'].includes(u.cfg.skillId??'')))
       this.astralUnitVfx=new AstralUnitVfx(root,this.cellSize,this.tickMs,
         (x,y)=>this.boardView.cellToWorld(x,y),id=>this.unitViews.get(id)?.node,
         id=>this.sim.units.find(u=>u.id===id)?.cfg.skillId);
@@ -80,6 +83,7 @@ export class BattleReplayer extends Component {
     this.mechanicalArt()?.play(e);
     switch (e.t) {
       case 'astral_meteor':
+        GameAudio.play('meteor');
         if (this.fxRoot?.isValid && this.boardView) {
           this.astralVfx ??= new AstralVfx(this.fxRoot, this.boardView, this.tickMs);
           this.astralVfx.play(e);
@@ -94,6 +98,8 @@ export class BattleReplayer extends Component {
         }
         break;
       case 'battle_start': break;
+      case 'rail_shot': GameAudio.play('rail'); break;
+      case 'missile': GameAudio.play('ranged_mechanical'); break;
       case 'move': {
         const unit = this.sim.units.find(u => u.id === e.id);
         if (unit && this.boardView) this.moves.set(e.id, {
@@ -104,6 +110,7 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'teleport': {
+        GameAudio.play('teleport');
         this.moves.delete(e.id);
         const uv = this.unitViews.get(e.id);
         if (uv && this.boardView) uv.node.setPosition(this.boardView.cellToWorld(e.to.x, e.to.y));
@@ -116,10 +123,20 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'dash': {
+        GameAudio.play('dash');
         if (this.boardView) this.moves.set(e.id,{from:this.boardView.cellToWorld(e.from.x,e.from.y),to:this.boardView.cellToWorld(e.to.x,e.to.y),startTick:e.tick,durationTicks:e.durationTicks});
         break;
       }
+      case 'dash_stop': {
+        this.moves.delete(e.id);
+        if (this.boardView) this.unitViews.get(e.id)?.node.setPosition(this.boardView.cellToWorld(e.at.x, e.at.y));
+        break;
+      }
       case 'attack': {
+        const attacker = this.sim.units.find(unit => unit.id === e.id);
+        const art = attacker && UNIT_ART[attacker.cfg.artId ?? attacker.cfg.id];
+        GameAudio.play((attacker?.cfg.range ?? 1) <= 1 ? 'melee' : art?.includes('/mechanical/') ? 'ranged_mechanical'
+          : attacker?.cfg.basicAttackFx === 'arrow' ? 'ranged_arrow' : attacker?.cfg.damageType === 'magic' ? 'ranged_magic' : 'ranged');
         const uv = this.unitViews.get(e.id);
         const tv = this.unitViews.get(e.target);
         if (uv && tv) {
@@ -135,7 +152,7 @@ export class BattleReplayer extends Component {
           if (sunlight) this.sunlightArt()?.basicAttack(uv.node.position.clone(),tv.node.position.clone(),e.tick,attacker.cfg.range>1);
           if (shadowMelee) this.shadowVfx()?.basicMelee(uv.node.position.clone(),tv.node.position.clone(),e.tick);
           else if (e.shadow) this.playSpriteFx(FX_SPRITE.shadowProjectile, uv.node.position.clone(), tv.node.position.clone(), 1.1, 0.55, true, false, undefined, true);
-          const projectile = e.shadow || shadowMelee || sunlight ? undefined : attacker?.cfg.basicAttackFx;
+          const projectile = e.shadow || shadowMelee || sunlight || attacker?.cfg.skillId==='moon_triple_arrow' ? undefined : attacker?.cfg.basicAttackFx;
           if (projectile) {
             const tint = attacker.cfg.basicAttackTint;
             this.playSpriteFx(FX_SPRITE[projectile], uv.node.position.clone(), tv.node.position.clone(),
@@ -159,15 +176,17 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'fear': {
+        GameAudio.play('stun');
         const view = this.unitViews.get(e.id);
         if (view && this.fxRoot) FloatTextPool.get().show('恐惧', new Color(195, 120, 235), view.node.position.clone(), this.fxRoot);
         break;
       }
       case 'hit': {
+        if (e.critical) GameAudio.play('hit');
         const tv = this.unitViews.get(e.id);
         if (tv) {
           tv.playHit();
-          if (this.fxRoot && tv.side !== 0) {
+          if (this.damageNumbers && this.fxRoot && tv.side !== 0) {
             const ft = FloatTextPool.get();
             const color = FloatText.colorForType(e.dmgType);
             const pos = tv.node.position.clone();
@@ -182,6 +201,10 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'cast': {
+        const caster = this.sim.units.find(unit => unit.id === e.id);
+        const art = caster && UNIT_ART[caster.cfg.artId ?? caster.cfg.id];
+        GameAudio.play(art?.includes('/shadow/') ? 'cast_shadow' : art?.includes('/sunlight/') ? 'cast_sunlight'
+          : art?.includes('/astral/') ? 'cast_astral' : art?.includes('/mechanical/') ? 'cast_mechanical' : 'cast');
         if (e.duration !== undefined) {
           this.unitViews.get(e.id)?.playCast(e.duration);
           const source = this.sim.units.find(unit => unit.id === e.id);
@@ -212,11 +235,13 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'heal': {
+        if (e.amount > 0) GameAudio.play('heal');
         const uv = this.unitViews.get(e.id);
-        if (uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}`, new Color(89, 203, 176), uv.node.position.clone(), this.fxRoot);
+        if (this.healingNumbers && uv && this.fxRoot) FloatTextPool.get().show(`+${e.amount}`, new Color(89, 203, 176), uv.node.position.clone(), this.fxRoot);
         break;
       }
       case 'shield': {
+        if (e.amount > 0) GameAudio.play('shield');
         // Equipment triggers already have their own visual notification.
         if (e.equipmentId) break;
         const uv = this.unitViews.get(e.id);
@@ -230,12 +255,14 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'stun': {
+        GameAudio.play('stun');
         const uv = this.unitViews.get(e.id);
         uv?.playCast(e.duration);
         if (uv && this.fxRoot) FloatTextPool.get().show('眩晕', new Color(204, 125, 255), uv.node.position.clone(), this.fxRoot);
         break;
       }
       case 'knockup': {
+        GameAudio.play('stun');
         const uv = this.unitViews.get(e.id);
         if(this.sim.units.find(u=>u.id===e.source)?.cfg.skillId==='stellar_bulwark')
           this.stellarKnockups.set(e.id,{tick:e.tick,duration:e.duration*1000/this.tickMs});
@@ -244,11 +271,13 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'guard': {
+        GameAudio.play('shield');
         const uv = this.unitViews.get(e.id);
         if (uv && this.fxRoot) FloatTextPool.get().show(`减伤${Math.round(e.reduction * 100)}%`, new Color(120, 215, 150), uv.node.position.clone(), this.fxRoot);
         break;
       }
       case 'skill_impact': {
+        GameAudio.play('explosion');
         const target = this.unitViews.get(e.target);
         if (e.skillId === 'monster_blast' && target) {
           const pos = target.node.position.clone();
@@ -257,6 +286,7 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'death': {
+        GameAudio.play('death');
         this.stellarKnockups.delete(e.id);
         this.moves.delete(e.id);
         this.shadowSkillVfx?.cancel(e.id);

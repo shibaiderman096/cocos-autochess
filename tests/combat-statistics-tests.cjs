@@ -4,7 +4,7 @@ const {ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {BattleSim}=require('../assets/scripts/battle/BattleSim.ts');
 const {CombatStatistics}=require('../assets/scripts/battle/CombatStatistics.ts');
 const cfg=new ConfigManager();cfg.setUnits(require('../assets/resources/config/units.json'));cfg.setSkills(require('../assets/resources/config/skills.json'));
-const base=cfg.getUnit('leon');
+const base=cfg.getUnit('turbo_fist_tiger');
 const sim=new BattleSim(cfg,[{cfg:{...base,hp:100,atk:1000,critChance:0,lifesteal:.5},side:0,x:3,y:3},
   {cfg:{...base,hp:20,atk:0,critChance:0},side:1,x:3,y:4}]);
 sim.units[0].hp=50;

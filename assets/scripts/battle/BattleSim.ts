@@ -1,10 +1,10 @@
 import { Rng } from '../core/Rng';
 import { BattleEvent, BattleResult, Side, BattleClockState, ShadowTraitEffect, AstralField } from './types';
 import { Unit } from './Unit';
-import { hydraulicBulwarkValues } from '../core/ConfigManager';
+import { hydraulicBulwarkValues, equipmentMaxHpResistance } from '../core/ConfigManager';
 import { ShadowSkills } from './ShadowSkills';
 import { SunlightCombat } from './SunlightCombat';
-import { resolveTraits, isTraitFrontRow } from './Traits';
+import { resolveTraits, isTraitMember, isTraitFrontRow } from './Traits';
 import { astralCells, densestAstralCenter } from './Astral';
 import { dist, nextStep } from './Pathfinding';
 import { hexNeighbors, offsetToWorld, worldToOffset, hexDist } from './HexMath';
@@ -21,8 +21,12 @@ export interface Placement {
   y: number;
   /** 星级（M2）：影响数值倍率，默认 1 */
   star?: number;
+  permanentMaxHp?: number;
+  soulLampHealth?: number;
   /** Wave stat multiplier, independent of star rank. */
   statMultiplier?: number;
+  /** Encounter bonus affects base health only, independently of attack and skill scaling. */
+  healthMultiplier?: number;
   equipment?: string[];
   damageAmp?: number;
   damageReduction?: number;
@@ -30,6 +34,8 @@ export interface Placement {
 
 export interface BattleOptions {
   seed?: number;
+  /** Session-fixed field layout, independent of each wave's combat random seed. */
+  astralSeed?: number;
   w?: number;
   h?: number;
   maxTicks?: number; // Optional shorter diagnostic limit; configured combat + overtime is a hard cap.
@@ -48,6 +54,9 @@ export class BattleSim {
   private shadowBoards: Array<{ side: Side; effect: NonNullable<ShadowTraitEffect['board']>; source: Unit }> = [];
   private shadowSkills: ShadowSkills;
   private sunlight: SunlightCombat;
+  private nebulas: Array<{ source: Unit; skill: SkillConfigData; center: {x:number;y:number}; end: number; next: number }> = [];
+  private gravityFields: Array<{ source: Unit; skill: SkillConfigData; end: number; next: number }> = [];
+  private hasGravityState = false;
   private pendingStuns: Array<{ src: Unit; dst: Unit; seconds: number; knockup?: boolean; fearOrigin?: { x: number; y: number } }> = [];
   private pendingDamage: Array<{ src: Unit; dst: Unit; raw: number; damageAmp: number; resistance: number; reduction: number;
     type: 'physical' | 'magic' | 'true'; critical: boolean; targeted: boolean; basicAttack?: boolean; fixed?: boolean; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; skillId?: string; missingHealthFraction?: number }> = [];
@@ -65,7 +74,7 @@ export class BattleSim {
       cooldown: u => this.attackCooldown(u) }, configs);
     this.shadowSkills = new ShadowSkills({ units: this.units, events: this.events, now: () => this.tick,
       width: () => this.w, height: () => this.h, targetable: unit => this.targetable(unit),
-      damage: (source, target, raw, type) => this.damage(source, target, raw, type),
+      damage: (source, target, raw, type, typeBonusApplied = false) => this.damage(source, target, raw, type, false, typeBonusApplied),
       fear: (src, dst, seconds, fearOrigin) => this.pendingStuns.push({ src, dst, seconds, fearOrigin }),
       cooldown: unit => this.attackCooldown(unit) }, configs);
     const w = opts.w ?? configs.battle.boardWidth;
@@ -76,27 +85,35 @@ export class BattleSim {
       }
       const star = Math.max(1, Math.min(3, Math.floor(p.star ?? 1)));
       const multiplier = p.statMultiplier ?? 1;
-      const scaled = configs.equipmentStats(configs.scaleUnit(p.cfg, star, multiplier), p.equipment);
+      const base = configs.scaleUnit(p.cfg, star, multiplier);
+      const healthMultiplier = p.healthMultiplier ?? 1;
+      if (!Number.isFinite(healthMultiplier) || healthMultiplier <= 0) throw new Error('Invalid health multiplier');
+      if (healthMultiplier !== 1) base.hp = Math.round(base.hp * healthMultiplier);
+      base.hp += p.permanentMaxHp ?? 0;
+      const scaled = configs.equipmentStats(base, p.equipment);
       Object.assign(scaled, combatAttributes({ ...scaled, damageAmp: scaled.damageAmp! + (p.damageAmp ?? 0), damageReduction: scaled.damageReduction! + (p.damageReduction ?? 0) }));
       const unit = new Unit(i + 1, p.side, scaled, p.x, p.y);
+      unit.soulLampHealth = p.soulLampHealth ?? 0;
       unit.equipment = configs.getEquipment(p.equipment);
+      unit.maxHpGrowthMultiplier = 1 / (base.hp + unit.equipment.reduce((sum, item) => sum + (item.hp ?? 0), 0));
       unit.star = star;
       unit.attackSpeedCap = configs.battle.attackSpeedCap ?? 5;
-      unit.manaPerSecond = unit.cfg.role === 'caster' ? configs.battle.roleMana?.casterPerSecond ?? 0 : 0;
+      unit.manaPerSecond = (unit.cfg.manaPerSecond ?? 0) + (unit.cfg.role === 'caster' ? configs.battle.roleMana?.casterPerSecond ?? 0 : 0);
       unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
       this.units.push(unit);
     });
     for (const side of [0, 1] as Side[]) {
       const army = this.units.filter(unit => unit.side === side);
-      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg.id), [...configs.allUnits(), ...army.map(unit => unit.cfg)]);
+      const startingHpResistance = army.map(unit => equipmentMaxHpResistance(unit.cfg.hp, unit.equipment));
+      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg), [...configs.allUnits(), ...army.map(unit => unit.cfg)]);
       for (const trait of traits) {
         const board = trait.active?.shadow?.board;
-        const source = army.find(unit => trait.memberIds.includes(unit.cfg.id));
+        const source = army.find(unit => isTraitMember(trait, unit.cfg));
         if (board && source) this.shadowBoards.push({ side, effect: board, source });
-        if (trait.active?.sunlight) this.sunlight.register(side, army.filter(unit => trait.memberIds.includes(unit.cfg.id)), trait.active.sunlight);
+        if (trait.active?.sunlight) this.sunlight.register(side, army.filter(unit => isTraitMember(trait, unit.cfg)), trait.active.sunlight);
       }
       for (const unit of army) for (const trait of traits) {
-        if (!trait.active || !trait.memberIds.includes(unit.cfg.id)) continue;
+        if (!trait.active || !isTraitMember(trait, unit.cfg)) continue;
         unit.cfg.physicalPower = (unit.cfg.physicalPower ?? 0) + (trait.active.power ?? 0);
         unit.cfg.spellPower = (unit.cfg.spellPower ?? 0) + (trait.active.power ?? 0);
         unit.traitRegenPerSecond += trait.active.regenPerSecond ?? 0;
@@ -152,17 +169,28 @@ export class BattleSim {
       for (const trait of traits) {
         const effect = trait.active?.astral;
         if (!effect) continue;
-        const cells = astralCells(opts.seed ?? 1, side, w, h, configs.battle.ownRows, effect.cellCount);
+        const cells = astralCells(opts.astralSeed ?? opts.seed ?? 1, side, w, h, configs.battle.ownRows, effect.cellCount);
         this.astralFields.push({ side, cells, effect });
         for (const unit of army) {
           if (!cells.some(cell => cell.x === unit.x && cell.y === unit.y)) continue;
-          const multiplier = trait.memberIds.includes(unit.cfg.id) ? effect.memberMultiplier : 1;
+          const multiplier = isTraitMember(trait, unit.cfg) ? effect.memberMultiplier : 1;
           unit.cfg.physicalPower = (unit.cfg.physicalPower ?? 0) + effect.power * multiplier;
           unit.cfg.spellPower = (unit.cfg.spellPower ?? 0) + effect.power * multiplier;
           unit.cfg.hp = Math.round(unit.cfg.hp * (1 + effect.maxHpBonus * multiplier));
           unit.hp = unit.cfg.hp;
         }
       }
+      // Health traits and astral tiles contribute before health-based equipment passives settle.
+      army.forEach((unit, i) => {
+        unit.maxHpGrowthMultiplier *= unit.cfg.hp;
+        const bonus = equipmentMaxHpResistance(unit.cfg.hp, unit.equipment) - startingHpResistance[i];
+        const previousArmor = unit.cfg.armor;
+        unit.cfg.armor += bonus; unit.cfg.mr += bonus;
+        unit.cfg.damageReduction = Math.min(1, (unit.cfg.damageReduction ?? 0) + unit.equipment.reduce((sum, item) => {
+          const effect = item.armorDamageReduction;
+          return sum + (effect && previousArmor <= effect.threshold && unit.cfg.armor > effect.threshold ? effect.bonus : 0);
+        }, 0));
+      });
     }
   }
 
@@ -207,18 +235,25 @@ export class BattleSim {
     this.updateAstralMeteors();
     this.sunlight.update();
     this.shadowSkills.update();
+    this.updateNebulas();
+    this.updateGravityFields();
     this.updateBurns();
     this.updateSpiderLeaps();
     this.updateFurnaceDashes();
     this.updateStellarBulwarks();
+    this.updateStarLeaps();
     for (const u of this.units) { // 按 id 升序遍历，确定性
       if (!u.alive) continue;
       this.flushSpellchanterMana(u);
       u.gainMana(u.manaPerSecond * this.configs.battle.tickMs / 1000);
+      this.refreshGravityState();
       this.updateUnit(u);
       this.flushSpellchanterMana(u);
     }
+    this.refreshNebulaSlows();
+    this.refreshGravityState();
     this.resolveDamage();
+    this.refreshGravityState();
     this.resolveStuns();
     if (this.checkEnd()) return;
     if (this.tick >= this.maxTicks) this.end(-1);
@@ -412,6 +447,34 @@ export class BattleSim {
     }
   }
 
+  private stopStarLeap(u: Unit): void {
+    if (!u.starLeap) return;
+    u.starLeap = null;
+    this.events.push({ t: 'dash_stop', tick: this.tick, id: u.id, at: u.pos });
+  }
+
+  private updateStarLeaps(): void {
+    for (const u of this.units) {
+      const state = u.starLeap;
+      if (!state) continue;
+      if (!u.alive || u.hp <= 0 || this.tick < u.stunnedUntilTick || this.tick < u.fearUntilTick) {
+        this.stopStarLeap(u); continue;
+      }
+      const a = offsetToWorld(state.from.x, state.from.y, 1, 0, 0), b = offsetToWorld(state.to.x, state.to.y, 1, 0, 0);
+      const progress = Math.min(1, (this.tick - state.startTick) / (state.endTick - state.startTick));
+      const cell = worldToOffset(a.x + (b.x - a.x) * progress, a.y + (b.y - a.y) * progress, 1, 0, 0);
+      u.x = cell.col; u.y = cell.row;
+      if (progress < 1) continue;
+      u.starLeap = null;
+      const target = this.units.find(e => e.id === state.targetId && e.side !== u.side && this.targetable(e) && u.canSelectEnemy(e));
+      if (target) {
+        const skill = this.configs.getSkill(u.cfg.skillId!);
+        this.damage(u, target, configuredSkillDamage(skill, u.star, u.skillScale), skill.dmgType, false, false, true, skill.id);
+        this.events.push({ t: 'skill_impact', tick: this.tick, id: u.id, target: target.id, skillId: skill.id });
+      }
+    }
+  }
+
   private updateFurnaceDashes(): void {
     for (const u of this.units) {
       const state = u.furnaceDash;
@@ -463,10 +526,51 @@ export class BattleSim {
     }
   }
 
+  private refreshNebulaSlows(): void {
+    for(const u of this.units)u.nebulaAttackSpeedPenalty=0;
+    for(const field of this.nebulas)if(this.tick<field.end)for(const enemy of this.units)
+      if(enemy.side!==field.source.side&&this.targetable(enemy)&&hexDist(enemy.pos,field.center)<=field.skill.radius)
+        enemy.nebulaAttackSpeedPenalty=Math.max(enemy.nebulaAttackSpeedPenalty,field.skill.nebula!.attackSpeedPenalty);
+  }
+
+  private updateNebulas(): void {
+    this.nebulas=this.nebulas.filter(field=>this.tick<=field.end);
+    this.refreshNebulaSlows();
+    for(const field of this.nebulas)if(this.tick>=field.next){
+      for(const enemy of this.units)if(enemy.side!==field.source.side&&this.targetable(enemy)&&enemy.hp>0&&hexDist(enemy.pos,field.center)<=field.skill.radius)
+        this.damage(field.source,enemy,configuredSkillDamage(field.skill,field.source.star,field.source.skillScale),field.skill.dmgType,false,false,true,field.skill.id);
+      field.next+=Math.max(1,Math.round(field.skill.nebula!.intervalSeconds*1000/this.configs.battle.tickMs));
+    }
+  }
+
+  private refreshGravityState(): void {
+    if(!this.gravityFields.length&&!this.hasGravityState)return;
+    this.hasGravityState=this.gravityFields.length>0;
+    for(const unit of this.units){unit.gravityResistanceBonus=0;unit.tauntSourceId=null;}
+    for(const field of this.gravityFields){
+      const source=field.source;
+      if(!source.alive||source.hp<=0||this.tick>=field.end)continue;
+      const enemies=this.units.filter(e=>e.side!==source.side&&e.alive&&e.hp>0&&hexDist(e.pos,source.pos)<=field.skill.radius);
+      source.gravityResistanceBonus=enemies.length*field.skill.gravity!.resistancePerEnemy[source.star-1];
+      if(this.targetable(source))for(const enemy of enemies)if(this.targetable(enemy)&&!enemy.crowdControlImmune)
+        enemy.tauntSourceId=enemy.tauntSourceId===null?source.id:Math.min(enemy.tauntSourceId,source.id);
+    }
+  }
+
+  private updateGravityFields(): void {
+    this.gravityFields=this.gravityFields.filter(f=>f.source.alive&&f.source.hp>0&&this.tick<=f.end);
+    this.refreshGravityState();
+    for(const field of this.gravityFields)if(this.tick>=field.next){
+      for(const enemy of this.units)if(enemy.side!==field.source.side&&enemy.hp>0&&this.targetable(enemy)&&hexDist(enemy.pos,field.source.pos)<=field.skill.radius)
+        this.damage(field.source,enemy,configuredSkillDamage(field.skill,field.source.star,field.source.skillScale),field.skill.dmgType,false,false,true,field.skill.id);
+      field.next+=Math.max(1,Math.round(field.skill.gravity!.intervalSeconds*1000/this.configs.battle.tickMs));
+    }
+  }
+
   private updateUnit(u: Unit) {
     if (u.atkCd > 0) u.atkCd--;
     if (u.moveCd > 0) u.moveCd--;
-    if (u.spiderLeap || u.furnaceDash || u.stellarCharge) return;
+    if (u.spiderLeap || u.furnaceDash || u.stellarCharge || u.starLeap) return;
     if (this.tick < u.stunnedUntilTick) return;
     if (this.tick < u.fearUntilTick) {
       if (u.moveCd === 0 && !u.hydraulicRooted) {
@@ -481,6 +585,10 @@ export class BattleSim {
     if (this.shadowSkills.busy(u) || this.sunlight.busy(u)) return;
 
     if (u.pendingCast) {
+      if(u.tauntSourceId!==null&&u.pendingCast.targetId!==undefined){
+        const previous=this.units.find(e=>e.id===u.pendingCast!.targetId);
+        if(previous&&previous.side!==u.side)u.pendingCast.targetId=u.tauntSourceId;
+      }
       const activeSkill = this.configs.getSkill(u.pendingCast.skillId);
       if (activeSkill.effect === 'healChannel' && this.tick >= u.pendingCast.nextHealTick!) {
         const heal = activeSkill.heal!;
@@ -494,6 +602,38 @@ export class BattleSim {
       if (--u.pendingCast.remainingTicks <= 0) {
         const skill = this.configs.getSkill(u.pendingCast.skillId);
         const targetId = u.pendingCast.targetId;
+        if (skill.effect === 'gravity') {
+          u.pendingCast=null;
+          const durationTicks=Math.max(1,Math.round(skill.gravity!.durationSeconds*1000/this.configs.battle.tickMs));
+          this.gravityFields=this.gravityFields.filter(f=>f.source!==u);
+          this.gravityFields.push({source:u,skill,end:this.tick+durationTicks,next:this.tick+Math.max(1,Math.round(skill.gravity!.intervalSeconds*1000/this.configs.battle.tickMs))});
+          this.events.push({t:'gravity_field',tick:this.tick,id:u.id,center:u.pos,radius:skill.radius,durationTicks});
+          this.refreshGravityState();u.atkCd=this.attackCooldown(u);return;
+        }
+        if (skill.effect === 'nebula') {
+          u.pendingCast = null;
+          const center = densestAstralCenter(this.units.filter(e=>e.side!==u.side&&this.targetable(e)&&e.hp>0).map(e=>e.pos),this.w,this.h,skill.radius);
+          if (center) {
+            const spec=skill.nebula!,durationTicks=Math.max(1,Math.round(spec.durationSeconds*1000/this.configs.battle.tickMs));
+            this.nebulas.push({source:u,skill,center,end:this.tick+durationTicks,
+              next:this.tick+Math.max(1,Math.round(spec.intervalSeconds*1000/this.configs.battle.tickMs))});
+            this.events.push({t:'nebula',tick:this.tick,id:u.id,center,radius:skill.radius,durationTicks});
+            this.refreshNebulaSlows();
+          }
+          u.atkCd=this.attackCooldown(u);return;
+        }
+        if (skill.effect === 'arrowVolley') {
+          const victim = this.units.find(e => e.id === targetId && e.side !== u.side && this.targetable(e) && e.hp > 0);
+          if (victim) {
+            this.events.push({ t: 'moon_arrow', tick: this.tick, id: u.id, target: victim.id, from: u.pos, to: victim.pos });
+            this.damage(u, victim, configuredSkillDamage(skill, u.star, u.skillScale), skill.dmgType, false, false, true, skill.id);
+          }
+          if (!victim || --u.pendingCast.shotsRemaining! <= 0) {
+            u.pendingCast = null;
+            u.atkCd = this.attackCooldown(u);
+          } else u.pendingCast.remainingTicks = Math.max(1, Math.round(skill.arrowVolley!.intervalSeconds * 1000 / this.configs.battle.tickMs));
+          return;
+        }
         u.pendingCast = null;
         if (skill.effect === 'spiderLeap') {
           u.spiderLeap = { targetId: targetId!, landTick: this.tick + Math.max(1, Math.round(skill.spiderLeap!.airborneSeconds * 1000 / this.configs.battle.tickMs)) };
@@ -640,7 +780,7 @@ export class BattleSim {
       const target = this.shadowSkills.target(u, teleportSkill);
       if (target) {
         const duration = teleportSkill.castSeconds ?? 0.5;
-        const castTarget = ['bulwark','domain','empower'].includes(teleportSkill.shadow!.kind) ? u : target;
+        const castTarget = ['bulwark','domain','soulLamp','empower'].includes(teleportSkill.shadow!.kind) ? u : target;
         u.mana = 0; u.pendingCast = { skillId: teleportSkill.id, targetId: castTarget.id, remainingTicks: Math.max(1, Math.round(duration * 1000 / this.configs.battle.tickMs)) };
         this.emitCast({ t: 'cast', tick: this.tick, id: u.id, target: castTarget.id, skillId: teleportSkill.id, duration });
         return;
@@ -656,7 +796,7 @@ export class BattleSim {
     }
     if (teleportSkill?.effect === 'atlasMissiles' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
       const spec=teleportSkill.atlasMissiles!;
-      const targets=this.units.filter(e=>e.side!==u.side&&this.targetable(e))
+      const targets=this.units.filter(e=>e.side!==u.side&&this.targetable(e)&&u.canSelectEnemy(e))
         .sort((a,b)=>dist(u.pos,a.pos)-dist(u.pos,b.pos)||a.id-b.id).slice(0,spec.targetCounts[u.star-1]);
       if(targets.length) {
         u.mana=0;u.atkCd=this.attackCooldown(u);
@@ -672,7 +812,7 @@ export class BattleSim {
     }
     if (teleportSkill?.effect === 'furnaceDash' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
       const spec=teleportSkill.furnaceDash!;
-      const target=this.units.filter(e=>e.side!==u.side&&this.targetable(e)&&dist(u.pos,e.pos)<=spec.targetRange)
+      const target=this.units.filter(e=>e.side!==u.side&&this.targetable(e)&&u.canSelectEnemy(e)&&dist(u.pos,e.pos)<=spec.targetRange)
         .sort((a,b)=>dist(u.pos,b.pos)-dist(u.pos,a.pos)||a.id-b.id).find(e=>!!this.teleportCell(u,e));
       if(target) {
         const to=this.teleportCell(u,target)!,from=u.pos;
@@ -683,7 +823,7 @@ export class BattleSim {
       }
     }
     if ((teleportSkill?.effect === 'railShot' || teleportSkill?.effect === 'spiderLeap') && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0) {
-      const target = this.units.filter(e => e.side !== u.side && this.targetable(e))
+      const target = this.units.filter(e => e.side !== u.side && this.targetable(e) && u.canSelectEnemy(e))
         .sort((a, b) => dist(u.pos, b.pos) - dist(u.pos, a.pos) || a.id - b.id)[0];
       if (target) {
         u.mana = 0;
@@ -736,7 +876,7 @@ export class BattleSim {
       }
     }
 
-    const priority = this.units.find(e => e.id === u.priorityTarget && this.targetable(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range);
+    const priority = this.units.find(e => e.id === u.priorityTarget && this.targetable(e) && u.canSelectEnemy(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range);
     const target = priority ?? this.nearestEnemy(u);
     if (!target) return;
 
@@ -748,9 +888,14 @@ export class BattleSim {
         .sort((a,b)=>dist(a,target.pos)-dist(b,target.pos)||a.y-b.y||a.x-b.x)[0];
       u.mana=0;
       this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration:0});
-      if(to){u.x=to.x;u.y=to.y;this.events.push({t:'teleport',tick:this.tick,id:u.id,from,to:u.pos});}
-      this.damage(u,target,configuredSkillDamage(teleportSkill,u.star,u.skillScale),'magic',false,false,true,teleportSkill.id);
-      this.events.push({t:'skill_impact',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id});
+      if(to){
+        const durationTicks=Math.max(1,Math.round(teleportSkill.starLeap!.durationSeconds*1000/this.configs.battle.tickMs));
+        u.starLeap={from,to,startTick:this.tick,endTick:this.tick+durationTicks,targetId:target.id};
+        this.events.push({t:'dash',tick:this.tick,id:u.id,from,to,durationTicks});
+      }else{
+        this.damage(u,target,configuredSkillDamage(teleportSkill,u.star,u.skillScale),'magic',false,false,true,teleportSkill.id);
+        this.events.push({t:'skill_impact',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id});
+      }
       u.atkCd=this.attackCooldown(u);return;
     }
 
@@ -776,7 +921,7 @@ export class BattleSim {
     if (u.cfg.skillId && !['railShot','spiderLeap','furnaceDash','stellarBulwark','starLeap'].includes(teleportSkill?.effect ?? '') && teleportSkill?.effect !== 'lowestHealthHeal' && teleportSkill?.effect !== 'hydraulicBulwark' && teleportSkill?.effect !== 'sunlight' && teleportSkill?.effect !== 'shadow' && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
       const skill = this.configs.getSkill(u.cfg.skillId);
       const castTarget = skill.targeting === 'lowestHp'
-        ? this.units.filter(e => this.targetable(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
+        ? this.units.filter(e => this.targetable(e) && u.canSelectEnemy(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
           .sort((a, b) => a.hp / a.cfg.hp - b.hp / b.cfg.hp || a.id - b.id)[0] : target;
       this.cast(u, skill, castTarget);
       return;
@@ -788,7 +933,8 @@ export class BattleSim {
         this.events.push({ t: 'attack', tick: this.tick, id: u.id, target: target.id,
           ...(u.shadowAttack ? { shadow: true } : {}),
           ...(this.tick < u.susanooUntilTick ? { area: true } : {}) });
-        if (u.equipment.some(item => item.attackSpeedPerAttack > 0)) u.equipmentAttackStacks++;
+        if (u.equipment.some(item => item.attackSpeedPerAttack > 0 || (item.physicalPowerPerAttack ?? 0) > 0)) u.equipmentAttackStacks++;
+        u.cfg.physicalPower = (u.cfg.physicalPower ?? 0) + u.equipment.reduce((sum, item) => sum + (item.physicalPowerPerAttack ?? 0), 0);
         const damage = empowered ? u.empoweredAttackDamage : u.cfg.atk;
         let attackCritical: boolean | undefined;
         if (this.tick < u.susanooUntilTick) {
@@ -835,6 +981,18 @@ export class BattleSim {
 
   private cast(u: Unit, sk: SkillConfigData, mainTarget: Unit) {
     u.mana = 0;
+    if (sk.effect === 'nebula' || sk.effect === 'gravity') {
+      u.pendingCast = {skillId:sk.id,remainingTicks:Math.max(1,Math.round(sk.castSeconds!*1000/this.configs.battle.tickMs))};
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,skillId:sk.id,target:mainTarget.id,duration:sk.castSeconds});return;
+    }
+    if (sk.effect === 'arrowVolley') {
+      const duration = sk.castSeconds!;
+      u.pendingCast = { skillId: sk.id, targetId: mainTarget.id, shotsRemaining: sk.arrowVolley!.count,
+        remainingTicks: Math.max(1, Math.round(duration * 1000 / this.configs.battle.tickMs)) };
+      this.emitCast({ t: 'cast', tick: this.tick, id: u.id, skillId: sk.id, target: mainTarget.id,
+        duration: duration + (sk.arrowVolley!.count - 1) * sk.arrowVolley!.intervalSeconds });
+      return;
+    }
     if (sk.effect === 'damageBurn' || sk.effect === 'damageStun' || sk.effect === 'knockupGuard' || sk.effect === 'splitPhysical' || sk.effect === 'delayedDamage' || sk.effect === 'delayedArea' || sk.effect === 'healAlly') {
       const duration = sk.castSeconds ?? 0.5;
       u.pendingCast = { skillId: sk.id, targetId: mainTarget.id,
@@ -884,12 +1042,14 @@ export class BattleSim {
 
   private resolveStuns(): void {
     for (const { src, dst, seconds, knockup, fearOrigin } of this.pendingStuns) {
+      if (dst.crowdControlImmune) continue;
       if (this.tick < dst.susanooUntilTick) continue;
       if (!this.targetable(dst)) continue;
       const ticks = Math.max(1, Math.round(seconds * 1000 / this.configs.battle.tickMs));
       if (fearOrigin) { dst.fearUntilTick = Math.max(dst.fearUntilTick, this.tick + ticks + 1); dst.fearOrigin = { ...fearOrigin }; }
       else dst.stunnedUntilTick = Math.max(dst.stunnedUntilTick, this.tick + ticks + 1);
       dst.pendingCast = null;
+      this.stopStarLeap(dst);
       if(dst.stellarCharge)this.settleStellarCharge(dst,true);
       if (dst.furnaceDash) {
         const from=dst.pos, origin=dst.furnaceDash.from;
@@ -940,7 +1100,7 @@ export class BattleSim {
   }
 
   private teleportTarget(u: Unit, skill: SkillConfigData): Unit | undefined {
-    return this.units.filter(e => this.targetable(e) && e.side !== u.side && dist(u.pos, e.pos) <= (skill.targetRange ?? 3))
+    return this.units.filter(e => this.targetable(e) && u.canSelectEnemy(e) && e.side !== u.side && dist(u.pos, e.pos) <= (skill.targetRange ?? 3))
       .sort((a, b) => a.hp - b.hp || a.id - b.id)
       .find(e => !!this.teleportCell(u, e));
   }
@@ -972,6 +1132,7 @@ export class BattleSim {
   private resolveDamage(): void {
     const healing = new Map<Unit, number>();
     for (const { src, dst, raw, damageAmp, resistance, reduction, type, critical, targeted, basicAttack, fixed, shadowBoardSide, sunlightJudgmentSide, sunlightJudgmentStar, astralMeteorSide, skillId, missingHealthFraction } of this.pendingDamage) {
+      if(this.gravityFields.length)this.refreshGravityState();
       const astral = astralMeteorSide !== undefined;
       if (targeted && !this.targetable(dst)) {
         this.sunlight.onHitResolved(src, dst, skillId, false);
@@ -982,9 +1143,9 @@ export class BattleSim {
         const effect = item.lowTargetDamageAmp;
         return sum + (effect && dst.hp < dst.cfg.hp * effect.threshold ? effect.bonus : 0);
       }, 0);
-      const effectiveReduction = Math.min(1, reduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0)
+      const effectiveReduction = Math.min(1, reduction + dst.equipmentStackDamageReduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0)
         + (this.tick < dst.susanooUntilTick ? dst.susanooReduction : 0) + dst.traitDamageReductionAt(this.tick));
-      const effectiveResistance = (resistance + (type === 'physical' ? dst.skillArmorBonus + dst.hydraulicResistanceBonus : type === 'magic' ? dst.skillMrBonus + dst.hydraulicResistanceBonus : 0))
+      const effectiveResistance = (resistance + (type === 'physical' ? dst.gravityResistanceBonus + dst.skillArmorBonus + dst.hydraulicResistanceBonus + dst.equipmentHealthArmor + dst.equipmentStackResistance : type === 'magic' ? dst.gravityResistanceBonus + dst.skillMrBonus + dst.hydraulicResistanceBonus + dst.equipmentStackResistance : 0))
         * (type === 'true' ? 1 : 1 - (dst.shadowCorruption?.resistanceReduction ?? 0));
       const missingDamage = (missingHealthFraction ?? 0) * Math.max(0, dst.cfg.hp - dst.hp)
         * (critical ? this.configs.battle.criticalMultiplier ?? 1.5 : 1);
@@ -1000,8 +1161,12 @@ export class BattleSim {
       // Trigger between hits so the lethal hit leaves 1 HP and later targeted hits miss.
       const triggered = this.triggerLowHealthProtection(dst);
       const dealt = Math.max(0, previousHp - dst.hp);
+      if (previousHp > 0 && dmg > 0) {
+        const cap = dst.equipment.reduce((max, item) => Math.max(max, item.damageTakenStacks?.maxStacks ?? 0), 0);
+        dst.equipmentDamageStacks = Math.min(cap, dst.equipmentDamageStacks + 1);
+      }
       // Independent faction damage has a representative source, not a personal contributor.
-      if (!fixed && !astral && dealt > 0 && src.side !== dst.side && src.spellchanter) {
+      if (!fixed && !astral && dealt > 0 && src.side !== dst.side && (src.spellchanter || this.takedownHealth(src) > 0)) {
         let contributors = this.spellchanterContributors.get(dst);
         if (!contributors) this.spellchanterContributors.set(dst, contributors = new Map());
         contributors.set(src, this.tick);
@@ -1041,6 +1206,7 @@ export class BattleSim {
         u.shield = 0;
         u.equipmentRegen = null;
         u.equipmentSustain.clear();
+        u.equipmentCastSpeedUntil.clear();
         u.conquerorProtectionUntilTick = 0;
         u.spellbladeUntilTick = 0;
         u.spellbladeAttacks = 0;
@@ -1049,7 +1215,7 @@ export class BattleSim {
         u.hydraulicBulwark = null;
         u.spiderLeap = null;
         u.furnaceDash = null;
-        u.stellarCharge = null;u.stellarShield = null;
+        u.stellarCharge = null;u.stellarShield = null;u.starLeap = null;
         u.overclockUntilTick = 0;
         u.overclockHealTick = 0;
         u.overclockNextTick = 0;
@@ -1058,15 +1224,39 @@ export class BattleSim {
         for (const member of this.units) {
           const lastHit = contributors?.get(member);
           if (lastHit === undefined || (this.tick - lastHit) * this.configs.battle.tickMs > 5000
-            || !member.alive || member.hp <= 0 || !member.spellchanter) continue;
-          member.spellchanterPendingMana += member.spellchanter.manaOnTakedown;
-          this.flushSpellchanterMana(member);
+            || !member.alive || member.hp <= 0) continue;
+          if (member.spellchanter) {
+            member.spellchanterPendingMana += member.spellchanter.manaOnTakedown;
+            this.flushSpellchanterMana(member);
+          }
+          const growth = this.takedownHealth(member);
+          if (growth > 0) {
+            const previousGrowth = member.permanentHealthGained;
+            member.permanentHealthGained += growth;
+            member.soulLampHealth += growth;
+            const previousArmor = member.cfg.armor;
+            const previousResistance = equipmentMaxHpResistance(member.cfg.hp, member.equipment);
+            const health = Math.round(member.permanentHealthGained * member.maxHpGrowthMultiplier)
+              - Math.round(previousGrowth * member.maxHpGrowthMultiplier);
+            member.cfg.hp += health; member.hp += health;
+            const resistance = equipmentMaxHpResistance(member.cfg.hp, member.equipment) - previousResistance;
+            member.cfg.armor += resistance; member.cfg.mr += resistance;
+            member.cfg.damageReduction = Math.min(1, (member.cfg.damageReduction ?? 0) + member.equipment.reduce((sum, item) => {
+              const effect = item.armorDamageReduction;
+              return sum + (effect && previousArmor <= effect.threshold && member.cfg.armor > effect.threshold ? effect.bonus : 0);
+            }, 0));
+          }
         }
         this.spellchanterContributors.delete(u);
         this.shadowSkills.onDeath(u);
         this.sunlight.onDeath(u);
       }
     }
+  }
+
+  private takedownHealth(unit: Unit): number {
+    const skill = unit.cfg.skillId ? this.configs.getSkill(unit.cfg.skillId) : undefined;
+    return skill?.shadow?.kind === 'soulLamp' ? skill.shadow.takedownHealth[unit.star - 1] : 0;
   }
 
   private flushSpellchanterMana(unit: Unit): void {
@@ -1083,7 +1273,7 @@ export class BattleSim {
     let best: Unit | null = null;
     let bd = Infinity;
     for (const e of this.units) {
-      if (!this.targetable(e) || e.side === u.side) continue;
+      if (!this.targetable(e) || e.side === u.side || !u.canSelectEnemy(e)) continue;
       const d = dist(u.pos, e.pos);
       if (d < bd) { bd = d; best = e; }
     }
@@ -1091,7 +1281,7 @@ export class BattleSim {
   }
 
   private occupied(x: number, y: number): boolean {
-    return this.units.some(o => o.alive && o.x === x && o.y === y);
+    return this.units.some(o => o.alive && ((o.x === x && o.y === y) || (o.starLeap?.to.x === x && o.starLeap?.to.y === y)));
   }
 
   private targetable(u: Unit): boolean {
@@ -1102,6 +1292,17 @@ export class BattleSim {
     this.events.push(event);
     const unit = this.units.find(u => u.id === event.id);
     if (!unit || !unit.alive || unit.hp <= 0) return;
+    unit.equipment.forEach((item, slot) => {
+      if (item.castAttackSpeed) unit.equipmentCastSpeedUntil.set(slot, this.tick
+        + Math.max(1, Math.round(item.castAttackSpeed.seconds * 1000 / this.configs.battle.tickMs)));
+    });
+    const manaDamage = unit.equipment.reduce((sum, item) => sum + (item.castMaxManaDamage ?? 0), 0);
+    if (manaDamage > 0 && unit.cfg.maxMana > 0) {
+      const priority = this.units.find(enemy => enemy.id === unit.priorityTarget && this.targetable(enemy) && unit.canSelectEnemy(enemy)
+        && enemy.side !== unit.side && dist(unit.pos, enemy.pos) <= unit.cfg.range);
+      const target = priority ?? this.nearestEnemy(unit);
+      if (target) this.damage(unit, target, unit.cfg.maxMana * manaDamage, 'magic');
+    }
     const effect = unit.spellblade;
     if (effect) {
       unit.spellbladeUntilTick = this.tick + Math.max(1, Math.round(effect.durationSeconds * 1000 / this.configs.battle.tickMs));
@@ -1172,7 +1373,9 @@ export class BattleSim {
     if (!u.alive || u.hp <= 0) return;
     u.equipment.forEach((item, slot) => {
       const effect = item.lowHealthRegen;
-      if (!effect || u.equipmentSustain.has(slot) || u.hp >= u.cfg.hp * effect.threshold) return;
+      if (!effect) return;
+      if (u.hp >= u.cfg.hp * effect.threshold) { u.equipmentSustain.delete(slot); return; }
+      if (u.equipmentSustain.has(slot)) return;
       const interval = Math.max(1, Math.round(effect.intervalSeconds * 1000 / this.configs.battle.tickMs));
       u.equipmentSustain.set(slot, { nextTick: this.tick + interval, pulses: 0, delivered: 0 });
       this.events.push({ t: 'equipment_trigger', tick: this.tick, id: u.id, equipmentId: item.id, shield: u.shield });
@@ -1180,10 +1383,12 @@ export class BattleSim {
   }
 
   private updateEquipmentSustain(u: Unit): void {
-    // Iterate slots rather than Map order; each copy keeps healing even after HP recovers above 50%.
+    // Recheck each slot: an earlier copy may have healed the carrier out of the low-health range.
     u.equipment.forEach((item, slot) => {
       const state = u.equipmentSustain.get(slot), effect = item.lowHealthRegen;
-      if (!state || !effect || this.tick < state.nextTick) return;
+      if (!state || !effect) return;
+      if (u.hp >= u.cfg.hp * effect.threshold) { u.equipmentSustain.delete(slot); return; }
+      if (this.tick < state.nextTick) return;
       state.pulses++;
       const delivered = Math.floor(u.cfg.hp * effect.maxHpFraction * state.pulses + 1e-9);
       const amount = Math.min(u.cfg.hp - u.hp, delivered - state.delivered);
@@ -1207,11 +1412,18 @@ export class BattleSim {
   private end(w: Side | -1) {
     this.finished = true;
     this.winner = w;
+    this.nebulas.length=0;
+    this.gravityFields.length=0;
+    this.hasGravityState=false;
     for (const unit of this.units) {
       unit.overclockUntilTick = 0;
       unit.hydraulicBulwark = null;
       unit.spiderLeap = null;
+      unit.nebulaAttackSpeedPenalty=0;
+      unit.gravityResistanceBonus=0;unit.tauntSourceId=null;
+      if (unit.pendingCast && ['arrowVolley','nebula','gravity'].includes(this.configs.getSkill(unit.pendingCast.skillId).effect??'')) unit.pendingCast = null;
       unit.furnaceDash = null;
+      this.stopStarLeap(unit);
       this.settleStellarCharge(unit,true);this.expireStellarShield(unit);
       unit.burns = unit.burns.filter(b=>!b.untilBattleEnd);
       unit.overclockNextTick = 0;

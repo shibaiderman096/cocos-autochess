@@ -21,6 +21,11 @@ for(const tier of trait.breakpoints){
   rows.forEach((row,i)=>{
     const copy=text(row.getChildByName('astralEffect')),e=trait.breakpoints[i].astral;
     assert.ok(copy.includes(`+${e.power}%`));assert.ok(copy.includes(`+${Math.round(e.maxHpBonus*100)}%`));
+    const rich=[...row.getChildByName('astralEffect').components.values()].find(c=>c.string!==undefined);
+    for(const key of ['attr_phys_bonus','attr_spell_bonus','stat_hp']){
+      assert.ok(copy.includes(`<img src='${key}'`),'each astral bonus uses its attribute image');
+      assert.ok(rich.imageAtlas.spriteFrames[key],'attribute image actually loaded');
+    }
     assert.ok(Math.abs(row.position.y)+row.getComponent(UITransform).contentSize.height/2<size.height/2);
     if(i){const previous=rows[i-1];assert.equal(previous.position.y-previous.getComponent(UITransform).contentSize.height/2-row.position.y-row.getComponent(UITransform).contentSize.height/2,6);}
   });

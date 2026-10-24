@@ -1,0 +1,61 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.ENCOUNTER_PLAYWRIGHT || 'playwright');
+const output=path.resolve('docs/evidence/opening-encounter');
+(async()=>{
+const browser=await chromium.launch({executablePath:process.env.ENCOUNTER_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:7456/',{waitUntil:'networkidle'});
+ await page.evaluate(async()=>{
+  const cc=window.cc||await System.import('cc');window.testCC=cc;
+  if(!cc.find('Canvas/Stage')?.getComponent('BattleStage')&&!cc.find('Canvas')?.getComponentInChildren('MainMenu'))await new Promise((resolve,reject)=>cc.director.loadScene('main',e=>e?reject(e):resolve()));
+ });
+ await page.waitForFunction(()=>testCC.find('Canvas/Stage')?.getComponent('BattleStage')?.loaded||testCC.find('Canvas')?.getComponentInChildren('MainMenu')?.ready);
+ await page.evaluate(()=>testCC.find('Canvas')?.getComponentInChildren('MainMenu')?.node.getChildByName('startGame')?.emit(testCC.Node.EventType.TOUCH_END));
+ await page.waitForFunction(()=>testCC.find('Canvas/Stage')?.getComponent('BattleStage')?.loaded,null,{timeout:45000});
+ await page.evaluate(async()=>{
+  const cc=window.cc||await System.import('cc');window.testCC=cc;window.testStage=cc.find('Canvas/Stage').getComponent('BattleStage');
+  window.point=node=>{const world=node.getComponent('cc.UITransform').convertToWorldSpaceAR(new cc.Vec3());const camera=cc.find('Canvas').getComponent('cc.Canvas').cameraComponent;const screen=camera.worldToScreen(world);const canvas=document.querySelector('canvas'),rect=canvas.getBoundingClientRect();return {x:rect.x+screen.x/canvas.width*rect.width,y:rect.y+(1-screen.y/canvas.height)*rect.height};};
+  const s=testStage;
+  s.session=new s.session.constructor(s.cfg,s.runConfig,s.waveTemplates,{runSeed:1,stageCount:6,enemyGenerationMode:'legacy',openingEncounter:true,equipmentPolicy:s.equipmentPolicy,enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
+  s.resetBattle(false);s.refreshShopUI();s.refreshEconomyUI();s.refreshRunUI();
+ });
+ await page.waitForTimeout(400);
+ const report={};
+ report.opening=await page.evaluate(()=>{const s=window.testStage,cc=window.testCC,root=s.ui.node.getChildByName('openingEncounter');return {pending:s.session.pendingOpeningEncounter,stage:s.flow.wave.stage,round:s.flow.wave.round,root:!!root,cards:root?.children.filter(c=>c.name.startsWith('encounter_')).map(c=>({name:c.name,position:c.position,size:c.getComponent('cc.UITransform').contentSize})),normalVisible:s.ui.shopSlots.some(c=>c.node.activeInHierarchy)};});
+ console.log(JSON.stringify(report.opening));assert.equal(report.opening.pending,true);assert.equal(report.opening.cards.length,3);assert.equal(report.opening.normalVisible,false);
+ await page.screenshot({path:path.join(output,'01-opening.png')});
+ let point=await page.evaluate(()=>window.point(testStage.ui.node.getChildByName('openingEncounter').getChildByName('encounter_inspiration')));
+ await page.mouse.click(point.x,point.y);await page.waitForTimeout(250);
+ report.selection=await page.evaluate(()=>({pending:testStage.session.pendingOpeningEncounter,selected:testStage.session.save.openingEncounter.selected,normalVisible:testStage.ui.shopSlots.every(c=>c.node.activeInHierarchy)}));
+ assert.equal(report.selection.pending,false);assert.equal(report.selection.selected,'inspiration');assert.equal(report.selection.normalVisible,false);
+ assert.equal(await page.evaluate(()=>testStage.session.buyExp().error),'shop_occupied');
+ await page.evaluate(()=>testStage.debugJumpStage(1,2));
+ assert.equal(await page.evaluate(()=>testStage.ui.shopRoot.activeInHierarchy),true);
+ await page.evaluate(()=>{testStage.debugGrantGold(4);testStage.buyExperience();});
+ report.refresh=await page.evaluate(()=>({free:testStage.session.freeRefreshes,gold:testStage.economy.gold,level:testStage.levelSys.level}));assert.equal(report.refresh.free,4);assert.equal(report.refresh.gold,0);
+ await page.waitForTimeout(200);
+ await page.screenshot({path:path.join(output,'02-free-refresh.png')});
+ point=await page.evaluate(()=>window.point(testStage.ui.economyControls.getChildByName('refresh')));await page.mouse.click(point.x,point.y);
+ assert.equal(await page.evaluate(()=>testStage.session.freeRefreshes),3);assert.equal(await page.evaluate(()=>testStage.economy.gold),0);
+ await page.evaluate(()=>{const s=testStage;s.debugGrantGold(100);s.debugJumpStage(4,1);const w=s.waves.find(w=>w.stage===4&&w.encounterKind==='specialShop');s.debugJumpStage(4,w.round);});await page.waitForTimeout(250);
+ report.shop=await page.evaluate(()=>{const s=testStage,root=s.ui.node.getChildByName('stageReward'),body=root.getChildByName('stageRewardBody');return {offers:s.session.pendingStageReward.offers,cardCount:body.children.filter(n=>n.name==='stageOffer').length,position:root.position,size:root.getComponent('cc.UITransform').contentSize,normalVisible:s.ui.shopSlots.some(c=>c.node.activeInHierarchy)};});
+ console.log(JSON.stringify(report.shop));assert.ok(report.shop.offers.some(o=>o.kind==='equipment'));assert.equal(report.shop.cardCount,5);assert.equal(report.shop.size.height,150);assert.equal(report.shop.normalVisible,false);
+ await page.screenshot({path:path.join(output,'03-special-shop.png')});
+ point=await page.evaluate(()=>window.point(testStage.stageRewards.root.getChildByName('stageRewardBody').children.filter(n=>n.name==='stageOffer')[0].getChildByName('stageChoice_0')));const gold=await page.evaluate(()=>testStage.economy.gold);
+ await page.mouse.click(point.x,point.y);await page.waitForTimeout(100);
+ assert.ok(await page.evaluate(()=>testStage.session.pendingStageReward.offers[0].bought));assert.equal(await page.evaluate(()=>testStage.economy.gold),gold-report.shop.offers[0].price);
+ await page.evaluate(()=>{const s=testStage,p=s.session.pendingStageReward;s.session.claimStageReward({type:'stageChoice',rewardId:p.id,choice:'continue'});s.session.debugJump(4,1);const w=s.waves.find(w=>w.stage===4&&w.encounterKind==='boss');s.session.debugJump(4,w.round);const u=s.owned.all()[0];s.session.moveUnit(u.uid,{location:'board',x:3,y:3});const sim=s.session.startBattle();sim.end(0);s.session.settleBattle();s.resultShown=true;s.fighting=false;s.resetBattle(false);s.refreshRunUI();});await page.waitForTimeout(100);
+ await page.waitForFunction(()=>!!testStage.bossChest?.model);
+ assert.equal(await page.evaluate(()=>testStage.stageRewards.root?.activeInHierarchy??false),false);
+ await page.screenshot({path:path.join(output,'04-boss-chest.png')});
+ await page.evaluate(()=>{window.bossGrant=null;const claim=testStage.session.claimStageReward.bind(testStage.session);testStage.session.claimStageReward=action=>{const result=claim(action);bossGrant=result.stageReward;return result;};});
+ point=await page.evaluate(()=>window.point(testStage.bossChest.root));await page.mouse.click(point.x,point.y);
+ await page.waitForFunction(()=>!!bossGrant);
+ report.boss=await page.evaluate(()=>({grant:bossGrant,pending:testStage.session.pendingStageReward??null}));
+ assert.ok(['units','equipment','health'].includes(report.boss.grant.kind));assert.equal(report.boss.pending,null);
+ await page.screenshot({path:path.join(output,'05-boss-random-reward.png')});
+ report.errors=errors;fs.writeFileSync(path.join(output,'browser-acceptance.json'),JSON.stringify(report,null,2));assert.deepEqual(errors,[]);
+ console.log('PASS actual browser: opening 3-choice pointer selection, shop restoration, four free rolls and zero-gold pointer refresh, five mixed offers with pointer purchase, boss one-click random reward');
+}finally{await browser.close();}
+})().catch(error=>{console.error(error);process.exitCode=1});

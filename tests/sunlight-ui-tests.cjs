@@ -3,7 +3,10 @@ const {load,Node,Sprite,Label,UITransform,pending}=require('./helpers/ui-harness
 const {BattleUI}=load(path.join(__dirname,'../assets/scripts/ui/BattleUI.ts'));
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
 const trait=require('../assets/resources/config/battle.json').traits.find(t=>t.id==='sunlight'),roster=require('../assets/resources/config/units.json');
+// Synthetic ten-member rendering fixture uses retained portraits.
+trait.members=[...trait.members,...roster.filter(u=>!trait.members.includes(u.id)).slice(0,2).map(u=>u.id)];
 const {UNIT_PORTRAIT}=load(path.join(__dirname,'../assets/scripts/view/ArtPaths.ts'));
+const {TRAIT_PORTRAIT_FRAMES}=load(path.join(__dirname,'../assets/scripts/ui/TraitPanel.ts'));
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();};
 const offers=trait.members.map(id=>({...roster.find(u=>u.id===id),unitId:id,price:1,poolLeft:10}));
@@ -20,7 +23,11 @@ for(const count of [1,3,5,7,10]){
  const size=card.getComponent(UITransform).contentSize;
  for(const n of [...rows,...card.children.filter(n=>n.name.startsWith('traitOwner_'))])assert.ok(Math.abs(n.position.y)+n.getComponent(UITransform).contentSize.height/2<=size.height/2);
  assert.equal(card.children.filter(n=>n.name.startsWith('traitOwner_')).length,10);
- for(const id of trait.members)assert.equal(card.getChildByName(`traitOwner_${id}`).children.find(n=>n.getComponent(Sprite)).getComponent(Sprite).spriteFrame.name,UNIT_PORTRAIT[id]);
+ for(const id of trait.members){
+  const owner=card.getChildByName(`traitOwner_${id}`),unit=roster.find(u=>u.id===id);
+  assert.equal(owner.getChildByName('portraitWindow').children.find(n=>n.getComponent(Sprite)).getComponent(Sprite).spriteFrame.name,UNIT_PORTRAIT[unit.artId??id]);
+  assert.equal(owner.getChildByName('portraitRarityFrame').getComponent(Sprite).spriteFrame.name,TRAIT_PORTRAIT_FRAMES[(unit.cost??1)-1]);
+ }
  const intro=[...card.getChildByName('sunlightDescription').components.values()].find(c=>c.string!==undefined);
  assert.equal(intro.string.replace(/<[^>]+>/g,''),trait.description,'intro comes from the configured description');
  assert.ok(intro.string.includes("src='sun_shield'"));

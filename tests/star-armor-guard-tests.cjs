@@ -25,11 +25,12 @@ function setup({star=1,side=0,from={x:2,y:3},target={x:3,y:3},changes={},extra=[
 function until(s,t){while(s.tick<t&&!s.finished)s.step();assert.equal(s.tick,t);}
 function ready(s,u){u.atkCd=0;u.mana=u.cfg.maxMana;s.step();}
 function hit(s,a,b,n){s.damage(a,b,n,'true');s.resolveDamage();s.pendingDamage.length=0;}
-assert.equal(guard.cost,1);assert.equal(guard.role,'tank');assert.equal(guard.damageType,'physical');
+assert.equal(guard.cost,1);assert.equal(guard.role,'tank');assert.equal(guard.damageType,'magic');
 assert.deepEqual(['hp','atk','armor','mr','atkSpeed','range','startMana','maxMana'].map(k=>guard[k]),[700,30,40,40,.55,1,40,100]);
 const traits=resolveTraits(battle.traits,['oris','blackstar_warlock',guard.id,guard.id],roster);
 assert.equal(traits.find(t=>t.config.id==='astral').active.count,3);
-assert.ok(traits.find(t=>t.config.id==='armored_tank').memberIds.includes(guard.id));
+assert.ok(traits.find(t=>t.config.id==='brawler').memberIds.includes(guard.id));
+assert.ok(!traits.find(t=>t.config.id==='armored_tank').memberIds.includes(guard.id));
 {
  const cfg=new ConfigManager();cfg.setBattle({...battle,traits:battle.traits.filter(t=>t.id==='astral')});cfg.setUnits(roster);cfg.setSkills(skills);
  const cell=astralCells(1022,0,7,8,4,7)[0];
@@ -41,7 +42,7 @@ assert.ok(traits.find(t=>t.config.id==='armored_tank').memberIds.includes(guard.
   {cfg:dummy,side:1,...target}],{seed:1022});
  sim.units.forEach(u=>{u.atkCd=100000;u.moveCd=100000;});const u=sim.units[0];
  assert.equal(u.cfg.physicalPower,30);assert.equal(u.cfg.spellPower,30);assert.equal(u.cfg.hp,840);
- ready(sim,u);assert.equal(u.shield,325,'natural three Astral gives doubled member bonus to physical shield');
+ ready(sim,u);assert.equal(u.shield,325,'natural three Astral gives doubled member bonus to magic shield');
 }
 {
  const pool=new CardPool(roster),owned=new OwnedUnits(),economy=new EconomySystem(undefined,{gold:10,winStreak:0,loseStreak:0});
@@ -58,7 +59,7 @@ for(const y of [2,3,4,5])for(const target of hexNeighbors(3,y)) {
 assert.deepEqual(stellarChargeRay({x:0,y:0},{x:1,y:0},2,7,8),[{x:1,y:0},{x:2,y:0}]);
 assert.deepEqual(stellarChargeRay({x:0,y:0},{x:0,y:0},2,7,8),[]);
 for(const star of [1,2,3]) {
- const {sim,u,enemy,cfg}=setup({star,changes:{physicalPower:100,spellPower:900,damageAmp:5,atk:999}});
+ const {sim,u,enemy,cfg}=setup({star,changes:{physicalPower:900,spellPower:100,damageAmp:5,atk:999}});
  ready(sim,u);const amount=[500,750,1100][star-1];assert.equal(u.shield,amount);assert.equal(u.stellarShield.untilTick,81);
  assert.deepEqual(u.stellarCharge.to,{x:4,y:3});assert.equal(u.stellarCharge.endTick,7);assert.equal(u.mana,0);
  u.atkCd=100000;until(sim,7);assert.deepEqual(u.pos,{x:4,y:3});assert.equal(u.stellarCharge,null);
@@ -66,7 +67,9 @@ for(const star of [1,2,3]) {
  const hits=sim.events.filter(e=>e.t==='knockup');assert.equal(hits.length,1);assert.equal(hits[0].id,enemy.id);assert.equal(hits[0].duration,.75);
  const rows=buildSkillStatRows(cfg,u.cfg,star,u.skillScale);assert.equal(Number(rows[0].current),amount);
  assert.equal(parseFloat(rows.at(-1).current),.75);assert.doesNotMatch(buildSkillDescription(cfg,u.cfg,star,u.skillScale),/\{|\}/);
- assert.equal(configuredShieldAmount({...u.cfg,atk:1,spellPower:0,damageAmp:0},skill,star),amount);
+ assert.equal(configuredShieldAmount({...u.cfg,atk:1,physicalPower:0,damageAmp:0},skill,star),amount);
+ assert.equal(configuredShieldAmount({...u.cfg,spellPower:0},skill,star),skill.shieldAmounts[star-1]);
+ assert.match(buildSkillDescription(cfg,u.cfg,star,u.skillScale,true),/attr_spell_bonus/);
  const stats=new CombatStatistics();stats.begin(sim.units);stats.consume(sim.events);
  assert.equal(stats.snapshot().find(r=>r.id===u.id).shielding,amount);
  until(sim,80);assert.equal(u.shield,amount);until(sim,81);assert.equal(u.shield,0);assert.equal(u.stellarShield,null);

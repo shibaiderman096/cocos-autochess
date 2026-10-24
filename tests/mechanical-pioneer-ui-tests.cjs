@@ -8,15 +8,22 @@ const panel=new TraitPanel(new Node('UI'));const flush=()=>{while(pending.length
 const text=n=>[...n.components.values()].find(c=>c.string!==undefined)?.string??'';
 panel.refresh([state],roster);assert.equal(panel.rows.children.length,0);
 for(const tier of trait.breakpoints){
- panel.refresh([{...state,count:tier.count,active:tier}],roster);panel.showDetail(trait.id);flush();
+ panel.refresh([{...state,count:tier.count,active:tier}],roster);panel.showDetail(trait.id);
+ assert.doesNotMatch(text(panel.detail.getChildByName('traitDescription')),/<img/,'text fallback stays readable while images load');flush();
  const card=panel.detail,rows=card.children.filter(n=>n.name==='mechanicalBreakpoint');assert.equal(rows.length,3);
  assert.ok(card.getComponent(UITransform).contentSize.height<610,'height follows content');
  rows.forEach((row,i)=>{const copy=text(row.getChildByName('mechanicalEffect')),e=trait.breakpoints[i].mechanicalPioneer;
+  const rich=[...row.getChildByName('mechanicalEffect').components.values()].find(c=>c.string!==undefined);
+  for(const key of ['attr_aspd','stat_hp']){assert.ok(copy.includes(`<img src='${key}'`));assert.ok(rich.imageAtlas.spriteFrames[key],'inline attribute artwork actually loads');}
+  assert.equal(rich.handleTouchEvent,false,'inline text does not block detail controls');
   assert.ok(copy.includes(`+${e.attackSpeedBonus*100}%`));assert.ok(copy.includes(`${e.regenPerSecond*100}%`));
   assert.match(copy,new RegExp(`${e.cooldownSeconds}秒`));
   assert.ok(Math.abs(row.position.y)+row.getComponent(UITransform).contentSize.height/2<305);
  });
  assert.match(text(rows[1].getChildByName('mechanicalEffect')),/每场首次低于.*50%/);
+ assert.match(text(card.getChildByName('traitDescription')),/<img src='attr_aspd'.*<img src='stat_hp'/,'introduction uses the same attribute artwork');
  assert.ok(card.getChildByName('traitOwner_bao_zero'));panel.hideDetail();assert.equal(panel.detail,null);
 }
-console.log('PASS mechanical UI: pending hidden, three configured colored tiers, timing, half-health wording, bounded rows and close');
+panel.showDetail(trait.id);panel.hideDetail();flush();assert.equal(panel.detail,null,'late attribute images cannot reopen a closed card');
+panel.inspectForCatalog(state,roster);flush();assert.match(text(panel.detail.getChildByName('traitDescription')),/<img src='attr_aspd'/);panel.hideDetail();
+console.log('PASS mechanical UI: inline attribute artwork in intro/three tiers/catalogue, loading fallback, unchanged values/timing/half-health, bounded rows and async close');

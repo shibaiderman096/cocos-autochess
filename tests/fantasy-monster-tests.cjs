@@ -57,7 +57,8 @@ for (let seed=1;seed<=40;seed++) {
   const encounters=waves.filter(w=>w.enemies.some(e=>strongIds.includes(e.unitId)));
   assert.deepEqual(encounters.map(w=>w.stage),[4,7,10]);
   for (const wave of encounters) {
-    assert.equal(wave.encounterKind,'monster');assert.equal(wave.enemies.length,1);
+    const guards=run.stageEncounters.strongMonster.escorts;
+    assert.equal(wave.encounterKind,'monster');assert.equal(wave.enemies.length,1+Math.min(guards.maxCount,guards.initialCount+(wave.stage-4)/3*guards.countPerEncounter));
     const e=wave.enemies[0]; assert.equal(e.star,1);
     assert.equal(e.statMultiplier,1+(wave.stage-4)*.25);
     assert.equal(wave.name,cfg.getUnit(e.unitId).name+'巢穴');
@@ -83,7 +84,7 @@ for (const id of strongIds) {
   function battle(ids,star,seed){return new BattleSim(cfg,[...ids.map((uid,i)=>({cfg:cfg.getUnit(uid),side:0,star,x:i+1,y:2})),{cfg:boss,side:1,x:3,y:6}],{seed}).run();}
   for(let seed=1;seed<=10;seed++){
     assert.equal(battle(['helion'],1,seed).winner,1,'strong monster defeats lone starter');
-    assert.equal(battle(['helion','leon','saiph','celine'],2,seed).winner,0,'developed team defeats strong monster');
+    assert.equal(battle(['helion','ghostflame_blade','saiph','celine'],2,seed).winner,0,'developed team defeats strong monster');
   }
 }
 console.log('PASS combat: all five strong monsters retain AoE timing/targets/320 base damage, mitigation and 100 strength simulations');

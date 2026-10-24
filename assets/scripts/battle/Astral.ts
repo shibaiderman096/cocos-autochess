@@ -2,7 +2,7 @@ import { Rng } from '../core/Rng';
 import { hexDist } from './HexMath';
 import type { Pos, Side } from './types';
 
-/** A dedicated stream keeps formation previews stable and never consumes combat RNG. */
+/** A dedicated layout seed keeps nested tier cells stable and never consumes combat RNG. */
 export function astralCells(seed: number, side: Side, width: number, height: number, ownRows: number, count: number | 'all'): Pos[] {
   const rows = Math.min(ownRows, height);
   const cells: Pos[] = [];

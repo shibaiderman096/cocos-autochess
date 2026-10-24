@@ -9,7 +9,7 @@ const {equipmentIdentity,sameEquipmentIdentity}=load(path.join(__dirname,'../ass
 const before=require('../art-source/original-equipment/equipment-before.json');
 const items=require('../assets/resources/config/equipment.json');
 const roster=require('../assets/resources/config/units.json'),battle=require('../assets/resources/config/battle.json');
-assert.deepEqual(combatEquipmentIdentity(items),combatEquipmentIdentity(before),'every mechanical field is preserved');
+assert.deepEqual(combatEquipmentIdentity(items.filter(item=>before.some(old=>old.id===item.id))),combatEquipmentIdentity(before),'existing mechanical fields are preserved; new authored equipment extends the catalogue');
 for(const item of items) {
   const png=fs.readFileSync(path.join(__dirname,'../assets/resources',item.icon.replace('/spriteFrame','.png')));
   assert.equal(png.readUInt32BE(16),128);assert.equal(png.readUInt32BE(20),128);
@@ -24,6 +24,20 @@ assert.ok(!sameEquipmentIdentity(oldPolicy,equipmentIdentity({},changed)));
 assert.ok(!sameCombatConfigurationIdentity(oldIdentity,stableEnemyJson({skills:{},equipment:changed})));
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();};
+const rgb=c=>[c.r,c.g,c.b];
+for(const item of items){
+ const expected=item.id.startsWith('basic_')?[255,255,255]:item.specialShopOnly?[220,187,115]:[100,220,130];
+ ui.showEquipmentDetail(item);flush();assert.deepEqual(rgb(ui.equipmentDetail.getChildByName('equipmentDetailName').getComponent(Label).color),expected,'detail names share equipment quality colors');
+ if(item.introduction){
+  const content=ui.equipmentDetail.getChildByName('equipmentDetailViewport').getChildByName('equipmentDetailContent');
+  assert.equal(content.getChildByName('equipmentDetailEffect').getComponent(Label).string,item.introduction,'basic items show their introduction without inventing a passive');
+ }
+ ui.showEquipment([item],false,0);ui.equipmentSlots[0].node.events.get('enter')();flush();
+ assert.deepEqual(rgb(ui.equipmentTooltipTitle.color),expected,'backpack/equipped tooltip names use the same colors');
+}
+ui.hideEquipmentDetail();ui.hideEquipmentTooltip();
+const changedCopy=items.map(item=>({...item,introduction:'新的展示简介'}));
+assert.deepEqual(combatEquipmentIdentity(changedCopy),combatEquipmentIdentity(items),'introductions never change combat/save identity');
 const base={name:'卫士',star:1,cost:1,artId:'helion',side:0,hp:700,maxHp:700,mana:0,maxMana:50,atk:40,armor:40,mr:40,atkSpeed:1,range:1,skillName:'技能',skillDescription:''};
 const traits=resolveTraits(battle.traits,[],roster).filter(s=>s.config.members.includes('helion')).map(s=>s.config.name);
 ui.showUnitDetail({...base,traits});
@@ -52,4 +66,9 @@ const unit=new Unit(1,0,{...roster.find(u=>u.id==='helion')},0,0);unit.equipment
 view.sync(unit.snapshot(),64);assert.equal(view.equipmentStackLabels[0].string,'17');
 unit.equipmentAttackStacks=0;view.sync(unit.snapshot(),64);assert.equal(view.equipmentStackLabels[0].string,'0');
 view.setEquipment([items[3]]);assert.equal(view.equipmentStackLabels.length,0);
-console.log('PASS equipment presentation: unchanged mechanics, ten 128px RGBA assets, fixed detail slots, memberships, per-item stacks/reset, tooltip, unload/lock, and legacy identity checks');
+const forged=items.find(item=>item.id==='thousand_forged_armor');
+ui.showEquipment([items[0],forged],false,7,30);flush();
+assert.equal(ui.equipmentSlots[0].stacks.string,'7');assert.equal(ui.equipmentSlots[1].stacks.string,'30');assert.ok(ui.equipmentSlots[1].stacks.node.parent.active);
+view.setEquipment([forged,items[0]]);flush();unit.equipment=[forged,items[0]];unit.equipmentAttackStacks=7;unit.equipmentDamageStacks=30;
+view.sync(unit.snapshot(),64);assert.deepEqual(view.equipmentStackLabels.map(l=>l.string),['30','7'],'board counters follow their own equipment slot');
+console.log('PASS equipment presentation: existing configuration fields, all 128px RGBA assets, fixed detail slots, memberships, per-item stacks/reset, tooltip, unload/lock, and legacy identity checks');

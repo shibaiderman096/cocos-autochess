@@ -31,6 +31,9 @@ import { createEquipmentReward } from './EquipmentReward';
 import type { BotPlayerPort,BotCatalog } from './BotObservation';
 import { StageProgression, freshStageProgress } from './StageProgression';
 import type { StageChoice, StagePending } from './StageProgression';
+import { traitEmblemChoices } from './TraitEmblem';
+import type { PendingTraitChoice } from './TraitEmblem';
+import { drawOpeningEncounters, LEGACY_OPENING_ENCOUNTERS, OPENING_ENCOUNTER_IDS, openingEncounterChoices } from './OpeningEncounter';
 
 const ok = (): ActionResult => ({ ok: true });
 const fail = (error: string): ActionResult => ({ ok: false, error });
@@ -47,6 +50,7 @@ export class RunSession {
   flow: RoundFlow;
   waves: WaveConfig[];
   private activeBattle: BattleSim | null = null;
+  private activeBattleIds = new Map<number, number>();
   private generation: EnemyGenerationOptions;
   private equipmentPolicy?:EquipmentPolicyConfig;
   private stageProgression?: StageProgression;
@@ -55,6 +59,9 @@ export class RunSession {
   private lockedFormation?:{waveId:number;result:EnemyFormationResult};
 
   constructor(readonly cfg: ConfigManager, readonly runConfig: RunConfig, private templates: WaveConfig[], options: RunSessionOptions = {}) {
+    const encounterRules = runConfig.openingEncounter;
+    if (encounterRules && (!encounterRules.name || ![encounterRules.refreshesPerLevel, encounterRules.incomeStartStage, encounterRules.incomePerStage, encounterRules.survivorMaxHp,
+      encounterRules.victoryGold, encounterRules.battleExp, encounterRules.victoryHeal].every(n => Number.isSafeInteger(n) && n > 0))) throw new Error('Invalid opening encounter rules');
     const loaded = options.save !== undefined;
     this.save = loaded ? migrateSaveV2(options.save) : freshSaveV2(options.stageCount ?? DEFAULT_STAGE_COUNT, options.runSeed ?? DEFAULT_RUN_SEED, options.enemyGenerationMode ?? 'budget-v1');
     if (loaded && options.runSeed !== undefined && options.runSeed !== this.save.runSeed) throw new Error('Cannot replace the seed of a saved run');
@@ -80,6 +87,7 @@ export class RunSession {
       this.save.difficultyConfigIdentity??=identity;
     }
     this.generation={mode,runSeed:this.save.runSeed,earlyEncounterLayout:this.save.earlyEncounterLayout ?? 'legacy',difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
+      traits: JSON.parse(JSON.stringify(cfg.battle.traits??[])),
       power:options.enemyPower&&JSON.parse(JSON.stringify(options.enemyPower))};
     this.configureEquipment(options,loaded);
     this.random = new RunRandomContext(this.save.runSeed);
@@ -88,6 +96,17 @@ export class RunSession {
     this.waves = buildRunWaves(this.save.stageCount, runConfig, templates, cfg.allUnits(), this.generation);
     this.migrateRoundIndex();
     this.flow = new RoundFlow(this.waves, cfg.battle, this.save.round ?? undefined);
+    if (options.openingEncounter && runConfig.openingEncounter && !this.save.openingEncounter
+      && this.flow.wave.stage === 1 && this.flow.wave.round === 1 && this.flow.phase === 'prepare') {
+      this.save.openingEncounter = { freeRefreshes: 0, lastIncomeStage: 1, offered: drawOpeningEncounters(this.random.stream('encounter', 1, 4100)) };
+    }
+    const opening = this.save.openingEncounter;
+    if (opening) {
+      opening.offered ??= [...LEGACY_OPENING_ENCOUNTERS];
+      if (!encounterRules || !Array.isArray(opening.offered) || opening.offered.length !== 3 || new Set(opening.offered).size !== 3
+        || opening.offered.some(id => !OPENING_ENCOUNTER_IDS.includes(id))
+        || (opening.selected !== undefined && !opening.offered.includes(opening.selected))) throw new Error('Invalid saved opening encounter choices');
+    }
     this.validateEquipmentProgress();
     this.save.floor = this.flow.wave.stage!;
     this.economy = new EconomySystem(undefined, this.save);
@@ -98,9 +117,13 @@ export class RunSession {
     restoreShopState(this.save, cfg.allUnits(), cfg.battle.boardWidth, cfg.battle.ownRows);
     for (const unit of this.save.owned) unit.equipment = cfg.getEquipmentReserve(unit.equipment ?? []).slice(0, MAX_EQUIPMENT).map(item => item.id);
     this.save.equipmentReserve = cfg.getEquipmentReserve(this.save.equipmentReserve ?? []).map(item => item.id);
-    this.pool = new CardPool(cfg.allUnits(), this.save.pool);
+    if (this.save.unlockedUnits !== undefined && (!Array.isArray(this.save.unlockedUnits)
+      || new Set(this.save.unlockedUnits).size !== this.save.unlockedUnits.length
+      || this.save.unlockedUnits.some(id => !cfg.allUnits().some(u => u.id === id && u.specialShopUnlock)))) throw new Error('Invalid unlocked unit save');
+    this.pool = new CardPool(cfg.allUnits(), this.save.pool, this.save.unlockedUnits);
     this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid, () => this.flow.phase !== 'battle');
     this.owned.equipmentReserve = [...(this.save.equipmentReserve ?? [])];
+    this.validateTraitChoice();
     if (needsStarter) {
       const candidates = cfg.allUnits().filter(u => u.cost === 1 && this.pool.count(u.id) > 0).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
       const id = runConfig.starterSelection === 'random-one-cost'
@@ -115,8 +138,25 @@ export class RunSession {
     if (!restoreShop) this.save.shopRollIndex = 0;
     this.shop.locked = this.save.shopLocked;
     if (runConfig.stageEncounters) {
+      if (!this.save.equipmentTierVersion && cfg.allEquipment().every(item => item.specialShopOnly || this.stageEquipmentTiers[item.id] === 'basic')) {
+        const pending = this.save.stageProgress?.pending;
+        if (pending?.kind === 'specialShop' && Array.isArray(pending.offers)) {
+          for (const offer of pending.offers) if (offer?.kind === 'equipment' && this.stageEquipmentTiers[offer.id] === 'basic'
+            && Object.values(runConfig.stageEncounters.shop.equipmentPrices).includes(offer.price))
+            offer.price = cfg.equipmentPrice(offer.id, runConfig.stageEncounters.shop.equipmentPrices.basic);
+        }
+        this.save.equipmentTierVersion = 'all-basic-v1';
+      }
       this.stageProgression = new StageProgression(runConfig.stageEncounters, this.save.stageProgress!, cfg,
         this.pool, this.owned, this.economy, this.random, this.save.benchSlots, this.stageEquipmentTiers, () => this.level.level);
+      const pendingShop = this.save.stageProgress?.pending, prices = runConfig.stageEncounters.shop.equipmentPrices;
+      if (pendingShop?.kind === 'specialShop') for (const offer of pendingShop.offers) {
+        if (offer.kind !== 'equipment') continue;
+        const tier = this.stageEquipmentTiers[offer.id];
+        // Adopt the authored 3→6 / 8→10 price update without charging or rerolling saved merchandise.
+        if ((tier === 'basic' && cfg.getEquipmentReserve([offer.id])[0]?.shopPrice === undefined && offer.price === 3 && prices.basic === 6)
+          || (tier === 'special' && offer.price === 8 && prices.special === 10)) offer.price = prices[tier];
+      }
       this.validateStageReward();
       if (this.flow.phase === 'prepare') this.stageProgression.enter(this.flow.wave);
     }
@@ -133,6 +173,8 @@ export class RunSession {
     const identity=equipmentIdentity(c,this.cfg.allEquipment(),options.enemyRoles);
     const menuNewGame=loaded&&!this.save.round&&!this.save.owned.length&&!this.save.shopReserved&&this.save.equipmentConfigIdentity===undefined;
     if(loaded&&!menuNewGame&&!sameEquipmentIdentity(this.save.equipmentConfigIdentity!,identity))throw new Error('Saved equipment configuration mismatch');
+    if (loaded && this.save.equipmentConfigIdentity && c.enemy.equipmentEconomy
+      && !JSON.parse(this.save.equipmentConfigIdentity).policy?.enemy?.equipmentEconomy) this.save.equipmentConfigIdentity = identity;
     this.save.equipmentConfigIdentity=this.save.equipmentConfigIdentity??identity;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
     if(this.save.enemyEquipmentVersion!=='none'){
       this.generation.equipmentPolicy=this.equipmentPolicy;
@@ -155,10 +197,27 @@ export class RunSession {
     }
   }
   get pendingEquipmentReward():PendingEquipmentReward|undefined {return this.save.equipmentProgress.pending&&JSON.parse(JSON.stringify(this.save.equipmentProgress.pending));}
-  canAdvanceWave():boolean {return !this.save.equipmentProgress.pending&&!this.pendingStageReward&&this.flow.phase==='settlement';}
+  /** A cleared campaign boundary waits for a deliberate portal click, including after loading. */
+  get portalAvailable(): boolean {
+    const wave = this.flow.wave;
+    return !!this.runConfig.endlessProgression && this.flow.phase === 'ended' && this.flow.health > 0
+      && this.flow.lastSettlement?.winner === 0 && wave.stage! >= DEFAULT_STAGE_COUNT
+      && wave.stage! < MAX_STAGE_COUNT && wave.encounterKind === 'boss'
+      && wave.round === wave.roundsInStage && this.flow.waveIndex === this.waves.length - 1;
+  }
+  enterPortal(): boolean {
+    if (!this.portalAvailable || this.pendingStageReward || this.pendingEquipmentReward) return false;
+    const snapshot = this.flow.snapshot(), nextStage = this.flow.wave.stage! + 1;
+    const waves = buildRunWaves(nextStage, this.runConfig, this.templates, this.cfg.allUnits(), this.generation);
+    this.waves = waves; this.save.stageCount = nextStage;
+    this.flow = new RoundFlow(waves, this.cfg.battle, { ...snapshot, phase: 'settlement', result: null,
+      lastSettlement: snapshot.lastSettlement && { ...snapshot.lastSettlement, runResult: null } });
+    return this.nextWave();
+  }
+  canAdvanceWave():boolean {return !this.save.pendingTraitChoice&&!this.save.equipmentProgress.pending&&!this.pendingStageReward&&this.flow.phase==='settlement';}
   get pendingStageReward(): StagePending | undefined { const p = this.save.stageProgress?.pending; return p && JSON.parse(JSON.stringify(p)); }
   private get stageEquipmentTiers(): Record<string, import('./EquipmentPolicyTypes').EquipmentTier> {
-    return this.equipmentPolicy?.tiers ?? Object.fromEntries(this.cfg.allEquipment().map(item => [item.id, this.runConfig.stageEncounters?.basicEquipmentIds.includes(item.id) ? 'basic' : 'advanced']));
+    return this.equipmentPolicy?.tiers ?? Object.fromEntries(this.cfg.allEquipment().map(item => [item.id, item.specialShopOnly ? 'special' : this.runConfig.stageEncounters?.basicEquipmentIds.includes(item.id) ? 'basic' : 'advanced']));
   }
   private validateStageReward(): void {
     const p = this.save.stageProgress?.pending; if (!p) return;
@@ -168,14 +227,14 @@ export class RunSession {
       if (w.encounterKind !== 'specialShop' || this.flow.phase !== 'prepare' || !Array.isArray(p.offers) || p.offers.length !== rules.shop.slots) bad();
       for (const offer of p.offers) {
         if (!offer || !['unit', 'equipment'].includes(offer.kind) || typeof offer.bought !== 'boolean') bad();
-        const price = offer.kind === 'unit' ? COST_PRICE[validCost(this.cfg.getUnit(offer.id).cost)] : rules.shop.equipmentPrices[this.stageEquipmentTiers[offer.id]];
+        const price = offer.kind === 'unit' ? COST_PRICE[validCost(this.cfg.getUnit(offer.id).cost)] : this.cfg.equipmentPrice(offer.id, rules.shop.equipmentPrices[this.stageEquipmentTiers[offer.id]]);
         if (offer.price !== price || !Number.isSafeInteger(price) || price <= 0) bad();
       }
     } else {
       if (!['settlement', 'ended'].includes(this.flow.phase) || this.flow.lastSettlement?.winner !== 0) bad();
       if (p.kind === 'bossChoice') { if (w.encounterKind !== 'boss' || p.value !== this.stageProgression!.value(w.stage!)) bad(); }
       else if (p.kind === 'equipmentChoice') {
-        if (w.encounterKind !== 'boss' || !Array.isArray(p.candidates) || p.candidates.length !== 4 || new Set(p.candidates).size !== 4 || p.candidates.some(id => !rules.basicEquipmentIds.includes(id))) bad();
+        if (w.encounterKind !== 'boss' || !Array.isArray(p.candidates) || ![4, 5].includes(p.candidates.length) || new Set(p.candidates).size !== p.candidates.length || p.candidates.some(id => !rules.basicEquipmentIds.includes(id))) bad();
       } else if (p.kind === 'unitBundle') {
         if (!['monster', 'boss'].includes(w.encounterKind!) || p.value !== this.stageProgression!.value(w.stage!) || !Array.isArray(p.units)
           || !Number.isSafeInteger(p.deferredValue) || p.deferredValue < 0 || p.units.reduce((n, id) => n + COST_PRICE[validCost(this.cfg.getUnit(id).cost)], p.deferredValue) !== p.value) bad();
@@ -185,16 +244,18 @@ export class RunSession {
     }
   }
   claimStageReward(action: StageChoice): ActionResult {
+    if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (!this.stageProgression) return fail('stage_rewards_disabled');
     const result = this.stageProgression.act(action, this.flow.wave);
     if (!result.ok) return result;
+    if (result.stageReward?.kind === 'health') result.stageReward.amount = this.flow.restoreHealth(result.stageReward.amount);
     if (result.completeShop) {
       if (!this.flow.completeEncounter()) throw new Error('Cannot complete shop encounter');
       const state = this.economy.snapshot();
       this.save.lastReward = { expGained: 0, levelUps: 0, breakdown: { floorIncome: 0, winBonus: 0, interest: 0, streakBonus: 0, extraIncome: 0,
         total: 0, goldBefore: state.gold, goldAfter: state.gold, winStreak: state.winStreak, loseStreak: state.loseStreak } };
     }
-    this.snapshot(); return { ok: true };
+    this.snapshot(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
   }
   claimEquipmentReward(index:number):ActionResult {
     const progress=this.save.equipmentProgress,pending=progress.pending;
@@ -247,7 +308,7 @@ export class RunSession {
   }
   private solveFormation(final:boolean):EnemyFormationResult {
     const wave=this.flow.wave,engine=this.formationEngine;
-    if(!engine||wave.encounterKind==='monster'||wave.encounterKind==='specialShop')return compatibilityFormation(wave.enemies);
+    if(wave.goldBudget||!engine||wave.encounterKind==='monster'||wave.encounterKind==='specialShop')return compatibilityFormation(wave.enemies);
     const kind=wave.waveKind??(wave.stage===1?'intro':'normal');
     let settings=formationSettings(engine.config,wave.stage!,wave.round!,wave.roundsInStage!,kind,this.save.formationOverride);
     const targeted=final&&settings.level==='L3';
@@ -284,33 +345,87 @@ export class RunSession {
       xp: this.level.exp, phase: this.flow.phase, result: this.flow.result };
   }
   get battle(): BattleSim | null { return this.activeBattle; }
+  /** Opening encounters replace the ordinary shop for the whole first round. */
+  get openingShopLocked(): boolean { return !!this.save.openingEncounter && this.flow.wave.stage === 1 && this.flow.wave.round === 1; }
+  get pendingOpeningEncounter(): boolean { return !!this.save.openingEncounter && !this.save.openingEncounter.selected; }
+  get freeRefreshes(): number { return this.save.openingEncounter?.freeRefreshes ?? 0; }
+  get openingEncounterOptions() {
+    const rules = this.runConfig.openingEncounter, state = this.save.openingEncounter;
+    if (!rules || !state) return [];
+    const choices = openingEncounterChoices(rules);
+    return state.offered!.map(id => choices.find(choice => choice.id === id)!);
+  }
+  chooseOpeningEncounter(id: import('./OpeningEncounter').OpeningEncounterId): ActionResult {
+    if (!this.pendingOpeningEncounter || this.flow.phase !== 'prepare' || this.flow.wave.stage !== 1 || this.flow.wave.round !== 1
+      || !this.save.openingEncounter!.offered!.includes(id)) return fail('invalid_encounter_choice');
+    this.save.openingEncounter!.selected = id; this.snapshot(); return ok();
+  }
+  private rewardLevelUps(count: number): void {
+    if (this.save.openingEncounter?.selected === 'inspiration')
+      this.save.openingEncounter.freeRefreshes += count * this.runConfig.openingEncounter!.refreshesPerLevel;
+  }
+  private enterEncounterStage(): void {
+    const state = this.save.openingEncounter, rules = this.runConfig.openingEncounter;
+    if (state?.selected !== 'stipend' || !rules || this.flow.wave.stage! <= state.lastIncomeStage) return;
+    if (this.flow.wave.stage! >= rules.incomeStartStage) this.economy.add(rules.incomePerStage);
+    state.lastIncomeStage = this.flow.wave.stage!;
+  }
   get battleSeed(): number { return this.random.seed('battle', this.flow.wave.id); }
-  private get canTrade(): boolean { return this.flow.phase === 'prepare' || this.flow.phase === 'battle'; }
+  private get canTrade(): boolean { return !this.save.pendingTraitChoice && (this.flow.phase === 'prepare' || this.flow.phase === 'battle'); }
+
+  get pendingTraitChoice(): PendingTraitChoice | undefined {
+    return this.save.pendingTraitChoice && JSON.parse(JSON.stringify(this.save.pendingTraitChoice));
+  }
+  private validateTraitChoice(): void {
+    const p = this.save.pendingTraitChoice;
+    if (!p) return;
+    const unit = this.owned.get(p.uid);
+    if (this.flow.phase !== 'prepare' || !unit || !Number.isInteger(p.slot) || p.slot < 0
+      || unit.equipment?.[p.slot] !== p.equipmentId || !this.cfg.getEquipmentReserve([p.equipmentId])[0]?.traitChoice
+      || !Array.isArray(p.candidates) || p.candidates.length !== 4 || new Set(p.candidates).size !== 4
+      || p.candidates.some(id => !this.cfg.battle.traits?.some(trait => trait.id === id))) throw new Error('Invalid saved trait choice');
+  }
+  chooseEquipmentTrait(index: number): ActionResult {
+    const p = this.save.pendingTraitChoice;
+    if (!p || this.flow.phase !== 'prepare' || !Number.isInteger(index) || !p.candidates[index]) return fail('invalid_trait_choice');
+    this.validateTraitChoice();
+    const unit = this.owned.get(p.uid)!;
+    unit.equipment![p.slot] = `${p.equipmentId}__${p.candidates[index]}`;
+    delete this.save.pendingTraitChoice;
+    this.snapshot(); return ok();
+  }
 
   buyShopSlot(index: number): ActionResult {
+    if (this.openingShopLocked || this.pendingStageReward?.kind === 'specialShop') return fail('shop_occupied');
     if (!this.canTrade) return fail('fighting');
     if (!Number.isInteger(index)) return fail('slot_empty');
     const result = this.shop.buy(index);
     return result.error ? fail(result.error) : { ok: true, ...result };
   }
   refreshShop(): ActionResult {
+    if (this.openingShopLocked || this.pendingStageReward?.kind === 'specialShop') return fail('shop_occupied');
     if (!this.canTrade) return fail('fighting');
     const index = this.save.shopRollIndex + 1;
     this.shop.setRollRng(this.random.stream('shop', this.flow.wave.id, index));
-    const error = this.shop.refresh();
+    const free = this.freeRefreshes > 0;
+    const error = this.shop.refresh(free);
     if (error) return fail(error);
+    if (free) this.save.openingEncounter!.freeRefreshes--;
     this.save.shopRollIndex = index;
     return ok();
   }
   toggleShopLock(): ActionResult {
+    if (this.openingShopLocked || this.pendingStageReward?.kind === 'specialShop') return fail('shop_occupied');
     if (!this.canTrade) return fail('fighting');
     this.shop.locked = !this.shop.locked; return ok();
   }
   buyExp(): ActionResult {
+    if (this.pendingOpeningEncounter) return fail('encounter_pending');
+    if (this.openingShopLocked) return fail('shop_occupied');
     if (!this.canTrade) return fail('fighting');
     if (this.level.level >= MAX_LEVEL) return fail('max_level');
     if (!this.economy.spend(EXP_PURCHASE.gold)) return fail('not_enough_gold');
-    this.level.addExp(EXP_PURCHASE.exp); return ok();
+    this.rewardLevelUps(this.level.addExp(EXP_PURCHASE.exp).length); return ok();
   }
   moveUnit(uid: number, to: { location: 'board' | 'bench'; x: number; y: number }): ActionResult {
     const u = this.owned.get(uid);
@@ -334,24 +449,36 @@ export class RunSession {
     return sold ? { ok: true, gold: sold.gold } : fail('not_owned');
   }
   equipItem(uid: number, reserveIndex: number): ActionResult {
+    if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (this.flow.phase !== 'prepare') return fail('fighting');
     if (!Number.isInteger(reserveIndex) || reserveIndex < 0) return fail('invalid_equipment');
     const id = this.owned.equipmentReserve[reserveIndex];
     if (!id || !this.cfg.getEquipmentReserve([id]).length) return fail('invalid_equipment');
+    const needsChoice = this.cfg.getEquipment([id])[0].traitChoice;
+    const candidates = needsChoice ? traitEmblemChoices(this.cfg, this.owned.all(), uid,
+      this.random.stream('reward', this.flow.wave.id, 5100 + (this.save.traitChoiceRoll ?? 0))) : [];
+    if (needsChoice && candidates.length !== 4) return fail('insufficient_traits');
     if (!this.owned.equip(uid, id)) return fail('equipment_full');
+    if (needsChoice) {
+      this.save.traitChoiceRoll = (this.save.traitChoiceRoll ?? 0) + 1;
+      this.save.pendingTraitChoice = { uid, slot: this.owned.get(uid)!.equipment!.length - 1, equipmentId: id, candidates };
+    }
     this.owned.equipmentReserve.splice(reserveIndex, 1); return ok();
   }
   unequipItem(uid: number, slot: number): ActionResult {
+    if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (this.flow.phase !== 'prepare') return fail('fighting');
     return this.owned.unequip(uid, slot) ? ok() : fail('invalid_equipment');
   }
   act(action: RunAction): ActionResult {
     const result = this.applyAction(action);
-    if (result.ok && this.flow.phase !== 'battle') this.stageProgression?.collect(this.flow.wave);
+    if (result.ok && !this.save.pendingTraitChoice && this.flow.phase !== 'battle') this.stageProgression?.collect(this.flow.wave);
     return result;
   }
   private applyAction(action: RunAction): ActionResult {
     switch (action.type) {
+      case 'chooseEquipmentTrait': return this.chooseEquipmentTrait(action.index);
+      case 'chooseOpeningEncounter': return this.chooseOpeningEncounter(action.id);
       case 'buy': return this.buyShopSlot(action.index);
       case 'refresh': return this.refreshShop();
       case 'lock': return this.toggleShopLock();
@@ -367,6 +494,8 @@ export class RunSession {
   }
   playerPort(): RunPlayerPort {
     return { act: action => this.act(action), observe: () => ({ state: this.state, unitCap: this.level.unitCap,
+      ...(this.pendingTraitChoice ? { pendingTraitChoice: this.pendingTraitChoice } : {}),
+      ...(this.pendingOpeningEncounter ? { pendingOpeningEncounter: true } : {}), freeRefreshes: this.freeRefreshes,
       boardWidth: this.cfg.battle.boardWidth, ownRows: this.cfg.battle.ownRows, benchSlots: this.save.benchSlots,
       shop: this.shop.snapshot().map(slot => { const cost = slot.unitId ? validCost(this.cfg.getUnit(slot.unitId).cost ?? 1) : 1;
         return { ...slot, cost, price: slot.unitId ? COST_PRICE[cost] : 0 }; }), shopLocked: this.shop.locked,
@@ -392,21 +521,22 @@ export class RunSession {
   /** Preview creates a throwaway BattleSim. It never consumes any stream or replaces an active battle. */
   createPreview(): { sim: BattleSim; battleIds: Map<number, number> } {
     const placements: Placement[] = this.currentFormation().placements.map(e => ({ cfg: this.cfg.getUnit(e.unitId), side: 1,
-      x: e.x, y: e.y, star: e.star, statMultiplier: e.statMultiplier, damageAmp: e.damageAmp, damageReduction: e.damageReduction, equipment:e.equipment }));
+      x: e.x, y: e.y, star: e.star, statMultiplier: e.statMultiplier, healthMultiplier: e.healthMultiplier, damageAmp: e.damageAmp, damageReduction: e.damageReduction, equipment:e.equipment }));
     const battleIds = new Map<number, number>();
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       battleIds.set(u.uid, placements.length + 1);
-      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment });
+      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth });
     }
-    return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, w: this.cfg.battle.boardWidth,
+    return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, astralSeed: this.save.runSeed, w: this.cfg.battle.boardWidth,
       h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks }), battleIds };
   }
   startBattle(): BattleSim | null {
-    if (this.pendingStageReward||this.flow.wave.encounterKind==='specialShop'||this.save.equipmentProgress.pending||this.flow.phase !== 'prepare' || !this.owned.onBoard().length || this.owned.onBoard().length > this.level.unitCap) return null;
+    if (this.pendingOpeningEncounter) return null;
+    if (this.save.pendingTraitChoice||this.pendingStageReward||this.flow.wave.encounterKind==='specialShop'||this.save.equipmentProgress.pending||this.flow.phase !== 'prepare' || !this.owned.onBoard().length || this.owned.onBoard().length > this.level.unitCap) return null;
     this.lockedFormation={waveId:this.flow.wave.id,result:this.solveFormation(true)};
-    const { sim } = this.createPreview();
+    const { sim, battleIds } = this.createPreview();
     if (!this.flow.startBattle()) return null;
-    this.activeBattle = sim; sim.start(); return sim;
+    this.activeBattleIds = battleIds; this.activeBattle = sim; sim.start(); return sim;
   }
   settleBattle(extraIncome = 0): SessionSettlement | null {
     const sim = this.activeBattle;
@@ -414,9 +544,28 @@ export class RunSession {
     if (!Number.isSafeInteger(extraIncome) || extraIncome < 0) throw new Error('Invalid extra income');
     const round = this.flow.settle(sim.winner, sim.units.filter(u => u.side === 1 && u.alive).length);
     if (!round) return null;
-    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome });
-    const ups = this.level.addExp(EXP_PER_BATTLE);
-    this.save.lastReward = { breakdown, expGained: EXP_PER_BATTLE, levelUps: ups.length };
+    for (const [uid, battleId] of this.activeBattleIds) {
+      const owned = this.owned.get(uid), combat = sim.units.find(unit => unit.id === battleId && unit.side === 0);
+      if (owned && combat && combat.permanentHealthGained > 0) {
+        owned.permanentMaxHp = (owned.permanentMaxHp ?? 0) + combat.permanentHealthGained;
+        owned.soulLampHealth = (owned.soulLampHealth ?? 0) + combat.permanentHealthGained;
+      }
+    }
+    if (this.save.openingEncounter?.selected === 'tempered') {
+      for (const [uid, battleId] of this.activeBattleIds) {
+        const unit = this.owned.get(uid);
+        if (unit && sim.units.some(u => u.id === battleId && u.side === 0 && u.alive))
+          unit.permanentMaxHp = (unit.permanentMaxHp ?? 0) + this.runConfig.openingEncounter!.survivorMaxHp;
+      }
+    }
+    const selected = this.save.openingEncounter?.selected, rules = this.runConfig.openingEncounter;
+    const encounterGold = selected === 'bounty' && sim.winner === 0 ? rules!.victoryGold : 0;
+    const expGained = EXP_PER_BATTLE + (selected === 'study' ? rules!.battleExp : 0);
+    if (selected === 'renewal' && sim.winner === 0) this.flow.restoreHealth(rules!.victoryHeal);
+    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome: extraIncome + encounterGold });
+    const ups = this.level.addExp(expGained);
+    this.rewardLevelUps(ups.length);
+    this.save.lastReward = { breakdown, expGained, levelUps: ups.length };
     this.stageProgression?.settle(this.flow.wave, sim.winner);
     if(!this.stageProgression&&this.equipmentPolicy&&this.save.equipmentRewardVersion!=='none'){
       const w=this.flow.wave;
@@ -434,11 +583,12 @@ export class RunSession {
     this.save.floor = this.flow.wave.stage!; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
     this.save.lastEquipmentReward=undefined;
     this.shop.setRollRng(this.random.stream('shop', this.flow.wave.id));
-    this.shop.nextRound(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    this.shop.nextRound(); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
   }
   /** Existing debug jump only; deliberately absent from the player/bot port. */
   debugJump(stage: number, round: number): boolean {
-    if(this.save.equipmentProgress.pending||this.pendingStageReward)return false;
+    if (this.pendingOpeningEncounter) return false;
+    if(this.save.pendingTraitChoice||this.save.equipmentProgress.pending||this.pendingStageReward)return false;
     if (!Number.isInteger(stage) || stage < 1 || stage > MAX_STAGE_COUNT || !Number.isInteger(round)
       || round < 1 || round > stageRoundCount(stage, this.runConfig)) return false;
     const stageCount = Math.max(this.save.stageCount, stage);
@@ -449,9 +599,10 @@ export class RunSession {
       health: this.flow.health || this.cfg.battle.initialHealth, result: null, lastSettlement: null });
     this.activeBattle = null;this.previewFormation=undefined;this.lockedFormation=undefined;
     this.save.floor = stage; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
-    this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
   }
   snapshot(): SaveDataV2 {
+    this.save.unlockedUnits = this.pool.unlockedSpecialUnits(this.cfg.allUnits());
     this.owned.mergeAll();
     this.stageProgression?.collect(this.flow.wave);
     Object.assign(this.save, this.economy.snapshot(), this.level.snapshot(), { shop: this.shop.snapshot(), shopReserved: true,

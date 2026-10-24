@@ -48,7 +48,7 @@ export class EnemyGenerator {
     return feasibleEnemyBounds(this.pool(stage,kind),population);
   }
   selectionPool(stage:number,kind:Exclude<WaveKind,'intro'>):CandidatePool {
-    const naked=this.pool(stage,kind);if(!this.equipmentPolicy)return naked;
+    const naked=this.pool(stage,kind);if(!this.equipmentPolicy||this.equipmentPolicy.enemy.equipmentEconomy)return naked;
     const key=stage+':'+kind;
     if(!this.equippedPools.has(key))this.equippedPools.set(key,{...naked,candidates:equipmentCandidates(naked.candidates,this.roster,stage,kind,this.equipmentPolicy,this.power,this.model,this.equipmentRoles).sort(compareCandidate)});
     return this.equippedPools.get(key)!;
@@ -56,7 +56,7 @@ export class EnemyGenerator {
   generate(budget:EnemyBudgetResult,population:number,cells:Array<{x:number;y:number}>):GeneratedEnemies {
     if(budget.waveKind==='intro')throw new Error('Intro monsters are not budget candidates');
     const naked=this.pool(budget.stage,budget.waveKind),pool=this.selectionPool(budget.stage,budget.waveKind),c=this.config,all=pool.candidates,target=budget.effectiveBudget;
-    const limits=feasibleEnemyBounds(naked,population),policy=this.equipmentPolicy,quota=policy&&equipmentQuota(policy,budget.stage,budget.waveKind);
+    const limits=feasibleEnemyBounds(naked,population),policy=this.equipmentPolicy?.enemy.equipmentEconomy?undefined:this.equipmentPolicy,quota=policy&&equipmentQuota(policy,budget.stage,budget.waveKind);
     const nakedPowers=new Map(naked.candidates.map(u=>[u.unitId+':'+u.star,u.power]));
     if(!Number.isFinite(target)||target<=0||target<limits.min-1e-8||target>limits.max+1e-8)throw new Error('Invalid effective budget');
     if(cells.length<population||new Set(cells.map(p=>p.x+','+p.y)).size!==cells.length

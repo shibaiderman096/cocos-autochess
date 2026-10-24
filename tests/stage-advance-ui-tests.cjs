@@ -11,7 +11,7 @@ const methods = names.map(name => stageClass.members.find(n => n.name?.getText(s
 const compiled = ts.transpileModule(`class Stage { ${methods.join('\n')} } exports.Stage=Stage;`, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
 }).outputText;
-const out = {}; new Function('exports', compiled)(out);
+const out = {}; new Function('exports', 'GameAudio', compiled)(out, { play() {} });
 function makeStage(kind, phase = 'settlement') {
   const stage = new out.Stage();
   stage.flow = { phase, wave: { encounterKind: kind } };

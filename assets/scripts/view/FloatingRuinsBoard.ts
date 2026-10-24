@@ -31,6 +31,7 @@ export class FloatingRuinsBoard extends Component {
   private bench: Node;
   private wheelListening = false;
   private ready = false;
+  get loadingComplete(): boolean { return this.ready && !!this.bench; }
 
   start(): void { this.schedule(this.tryInitialize, .1); }
 

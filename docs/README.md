@@ -1,6 +1,6 @@
 # 项目导航
 
-Cocos Creator 3.8.8 / TypeScript。当前有 29 名可购买棋子（暗影、日辉各 10 名，机械先驱 7 名，新增星铠守卫、流星灵狐·弥露；星穹四名成员与原阵营可重叠）和 30 种野怪。实际数值以运行时 JSON 配置为准。
+Cocos Creator 3.8.8 / TypeScript。当前有 25 名可购买棋子，初始普通牌库 23 名；黑星咒术师、奥瑞斯在特殊商店购买后解锁本局牌库。暗影、日辉各 8 名，机械先驱 7 名，星穹 4 名（与原阵营可重叠）；另有 30 种野怪。实际数值以运行时 JSON 配置为准。
 
 ## 目录与维护入口
 
@@ -24,6 +24,11 @@ Cocos Creator 3.8.8 / TypeScript。当前有 29 名可购买棋子（暗影、�
 | 内容 | 文档 |
 | --- | --- |
 | 羁绊系统 | [总览](traits.md)、[职业羁绊及当前成员](class-traits.md) |
+| 特殊商店与装备授予羁绊 | [购买解锁、名单删除与万象共鸣徽记](special-shop-and-emblem.md) |
+| 商店区域与特殊商店概率 | [弹出动画、专属棋子费用概率与验收](shop-dock-popup-and-rates.md) |
+| 开局奇遇扩充 | [六个奇遇随机三选一、新增金币／经验／治疗及验收](opening-expansion.md) |
+| 后续内容更新 | [主菜单设置、1-1 商店禁用、魂灯成长与疾咒秘铠](soul-lamp-and-overdrive.md) |
+| 防御装备更新 | [圣谕庇护、千锻玄甲与受伤层数显示](defensive-equipment.md) |
 | 战士羁绊 | [征战者与魔剑士：机制、数值与验证](warrior-traits.md) |
 | 暗影 | [羁绊](shadow-trait.md)、[十棋子](shadow-roster-v3.md)、[技能动画](shadow-animations.md) |
 | 日辉 | [羁绊与十棋子](sunlight-roster.md)、[技能动画](sunlight-animations.md) |
@@ -51,7 +56,7 @@ Cocos Creator 3.8.8 / TypeScript。当前有 29 名可购买棋子（暗影、�
 | npm test | 编译与全部套件执行，逐组汇总失败 |
 | npm run build:web | 网页构建及实际构建产物检查 |
 
-完整入口中仍有待迁移的旧角色、旧数值和历史阵型断言；不得把专项通过写成全量通过。Node 组件替身、编辑器诊断、浏览器预览、发布构建和设备实测分别验收。
+2026-10-23 最新完整入口 92 组通过、0 组失败，两件防御装备的实际浏览器交互和场景诊断通过，见[本轮验收](defensive-equipment.md)。此前特殊商店与徽记版本的 Web 构建记录见[上一轮验收](special-shop-and-emblem.md)。Node 组件替身、编辑器诊断、浏览器预览、发布构建和设备实测分别验收。
 
 ## 历史实验与生成文件
 

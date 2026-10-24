@@ -9,6 +9,9 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
   milu: 'art/units/astral/milu/spriteFrame',
+  xiya: 'art/units/astral/xiya/spriteFrame',
+  nebula_weaver: 'art/units/astral/nebula_weaver/spriteFrame',
+  gravity_executor: 'art/units/astral/gravity_executor/spriteFrame',
   star_armor_guard: 'art/units/astral/star_armor_guard/spriteFrame',
   turbo_fist_tiger: 'art/units/mechanical/turbo_fist_tiger/spriteFrame',
   arc_repairer: 'art/units/mechanical/arc_repairer/spriteFrame',
@@ -19,9 +22,7 @@ export const UNIT_ART: Record<string, string> = {
   bao_zero: 'art/units/mechanical/bao_zero/spriteFrame',
   helion: 'art/units/sunlight/helion/spriteFrame',
   saiph: 'art/units/sunlight/saiph/spriteFrame',
-  bronda: 'art/units/sunlight/bronda/spriteFrame',
   kaeru: 'art/units/sunlight/kaeru/spriteFrame',
-  leon: 'art/units/sunlight/leon/spriteFrame',
   phinia: 'art/units/sunlight/phinia/spriteFrame',
   aurelia: 'art/units/sunlight/aurelia/spriteFrame',
   celine: 'art/units/sunlight/celine/spriteFrame',
@@ -30,8 +31,6 @@ export const UNIT_ART: Record<string, string> = {
   abyss_iron_guard: 'art/units/shadow/abyss_iron_guard/spriteFrame',
   blackfeather_hunter: 'art/units/shadow/blackfeather_hunter/spriteFrame',
   nightmare_lamplighter: 'art/units/shadow/nightmare_lamplighter/spriteFrame',
-  shadow_seam_assassin: 'art/units/shadow/shadow_seam_assassin/spriteFrame',
-  soulcleaver_general: 'art/units/shadow/soulcleaver_general/spriteFrame',
   ghostflame_blade: 'art/units/shadow/ghostflame_blade/spriteFrame',
   eclipse_crossbow: 'art/units/shadow/eclipse_crossbow/spriteFrame',
   nether_lantern_witch: 'art/units/shadow/nether_lantern_witch/spriteFrame',
@@ -55,22 +54,24 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
   milu:'795,170,360,360',
+  xiya:'400,160,340,340',
+  nebula_weaver:'320,100,350,350',
+  gravity_executor:'400,230,340,340',
   star_armor_guard:'470,160,340,340',
   turbo_fist_tiger:'570,390,400,400', arc_repairer:'380,90,400,400', rail_hunter_07:'300,25,400,400',
   ripsaw_spider:'400,500,400,400',
   furnace_executioner:'410,30,400,400',
   atlas:'300,440,450,450',
   bao_zero:'360,220,400,400',
-  helion:'290,100,400,400', saiph:'270,210,360,360', bronda:'290,260,360,360', kaeru:'480,140,360,360', leon:'280,100,400,400',
-  phinia:'450,70,340,340', aurelia:'260,140,360,360', celine:'350,140,360,360', oris:'360,170,360,360', seraphiel:'340,180,360,360',
+  helion:'290,100,400,400', saiph:'270,210,360,360', kaeru:'480,140,360,360', phinia:'450,70,340,340', aurelia:'260,140,360,360', celine:'350,140,360,360', oris:'360,170,360,360', seraphiel:'340,180,360,360',
   abyss_iron_guard: '360,40,400,400', blackfeather_hunter: '450,160,350,350',
-  nightmare_lamplighter: '410,20,400,400', shadow_seam_assassin: '610,340,350,350',
-  soulcleaver_general: '580,40,400,400', ghostflame_blade: '450,20,420,420',
+  nightmare_lamplighter: '410,20,400,400', ghostflame_blade: '450,20,420,420',
   eclipse_crossbow: '270,100,350,350', nether_lantern_witch: '370,100,360,360',
   blackstar_warlock: '380,210,350,350', voidscar_reaver: '450,210,400,400',
 }).map(([id, rect]) => [id, `${UNIT_ART[id]}#rawrect,${rect}`]));
 
 export const UI_SPRITE = {
+  loadingEmblem: 'art/ui/loading_emblem/spriteFrame',
   barBg:        'art/ui/bar_bg/spriteFrame',
   hpFillAlly:   'art/ui/hp_fill_ally/spriteFrame',
   hpFillEnemy:  'art/ui/hp_fill_enemy/spriteFrame',
@@ -80,6 +81,11 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  miluSkillSheet: 'art/fx/milu_skill_sheet/spriteFrame',
+  stellarSkillSheet: 'art/fx/stellar_skill_sheet/spriteFrame',
+  moonArrowSheet: 'art/fx/moon_arrow_sheet/spriteFrame',
+  nebulaTideSheet: 'art/fx/nebula_tide_sheet/spriteFrame',
+  gravityCollapseSheet: 'art/fx/gravity_collapse_sheet/spriteFrame',
   stellarBarrier: 'art/fx/stellar_barrier/spriteFrame',
   stellarRush: 'art/fx/stellar_rush/spriteFrame',
   miluStarTrail: 'art/fx/milu_star_trail/spriteFrame',
@@ -117,9 +123,10 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
 }
 
 /** Current M2 interface textures. */
-export const SKY_BACKGROUND_SPRITE = { loop: 'art/arena/sky_islands_30/spriteFrame' };
-
 export const M2_UI_SPRITE = {
+  special_shop_panel: 'art/ui/special_shop_panel/spriteFrame',
+  special_shop_card: 'art/ui/special_shop_card/spriteFrame',
+  special_shop_button: 'art/ui/special_shop_button/spriteFrame',
   attr_phys_atk: 'art/ui_m2/attr_phys_atk/spriteFrame',
   attr_armor: 'art/ui_m2/attr_armor/spriteFrame',
   attr_mr: 'art/ui_m2/attr_mr/spriteFrame',
@@ -131,7 +138,7 @@ export const M2_UI_SPRITE = {
   attr_lifesteal: 'art/ui_m2/attr_lifesteal/spriteFrame',
   attr_dmg_amp: 'art/ui_m2/attr_dmg_amp/spriteFrame',
   attr_dmg_reduce: 'art/ui_m2/attr_dmg_reduce/spriteFrame',
-  arena_sky: 'art/arena/sky_islands_30_poster/spriteFrame',
+  arena_sky: 'art/arena/bg_clouds_poster/spriteFrame',
   panel_ink: 'art/ui_m2/panel_ink/spriteFrame',
   panel_side: 'art/ui_m2/panel_side/spriteFrame',
   panel_dock: 'art/ui_m2/panel_dock/spriteFrame',

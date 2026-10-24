@@ -1,0 +1,64 @@
+{
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "retrieved": "2026-10-24",
+  "processing": "Converted full tracks to stereo 44.1kHz 96kbps MP3, loudnorm target -20 LUFS / -4 dBTP. Original loop timing retained.",
+  "tracks": [
+    {
+      "id": "menu",
+      "title": "Fantasy Orchestral Theme",
+      "author": "Joth",
+      "file": "audio/music/menu.mp3",
+      "source": "https://opengameart.org/content/fantasy-orchestral-theme",
+      "download": "https://opengameart.org/sites/default/files/FantasyOrchestralTheme_1.mp3",
+      "original": "FantasyOrchestralTheme_1.mp3",
+      "license": "CC0-1.0",
+      "durationSeconds": 191.686531,
+      "bytes": 2301191,
+      "sourceSha256": "add1de5eae0771c4ce5b3782a6eae9c01f321d32446421691426587000e50cdc",
+      "sha256": "60b8d0cff31760e0769f15f7b338141672d76bcbb77f3a6f33715e39815bfa5a"
+    },
+    {
+      "id": "prepare",
+      "title": "Town Theme RPG",
+      "author": "cynicmusic",
+      "file": "audio/music/prepare.mp3",
+      "source": "https://opengameart.org/content/town-theme-rpg",
+      "download": "https://opengameart.org/sites/default/files/TownTheme.mp3",
+      "original": "TownTheme.mp3",
+      "license": "CC0-1.0",
+      "durationSeconds": 97.463923,
+      "bytes": 1170538,
+      "sourceSha256": "2657861d5107d4a3c01ef81cb6a4d61ddd5e7a054b6da57e658373d79d0c3466",
+      "sha256": "0181d0d804ec2362ec59f1651bf5264b4c087762d2949d9e6212c88e16066617"
+    },
+    {
+      "id": "battle",
+      "title": "Hope (Orchestral battle music)",
+      "author": "MintoDog",
+      "file": "audio/music/battle.mp3",
+      "source": "https://opengameart.org/content/hopeorchestral-battle-music",
+      "download": "https://opengameart.org/sites/default/files/hope_orchestral_battle_music_bpm165_0.ogg",
+      "original": "hope_orchestral_battle_music_bpm165_0.ogg",
+      "license": "CC0-1.0",
+      "durationSeconds": 69.818186,
+      "bytes": 838574,
+      "sourceSha256": "1615903236286af59d14b4d71da3fc2518a3091ecdd8f162a50215b9b3d0f320",
+      "sha256": "77b7a8613179df25ad83ecb9b8eb8396dc8e21bef2c456581f1b217b6f2439c5"
+    },
+    {
+      "id": "boss",
+      "title": "Epic Boss Battle",
+      "author": "Juhani Junkala / SubspaceAudio",
+      "file": "audio/music/boss.mp3",
+      "source": "https://opengameart.org/content/boss-battle-music",
+      "download": "https://opengameart.org/sites/default/files/Juhani%20Junkala%20-%20Epic%20Boss%20Battle%20%5BSeamlessly%20Looping%5D.wav",
+      "original": "Juhani Junkala - Epic Boss Battle [Seamlessly Looping].wav",
+      "license": "CC0-1.0",
+      "durationSeconds": 123.429637,
+      "bytes": 1482127,
+      "sourceSha256": "35f75b4381dfbb053992876f7dfc567d9fd959d61b73954d5b1cd519753e7df1",
+      "sha256": "0e50ec829bbeb70559698702eab59ae115a0190779e6fc4228ac0c9f83d4536e"
+    }
+  ]
+}

@@ -11,8 +11,8 @@ const renamed={guinsoo:'炽轮战刃',totem_of_undying:'余烬命核',jeweled_ga
 for(const item of legacyEquipment)assert.equal(item.name,renamed[item.id],'explicit authored display rename');
 const mechanics=items=>items.map(({name,effectDescription,...item})=>item);
 assert.deepEqual(mechanics(legacyEquipment),mechanics(archived.equipment),'all four audited item mechanics remain unchanged; effectDescription is presentation only');
-const added=current.filter(item=>!archived.equipment.some(old=>old.id===item.id));
-assert.deepEqual(added.map(item=>item.id).sort(),['abyssal_plate','arcane_sovereignty','arcane_veil','crimson_bloodclaw','divine_judgment','forest_sanctuary']);
+const added=current.filter(item=>!item.id.startsWith('basic_')&&!archived.equipment.some(old=>old.id===item.id));
+assert.deepEqual(added.map(item=>item.id).sort(),['abyssal_plate','arcane_overflow_codex','arcane_sovereignty','arcane_veil','blazing_feather','crimson_bloodclaw','divine_judgment','divine_protection','forest_sanctuary','spell_overdrive_armor','stonegrowth_bulwark','thousand_forged_armor','trait_emblem']);
 module.exports={legacyEquipment,archivedInputs:archived,featureChanges:new Set([
   'README.md','assets/resources/config/equipment.json','assets/scripts/battle/types.ts',
   'assets/scripts/battle/Unit.ts','assets/scripts/battle/BattleSim.ts','assets/scripts/core/ConfigManager.ts',

@@ -14,12 +14,15 @@ export class CardPool {
   private stock: Map<string, number> = new Map();
   /** unitId → cost（冗余缓存，避免每次查配置） */
   private costOf: Map<string, Cost> = new Map();
+  private locked = new Set<string>();
 
   constructor(
     unitConfigs: UnitConfigData[],
     initialState?: Record<string, number>,
+    unlocked: readonly string[] = [],
   ) {
     for (const u of unitConfigs) {
+      if (u.specialShopUnlock && !unlocked.includes(u.id)) this.locked.add(u.id);
       const cost = validCost(u.cost ?? 1);
       this.costOf.set(u.id, cost);
       const n = initialState?.[u.id] ?? POOL_STOCK[cost];
@@ -30,6 +33,11 @@ export class CardPool {
   /** 剩余张数；未知棋子返回 0 */
   count(unitId: string): number {
     return this.stock.get(unitId) ?? 0;
+  }
+  canDraw(unitId: string): boolean { return this.stock.has(unitId) && !this.locked.has(unitId); }
+  unlock(unitId: string): void { this.locked.delete(unitId); }
+  unlockedSpecialUnits(configs: readonly UnitConfigData[]): string[] {
+    return configs.filter(u => u.specialShopUnlock && this.canDraw(u.id)).map(u => u.id).sort();
   }
 
   /** 整池剩余总数 */
@@ -50,7 +58,7 @@ export class CardPool {
   pickByCost(cost: Cost, rng: Rng): string | null {
     const ids: string[] = [];
     for (const [id, n] of this.stock) {
-      if (n > 0 && this.costOf.get(id) === cost) ids.push(id);
+      if (n > 0 && this.canDraw(id) && this.costOf.get(id) === cost) ids.push(id);
     }
     if (ids.length === 0) return null;
     // 确定性遍历（Map 插入序 = 配置序），rng 决定选中项
@@ -59,7 +67,7 @@ export class CardPool {
 
   /** 是否还有任何棋子可抽 */
   isEmpty(): boolean {
-    for (const n of this.stock.values()) if (n > 0) return false;
+    for (const [id, n] of this.stock) if (n > 0 && this.canDraw(id)) return false;
     return true;
   }
 

@@ -15,6 +15,9 @@ export interface OwnedUnit {
   /** 棋子配置 id（如 helion） */
   unitId: string;
   star: number;
+  permanentMaxHp?: number;
+  /** Health earned specifically by the soul-lamp passive, before stat multipliers. */
+  soulLampHealth?: number;
   equipment?: string[];
   location: UnitLocation;
   /** board: hex (x,y)；bench: 格子索引 0..benchSlots-1 */
@@ -179,6 +182,9 @@ export class OwnedUnits {
       while (same.length >= MERGE_COUNT) {
         // 保留第一个，删除其余
         const keep = same[0];
+        const permanentMaxHp = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.permanentMaxHp ?? 0), 0);
+        if (permanentMaxHp) keep.permanentMaxHp = permanentMaxHp;
+        keep.soulLampHealth = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.soulLampHealth ?? 0), 0);
         const equipment = same.slice(0, MERGE_COUNT).flatMap(unit => unit.equipment ?? []);
         keep.equipment = equipment.slice(0, MAX_EQUIPMENT);
         this.equipmentReserve.push(...equipment.slice(MAX_EQUIPMENT));

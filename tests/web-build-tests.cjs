@@ -41,21 +41,26 @@ function method(name,dependencies,fragment='') {
 const run=require('../assets/resources/config/run.json');
 const art=Object.fromEntries(run.monsters.map(m=>[m.artId,'art/test/'+m.artId]));
 const calls=[];
-const menu={isValid:true,status:{string:''},ready:false,runConfig:{monsters:[...run.monsters,run.monsters[0]]}};
+const menu={isValid:true,status:{string:''},ready:false,runConfig:{monsters:[...run.monsters,run.monsters[0]]},loadFinishes:0,
+  loadScreen:{setMessage(value){menu.loadingMessage=value;},finish(){menu.loadFinishes++;}},finishPreparation:method('finishPreparation',{})};
 method('loadMonsterArt',{UNIT_ART:art,resources:{load:(name,type,cb)=>{
   assert.equal(typeof name,'string','Creator output must enumerate individual SpriteFrame paths');calls.push(name);cb(null);
 }},SpriteFrame:class{}}).call(menu);
 const expectedMonsterArt=new Set(run.monsters.map(m=>art[m.artId]));
 assert.equal(menu.ready,true);assert.equal(calls.length,expectedMonsterArt.size);assert.deepEqual(new Set(calls),expectedMonsterArt,'compiled loader must load every configured monster once');
-const {shopCostRates}=require('../assets/scripts/core/ShopConfig.ts');
+assert.equal(menu.loadFinishes,1);assert.equal(menu.loadScreen,null,'compiled preparation closes the resource-gated loading overlay');
+const {shopCostRates,rollShopCost}=require('../assets/scripts/core/ShopConfig.ts');
 const unitConfigs=new Map([['one',{cost:1}],['two',{cost:2}]]);
-const shop={unitConfigs,getLevel:()=>3,rng:{next:()=>.9},pool:{count:()=>10,costOfUnit:id=>unitConfigs.get(id)?.cost}};
+const shop={unitConfigs,getLevel:()=>3,rng:{next:()=>.9},pool:{canDraw:()=>true,count:()=>10,costOfUnit:id=>unitConfigs.get(id)?.cost}};
 shop.costRates=method('costRates',{shopCostRates});
 assert.deepEqual(method('costRates',{shopCostRates}).call(shop),[75,25,0,0,0]);
-assert.equal(method('rollCost',{shopCostRates}).call(shop,3),2);
+assert.equal(method('rollCost',{rollShopCost}).call(shop,3),2);
+shop.pool.canDraw=id=>id!=='two';
+assert.deepEqual(shop.costRates(),[100,0,0,0,0],'compiled ordinary shop excludes locked cards');
+shop.pool.canDraw=()=>true;
 shop.pool.count=id=>id==='one'?0:10;
 assert.deepEqual(shop.costRates(),[0,100,0,0,0]);
-assert.equal(method('rollCost',{shopCostRates}).call(shop,3),2);
+assert.equal(method('rollCost',{rollShopCost}).call(shop,3),2);
 const timerNode=()=>({active:true,setPosition(){},getComponent:()=>({setContentSize(){}})});
 const progress={combatActive:true,battleTimer:timerNode(),floorLabel:{node:timerNode()},
   preparationBar:{active:false},preparationLabel:{string:''},phaseLabel:{string:'',node:timerNode()},
@@ -102,6 +107,7 @@ const html=fs.readFileSync(path.join(buildRoot,'index.html'),'utf8');
 const cssFile=html.match(/href="\.\/([^"\s]+\.css)"/)[1];
 const css=fs.readFileSync(path.join(buildRoot,cssFile),'utf8');
 assert.match(css,/width:\s*100vw\s*!important/);assert.match(css,/height:\s*100vh\s*!important/);
+assert.match(css,/#GameDiv\s*\{[^}]*z-index:\s*0\s*;/, 'video underlay needs a stacking context above the page background');
 console.log('PASS actual web build: monster loading, deduplication, shop iterator conversion, attributes and fullscreen container');
 
 // Run real Creator-compiled Set/Map consumers, not just the TypeScript source.

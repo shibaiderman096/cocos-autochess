@@ -2,13 +2,16 @@
 
 Cocos Creator 3.8.8 / TypeScript 自走棋 PVE 项目。用 Creator 打开项目后，从 assets/main.scene 启动；战斗场景为 assets/floating-ruins.scene。
 
-当前可购买棋子共 27 名，暗影、日辉各 10 名，机械先驱7名；另有 30 种野怪。羁绊包括暗影、日辉、机械先驱和九种职业羁绊。磁轨猎手·零七与阿特拉斯可组成2迅武师。名单、数值和资源以 assets/resources/config/ 中的配置及运行时映射为准；机械名单与验收见 [机械棋子](docs/mechanical-units.md)。
+当前可购买棋子共 25 名，初始普通牌库包含 23 名；黑星咒术师、奥瑞斯需在特殊商店购买后解锁本局牌库。暗影、日辉各 8 名，机械先驱 7 名，星穹 4 名（可与其他阵营重叠）；另有 30 种野怪。羁绊包括这四种阵营和九种职业羁绊。名单、数值和资源以 assets/resources/config/ 中的配置及运行时映射为准。
 
 ## 开发入口
 
 - [项目目录、配置与文档导航](docs/README.md)
 - [羁绊总览](docs/traits.md)、[职业羁绊](docs/class-traits.md)
-- [暗影十棋子](docs/shadow-roster-v3.md)、[日辉十棋子](docs/sunlight-roster.md)
+- [特殊商店解锁、名单调整与万象共鸣徽记](docs/special-shop-and-emblem.md)
+- [主菜单设置、1-1 商店禁用、魂灯成长与疾咒秘铠](docs/soul-lamp-and-overdrive.md)
+- [圣谕庇护、千锻玄甲与受伤层数显示](docs/defensive-equipment.md)
+- 历史设计：[暗影十棋子](docs/shadow-roster-v3.md)、[日辉十棋子](docs/sunlight-roster.md)
 - [塞拉菲尔连续斩击与追击](docs/seraphiel-combo.md)
 - [收入、阶段与奖励规则](docs/round-income-and-stage-rewards.md)
 - [五系30只野怪与替换验收](docs/fantasy-monsters.md)
@@ -30,7 +33,7 @@ Cocos Creator 3.8.8 / TypeScript 自走棋 PVE 项目。用 Creator 打开项目
 
 Android 打包入口为 tools/build-android.ps1，需要本机 Creator、JDK、Android SDK/NDK。生成的构建、依赖和编辑器缓存不提交源码仓库。
 
-自动测试、编辑器诊断、浏览器预览、构建和设备实测分别记录。历史完整测试仍有旧角色及旧数值断言，旧报告的通过数量不能作为当前版本结论；最近相关验证及其限制见 [名单清理记录](docs/roster-removal.md) 和各功能文档。
+自动测试、编辑器诊断、浏览器预览、构建和设备实测分别记录。2026-10-23 最新完整测试为 92 组通过、0 组失败，两件防御装备的实际浏览器交互和场景诊断通过；范围及限制见[本轮记录](docs/defensive-equipment.md)。此前特殊商店与徽记版本的 Web 构建记录见[上一轮验收](docs/special-shop-and-emblem.md)。历史报告的通过数量不代表当前阵容的平衡资格。
 
 ## 文件维护
 

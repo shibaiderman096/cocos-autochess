@@ -12,7 +12,7 @@ import { Rng } from './Rng';
 import { CardPool } from './CardPool';
 import { OwnedUnits } from './OwnedUnits';
 import { EconomySystem } from './EconomySystem';
-import { shopCostRates, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
+import { shopCostRates, rollShopCost, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
 
 export const REFRESH_COST = 2;
@@ -47,6 +47,7 @@ export class ShopSystem {
       this.slots = initialState.map(s => {
         const id = s.unitId;
         if (!id || !this.unitConfigs.has(id)) return { unitId: null };
+        if (!this.pool.canDraw(id)) { if (initialStateReserved) this.pool.give(id); return { unitId: null }; }
         // 旧版商品未预留库存；只在首次恢复时扣一次。
         return { unitId: (initialStateReserved || this.pool.take(id)) ? id : null };
       });
@@ -57,7 +58,7 @@ export class ShopSystem {
 
   /** 按当前等级抽一个费用档 */
   costRates(level = this.getLevel()): number[] {
-    const costs = Array.from(this.unitConfigs.keys()).filter(id => this.pool.count(id) > 0)
+    const costs = Array.from(this.unitConfigs.keys()).filter(id => this.pool.canDraw(id) && this.pool.count(id) > 0)
       .map(id => this.pool.costOfUnit(id));
     return shopCostRates(level, costs);
   }
@@ -66,16 +67,7 @@ export class ShopSystem {
   setRollRng(rng: Rng): void { this.rng = rng; }
 
   private rollCost(level: number): Cost | null {
-    const weights = this.costRates(level);
-    const total = weights.reduce((sum, rate) => sum + rate, 0);
-    if (!total) return null;
-    const r = this.rng.next() * total;
-    let acc = 0;
-    for (let i = 0; i < weights.length; i++) {
-      acc += weights[i];
-      if (r < acc) return (i + 1) as Cost;
-    }
-    return (weights.findIndex(rate => rate > 0) + 1) as Cost;
+    return rollShopCost(this.costRates(level), () => this.rng.next());
   }
 
   /** Conditioning on available tiers is equivalent to retrying without a cutoff. */
@@ -100,8 +92,8 @@ export class ShopSystem {
    * 手动刷新：扣金币 + 返还未购买棋子。
    * 返回 null = 成功；否则返回错误码。
    */
-  refresh(): ShopError | null {
-    if (!this.economy.spend(REFRESH_COST)) return 'not_enough_gold';
+  refresh(free = false): ShopError | null {
+    if (!free && !this.economy.spend(REFRESH_COST)) return 'not_enough_gold';
     this.returnUnbought();
     this.reroll();
     return null;

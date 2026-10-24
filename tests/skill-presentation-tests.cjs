@@ -17,9 +17,12 @@ for(const unit of cfg.allUnits())for(const star of [1,2,3]){
  for(const [index,row] of display.entries()){
   assert.doesNotMatch(JSON.stringify(row),/NaN|undefined|Infinity/);
   assert.equal(row.stars,base[index].stars,'bonuses do not alter base-star column');
-  assert.equal(row.stars.split(' / ').length,3);
+  if(row.label==='被动累计生命')assert.equal(row.stars,'本局累计');
+  else assert.equal(row.stars.split(' / ').length,3);
   const text=row.currentRich.replace(/<img[^>]*\/>/g,'').replace(/<[^>]*>/g,'').replace(/（）/g,'');
-  assert.equal(text,row.current,'body and table share current values');
+  if(unit.id==='nightmare_lamplighter'&&row.label==='每秒伤害'){assert.match(text,/^\d+(?:\.\d+)?＋\d+(?:\.\d+)?$/);assert.ok(Math.abs(text.split('＋').reduce((n,v)=>n+Number(v),0)-Number(row.current))<=.5);}
+  else if(unit.id==='nightmare_lamplighter'&&row.label==='最大生命系数')assert.equal(text,row.current+'最大生命值');
+  else assert.equal(text,row.current,'body and table share current values');
  }
 }
 assert.equal(unitRoleLabel('caster','physical'),'物理术士');assert.equal(unitRoleLabel('tank','magic'),'魔法坦克');

@@ -5,11 +5,14 @@ const {BattleSim}=require('../assets/scripts/battle/BattleSim.ts');
 const {hexDist}=require('../assets/scripts/battle/HexMath.ts');
 const {buildSkillStatRows,buildSkillDescription}=require('../assets/scripts/ui/SkillPresentation.ts');
 const {resolveTraits}=require('../assets/scripts/battle/Traits.ts');
-const roster=require('../assets/resources/config/units.json'),skills=require('../assets/resources/config/skills.json'),battle=require('../assets/resources/config/battle.json');
+const retired=require('./fixtures/retired-20261023.json');
+const roster=[...require('../assets/resources/config/units.json'),...retired.units],skills={...require('../assets/resources/config/skills.json'),...retired.skills},battle=structuredClone(require('../assets/resources/config/battle.json'));
+// Historical skill regression fixtures retain their original faction membership.
+for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','seraphiel'];t.members=old;}
 const shadow=battle.traits.find(t=>t.id==='shadow'),clone=x=>JSON.parse(JSON.stringify(x));
 const expected=[
  ['abyss_iron_guard',1,30,.55,1,40,100,[80,120,180]],['blackfeather_hunter',1,50,.9,4,0,50,[150,225,350]],
- ['nightmare_lamplighter',2,30,.6,1,40,110,null],['shadow_seam_assassin',2,60,.9,1,20,70,[90,135,210]],
+ ['nightmare_lamplighter',2,30,.6,1,40,110,[25,40,60]],['shadow_seam_assassin',2,60,.9,1,20,70,[90,135,210]],
  ['soulcleaver_general',3,65,.7,1,30,100,[260,390,650]],['ghostflame_blade',3,50,.8,1,0,60,[55,85,140]],
  ['eclipse_crossbow',4,65,.9,4,0,70,[360,560,2240]],['nether_lantern_witch',4,45,.75,4,30,100,[160,240,960]],
  ['blackstar_warlock',5,50,.75,4,30,120,[240,360,3000]],['voidscar_reaver',5,70,1,1,20,90,[100,150,1500]],
@@ -44,8 +47,8 @@ for(const [id,,,,,,,damage] of expected)for(const star of [1,2,3]) {
  assert.ok(rows.length>=2);assert.ok(rows.every(row=>!JSON.stringify(row).match(/NaN|Infinity|undefined/)));
  const body=buildSkillDescription(f.cfg,f.src.cfg,star,f.src.skillScale,true);
  assert.doesNotMatch(body,/\{[^}]+\}|NaN|Infinity|undefined/);
- if(damage) assert.ok(rows.some(row=>row.current===String(Math.round(damage[star-1]*1.5*1.2))),id+' concrete damage appears in panel');
- assert.ok(rows.every(row=>row.stars.split(' / ').length===3));
+ if(damage && id!=='nightmare_lamplighter') assert.ok(rows.some(row=>row.current===String(Math.round(damage[star-1]*1.5*1.2))),id+' concrete damage appears in panel');
+ assert.ok(rows.every(row=>row.label==='被动累计生命'||row.stars.split(' / ').length===3));
 }
 
 for(const star of [1,2,3]) {
@@ -78,11 +81,14 @@ for(const [from,to] of [[{x:3,y:3},{x:3,y:4}],[{x:3,y:3},{x:3,y:2}],[{x:3,y:3},{
 for(const star of [1,2,3]) {
  const f=create('nightmare_lamplighter',star,{source:{x:3,y:2},enemies:[{x:3,y:3},{x:6,y:7}],friends:[{x:0,y:0},{x:1,y:0},{x:2,y:0}],bonuses:{spellPower:50,physicalPower:900,damageAmp:1}});
  f.friends[0].hp=100;f.friends[1].hp=200;f.friends[2].hp=300;
- activate(f);assert.equal(f.src.shield,Math.round([260,390,600][star-1]*1.5));
- assert.deepEqual(f.friends.map(u=>u.shield),[Math.round([130,195,300][star-1]*1.5),Math.round([130,195,300][star-1]*1.5),0]);
- near(f.enemies[0].skillAttackSpeedPenalty,[.15,.2,.25][star-1]);assert.equal(f.enemies[1].skillAttackSpeedPenalty,0);
- f.src.x=6;f.src.y=6;advance(f,1);assert.equal(f.enemies[0].skillAttackSpeedPenalty,0);near(f.enemies[1].skillAttackSpeedPenalty,[.15,.2,.25][star-1]);
- advance(f,79);assert.equal(f.src.shield,0);assert.equal(f.src.snapshot(80).domainRadius,0);assert.ok(f.sim.units.every(u=>u.skillAttackSpeedPenalty===0));
+ activate(f);assert.equal(f.src.shield,0);assert.ok(f.friends.every(u=>u.shield===0));
+ assert.ok(f.sim.units.every(u=>u.skillAttackSpeedPenalty===0));
+ advance(f,19);assert.equal(sourceHits(f).length,0);advance(f,1);assert.equal(sourceHits(f).length,1);
+ const raw=([25,40,60][star-1]*1.5+f.src.cfg.hp*[.01,.015,.02][star-1])*2;
+ assert.equal(sourceHits(f)[0].dmg,Math.round(raw));
+ f.src.x=6;f.src.y=6;advance(f,60);assert.equal(sourceHits(f).length,4);
+ assert.equal(sourceHits(f).filter(e=>e.id===f.enemies[1].id).length,3,'soul lamp follows the carrier');
+ assert.equal(f.src.snapshot(80).domainRadius,0);assert.ok(f.sim.units.every(u=>u.skillAttackSpeedPenalty===0));
 }
 
 for(const star of [1,2,3]) {
@@ -190,7 +196,7 @@ for(const [id,change] of [
 const fs=require('node:fs'),crypto=require('node:crypto');
 const {UNIT_ART,UNIT_PORTRAIT}=require('../assets/scripts/view/ArtPaths.ts');
 const manifest=require('../art-source/shadow-roster/manifest.json'),roles=require('../assets/resources/config/enemy-roles.json');
-for(const item of manifest) {
+for(const item of manifest.filter(item=>!retired.units.some(unit=>unit.id===item.id))) {
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(item.runtime)).digest('hex'),item.sha256,'supplied image remains unchanged');
  assert.ok(UNIT_ART[item.id]&&UNIT_PORTRAIT[item.id]&&roles.units[item.id]);
  const [x,y,w,h]=UNIT_PORTRAIT[item.id].split('#rawrect,')[1].split(',').map(Number);

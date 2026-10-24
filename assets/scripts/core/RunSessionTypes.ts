@@ -6,9 +6,11 @@ import type { EnemyDifficultyConfig, EnemyGenerationMode, EnemyGenerationDiagnos
 import type { EnemyPowerData } from './EnemyPowerTypes';
 import type { EnemyFormationConfig,EnemyRoleConfig,FormationOverride,EnemyFormationResult,FormationLevel } from './EnemyFormationTypes';
 import type { EquipmentPolicyConfig,EquipmentRewardEvent,PendingEquipmentReward } from './EquipmentPolicyTypes';
-import type { StageChoice, StagePending } from './StageProgression';
+import type { StageChoice, StagePending, StageRewardGrant } from './StageProgression';
 
 export interface RunSessionOptions {
+  /** Interactive new runs show the opening choice; offline fixtures opt in explicitly. */
+  openingEncounter?: boolean;
   equipmentPolicy?:EquipmentPolicyConfig;
   runSeed?: number;
   stageCount?: number;
@@ -36,6 +38,8 @@ export interface RunSessionState {
 }
 
 export type RunAction =
+  | { type: 'chooseEquipmentTrait'; index: number }
+  | { type: 'chooseOpeningEncounter'; id: import('./OpeningEncounter').OpeningEncounterId }
   | StageChoice
   | { type: 'buy'; index: number }
   | { type: 'refresh' }
@@ -48,6 +52,7 @@ export type RunAction =
   | { type: 'claimEquipmentReward'; index:number };
 
 export interface ActionResult {
+  stageReward?: StageRewardGrant;
   ok: boolean;
   error?: string;
   uid?: number;
@@ -58,6 +63,9 @@ export interface ActionAttempt { action: RunAction; result: ActionResult }
 
 /** Deliberately excludes enemies, future waves, RNG state, debug grants and mutable core objects. */
 export interface PlayerObservation {
+  pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
+  pendingOpeningEncounter?: boolean;
+  freeRefreshes?: number;
   state: RunSessionState;
   unitCap: number;
   boardWidth: number;
@@ -81,6 +89,8 @@ export type SessionReward = NonNullable<SaveDataV2['lastReward']>;
 export interface SessionSettlement { round: RoundSettlement; reward: SessionReward }
 
 export interface RunWaveReport extends Partial<Omit<EnemyGenerationDiagnostics,'enemyGenerationMode'>> {
+  goldBudget?: import('./EnemyGoldArmy').EnemyGoldDiagnostics;
+  enemyUpgrade?: import('./EquipmentPolicyTypes').EnemyUpgradeDiagnostics;
   unitDrop?: NonNullable<import('./StageProgression').StageProgressState['lastUnitDrop']>;
   stageReward?: import('./StageProgression').StagePending;
   botMetrics?:{refreshSpending:number;xpSpending:number;unitSpending:number;saleIncome:number;formationChanges:number;
@@ -97,7 +107,7 @@ export interface RunWaveReport extends Partial<Omit<EnemyGenerationDiagnostics,'
   enemyGenerationMode?: EnemyGenerationMode;
   waveKind?: WaveKind;
   encounterKind?: import('./StageEncounters').StageEncounterKind;
-  /** The generator's original model query and optimizer diagnostics, never reconstructed from stats. */
+  /** Base army query and optimizer diagnostics; bonus gold and HP are recorded separately in enemyUpgrade. */
   enemyBudget?: EnemyGenerationDiagnostics | null;
   waveId: number;
   stage: number;

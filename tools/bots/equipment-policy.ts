@@ -14,6 +14,7 @@ export function chooseReward(player:BotPlayerPort,c:BotConfig):ActionAttempt[] {
 }
 export function equipInventory(player:BotPlayerPort,c:BotConfig,actions:ActionAttempt[]):void {
   const act=(action:RunAction)=>{const result=player.act(action);actions.push({action,result});return result.ok;};
+  if(player.observe().pendingTraitChoice)act({type:'chooseEquipmentTrait',index:0});
   if(c.equipment==='synergy'){
     const o=player.observe(),core=o.units.filter(u=>u.location==='board').sort((a,b)=>ownedQuality(b,o)-ownedQuality(a,o))[0];
     if(core&&(core.equipment?.length??0)<o.catalog.maxEquipment){const bench=o.units.filter(u=>u.location==='bench');
@@ -25,5 +26,6 @@ export function equipInventory(player:BotPlayerPort,c:BotConfig,actions:ActionAt
     const ranked=units.map(u=>({u,score:equipmentFit(id,u,o,c.equipment==='synergy')*(u.location==='board'?1.3:1)+(c.equipment==='synergy'?ownedQuality(u,o)*.08:0)}))
       .sort((a,b)=>c.equipment==='first-fit'?Number(b.score>0)-Number(a.score>0)||a.u.uid-b.u.uid:b.score-a.score||a.u.uid-b.u.uid);
     if(!act({type:'equip',uid:ranked[0].u.uid,reserveIndex:0}))break;
+    if(player.observe().pendingTraitChoice)act({type:'chooseEquipmentTrait',index:0});
   }
 }

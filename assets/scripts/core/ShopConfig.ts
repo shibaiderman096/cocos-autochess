@@ -35,6 +35,19 @@ export function shopCostRates(level: number, supportedCosts: readonly number[] =
   return weights.map(rate => total ? rate * 100 / total : 0);
 }
 
+/** Shared fee roll for ordinary refreshes and special merchant slots. */
+export function rollShopCost(weights: readonly number[], random: () => number): Cost | null {
+  const total = weights.reduce((sum, rate) => sum + rate, 0);
+  if (!total) return null;
+  const roll = random() * total;
+  let accumulated = 0;
+  for (let i = 0; i < weights.length; i++) {
+    accumulated += weights[i];
+    if (roll < accumulated) return (i + 1) as Cost;
+  }
+  return (weights.findIndex(rate => rate > 0) + 1) as Cost;
+}
+
 /** 每个不同棋子的初始存量（按费用） */
 export const POOL_STOCK: Readonly<Record<Cost, number>> = {
   1: 30, 2: 25, 3: 18, 4: 10, 5: 9,

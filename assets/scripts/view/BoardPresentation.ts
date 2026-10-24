@@ -24,5 +24,5 @@ export function wheelBoardZoom(current: number, scrollY: number): number {
 }
 /** Shared by the 3D module placement, reserve portraits and reserve hit rectangles. */
 export function benchGroundPoint(slot: number, count: number, boardHeight: number): {x:number;y:number;z:number} {
-  return {x:(slot-(count-1)/2)*.7125,y:0,z:(boardHeight/2+25)/60};
+  return {x:(slot-(count-1)/2)*.7125,y:0,z:(boardHeight/2+35)/60};
 }

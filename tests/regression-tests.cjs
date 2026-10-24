@@ -105,6 +105,13 @@ class BattleReplayer {
   syncViews() {}
 }
 class BattleUI {
+  getBattleSettings() { return {speed:1,damageNumbers:true,healingNumbers:true}; }
+  setOpeningShopLocked(value) { this.openingShopLocked=value; }
+  setPortalState(value) { this.portalState=value; }
+  setShopContentOccupied(value) { this.occupied=value; }
+  setFreeRefreshes(count) { this.freeRefreshes=count; }
+  hideOpeningEncounter() {}
+  showOpeningEncounter(title, choices, choose) { this.openingChoice=choose; }
   setShopEncounter(visible) { this.shopEncounter=visible; }
   setNextWaveVisible(visible) { this.nextWaveVisible=visible; }
   playWaveTransition(covered,complete) { covered();complete(); }
@@ -140,10 +147,11 @@ const code = ts.transpileModule(fs.readFileSync(stageFile, 'utf8'), { compilerOp
   module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, experimentalDecorators: true,
 } }).outputText;
 const stageExports = {};
-const viewMocks = { './ArtSpriteLoader':{loadArtSprite:(name,cb)=>{assert.equal(typeof name,'string');const file=path.join(root,'assets/resources',name.split('#')[0].replace(/\/spriteFrame$/,'.png'));assert.ok(fs.existsSync(file),file);cb(null,{name});}}, './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/StageRewardPanel':{StageRewardPanel:class{constructor(parent,cfg,choose){this.choose=choose;}show(pending,gold){this.pending=pending;this.gold=gold;}hide(){this.pending=undefined;}}}, '../ui/UISkin': { setUISkin() {} } };
+const viewMocks = { './GameAudio':{GameAudio:{mount(){},play(){},setMusic(){}}}, './ArtSpriteLoader':{loadArtSprite:(name,cb)=>{assert.equal(typeof name,'string');const file=path.join(root,'assets/resources',name.split('#')[0].replace(/\/spriteFrame$/,'.png'));assert.ok(fs.existsSync(file),file);cb(null,{name});}}, './BoardView': { BoardView }, './UnitView': { UnitView }, './BattleReplayer': { BattleReplayer }, '../ui/BattleUI': { BattleUI }, '../ui/StageRewardPanel':{StageRewardPanel:class{constructor(parent,cfg,choose){this.choose=choose;}show(pending,gold){this.pending=pending;this.gold=gold;}hide(){this.pending=undefined;}}}, '../ui/UISkin': { setUISkin() {} } };
 // This suite verifies progression; rendering duration is exercised in the dedicated flight suite/browser.
 let deferRewardFlights=false, pendingRewardFlight=null;
 viewMocks['./ChestRewardFlight']={ChestRewardFlight:class{play(origin,targets,done){this.targets=targets;if(deferRewardFlights)pendingRewardFlight=done;else done();}cancel(){}}};
+viewMocks['./ExpeditionPortal']={ExpeditionPortal:class{init(position,enter){this.node.setPosition(position);this.enter=enter;}}};
 const cc={Component,Node,Vec3,UITransform,Graphics,Label,Color,Sprite,JsonAsset:class{},
  director:{loadScene:name=>{sceneLoads.push(name);return true;}},
  _decorator:{ccclass:()=>c=>c,property:()=>()=>{}},
@@ -169,7 +177,7 @@ async function makeStage(saved) {
   const canvas = new Node('Canvas'); stage.node = new Node('Stage'); canvas.addChild(stage.node);
   stage.boardNode = new Node('Board'); canvas.addChild(stage.boardNode);
   stage.boardNode.addComponent(BoardView);
-  await stage.start(); return stage;
+  await stage.start(); if(stage.session.pendingOpeningEncounter){stage.session.chooseOpeningEncounter('inspiration');stage.refreshRunUI();} return stage;
 }
 // Board inputs become Canvas coordinates, including the board's 60-pixel offset.
 const touch = pos => ({ getUILocation: () => new Vec3(pos.x,pos.y+60) });
@@ -459,7 +467,7 @@ function drag(stage, from, to) {
     const stage = await makeStage(); stage.flow.startBattle(); stage.flow.settle(1,99);
     stage.shop.locked=true; stage.resultShown=true; stage.fighting=true; stage.persistShopState();
     const restored = await makeStage(JSON.parse(storage.get(SAVE_KEY))); restored.restart();
-    assert.equal(restored.flow.phase,'prepare'); assert.equal(restored.flow.health,20);
+    assert.equal(restored.flow.phase,'prepare'); assert.equal(restored.flow.health,restored.cfg.battle.initialHealth);
     assert.equal(restored.flow.waveIndex,0); assert.equal(restored.economy.gold,0);
     assert.equal(restored.levelSys.level,1); assert.equal(restored.owned.all().length,1);
     assert.equal(restored.shop.locked,false); assert.equal(restored.shop.slots.filter(s=>s.unitId).length,5);
@@ -578,7 +586,7 @@ function drag(stage, from, to) {
     const stage = await makeStage();
     assert.equal(stage.ownedViews?.size, 1);
     assert.equal(stage.owned.all()[0].star,1); assert.equal(stage.cfg.getUnit(stage.owned.all()[0].unitId).cost,1);
-    assert.equal(stage.waves.length,14); assert.equal(stage.save.stageCount,3);
+    assert.equal(stage.waves.length,78); assert.equal(stage.save.stageCount,10);
     assert.equal(stage.ui.slots.filter(s => s.unitId).length, 5);
     assert.equal(stage.economy.gold, 0);
   });
@@ -669,7 +677,7 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.owned.snapshot(), initial);
     assert.deepEqual(stage.ownedViews.get(1).node.position, original);
   });
-  await test('selected stage count survives reload, stage boundaries, and a complete restart', async () => {
+  await test('legacy stage count survives reload and a complete restart uses ten stages', async () => {
     const stage = await makeStage(freshSaveV2(4)); assert.equal(stage.waves.length,21);
     for(let i=0;i<3;i++) {
       stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown=true; stage.fighting=true; stage.restart();
@@ -679,7 +687,7 @@ function drag(stage, from, to) {
     assert.equal(reloaded.waves.length,21); assert.equal(reloaded.flow.waveIndex,3);
     assert.equal(reloaded.flow.wave.stage,2); assert.equal(reloaded.flow.wave.round,1);
     reloaded.flow.startBattle(); reloaded.flow.settle(1,99); reloaded.resultShown=true; reloaded.restart();
-    assert.equal(reloaded.save.stageCount,4); assert.equal(reloaded.waves.length,21);
+    assert.equal(reloaded.save.stageCount,10); assert.equal(reloaded.waves.length,78);
     assert.equal(reloaded.owned.all().length,1); assert.equal(reloaded.flow.wave.stage,1);
   });
   await test('runtime population grows across stages without increasing shared base stats', async () => {
@@ -899,7 +907,7 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.owned.snapshot(),before);assert.deepEqual(stage.pool.snapshot(),pool);
   });
   await test('debug stage jump extends the run without changing existing waves, resources or shop and resumes exactly', async () => {
-    const stage=await makeStage();stage.ui.onDebugGold(100);stage.ui.onGrantEquipment('totem_of_undying');
+    const stage=await makeStage(freshSaveV2(3));stage.ui.onDebugGold(100);stage.ui.onGrantEquipment('totem_of_undying');
     const oldWaves=JSON.parse(JSON.stringify(stage.waves)),gold=stage.economy.gold,exp=stage.levelSys.exp,
       owned=stage.owned.snapshot(),shop=stage.shop.snapshot(),pool=stage.pool.snapshot();
     stage.ui.onDebugStage(5,2);
@@ -980,7 +988,8 @@ function drag(stage, from, to) {
     const saved={...createSaveV2(3,12345),formationOverride:'L0'},stage=await makeStage(saved),cfg=new ConfigManager();
     cfg.setUnits(units);cfg.setSkills(skills);cfg.setBattle(require('../assets/resources/config/battle.json'));cfg.setEquipment(require('../assets/resources/config/equipment.json'));
     const deps={enemyPower:require('../assets/resources/config/enemy-power.json'),enemyDifficulty:require('../assets/resources/config/enemy-difficulty.json')};
-    const session=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:saved,...deps});
+    const session=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:saved,...deps, openingEncounter:true});
+    session.chooseOpeningEncounter('inspiration');
     assert.equal(stage.save.enemyGenerationVersion,'budget-v1');assert.deepEqual(stage.waves,session.waves);
     const bot=new MinimalBaselineBot();
     for(let i=0;i<5;i++){
@@ -1048,7 +1057,7 @@ function drag(stage, from, to) {
     restored.update(2);assert.equal(restored.flow.wave.id,wave+1);assert.equal(restored.flow.phase,'prepare');
     const again=await makeStage(claimed);assert.equal(again.session.pendingEquipmentReward,undefined);assert.equal(again.owned.equipmentReserve.length,1);
   });
-  await test('new stage UI persists purchases, skips noncombat shop, blocks unclaimed Boss reward and resumes after four-choice claim',async()=>{
+  await test('new stage UI persists purchases, skips noncombat shop, blocks unopened Boss chest and resumes after random reward',async()=>{
     stageEncountersEnabled=true;
     try {
       const ticket=createSaveV2(6,1,'legacy');ticket.level=10;
@@ -1068,18 +1077,15 @@ function drag(stage, from, to) {
       resumed.preparationRemaining=0; // The real battle has already consumed its preparation countdown.
       // Win with actual authored three-star cards; no combat stat overrides.
       assert.equal(resumed.sim.run().winner,0);resumed.update(.1);
-      const boss=resumed.session.pendingStageReward;assert.equal(boss.kind,'bossChoice');resumed.openStageReward();assert.equal(resumed.stageRewards.pending.kind,'bossChoice');
+      const boss=resumed.session.pendingStageReward;assert.equal(boss.kind,'bossChoice');
       resumed.update(5);assert.equal(resumed.flow.wave.round,7,'pending choice blocks auto advance');
-      resumed.chooseStageReward({type:'stageChoice',rewardId:boss.id,choice:'equipment'});
-      const four=resumed.session.pendingStageReward;assert.equal(four.candidates.length,4);
+      resumed.openStageReward();assert.equal(resumed.session.pendingStageReward,undefined);
       const choicePreview=resumed.sim,choiceTick=choicePreview.tick;resumed.update(.2);
       assert.equal(choicePreview.tick,choiceTick,'reward selection keeps the finished battle frozen');
       assert.equal(choicePreview.finished,true);
-      const before=resumed.owned.equipmentReserve.length;
-      resumed.chooseStageReward({type:'stageChoice',rewardId:four.id,choice:'claim',index:1});
       const claimedPreview=resumed.sim,claimedTick=claimedPreview.tick;resumed.update(.4);
       assert.equal(claimedPreview,choicePreview);assert.equal(claimedPreview.tick,claimedTick,'claiming preserves the final frame during the next-wave delay');
-      assert.equal(resumed.owned.equipmentReserve.length,before+1);resumed.update(2);
+      resumed.update(2);
       assert.equal(resumed.flow.wave.stage,5);assert.equal(resumed.flow.wave.round,1);
     } finally {stageEncountersEnabled=false;}
   });

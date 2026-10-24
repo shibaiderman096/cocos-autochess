@@ -15,6 +15,7 @@ export class MinimalBaselineBot {
       const result = player.act(action); actions.push({ action, result });
       return result;
     };
+    if (player.observe().pendingTraitChoice) act({ type: 'chooseEquipmentTrait', index: 0 });
     const deploy = () => {
       const observation = player.observe();
       const selected = observation.units.slice().sort((a, b) => b.star - a.star || b.cost - a.cost || a.uid - b.uid)
@@ -51,7 +52,8 @@ export class MinimalBaselineBot {
     }
     // Infrastructure fixture: first reserve item goes to first uid with an empty slot, without role strategy.
     while(player.observe().equipmentReserve.length){const unit=player.observe().units.slice().sort((a,b)=>a.uid-b.uid).find(u=>(u.equipment?.length??0)<MAX_EQUIPMENT);
-      if(!unit||!act({type:'equip',uid:unit.uid,reserveIndex:0}).ok)break;}
+      if(!unit||!act({type:'equip',uid:unit.uid,reserveIndex:0}).ok)break;
+      if(player.observe().pendingTraitChoice)act({type:'chooseEquipmentTrait',index:0});}
     return actions;
   }
 }

@@ -16,8 +16,8 @@ function create(n=2,side=0,extra=[]) {
 }
 function hit(s,a,b,n=10,type='true'){s.damage(a,b,n,type);s.resolveDamage();s.pendingDamage.length=0;}
 const current=resolveTraits([trait],roster.map(u=>u.id),roster)[0];
-assert.deepEqual(current.memberIds,['arc_repairer','blackstar_warlock','celine','nether_lantern_witch','oris']);
-assert.equal(current.count,5);
+assert.deepEqual(current.memberIds,['arc_repairer','blackstar_warlock','celine','nebula_weaver','nether_lantern_witch','oris']);
+assert.equal(current.count,6);
 for(const side of [0,1])for(let n=1;n<=8;n++) {
   const s=create(n,side),e=trait.breakpoints.filter(t=>t.count<=n).at(-1)?.spellchanter;
   assert.equal(s.units[0].cfg.spellPower,e?.spellPower??0);assert.equal(s.units.at(-1).cfg.spellPower,0);

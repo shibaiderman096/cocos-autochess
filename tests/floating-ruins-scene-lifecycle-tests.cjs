@@ -30,6 +30,16 @@ for(const state of ['destroyed','queued','live']){
  board.board={isValid:false,setVisualMode(){throw Error('wrote a dead board');}};
  board.onDestroy();board.onDestroy();assert.deepEqual(destroyed,state==='live'?['frame','texture','bench','surface','sky']:[]);
 }
+const {AstralBoardArt}=load(root+'/assets/scripts/view/AstralBoardArt.ts');
+for(const astralRoot of [null,{isValid:false},{isValid:true,destroyQueued:true},{isValid:true,children:undefined}]) {
+ const art=new AstralBoardArt(astralRoot);art.tiles=[{node:{},phase:0}];art.rings=[{}];
+ art.clear();art.clear();assert.equal(art.stopped,true);assert.equal(art.tiles.length,0);assert.equal(art.rings.length,0);
+ assert.doesNotThrow(()=>art.update(1,50),'teardown invalidates animation work');
+}
+let astralRemoves=0,astralDestroys=0;
+const astralChild={isValid:true,removeFromParent(){astralRemoves++;},destroy(){this.destroyQueued=true;astralDestroys++;}};
+const astral=new AstralBoardArt({isValid:true,children:[null,{isValid:false},astralChild]});
+astral.clear();astral.clear();assert.equal(astralRemoves,1);assert.equal(astralDestroys,1);
 console.log('PASS scene lifecycle: null/destroyed child, repeated disposal, queued resources and Canvas teardown');
 // Reuse P2's actual component lifecycle checks against the new GLB, without
 // running its historical evidence writers or the old model's geometry checks.

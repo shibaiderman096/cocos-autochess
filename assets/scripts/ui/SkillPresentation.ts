@@ -11,7 +11,7 @@ export interface SkillStatRow {
 const number = (v: number) => String(Number(v.toFixed(2)));
 
 /** Presentation only: current equipment/wave stats versus unequipped, unscaled base ranks. */
-export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false): SkillStatRow[] {
+export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false, passiveHealth = 0): SkillStatRow[] {
   if (!unit.skillId) return [];
   const skill = configs.getSkill(unit.skillId);
   const base = configs.getUnit(unit.id);
@@ -53,6 +53,13 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
         add('自身护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1)), 'shield');
         add('友军护盾', (u, i) => String(configuredShieldAmount(u, skill, i + 1, shadow.allyShieldAmounts)), 'shield');
         add('攻速降低', (_u, i) => `${number(shadow.slowAmounts[i] * 100)}%`, 'speed'); break;
+      case 'soulLamp':
+        add('每秒伤害', (u, i) => String(Math.round((skill.starDamage![i] * power(u) + u.hp * shadow.maxHpFractions[i]) * (1 + (u.damageAmp ?? 0)))), 'magic');
+        rows[rows.length - 1].stars = skill.starDamage!.join(' / ');
+        add('最大生命系数', (_u, i) => `${number(shadow.maxHpFractions[i] * 100)}%`, 'healing');
+        add('参与击杀永久生命', (_u, i) => number(shadow.takedownHealth[i]), 'healing');
+        rows.push({ label: '被动累计生命', current: number(passiveHealth), stars: '本局累计', tone: 'healing' });
+        add('持续时间', () => `${number(shadow.durationSeconds)}秒`, 'neutral'); break;
       case 'flurry': hit('每段伤害'); add('三段总伤害', (u, i) => String(Number(damage(u, i)) * shadow.hits), skill.dmgType); add('法力回复', () => number(shadow.refundMana), 'neutral'); break;
       case 'cleave': hit('基础伤害'); hit('最高伤害', skill.starDamage, 1 + shadow.missingHpBonusCap); break;
       case 'empower':
@@ -67,6 +74,24 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       case 'void':
         add('跃迁次数', (_u, i) => number(shadow.counts[i]), 'neutral'); hit('每次跃迁伤害'); hit('虚痕爆炸伤害', shadow.markDamage); break;
     }
+  } else if (skill.effect === 'gravity') {
+    const pulses=Math.floor(skill.gravity!.durationSeconds/skill.gravity!.intervalSeconds+1e-9);
+    const hit=(u:UnitConfigData,i:number)=>Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)));
+    add('每次伤害',(u,i)=>String(hit(u,i)),'magic');
+    add('完整伤害',(u,i)=>String(hit(u,i)*pulses),'magic');
+    add('每名敌人双抗',(_u,i)=>String(skill.gravity!.resistancePerEnemy[i]),'neutral');
+    add('持续时间',()=>`${number(skill.gravity!.durationSeconds)}秒`,'neutral');
+  } else if (skill.effect === 'nebula') {
+    const pulses=Math.floor(skill.nebula!.durationSeconds/skill.nebula!.intervalSeconds+1e-9);
+    const hit=(u: UnitConfigData,i:number)=>Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)));
+    add('每次伤害',(u,i)=>String(hit(u,i)),'magic');
+    add('完整伤害',(u,i)=>String(hit(u,i)*pulses),'magic');
+    add('攻速降低',()=>`${number(skill.nebula!.attackSpeedPenalty*100)}%`,'speed');
+    add('持续时间',()=>`${number(skill.nebula!.durationSeconds)}秒`,'neutral');
+  } else if (skill.effect === 'arrowVolley') {
+    const hit = (u: UnitConfigData, i: number) => Math.round(skill.starDamage![i] * power(u) * (1 + (u.damageAmp ?? 0)));
+    add('每箭伤害', (u, i) => String(hit(u, i)), 'physical');
+    add('三段总伤害', (u, i) => String(hit(u, i) * skill.arrowVolley!.count), 'physical');
   } else if (skill.effect === 'hydraulicBulwark') {
     add('双抗提升', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).resistanceBonus), 'physical');
     add('结束治疗', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).healAmount), 'healing');
@@ -134,7 +159,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     if (!skill.burn.untilBattleEnd) add('持续时间', () => `${number(skill.burn!.durationSeconds)}秒`, 'neutral');
   }
   if (!rich) return rows;
-  const values = skillCurrentValues(skill, rows, star);
+  const values = skillCurrentValues(skill, rows, star, unit, passiveHealth);
   return rows.map((row, i) => ({ ...row,
     currentRich: skill.statRows?.[i] ? formatSkillTokens(skill.statRows[i].value, values, true, 1, skill.effect === 'hydraulicBulwark' ? 'physical' : 'magic') : undefined }));
 }
@@ -156,7 +181,7 @@ export function skillBodyHeight(text: string, width = 544, font = 17): number {
 
 const TOKEN_COLORS: Record<string, string> = {
   '物理': '#ff9740', '魔法': '#50b4ff', '真实': '#ffffff',
-  '治疗': '#7bf59a', '攻速': '#f2d04b', '控制': '#b57fe6',
+  '治疗': '#7bf59a', '生命': '#7bf59a', '攻速': '#f2d04b', '控制': '#b57fe6',
 };
 
 /** The roster stores combat role and damage identity independently. */
@@ -166,7 +191,7 @@ export function unitRoleLabel(role?: string, damageType?: 'physical' | 'magic'):
 }
 
 /** Resolve the configuration template from the same current stats used by the skill rows. */
-function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: number): Record<string, string | number> {
+function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: number, unit?: UnitConfigData, passiveHealth = 0): Record<string, string | number> {
   const current = (label: string) => rows.find(row => row.label === label)?.current ?? '';
   const kind = skill.shadow?.kind;
   const damageLabels: Record<string, string> = { bulwark:'震击伤害', piercing:'首目标伤害', flurry:'每段伤害', cleave:'基础伤害',
@@ -185,11 +210,18 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
     dmg: kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', trail:current('沿途伤害'), knockup:skill.stellarBulwark?.knockupSeconds??skill.furnaceDash?.knockupSeconds??0, shield: current('护盾') || current('自身护盾'), heal: current('单目标治疗') || current('击杀治疗') || current('结束治疗') || current('每次治疗') || current('治疗'),
     chargeDistance:skill.stellarBulwark?.distance??0,shieldDuration:skill.stellarBulwark?.shieldSeconds??0,leapDistance:skill.starLeap?.distance??0,
     resists: current('双抗提升'), secondary: current('后续目标伤害'), allyShield: current('友军护盾'),
-    total: current('三段总伤害'), refund: current('法力回复'), maximum: current('最高伤害') || current('处决伤害'),
+    total: current('三段总伤害') || current('完整伤害'), refund: current('法力回复'), maximum: current('最高伤害') || current('处决伤害'),
     burst: current('爆炸伤害'), repeat: current('重复命中伤害'), collapse: current('坍缩伤害'), mark: current('虚痕爆炸伤害'),
     count: current('目标数量') || current('治疗目标') || current('黑星数量') || current('跃迁次数'),
     manaReduction: current('每次蓝条降低'), manaCap:current('最多降低'),
-    slow: skill.shadow?.kind === 'domain' ? skill.shadow.slowAmounts[star - 1] : 0,
+    lampDamage: current('每秒伤害'), permanentHealth: current('参与击杀永久生命'),
+    lampBase: skill.shadow?.kind === 'soulLamp' ? number(skill.starDamage![star - 1] * (1 + (unit?.spellPower ?? 0) / 100) * (1 + (unit?.damageAmp ?? 0))) : 0,
+    lampHp: skill.shadow?.kind === 'soulLamp' ? number((unit?.hp ?? 0) * skill.shadow.maxHpFractions[star - 1] * (1 + (unit?.damageAmp ?? 0))) : 0,
+    passiveHealth,
+    lampRatio: skill.shadow?.kind === 'soulLamp' ? number(skill.shadow.maxHpFractions[star - 1] * 100) : 0,
+    slow: skill.nebula ? number(skill.nebula.attackSpeedPenalty*100) : skill.shadow?.kind === 'domain' ? skill.shadow.slowAmounts[star - 1] : 0,
+    duration: skill.nebula?.durationSeconds ?? skill.gravity?.durationSeconds ?? 0,
+    gravityResists: current('每名敌人双抗'),
     fear: skill.shadow?.kind === 'lanterns' ? skill.shadow.fearSeconds[star - 1] : 0,
     basePhysical: current('基础物理伤害'), baseMagic: current('基础魔法伤害'),
     burn: current('每秒生命伤害'), aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0,
@@ -205,12 +237,12 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
 }
 
 function formatSkillTokens(template: string, values: Record<string, string | number>, rich: boolean, iconOffset = 5, healingScaling: 'physical' | 'magic' = 'magic'): string {
-    return template.replace(/\{(物理|魔法|真实|治疗|攻速|控制)(\+{0,2}):([A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?%?)\}/g,
+    return template.replace(/\{(物理|魔法|真实|治疗|生命|攻速|控制)(\+{0,2}):([A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?%?)\}/g,
       (_match, type: string, plus: string, key: string) => {
         const raw = values[key] ?? key;
         const value = type === '攻速' && typeof raw === 'number' ? `${number(raw * 100)}%` : String(raw);
         if (!rich) return value;
-        const icons = plus.length === 2 ? ['attr_phys_bonus', 'attr_spell_bonus']
+        const icons = type === '生命' ? ['stat_hp'] : plus.length === 2 ? ['attr_phys_bonus', 'attr_spell_bonus']
           : plus ? [type === '物理' || (type === '治疗' && healingScaling === 'physical') ? 'attr_phys_bonus' : 'attr_spell_bonus'] : [];
         return `<color=${TOKEN_COLORS[type]}>${value}</color>`
           + (icons.length ? `（${icons.map(icon => `<img src='${icon}' width=16 height=16 align=center offset=${iconOffset} />`).join('')}）` : '');
@@ -218,9 +250,9 @@ function formatSkillTokens(template: string, values: Record<string, string | num
 }
 
 /** Body only; the UI renders stat rows in independent left/right columns below it. */
-export function buildSkillDescription(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false): string {
+export function buildSkillDescription(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false, passiveHealth = 0): string {
   if (!unit.skillId) return unit.description ?? '无主动技能';
   const skill = configs.getSkill(unit.skillId);
   const rows = buildSkillStatRows(configs, unit, star, skillScale);
-  return formatSkillTokens(skill.description ?? '', skillCurrentValues(skill, rows, star), rich, 5, skill.effect === 'hydraulicBulwark' ? 'physical' : 'magic');
+  return formatSkillTokens(skill.description ?? '', skillCurrentValues(skill, rows, star, unit, passiveHealth), rich, 5, skill.effect === 'hydraulicBulwark' ? 'physical' : 'magic');
 }

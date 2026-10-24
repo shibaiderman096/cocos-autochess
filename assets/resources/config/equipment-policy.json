@@ -2,16 +2,31 @@
   "enemyVersion": "equipment-policy-v1",
   "rewardVersion": "equipment-reward-v1",
   "tiers": {
-    "guinsoo": "advanced",
-    "totem_of_undying": "special",
-    "jeweled_gauntlet": "advanced",
-    "infinity_edge": "advanced",
-    "arcane_sovereignty": "advanced",
-    "crimson_bloodclaw": "advanced",
-    "abyssal_plate": "advanced",
-    "divine_judgment": "advanced",
-    "arcane_veil": "advanced",
-    "forest_sanctuary": "special"
+    "guinsoo": "basic",
+    "totem_of_undying": "basic",
+    "jeweled_gauntlet": "basic",
+    "infinity_edge": "basic",
+    "arcane_sovereignty": "basic",
+    "crimson_bloodclaw": "basic",
+    "abyssal_plate": "basic",
+    "divine_judgment": "basic",
+    "arcane_veil": "basic",
+    "forest_sanctuary": "basic",
+    "stonegrowth_bulwark": "basic",
+    "blazing_feather": "basic",
+    "arcane_overflow_codex": "basic",
+    "trait_emblem": "special",
+    "spell_overdrive_armor": "basic",
+    "divine_protection": "basic",
+    "thousand_forged_armor": "basic",
+    "basic_swift_bow": "basic",
+    "basic_crystal_blade": "basic",
+    "basic_astral_staff": "basic",
+    "basic_iron_shield": "basic",
+    "basic_mystic_cloak": "basic",
+    "basic_life_heart": "basic",
+    "basic_mana_flask": "basic",
+    "basic_blood_fang": "basic"
   },
   "enemy": {
     "calibratedItems": [
@@ -111,7 +126,267 @@
       ]
     },
     "targetPenalty": 0.04,
-    "corePenalty": 0.01
+    "corePenalty": 0.01,
+    "itemTags": {
+      "guinsoo": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ]
+      },
+      "totem_of_undying": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ]
+      },
+      "jeweled_gauntlet": {
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "requiresMana": true
+      },
+      "infinity_edge": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ]
+      },
+      "arcane_sovereignty": {
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "assassin",
+          "support"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "requiresMana": true
+      },
+      "crimson_bloodclaw": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ]
+      },
+      "abyssal_plate": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ]
+      },
+      "divine_judgment": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ]
+      },
+      "arcane_veil": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ]
+      },
+      "forest_sanctuary": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ]
+      },
+      "stonegrowth_bulwark": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ]
+      },
+      "blazing_feather": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ]
+      },
+      "arcane_overflow_codex": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "requiresMana": true
+      },
+      "trait_emblem": {
+        "enabled": false,
+        "roles": []
+      },
+      "spell_overdrive_armor": {
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "requiresMana": true
+      },
+      "divine_protection": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ]
+      },
+      "thousand_forged_armor": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ]
+      },
+      "basic_swift_bow": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "goldCost": 3
+      },
+      "basic_crystal_blade": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "assassin"
+        ],
+        "goldCost": 3,
+        "damageTypes": [
+          "physical"
+        ]
+      },
+      "basic_astral_staff": {
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 3,
+        "damageTypes": [
+          "magic"
+        ],
+        "requiresMana": true
+      },
+      "basic_iron_shield": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 3
+      },
+      "basic_mystic_cloak": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 3
+      },
+      "basic_life_heart": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 3
+      },
+      "basic_mana_flask": {
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 3,
+        "requiresMana": true
+      },
+      "basic_blood_fang": {
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "goldCost": 3
+      }
+    },
+    "equipmentEconomy": {
+      "startStage": 2,
+      "itemCost": 6,
+      "normal": {
+        "initialGold": 6,
+        "goldPerStage": 6
+      },
+      "elite": {
+        "initialGold": 0,
+        "goldPerStage": 1,
+        "healthMultiplier": 1.05
+      },
+      "boss": {
+        "initialGold": 0,
+        "goldPerStage": 2,
+        "healthMultiplier": 1.1
+      }
+    }
   },
   "reward": {
     "tierUnlock": {
@@ -127,6 +402,9 @@
       "jeweled_gauntlet"
     ],
     "insufficientPool": "fewer-choices",
-    "guarantee": "last-eligible-victory"
+    "guarantee": "last-eligible-victory",
+    "excludedIds": [
+      "trait_emblem"
+    ]
   }
 }

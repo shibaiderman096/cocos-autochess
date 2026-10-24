@@ -144,7 +144,8 @@ test('budget save/load and debug extension retain all enemies, IDs, shops and is
 });
 test('run-sim exports the generator diagnostics and explicit modes without granting bot resources',()=>{
  const report=runSimulation(require('../tools/run-simulation.ts').loadRunInputs(),{runSeed:12345,stageCount:3});assert.notEqual(report.result,'SIMULATION_ERROR',report.error);assert.equal(report.enemyGenerationMode,'budget-v1');
- const row=report.waves.find(w=>w.stage===2&&w.enemyBudget);assert.ok(row);assert.equal(row.actualBudget,row.enemyBudget.actualBudget);assert.equal(row.budgetWaveIndex,row.waveId-3);assert.equal(report.waves[0].enemyBudget,null);assert.equal(row.statMultiplier,1);
+ const row=report.waves.find(w=>w.stage===2&&w.goldBudget);assert.ok(row);assert.equal(row.goldBudget.version,'gold-v1');assert.equal(row.enemyBudget,null);assert.equal(report.waves[0].enemyBudget,null);
+ assert.equal(row.goldBudget.spentGold,row.enemies.reduce((n,u)=>n+require('../assets/scripts/core/EnemyGoldArmy.ts').enemyUnitGold(require('../tools/run-simulation.ts').loadRunInputs().units.find(v=>v.id===u.unitId),u.star),0));
  assert.ok(report.waves.filter(w=>w.encounterKind==='monster').every(w=>w.enemyBudget===null),'monster encounters use their independent template, not a generated player-unit budget');
 });
 test('archived experiment configurations remain unchanged',()=>{

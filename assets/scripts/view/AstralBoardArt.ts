@@ -1,4 +1,4 @@
-import { Node, UIOpacity } from 'cc';
+import { Node, UIOpacity, isValid } from 'cc';
 import type { AstralField } from '../battle/types';
 import { BoardGeometry } from './BoardGeometry';
 import { projectBoardPoint } from './BoardPresentation';
@@ -14,8 +14,10 @@ export class AstralBoardArt {
   constructor(private root: Node) {}
 
   show(fields: readonly AstralField[], geometry: BoardGeometry): void {
-    this.clear(); this.stopped = false;
-    const generation = this.generation, alive = () => generation === this.generation && this.root.isValid;
+    this.clear();
+    if (!isValid(this.root, true) || !Array.isArray(this.root.children)) return;
+    this.stopped = false;
+    const generation = this.generation, alive = () => generation === this.generation && isValid(this.root, true);
     for (const field of fields) {
       const polygons = field.cells.map(pos => geometry.cells.find(c => c.x === pos.x && c.y === pos.y))
         .filter((cell): cell is typeof geometry.cells[number] => !!cell);
@@ -50,8 +52,10 @@ export class AstralBoardArt {
   }
   stop(): void { this.stopped = true; for (const ring of this.rings) ring.active = false; }
   clear(): void {
-    this.generation++;
-    for (const child of [...this.root.children]) { child.removeFromParent(); child.destroy(); }
+    this.generation++; this.stopped = true;
+    // Child nodes may already be destroyed when BoardView.onDestroy runs.
+    if (isValid(this.root, true) && Array.isArray(this.root.children))
+      for (const child of [...this.root.children]) if (isValid(child, true)) { child.removeFromParent(); child.destroy(); }
     this.tiles.length = 0; this.rings.length = 0;
   }
 }

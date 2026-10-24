@@ -13,7 +13,7 @@ class UITransform{setContentSize(width,height){this.contentSize={width,height};}
 class Sprite{static SizeMode={CUSTOM:1};}class UIOpacity{opacity=255;}class Color{constructor(...rgba){this.rgba=rgba;}}
 const cc={Node,Vec3,Sprite,SpriteFrame:class{},UITransform,UIOpacity,Color,Component:class{},_decorator:{ccclass:()=>T=>T},resources:{load:(path,T,callback)=>pending.push({path,callback})},tween:()=>({to(){return this;},call(){return this;},start(){}})};
 const cache={};function load(file){if(cache[file])return cache[file];const exports={};cache[file]=exports;
- new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./ArtPaths'?art:name==='./ShadowSkillVfx'?load('assets/scripts/view/ShadowSkillVfx.ts'):{},exports);return exports;}
+ new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./GameAudio'?{GameAudio:{play(){}}}:name==='./ArtPaths'?art:name==='./ShadowSkillVfx'?load('assets/scripts/view/ShadowSkillVfx.ts'):{},exports);return exports;}
 const {ShadowSkillVfx}=load('assets/scripts/view/ShadowSkillVfx.ts');
 const root=new Node('fx'),owner=new Node('owner');const vfx=new ShadowSkillVfx(root,56,50,id=>id===1?owner:undefined);
 const flush=()=>{while(pending.length){const {path,callback}=pending.shift();callback(null,{name:path});}};
@@ -49,7 +49,7 @@ for(const [x,y] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]]){
 replay.play({t:'shadow_pulse',tick:10,side:0,damage:true,attackSpeed:false});assert.ok(replay.shadowSkillVfx.slots.some(s=>s.layer?.opacity===65),'half-second damage pulse animates the board');
 const targetView={node:new Node('meleeTarget')};replay.unitViews.set(2,targetView);
 const meleeUnits=require('../assets/resources/config/units.json').filter(unit=>unit.range===1&&art.UNIT_ART[unit.artId??unit.id]?.includes('/units/shadow/'));
-assert.equal(meleeUnits.length,6);
+assert.equal(meleeUnits.length,4);
 for(const unit of meleeUnits)for(const [x,y] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]]){
  sim.units[0].cfg=unit;targetView.node.setPosition(x*60,y*45,0);replay.shadowSkillVfx.clear();
  const before=pending.length;replay.play({t:'attack',tick:1,id:1,target:2,shadow:true});

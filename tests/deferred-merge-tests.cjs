@@ -8,14 +8,14 @@ const inputs=loadRunInputs();
 function make(full=false){
  const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);
  const save=freshSaveV2(3,45,'legacy');save.gold=100;save.shopReserved=true;save.benchSlots=full?1:3;
- save.owned=[{uid:1,unitId:'leon',star:1,location:'board',x:3,y:3},{uid:2,unitId:'leon',star:1,location:'bench',x:-1,y:0}];
- save.shop=[{unitId:'leon'},...Array.from({length:4},()=>({unitId:null}))];
+ save.owned=[{uid:1,unitId:'ghostflame_blade',star:1,location:'board',x:3,y:3},{uid:2,unitId:'ghostflame_blade',star:1,location:'bench',x:-1,y:0}];
+ save.shop=[{unitId:'ghostflame_blade'},...Array.from({length:4},()=>({unitId:null}))];
  return new RunSession(cfg,inputs.run,inputs.waves,{save,enemyGenerationMode:'legacy'});
 }
 for(const kind of ['monster','normal','boss']){
  const s=make();s.flow.wave.encounterKind=kind;assert.ok(s.startBattle());
  assert.equal(s.buyShopSlot(0).ok,true);assert.equal(s.owned.all().length,3);assert.equal(s.owned.get(1).star,1);
- const before=s.owned.snapshot();s.owned.tryMerge('leon');assert.deepEqual(s.owned.snapshot(),before);
+ const before=s.owned.snapshot();s.owned.tryMerge('ghostflame_blade');assert.deepEqual(s.owned.snapshot(),before);
  assert.equal(s.moveUnit(2,{location:'bench',x:-1,y:2}).ok,true);assert.equal(s.owned.all().length,3);
  const saved=s.snapshot();assert.equal(saved.owned.length,3,'saving during battle cannot consume copies');
  const restored=new RunSession(s.cfg,inputs.run,inputs.waves,{save:saved,enemyGenerationMode:'legacy'});
@@ -28,7 +28,7 @@ const full=make(true);full.startBattle();const before=full.snapshot();assert.equ
 console.log('PASS deferred merge: monster/normal/boss combat purchases, moves, snapshots, recovery, settlement and full-bench rollback');
 const {OwnedUnits}=require('../assets/scripts/core/OwnedUnits.ts');
 let fighting=true;
-const chain=new OwnedUnits(Array.from({length:9},(_,i)=>({uid:i+1,unitId:'leon',star:1,location:i===0?'board':'bench',x:i===0?3:-1,y:i===0?3:i-1,equipment:['guinsoo']})),undefined,()=>!fighting);
+const chain=new OwnedUnits(Array.from({length:9},(_,i)=>({uid:i+1,unitId:'ghostflame_blade',star:1,location:i===0?'board':'bench',x:i===0?3:-1,y:i===0?3:i-1,equipment:['guinsoo']})),undefined,()=>!fighting);
 const materials=chain.snapshot();chain.mergeAll();assert.deepEqual(chain.snapshot(),materials);assert.equal(chain.equipmentReserve.length,0);
 fighting=false;chain.mergeAll();assert.equal(chain.all().length,1);assert.equal(chain.get(1).star,3);assert.equal(chain.get(1).location,'board');assert.equal(chain.get(1).equipment.length,3);assert.equal(chain.equipmentReserve.length,6);
 console.log('PASS deferred chained 3-star merge preserves equipped materials during combat and returns overflow after combat');

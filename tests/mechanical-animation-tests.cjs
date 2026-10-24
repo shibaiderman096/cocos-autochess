@@ -19,7 +19,7 @@ const cc={Node:N,Sprite:S,SpriteFrame:Frame,Texture2D:Texture,Rect:class{constru
 function load(file,imports){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(id=>id==='cc'?cc:imports[id]??{},exports);return exports;}
 const {MechanicalVfx}=load('assets/scripts/view/MechanicalVfx.ts',{'./ArtPaths':{FX_SPRITE}});
 const float={FloatText:{colorForType:()=>({})},FloatTextPool:{get:()=>({show(){}})}};
-const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts',{'./ArtPaths':{FX_SPRITE,UNIT_ART},'./MechanicalVfx':{MechanicalVfx},'./FloatText':float});
+const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts',{'./GameAudio':{GameAudio:{play(){}}},'./ArtPaths':{FX_SPRITE,UNIT_ART},'./MechanicalVfx':{MechanicalVfx},'./FloatText':float});
 const flush=()=>{while(pending.length){const {path,ready}=pending.shift();assert.ok(fs.existsSync('assets/resources/'+path.replace('/texture','.png')));ready(null,{width:1024,height:1536});}};
 const project=(x,y)=>new V((x-3)*50,(y-3)*30);
 function fixture(){

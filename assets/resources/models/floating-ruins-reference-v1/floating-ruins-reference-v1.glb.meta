@@ -183,7 +183,7 @@
       "name": "SM_SideRim_-1_00_Mesh.001.mesh",
       "userData": {
         "gltfIndex": 78,
-        "triangleCount": 12152
+        "triangleCount": 11792
       },
       "ver": "1.1.1",
       "imported": true,
@@ -1423,7 +1423,7 @@
       "name": "SM_Island_Crown_RefinedMesh.001.mesh",
       "userData": {
         "gltfIndex": 73,
-        "triangleCount": 2444
+        "triangleCount": 2312
       },
       "ver": "1.1.1",
       "imported": true,
@@ -1441,7 +1441,7 @@
       "name": "SM_Side_BronzeRail_-1_00_Mesh.001.mesh",
       "userData": {
         "gltfIndex": 74,
-        "triangleCount": 4040
+        "triangleCount": 3940
       },
       "ver": "1.1.1",
       "imported": true,
@@ -1459,7 +1459,7 @@
       "name": "SM_End_Gold_False_00_Mesh.001.mesh",
       "userData": {
         "gltfIndex": 75,
-        "triangleCount": 3312
+        "triangleCount": 3204
       },
       "ver": "1.1.1",
       "imported": true,
@@ -1477,7 +1477,7 @@
       "name": "SM_Corner_Satellite_-1_-1_1_Mesh.001.mesh",
       "userData": {
         "gltfIndex": 76,
-        "triangleCount": 264
+        "triangleCount": 240
       },
       "ver": "1.1.1",
       "imported": true,
@@ -1513,7 +1513,7 @@
       "name": "SM_Front_LanternCore_-1_Mesh.001.mesh",
       "userData": {
         "gltfIndex": 79,
-        "triangleCount": 868
+        "triangleCount": 824
       },
       "ver": "1.1.1",
       "imported": true,

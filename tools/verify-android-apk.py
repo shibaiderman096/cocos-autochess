@@ -31,13 +31,15 @@ def verify(apk, project):
             configs.append(name)
         images = ["art/units/astral/milu", "art/units/astral/star_armor_guard"] + [
             "art/fx/" + name for name in ["stellar_barrier", "stellar_rush", "milu_star_trail", "milu_star_impact",
-                                        "astral_tile", "astral_ring", "astral_meteor", "astral_impact"]]
+                                        "astral_tile", "astral_ring", "astral_meteor", "astral_impact",
+                                        "milu_skill_sheet", "stellar_skill_sheet", "moon_arrow_sheet",
+                                        "nebula_tide_sheet", "gravity_collapse_sheet"]] + ["art/ui/loading_emblem"]
         for image in images:
             assert image + "/spriteFrame" in paths, "Missing packaged sprite: " + image
             uuid = paths[image]
             assert any(name.startswith(prefix + "native/" + uuid[:2] + "/" + uuid + ".") for name in names), image
         runtime = archive.read("assets/assets/main/index.js").decode("utf-8")
-        for token in ["milu_star_leap", "stellar_bulwark", "milu_star_impact", "stellar_barrier"]:
+        for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay"]:
             assert token in runtime, "Missing packaged behavior: " + token
         main = json.loads(archive.read("assets/assets/main/cc.config.json"))
         scenes = sorted(main["scenes"])

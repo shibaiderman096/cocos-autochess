@@ -20,6 +20,7 @@ class Node {
   setScale(x,y,z) { this.scale={x,y,z}; }
   setRotationFromEuler(x,y,z) { this.rotation={x,y,z}; }
   setSiblingIndex(i) { const list=this.parent.children; list.splice(list.indexOf(this),1); list.splice(i,0,this); }
+  getSiblingIndex() { return this.parent.children.indexOf(this); }
   on(type,fn) { this.events.set(type,fn); }
   destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
 }
@@ -81,8 +82,9 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
 const cc={Node,UITransform,Sprite,Label,RichText,LabelOutline:class{},Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
-  input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
-  ResolutionPolicy:{EXACT_FIT:0},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
+  tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
+  input,Input,sys:{isNative:false,os:'web',OS:{ANDROID:'android'}},isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
+  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
   resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:name.includes('trait_badges')?2172:1536,height:name.includes('trait_badges')?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
@@ -102,7 +104,7 @@ const ui=new BattleUI(); ui.node=new Node('UI'); new Node('Canvas').addChild(ui.
 assert.equal(ui.node.getChildByName('settlement'),undefined,'no report modal or full-screen shield');
 assert.equal(ui.resultPanel.parent,ui.node.getChildByName('roundBar'));
 assert.equal(ui.resultLabel.node.position.y,-102,'outcome appears below the taller stage node track');
-ui.showResult(0,null,0,0,1);assert.equal(ui.resultLabel.string,'胜利');assert.equal(ui.resultPanel.active,true);
+ui.setCombatActive(true);ui.showResult(0,null,0,0,1);assert.equal(ui.combatActive,false,'settlement permits return through the main menu');assert.equal(ui.resultLabel.string,'胜利');assert.equal(ui.resultPanel.active,true);
 ui.update(.5);assert.equal(ui.resultPanel.active,true);ui.update(.5);assert.equal(ui.resultPanel.active,false);
 ui.showResult(1,null,0,0,1);assert.equal(ui.resultLabel.string,'失败');ui.hideResult();
 ui.showResult(1,null,0,0,1,{runResult:'defeat'});ui.update(1);
@@ -127,7 +129,7 @@ ui.combatMetricButtons[0].events.get('end')();
 assert.equal(ui.combatStatsPanel.active,true);
 ui.closeUnitDetail();assert.equal(ui.combatStatsPanel.active,true);
 assert.deepEqual(ui.backdrop.getComponent(UITransform).contentSize,{width:1280,height:720},'3D battle loading backdrop fills the viewport without a retired 2D board image');
-assert.deepEqual(screenSetup,{width:1280,height:720,policy:0,resize:true},'battle fills the viewport and follows resize');
+assert.deepEqual(screenSetup,{width:1280,height:720,policy:1,resize:true},'uniform letterbox scaling keeps native touch coordinates aligned with the orthographic UI camera on ultrawide screens');
 assert.deepEqual(JSON.parse(fs.readFileSync(path.join(__dirname,'../settings/v2/packages/project.json'),'utf8')).general.designResolution,{width:1280,height:720,fitHeight:true},'project and UI design sizes match with height fitting');
 ui.setBoardCenter(0,60);assert.equal(ui.capLabel.isBold,true);assert.equal(ui.capLabel.horizontalAlign,1);
 // docs/combat-hud-overtime.md: population is 28px above the board center.
@@ -238,7 +240,8 @@ const debugEquipment=require('../assets/resources/config/equipment.json');
 const debugUnits=require('../assets/resources/config/units.json');
 ui.configureDebug({equipment:debugEquipment,units:debugUnits,roundsPerStage:[3,5,6]});
 ui.refreshDebugState(1,1,3);
-ui.node.getChildByName('debugToggle').events.get(Node.EventType.TOUCH_END)();flush();
+ui.homeButton.events.get(Node.EventType.TOUCH_END)();flush();
+ui.mainMenuContent.getChildByName('debugToggle').events.get(Node.EventType.TOUCH_END)();flush();
 assert.equal(ui.debugPanel.active,true);
 assert.match(ui.debugStatus.string,/1-1/);
 const totemGrant=ui.debugContent.getChildByName('debug_equipment_totem_of_undying');
@@ -292,7 +295,8 @@ const debugRect=screenRect(ui.debugPanel);assert.ok(debugRect.top<=360&&debugRec
 ui.debugPanel.getChildByName('debugClose').events.get(Node.EventType.TOUCH_END)();assert.equal(ui.debugPanel.active,false);
 assert.ok(!ui.node.getChildByName('backpack').children.some(n=>n.getChildByName('text')?.getComponent(Label)?.string?.includes('领取')),'old test grant buttons moved out of backpack');
 
-assert.equal(ui.combatStatsPanel.active,false,'unit details temporarily replace statistics');
+assert.equal(ui.combatStatsPanel.active,true,'main menu closes the previously selected unit detail');
+ui.mainMenuContent.getChildByName('mainMenuClose').events.get(Node.EventType.TOUCH_END)();
 ui.showUnitDetail({...warriorDetail,skillName:'黑炎 · 150物理伤害',skillDescription:'造成150点物理伤害，每秒造成最大生命值2%的真实伤害。'});
 assert.match(ui.unitDetail.string,/<color=#ff9740>150点物理伤害<\/color>/);
 assert.match(ui.unitDetail.string,/<color=#ffffff>2%的真实伤害<\/color>/);
@@ -361,7 +365,7 @@ ui.setShopVisible(false); ui.showSellPreview('战士',1,true,0); flush();
 assert.equal(ui.sellNode.active,false); assert.equal(ui.shopRoot.active,false); assert.equal(ui.economyControls.active,false);
 assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),false,'settlement disables the sale target');
 ui.setShopVisible(true); assert.equal(ui.economyControls.active,true);
-ui.setCombatActive(true);flush();assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.shopRoot.active,true);assert.equal(ui.homeButton.active,false);
+ui.setCombatActive(true);flush();assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.shopRoot.active,true);assert.equal(ui.homeButton.active,true);
 assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),true,'combat keeps the reserve sale target enabled');
 ui.setCombatActive(false);
 assert.ok(ui.node.getChildByName('command').position.y<-230);
@@ -467,6 +471,14 @@ shieldDelayedUI.showUnitDetail({...warriorDetail,hp:700,shield:350});flush();
 assert.ok(Math.abs(shieldDelayedUI.hpMeter.fill.fillRange-2/3)<1e-8,'shield scaling survives delayed textures');
 console.log('PASS grey shields: acquisition, absorption, disappearance, excess shield, invalid bounds, detail text and texture callbacks');
 console.log('PASS actual UnitView: fixed left edges, independent HP/mana widths, clamped values, and delayed texture loading');
+unitView.animateStellar(true,null,4,50);while(pending.length)pending.pop()();
+const stellarSprite=unitView.stellarAura.getComponent(Sprite),stellarFrame=stellarSprite.spriteFrame;
+assert.equal(unitView.stellarFrameIndex,2);assert.equal(unitView.stellarFrames.filter(Boolean).length,8);
+assert.ok(unitView.stellarAura.getSiblingIndex()<unitView.hpBarBg.getSiblingIndex(),'painted shield stays below vitals');
+assert.equal(unitView.shieldRing.active,false,'painted stellar ring replaces the generic gold ring');
+unitView.animateStellar(true,null,4,50);assert.equal(stellarSprite.spriteFrame,stellarFrame,'paused guardian barrier retains its painted phase');
+unitView.animateStellar(true,null,7,50);assert.notEqual(stellarSprite.spriteFrame,stellarFrame);
+unitView.animateStellar(false,null,7,50);assert.equal(unitView.stellarAura.active,false,'broken/expired shield hides the animation');
 
 const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
 const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
@@ -475,22 +487,23 @@ const createMenu=()=>{const menu=new MainMenu();menu.node=new Node('MainMenu');n
 let menu=createMenu(); menu.startNewRun(); assert.equal(sceneLoads.length,0,'configuration must finish before starting');
 assert.deepEqual(menu.node.getChildByName('menuBackground').getChildByName('skin').getComponent(UITransform).contentSize,{width:1280,height:720},'menu sky uses the full viewport');
 const configIndex=pending.findIndex(f=>f.path==='config/run');pending.splice(configIndex,1)[0]();
+for(const name of ['units','skills','battle','equipment']){const i=pending.findIndex(f=>f.path===`config/${name}`);pending.splice(i,1)[0]();}
 assert.equal(menu.ready,false,'monster images must finish loading before the run is ready');
 menu.startNewRun();assert.equal(sceneLoads.length,0,'do not enter a monster stage while its images are missing');
 assert.equal(pending.filter(f=>f.path?.startsWith('art/units/monsters/')).length,30,'load all ordinary and strong monster SpriteFrames');
 flush();assert.equal(menu.ready,true);
-const setup=menu.node.getChildByName('runSetup');
-setup.getChildByName('fewerStages').events.get('end')(); assert.equal(menu.stageCount,3);
-setup.getChildByName('moreStages').events.get('end')(); assert.equal(menu.stageCount,4); assert.match(menu.summary.string,/21/);
+const setup=menu.node;
+assert.equal(menu.stageCount,10);assert.equal(setup.getChildByName('runSetup'),undefined);
+assert.ok(setup.getChildByName('startGame').position.x>0&&setup.getChildByName('startGame').position.y<0);
 setup.getChildByName('startGame').events.get('end')();
-assert.deepEqual(sceneLoads,['floating-ruins']); assert.equal(loadSaveV2().stageCount,4); assert.equal(loadSaveV2().round,null);
+assert.deepEqual(sceneLoads,['floating-ruins']); assert.equal(loadSaveV2().stageCount,10); assert.equal(loadSaveV2().round,null);
 setup.getChildByName('startGame').events.get('end')(); assert.equal(sceneLoads.length,1,'double start is blocked');
 const saved=freshSaveV2(5);saved.gold=77;saved.round={phase:'prepare',waveIndex:3,health:18,result:null,lastSettlement:null};writeSaveV2(saved);
 menu=createMenu();flush(); assert.ok(menu.node.getChildByName('continueGame'));const before=storage.get(SAVE_KEY);
 menu.node.getChildByName('continueGame').events.get('end')();assert.equal(storage.get(SAVE_KEY),before,'continue preserves exact saved run');
 menu=createMenu();flush();sceneAccepted=false;menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before,'scene failure restores previous run');assert.equal(menu.loading,false);
 sceneAccepted=true;sceneError=new Error('launch error');menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before);assert.match(menu.status.string,/加载失败/);
-sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,5);assert.equal(loadSaveV2().gold,0);assert.equal(loadSaveV2().round,null);
+sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,10);assert.equal(loadSaveV2().gold,0);assert.equal(loadSaveV2().round,null);
 const main=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/main.scene'),'utf8'));
 assert.equal(main[0]._name,'main');assert.ok(main.some(o=>o.__type__==='3d5ecIKFJdMUocoPL3jTL8c'));
 assert.ok(!main.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'menu contains no battle stage');
@@ -509,7 +522,7 @@ assert.ok(builder.scenes.some(s=>s.uuid===productionMeta.uuid&&s.url==='db://ass
 const productionRefs=o=>{if(!o||typeof o!=='object')return;if('__id__'in o)assert.ok(productionScene[o.__id__]);for(const v of Object.values(o))productionRefs(v);};productionScene.forEach(productionRefs);
 assert.ok(productionScene.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'new board uses the real battle stage');
 assert.ok(productionScene.some(o=>o.__type__==='cc.Node'&&o._name==='BoardCamera3D'),'new board contains its fixed RT camera');
-console.log('PASS main menu: stage selector/minimum, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');
+console.log('PASS main menu: fixed ten stages, bottom-right start, asynchronous readiness, new/continue, duplicate click, failure recovery, and scene registration');
 const rewardItems=require('../assets/resources/config/equipment.json').slice(0,3),choices=[];
 ui.onClaimEquipmentReward=index=>choices.push(index);
 ui.showEquipmentReward(rewardItems.slice(0,2));
@@ -524,7 +537,7 @@ ui.showEquipmentReward(rewardItems);flush();assert.equal(oldIcon.spriteFrame,und
 rewardRoot=ui.node.getChildByName('equipmentReward');cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');assert.equal(cards.length,3);
 for(let index=0;index<3;index++)assert.equal(cards[index].getChildByName('rewardIcon').getComponent(Sprite).spriteFrame.name,rewardItems[index].icon);
 ui.hideEquipmentReward();assert.equal(ui.node.getChildByName('equipmentReward'),undefined);
-console.log('PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, modal input, choice callback and stale async protection');
+console.log('PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, dock input, choice callback and stale async protection');
 ui.onDestroy();assert.equal(inputListeners.filter(l=>l.target===ui).length,0,'scene cleanup removes all idle wake listeners');
 for(const backdrop of [{isValid:false},{isValid:true,destroyQueued:true}]){
  const cleanupUI=new BattleUI();cleanupUI.backdrop={...backdrop,destroy(){throw Error('duplicate backdrop destroy');}};
@@ -536,13 +549,13 @@ const {StageRewardPanel}=load(path.join(__dirname,'../assets/scripts/ui/StageRew
 const {ConfigManager:StageConfig}=load(path.join(__dirname,'../assets/scripts/core/ConfigManager.ts'));
 const stageCfg=new StageConfig();stageCfg.setUnits(require('../assets/resources/config/units.json'));stageCfg.setEquipment(require('../assets/resources/config/equipment.json'));
 let stageCloses=0;
-const stageActions=[],stagePanel=new StageRewardPanel(ui.node,stageCfg,a=>stageActions.push(a),()=>{stageCloses++;stagePanel.hide();});
+const stageActions=[],stagePanel=new StageRewardPanel(ui.node,stageCfg,a=>stageActions.push(a),()=>{stageCloses++;stagePanel.hide();},item=>{
+ if(item)ui.showEquipmentDetail(item);else ui.hideEquipmentDetail();
+});
 stagePanel.show({id:'boss',waveId:20,kind:'bossChoice',value:8},10);flush();
 let stageBody=stagePanel.root.getChildByName('stageRewardBody');
-const bossCards=stageBody.children.filter(n=>n.name==='bossChoice');assert.equal(bossCards.length,2);
-const supplyUnit=stageCfg.allUnits().find(unit=>unit.cost===1);const {UNIT_ART:supplyArt}=load(path.join(__dirname,'../assets/scripts/view/ArtPaths.ts'));
-assert.equal(bossCards[0].getChildByName('rewardArt').getComponent(Sprite).spriteFrame.name,supplyArt[supplyUnit.artId??supplyUnit.id],'Boss unit-supply icon uses a current authored card');
-const oldBossClick=bossCards[0].children.find(n=>n.name==='button').events.get('end');oldBossClick();assert.equal(stageActions.at(-1).choice,'units');
+assert.equal(stageBody.children.filter(n=>n.name==='bossChoice').length,0,'no manual reward category buttons');
+const oldBossClick=stageBody.children.find(n=>n.name==='button').events.get('end');oldBossClick();assert.equal(stageActions.at(-1).choice,'claim');
 const basicIds=require('../assets/resources/config/run.json').stageEncounters.basicEquipmentIds.slice(0,4);
 stagePanel.show({id:'four',waveId:20,kind:'equipmentChoice',candidates:basicIds},10);flush();
 stageBody=stagePanel.root.getChildByName('stageRewardBody');let stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,4);
@@ -555,21 +568,35 @@ stageCards[0].getChildByName('stageDetails_0').events.get('end')();flush();
 const equipmentDetail=stagePanel.root.getChildByName('stageEquipmentDetail');assert.ok(equipmentDetail);
 const equipmentCard=equipmentDetail.getChildByName('equipmentDetailCard');
 assert.ok(equipmentCard.children.some(n=>n.getComponent(Label)?.string===stageCfg.getEquipmentReserve([basicIds[0]])[0].name));
-assert.equal(equipmentCard.children.filter(n=>n.name==='equipmentStat').length,2);
+assert.equal(equipmentCard.getChildByName('equipmentStats').children.filter(n=>n.name==='equipmentStat').length,2);
 equipmentCard.children.find(n=>n.name==='button').events.get('end')();assert.equal(equipmentDetail.active,false);
 let stageActionCount=stageActions.length;oldBossClick();assert.equal(stageActions.length,stageActionCount,'old category buttons cannot fire after changing panel');
 stageCards[2].getChildByName('stageChoice_2').events.get('end')();assert.deepEqual(stageActions.at(-1),{type:'stageChoice',rewardId:'four',choice:'claim',index:2});
 stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'blackfeather_hunter',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
 stageBody=stagePanel.root.getChildByName('stageRewardBody');stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,5);
 stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(stageActions.at(-1).choice,'buy');
-const beforeReturn=stageActions.length;
-stageBody.children.find(n=>n.getChildByName('text')?.getComponent(Label)?.string==='返回棋盘').events.get('end')();assert.equal(stageCloses,1);assert.equal(stageActions.length,beforeReturn,'returning from the shop does not advance the wave');
-stagePanel.hide();assert.equal(stagePanel.root,null);
-console.log('PASS stage reward UI: category cards, four original equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');
+const merchantEquipment=stageCards[1],merchantInspect=merchantEquipment.events.get('end');
+assert.equal(merchantEquipment.getChildByName('equipmentStats'),undefined,'shop cards hide equipment attributes');
+assert.equal(merchantEquipment.getChildByName('stageDetails_1'),undefined,'shop cards use direct inspection');
+merchantInspect({target:merchantEquipment});flush();
+const rightEquipment=ui.equipmentDetail;assert.ok(rightEquipment?.active);
+assert.deepEqual(rightEquipment.position,ui.unitPanel.position,'equipment shares the unit detail slot');
+assert.deepEqual(rightEquipment.getComponent(UITransform).contentSize,ui.unitPanel.getComponent(UITransform).contentSize);
+assert.equal(ui.unitPanel.active,false);ui.update(.01);assert.equal(ui.combatStatsPanel.active,false);
+assert.equal(rightEquipment.getChildByName('equipmentDetailName').getComponent(Label).string,stageCfg.getEquipmentReserve([basicIds[0]])[0].name);
+const merchantBuy=merchantEquipment.getChildByName('stageChoice_1');merchantBuy.events.get('end')();
+merchantInspect({target:merchantBuy});assert.equal(ui.equipmentDetail,rightEquipment,'purchase bubbling cannot open another inspector');
+rightEquipment.getChildByName('closeEquipmentDetail').events.get('end')();assert.equal(ui.equipmentDetail,null);
+assert.equal(ui.combatStatsPanel.active,true);
+assert.equal(stageCloses,0,'shop stays visible in the dock until next-wave is used');
+stagePanel.hide();assert.equal(stagePanel.root,null);merchantInspect({target:merchantEquipment});assert.equal(ui.equipmentDetail,null,'stale cards cannot reopen details');
+console.log('PASS stage reward UI: random chest button, four legacy equipment icons, item names, complete equipment detail/return, five shop cards, purchase/skip and stale-panel protection');
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
 const trait=JSON.parse(JSON.stringify(require('../assets/resources/config/battle.json').traits.find(t=>t.id==='sunlight')));
 
 const traitRoster=require('../assets/resources/config/units.json');
+// Synthetic membership checks all displayed tiers independently of authored roster size.
+trait.members.push(...traitRoster.filter(u=>!trait.members.includes(u.id)).slice(0,2).map(u=>u.id));
 ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
 assert.equal(ui.traitPanel.rows.children.filter(node=>node.active).length,0,'no deployed owner means no trait row');
 for(const [count,tier] of [[1,'inactive'],[2,'inactive'],[3,'bronze'],[5,'silver'],[7,'gold'],[10,'prismatic']]) {

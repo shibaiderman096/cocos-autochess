@@ -6,7 +6,6 @@ import { drawFactionRing } from './FactionRing';
 import { setStarBadge } from '../ui/UISkin';
 import { healthBarSegments } from './HealthBar';
 import { createHealthBarClip } from './HealthBarClip';
-import { astralSprite } from './AstralArt';
 
 const { ccclass } = _decorator;
 
@@ -32,6 +31,8 @@ export class UnitView extends Component {
   private hpBarBg: Node;
   private hpBarContent: Node;
   private loaded = false;
+  loadError = '';
+  get visualReady(): boolean { return this.loaded; }
   private starBadge: Node;
   private shadowView: Node;
   private domainView: Node;
@@ -40,9 +41,12 @@ export class UnitView extends Component {
   private equipmentIcons: Node[] = [];
   private equipmentKey = "";
   private equipmentStackLabels: Label[] = [];
+  private equipmentStackSlots: number[] = [];
   private bodyOpacity: UIOpacity;
   private shieldRing: Node;
   private stellarAura: Node | null = null;
+  private stellarFrames: Array<SpriteFrame | undefined> = [];
+  private stellarFrameIndex = 0;
   private stellarRaised = false;
   displayedStar = 1;
   private upgradeEffect: Node | null = null;
@@ -171,10 +175,10 @@ export class UnitView extends Component {
 
     const key = unitSpriteKey(artId, side);
     const path = UNIT_SPRITE[key];
-    if (!path) { console.warn(`[UnitView] no sprite for ${key}`); return; }
+    if (!path) { this.loadError = `No sprite for ${key}`; console.warn(`[UnitView] no sprite for ${key}`); return; }
     resources.load(path, SpriteFrame, (err, sf) => {
       if (!this.isValid) return;
-      if (err) { console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
+      if (err) { this.loadError = err.message; console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
       if (path.includes('/units/shadow/') || path.includes('/units/sunlight/') || path.includes('/units/mechanical/') || path.includes('/units/astral/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
       this.loaded = true;
@@ -202,13 +206,14 @@ export class UnitView extends Component {
     if (key === this.equipmentKey) return; this.equipmentKey = key;
     for (const node of this.equipmentIcons) node.destroy(); this.equipmentIcons = [];
     this.equipmentStackLabels = [];
+    this.equipmentStackSlots = [];
     items.slice(0, 3).forEach((item, i) => {
       const node = new Node('carriedEquipment'); node.addComponent(UITransform).setContentSize(12, 12);
       const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       this.node.addChild(node);
       node.setPosition((i - (items.length - 1) / 2) * 14, this.hpBarBg.position.y - (this.hpBarBg.active ? 17 : 0), 0);
       this.equipmentIcons.push(node);
-      if (item.attackSpeedPerAttack > 0) {
+      if (item.attackSpeedPerAttack > 0 || (item.physicalPowerPerAttack ?? 0) > 0 || item.damageTakenStacks) {
         const counter = new Node('equipmentStacks'); node.addChild(counter);
         counter.addComponent(UITransform).setContentSize(12, 10); counter.setPosition(0, -2, 0);
         const text = counter.addComponent(Label); text.fontSize = 8; text.lineHeight = 10;
@@ -217,6 +222,7 @@ export class UnitView extends Component {
         const outline = counter.addComponent(LabelOutline); outline.color = new Color(8, 17, 23);
         outline.width = 1;
         this.equipmentStackLabels.push(text);
+        this.equipmentStackSlots.push(i);
       }
       loadArtSprite(item.icon, (err, frame) => { if (!err && sprite.isValid) sprite.spriteFrame = frame; });
     });
@@ -276,7 +282,7 @@ export class UnitView extends Component {
       });
     }
     if (this.shadowView) this.shadowView.active = !!snap.shadowCorrupted;
-    for (const text of this.equipmentStackLabels) text.string = String(snap.equipmentAttackStacks ?? 0);
+    this.equipmentStackLabels.forEach((text, i) => { text.string = String(snap.equipmentStacks?.[this.equipmentStackSlots[i]] ?? snap.equipmentAttackStacks ?? 0); });
     if (this.bodyOpacity) this.bodyOpacity.opacity = snap.untargetable ? 80 : 255;
     if (this.bodySprite && !!snap.spiderAirborne !== this.spiderRaised) {
       this.spiderRaised = !!snap.spiderAirborne;
@@ -310,16 +316,29 @@ export class UnitView extends Component {
   /** Skill shield and airborne travel follow the replay clock, including pause. */
   animateStellar(shielded: boolean, knockup: number | null, renderTick: number, tickMs: number): void {
     if (shielded && !this.stellarAura) {
-      this.stellarAura = astralSprite(this.node,'stellarBarrier',FX_SPRITE.stellarBarrier,
-        this.cellSize*1.28,this.cellSize*1.35,()=>this.isValid).node;
+      this.stellarAura = new Node('stellarBarrier'); this.node.addChild(this.stellarAura);
+      this.stellarAura.layer = this.node.layer;
+      // The atlas keeps transparent frame gutters; compensate so the ring surrounds the portrait.
+      this.stellarAura.addComponent(UITransform).setContentSize(this.cellSize*2.1,this.cellSize*2.2);
+      this.stellarAura.addComponent(UIOpacity);
+      const sprite = this.stellarAura.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
+      for (let i = 0; i < 8; i++) loadArtSprite(`${FX_SPRITE.stellarSkillSheet}#${i},4,4`, (error, frame) => {
+        if (error || !frame || !this.isValid || !sprite.isValid) return;
+        this.stellarFrames[i] = frame;
+        if (this.stellarFrameIndex === i) sprite.spriteFrame = frame;
+      });
       this.stellarAura.setPosition(0,this.bodyBaseY+this.cellSize*.12,0);
+      this.stellarAura.setSiblingIndex(this.shieldRing.getSiblingIndex());
     }
     if (this.stellarAura) {
       this.stellarAura.active=shielded;
+      if (shielded) this.shieldRing.active=false;
       const phase=renderTick*tickMs/1000;
+      this.stellarFrameIndex = Math.floor(phase*12)%8;
+      this.stellarAura.getComponent(Sprite)!.spriteFrame = this.stellarFrames[this.stellarFrameIndex] ?? null;
       const scale=1+Math.sin(phase*3)*.035;
       this.stellarAura.setScale(scale,scale,1);
-      this.stellarAura.angle=phase*18;
+      this.stellarAura.angle=0;
       this.stellarAura.getComponent(UIOpacity)!.opacity=170+Math.round(Math.sin(phase*3)*30);
     }
     if (this.bodySprite && (knockup!==null || this.stellarRaised)) {

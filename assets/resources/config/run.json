@@ -795,22 +795,22 @@
       "enemies": [
         {
           "unitId": "undead_knight",
-          "x": 2,
+          "x": 3,
           "y": 4,
           "star": 1,
           "statMultiplier": 1
         },
         {
           "unitId": "undead_mage",
-          "x": 3,
-          "y": 5,
+          "x": 2,
+          "y": 6,
           "star": 1,
           "statMultiplier": 1
         },
         {
           "unitId": "undead_archer",
           "x": 4,
-          "y": 4,
+          "y": 6,
           "star": 1,
           "statMultiplier": 1
         }
@@ -863,7 +863,27 @@
     ],
     "damageAmpPerStage": 0.05,
     "damageReductionPerStage": 0.05,
-    "initialPopulation": 1,
+    "initialPopulation": 3,
+    "populationSchedule": {
+      "milestones": [
+        {
+          "stage": 2,
+          "round": 1,
+          "population": 3
+        },
+        {
+          "stage": 2,
+          "round": 5,
+          "population": 4
+        },
+        {
+          "stage": 3,
+          "round": 2,
+          "population": 5
+        }
+      ],
+      "perStageAfterLast": 1
+    },
     "tiers": [
       {
         "stage": 2,
@@ -897,32 +917,115 @@
     "populationCap": 10
   },
   "monsterAttackSpeed": 0.75,
+  "endlessProgression": {
+    "startStage": 11,
+    "damageAmpPerRound": 0.01,
+    "damageReductionPerStage": 0.01,
+    "damageReductionCap": 0.95
+  },
   "stageEncounters": {
     "version": "stage-encounters-v1",
     "startStage": 4,
     "monsterStatGrowth": 0.5,
+    "monsterFormation": {
+      "center": {
+        "x": 3,
+        "y": 6
+      },
+      "pairs": [
+        [
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        [
+          {
+            "x": 2,
+            "y": 6
+          },
+          {
+            "x": 4,
+            "y": 6
+          }
+        ],
+        [
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          }
+        ],
+        [
+          {
+            "x": 1,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 6
+          }
+        ],
+        [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          }
+        ]
+      ]
+    },
     "monsterReward": {
       "initialValue": 2,
       "valuePerStage": 2,
       "maxValue": 10
     },
+    "bossReward": {
+      "healAmount": 5
+    },
     "shop": {
       "slots": 5,
       "equipmentPrices": {
-        "basic": 3,
+        "basic": 6,
         "advanced": 6,
-        "special": 8
+        "special": 10
       }
     },
     "basicEquipmentIds": [
       "guinsoo",
+      "totem_of_undying",
       "jeweled_gauntlet",
       "infinity_edge",
       "arcane_sovereignty",
       "crimson_bloodclaw",
       "abyssal_plate",
       "divine_judgment",
-      "arcane_veil"
+      "arcane_veil",
+      "forest_sanctuary",
+      "stonegrowth_bulwark",
+      "blazing_feather",
+      "arcane_overflow_codex",
+      "spell_overdrive_armor",
+      "divine_protection",
+      "thousand_forged_armor",
+      "basic_swift_bow",
+      "basic_crystal_blade",
+      "basic_astral_staff",
+      "basic_iron_shield",
+      "basic_mystic_cloak",
+      "basic_life_heart",
+      "basic_mana_flask",
+      "basic_blood_fang"
     ],
     "strongMonster": {
       "startStage": 4,
@@ -934,7 +1037,96 @@
         "lava_titan",
         "ice_dragon",
         "shadow_dragon"
-      ]
+      ],
+      "escorts": {
+        "initialCount": 2,
+        "countPerEncounter": 2,
+        "maxCount": 6,
+        "pairs": [
+          [
+            {
+              "x": 2,
+              "y": 4
+            },
+            {
+              "x": 4,
+              "y": 4
+            }
+          ],
+          [
+            {
+              "x": 1,
+              "y": 4
+            },
+            {
+              "x": 5,
+              "y": 4
+            }
+          ],
+          [
+            {
+              "x": 2,
+              "y": 5
+            },
+            {
+              "x": 3,
+              "y": 5
+            }
+          ]
+        ],
+        "unitIdsByLeader": {
+          "undead_bone_dragon": [
+            "undead_swordsman",
+            "undead_knight",
+            "undead_reaper"
+          ],
+          "forest_ancient": [
+            "forest_slime",
+            "forest_boar",
+            "forest_treant"
+          ],
+          "lava_titan": [
+            "lava_wolf",
+            "lava_golem",
+            "lava_giant"
+          ],
+          "ice_dragon": [
+            "ice_wolf",
+            "ice_golem",
+            "ice_axe_giant"
+          ],
+          "shadow_dragon": [
+            "shadow_wisp",
+            "shadow_wolf",
+            "shadow_reaper"
+          ]
+        }
+      }
     }
+  },
+  "openingEncounter": {
+    "name": "命运初逢",
+    "refreshesPerLevel": 2,
+    "incomeStartStage": 2,
+    "incomePerStage": 10,
+    "survivorMaxHp": 50,
+    "victoryGold": 2,
+    "battleExp": 1,
+    "victoryHeal": 3
+  },
+  "enemyGoldBudget": {
+    "version": "gold-v1",
+    "initialGold": 3,
+    "goldPerRound": 1,
+    "goldPerStage": 3,
+    "eliteGoldPerStage": 1,
+    "bossGoldPerStage": 2,
+    "maxShopRolls": 200,
+    "themeTraits": [
+      "astral",
+      "mechanical_pioneer",
+      "shadow",
+      "sunlight"
+    ]
   }
 }

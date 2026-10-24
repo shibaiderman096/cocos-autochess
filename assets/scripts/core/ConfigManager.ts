@@ -11,6 +11,11 @@ export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttribut
 }
 
 export interface UnitConfigData extends Partial<CombatAttributes> {
+  specialShopUnlock?: boolean;
+  /** Explicit profession-trait membership without changing attack or skill damage identity. */
+  classTraitId?: string;
+  /** Per-carrier equipment traits; never written into the authored roster. */
+  grantedTraitIds?: string[];
   id: string;
   name: string;
   /** Strong PvE monsters keep authored attributes instead of the ordinary monster template. */
@@ -29,6 +34,7 @@ export interface UnitConfigData extends Partial<CombatAttributes> {
   maxMana: number;
   startMana: number;
   manaPerHit: number;
+  manaPerSecond?: number;
   skillId?: string;
   /** Enables crit rolls for all skill damage, including damage-over-time pulses. */
   skillCanCrit?: boolean;
@@ -53,8 +59,11 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap';
-  starLeap?: { distance: number };
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity';
+  starLeap?: import('../battle/types').StarLeapConfig;
+  arrowVolley?: import('../battle/types').ArrowVolleyConfig;
+  nebula?: import('../battle/types').NebulaConfig;
+  gravity?: import('../battle/types').GravityConfig;
   stellarBulwark?: import('../battle/types').StellarBulwarkConfig;
   hydraulicBulwark?: HydraulicBulwarkConfig;
   spiderLeap?: SpiderLeapConfig;
@@ -133,6 +142,9 @@ function validateShadowSkill(skill: SkillConfigData): void {
     case 'domain':
       triple(skill.shieldAmounts); triple(spec.allyShieldAmounts); triple(spec.slowAmounts); spec.slowAmounts.forEach(fraction);
       positive(spec.durationSeconds); if (!Number.isInteger(spec.allyCount) || spec.allyCount < 0) bad(); break;
+    case 'soulLamp':
+      positive(spec.durationSeconds); positive(spec.intervalSeconds);
+      triple(spec.maxHpFractions); spec.maxHpFractions.forEach(fraction); triple(spec.takedownHealth); break;
     case 'flurry':
       positive(spec.intervalSeconds); positive(spec.refundWindowSeconds); if (!Number.isInteger(spec.hits) || spec.hits < 1 || !Number.isFinite(spec.refundMana) || spec.refundMana < 0) bad(); break;
     case 'cleave': positive(spec.coneDegrees); if (spec.coneDegrees > 360) bad(); fraction(spec.missingHpBonusCap); break;
@@ -203,6 +215,11 @@ export interface BattleConfigData {
   lossPerEnemy: number;
 }
 
+export function equipmentMaxHpResistance(hp: number, items: EquipmentConfigData[]): number {
+  return items.reduce((sum, item) => sum + (item.maxHpResistance
+    ? Math.floor(hp / item.maxHpResistance.step) * item.maxHpResistance.bonus : 0), 0);
+}
+
 export class ConfigManager {
   private units: Record<string, UnitConfigData> = {};
   private enemies: Record<string, UnitConfigData> = {};
@@ -210,18 +227,47 @@ export class ConfigManager {
   private equipment: Record<string, EquipmentConfigData> = {};
   allEquipment(): EquipmentConfigData[] { return Object.values(this.equipment); }
   setEquipment(data: EquipmentConfigData[]): void {
+    for (const item of data) if (item.shopPrice !== undefined && (!Number.isSafeInteger(item.shopPrice) || item.shopPrice <= 0)) throw new Error('Invalid equipment shop price');
+    for (const item of data) if (item.damageTakenStacks && (!Number.isInteger(item.damageTakenStacks.maxStacks) || item.damageTakenStacks.maxStacks <= 0
+      || !Number.isFinite(item.damageTakenStacks.resistancePerStack) || item.damageTakenStacks.resistancePerStack < 0
+      || !Number.isFinite(item.damageTakenStacks.maxStackDamageReduction) || item.damageTakenStacks.maxStackDamageReduction < 0 || item.damageTakenStacks.maxStackDamageReduction > 1)) throw new Error('Invalid damage taken stacks equipment');
+    for (const item of data) if (item.healthStance && (!Number.isFinite(item.healthStance.threshold) || item.healthStance.threshold <= 0 || item.healthStance.threshold > 1
+      || !Number.isFinite(item.healthStance.attackSpeedBonus) || item.healthStance.attackSpeedBonus < 0
+      || !Number.isFinite(item.healthStance.armor) || item.healthStance.armor < 0)) throw new Error('Invalid health stance equipment');
+    for (const item of data) if (item.castAttackSpeed && (!Number.isFinite(item.castAttackSpeed.bonus) || item.castAttackSpeed.bonus < 0
+      || !Number.isFinite(item.castAttackSpeed.seconds) || item.castAttackSpeed.seconds <= 0)) throw new Error('Invalid cast attack speed equipment');
     this.equipment = Object.fromEntries(data.map(item => [item.id, { ...item }]));
   }
   getEquipment(ids: string[] = []): EquipmentConfigData[] {
     if (ids.length > MAX_EQUIPMENT) throw new Error('装备最多3件');
-    return ids.map(id => { const item = this.equipment[id]; if (!item) throw new Error(`未知装备: ${id}`); return item; });
+    return ids.map(id => { const item = this.resolveEquipment(id); if (!item) throw new Error(`未知装备: ${id}`); return item; });
+  }
+  private resolveEquipment(id: string): EquipmentConfigData | undefined {
+    if (this.equipment[id]) return this.equipment[id];
+    const parts = id.split('__');
+    const base = this.equipment[parts[0]], trait = this.battle.traits?.find(t => t.id === parts[1]);
+    if (parts.length !== 2 || !base?.traitChoice || !trait) return undefined;
+    const effect = `共鸣羁绊：${trait.name}。当前携带者获得此羁绊；卸下后失去，转移后由新携带者获得。`;
+    return { ...base, id, name: `${base.name}·${trait.name}`, traitChoice: false, grantedTraitId: trait.id,
+      effectDescription: effect, description: `+100最大生命，+1法力值/秒。\n${effect}` };
   }
   getEquipmentReserve(ids: string[]): EquipmentConfigData[] {
-    return ids.map(id => this.equipment[id]).filter(Boolean);
+    return ids.map(id => this.resolveEquipment(id)).filter((item): item is EquipmentConfigData => !!item);
+  }
+  equipmentPrice(id: string, tierPrice: number): number {
+    const item = this.resolveEquipment(id);
+    if (!item) throw new Error(`未知装备: ${id}`);
+    return item.shopPrice ?? tierPrice;
   }
   equipmentStats(cfg: UnitConfigData, ids: string[] = []): UnitConfigData {
     const items = this.getEquipment(ids);
-    const armor = cfg.armor + items.reduce((sum, item) => sum + (item.armor ?? 0), 0);
+    const hp = Math.round((cfg.hp + items.reduce((sum, item) => sum + (item.hp ?? 0), 0))
+      * (1 + items.reduce((sum, item) => sum + (item.maxHpBonus ?? 0), 0)));
+    const hpResistance = equipmentMaxHpResistance(hp, items);
+    const manaBonus = items.reduce((sum, item) => sum + (item.maxManaBonus ?? 0), 0);
+    const maxMana = cfg.maxMana > 0 && manaBonus !== 0
+      ? Math.max(...items.map(item => item.maxManaMinimum ?? 1), cfg.maxMana + manaBonus) : cfg.maxMana;
+    const armor = cfg.armor + items.reduce((sum, item) => sum + (item.armor ?? 0), 0) + hpResistance;
     const spellPower = (cfg.spellPower ?? 0) + items.reduce((sum, item) => sum + item.spellPower, 0);
     const damageAmp = (cfg.damageAmp ?? 0) + items.reduce((sum, item) => {
       const effect = item.spellPowerDamageAmp;
@@ -232,10 +278,12 @@ export class ConfigManager {
       return sum + (effect && armor > effect.threshold ? effect.bonus : 0);
     }, 0));
     return { ...cfg,
-      hp: Math.round((cfg.hp + items.reduce((sum, item) => sum + (item.hp ?? 0), 0))
-        * (1 + items.reduce((sum, item) => sum + (item.maxHpBonus ?? 0), 0))),
+      grantedTraitIds: Array.from(new Set([...(cfg.grantedTraitIds ?? []), ...items.flatMap(item => item.grantedTraitId ? [item.grantedTraitId] : [])])),
+      hp,
+      maxMana, startMana: Math.min(maxMana, cfg.startMana),
+      manaPerSecond: (cfg.manaPerSecond ?? 0) + items.reduce((sum, item) => sum + (item.manaPerSecond ?? 0), 0),
       armor,
-      mr: cfg.mr + items.reduce((sum, item) => sum + (item.mr ?? 0), 0),
+      mr: cfg.mr + items.reduce((sum, item) => sum + (item.mr ?? 0), 0) + hpResistance,
       physicalPower: (cfg.physicalPower ?? 0) + items.reduce((sum, item) => sum + (item.physicalPower ?? 0), 0),
       critChance: Math.min(1, combatAttributes(cfg).critChance + items.reduce((sum, item) => sum + (item.critChance ?? 0), 0)),
       skillCanCrit: cfg.skillCanCrit === true || items.some(item => item.skillCanCrit),
@@ -292,8 +340,27 @@ export class ConfigManager {
           || ![skill.starDamage,e.trailDamage].every(a => Array.isArray(a) && a.length === 3 && a.every(v => Number.isFinite(v) && v >= 0))) throw new Error('Invalid furnace dash skill');
       }
       if (skill.effect === 'starLeap' && (skill.starLeap?.distance!==1 || skill.dmgType!=='magic'
+        || !Number.isFinite(skill.starLeap.durationSeconds) || skill.starLeap.durationSeconds <= 0
         || !Array.isArray(skill.starDamage) || skill.starDamage.length!==3 || skill.starDamage.some(v=>!Number.isFinite(v)||v<0)))
         throw new Error('Invalid star leap skill');
+      if (skill.effect === 'arrowVolley' && (!skill.arrowVolley || skill.arrowVolley.count !== 3
+        || !Number.isFinite(skill.arrowVolley.intervalSeconds) || skill.arrowVolley.intervalSeconds <= 0
+        || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0 || skill.dmgType !== 'physical'
+        || !Array.isArray(skill.starDamage) || skill.starDamage.length !== 3 || skill.starDamage.some(v=>!Number.isFinite(v)||v<0)))
+        throw new Error('Invalid arrow volley skill');
+      if (skill.effect === 'nebula' && (!skill.nebula || skill.dmgType !== 'magic'
+        || !Number.isFinite(skill.radius) || skill.radius < 1 || !Number.isInteger(skill.radius)
+        || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0
+        || ![skill.nebula.durationSeconds,skill.nebula.intervalSeconds,skill.nebula.attackSpeedPenalty].every(v=>Number.isFinite(v)&&v>0)
+        || skill.nebula.intervalSeconds > skill.nebula.durationSeconds
+        || !Array.isArray(skill.starDamage) || skill.starDamage.length !== 3 || skill.starDamage.some(v=>!Number.isFinite(v)||v<0)))
+        throw new Error('Invalid nebula skill');
+      if (skill.effect === 'gravity' && (!skill.gravity || skill.dmgType !== 'magic' || skill.radius !== 2
+        || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0
+        || ![skill.gravity.durationSeconds,skill.gravity.intervalSeconds].every(v=>Number.isFinite(v)&&v>0)
+        || skill.gravity.intervalSeconds > skill.gravity.durationSeconds
+        || ![skill.starDamage,skill.gravity.resistancePerEnemy].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0))))
+        throw new Error('Invalid gravity skill');
       if (skill.effect === 'stellarBulwark') {
         const e = skill.stellarBulwark;
         if (!e || !Number.isInteger(e.distance) || e.distance < 1

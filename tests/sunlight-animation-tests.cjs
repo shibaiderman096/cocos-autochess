@@ -17,7 +17,7 @@ class S {static SizeMode={CUSTOM:1};}class O {opacity=255;}
 const cc={Node:N,Sprite:S,SpriteFrame:class{},UITransform:U,UIOpacity:O,Vec3:V,Color:class {constructor(...rgba){this.rgba=rgba;}},Component:class{},_decorator:{ccclass:()=>c=>c},resources:{load:(path,T,ready)=>pending.push({path,ready})}};
 function load(file,imports){const exports={};new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(id=>id==='cc'?cc:imports[id]??{},exports);return exports;}
 const {SunlightSpriteVfx}=load('assets/scripts/view/SunlightSpriteVfx.ts',{'./ArtPaths':{FX_SPRITE}});
-const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts',{'./ArtPaths':{FX_SPRITE,UNIT_ART},'./SunlightSpriteVfx':{SunlightSpriteVfx},'./SunlightVfx':{SunlightVfx:class{play(){}update(){}clear(){}destroy(){}}}});
+const {BattleReplayer}=load('assets/scripts/view/BattleReplayer.ts',{'./GameAudio':{GameAudio:{play(){}}},'./ArtPaths':{FX_SPRITE,UNIT_ART},'./SunlightSpriteVfx':{SunlightSpriteVfx},'./SunlightVfx':{SunlightVfx:class{play(){}update(){}clear(){}destroy(){}}}});
 const flush=()=>{while(pending.length){const {path,ready}=pending.shift();assert.ok(fs.existsSync('assets/resources/'+path.replace('/spriteFrame','.png')));ready(null,{name:path});}};
 const project=(x,y)=>new V((x-3)*50,(y-3)*30);
 function fixture(){const parent=new N('board');parent.addChild(new N('arenaArt'));parent.addChild(new N('boardGrid'));const unit=new N('owner');parent.addChild(unit);const root=new N('fx');parent.addChild(root);const state={alive:true,shield:100,empowered:true};const fx=new SunlightSpriteVfx(root,50,50,project,()=>unit,{width:600,height:350},()=>state);return {parent,root,unit,state,fx};}
@@ -71,5 +71,5 @@ for(const id of trait.members){
  const pulses=sim.events.filter(e=>e.t==='sun_pulse'&&e.kind===skills[hero.skillId].sunlight.kind);assert.ok(pulses.length,id+' emits skill-specific art events');assert.ok(pulses.every(e=>Number.isFinite(e.duration)),'cosmetic events serialize without Infinity');
  const test=fixture();test.state.shield=100;test.state.empowered=true;flush();for(const pulse of pulses){test.fx.play(pulse);test.fx.update(pulse.tick+1);for(const slot of test.fx.slots)if(slot.layer&&slot.sprite.spriteFrame)seen.add(id);}assert.ok(seen.has(id),id+' has drawn sprite consumers');test.fx.destroy();
 }
-assert.equal(seen.size,10);
-console.log('PASS drawn sunlight animations: all ten real skills, nine transient effects, actual replay eight-direction arrows/slashes, pause/expiry, moving shields, buff cancellation, persistent terrain, both-side deduplication, ground layering, source death, bounded pool, late loads, end/rebind/destroy cleanup');
+assert.equal(seen.size,8);
+console.log('PASS drawn sunlight animations: all eight retained real skills, nine transient effects, actual replay eight-direction arrows/slashes, pause/expiry, moving shields, buff cancellation, persistent terrain, both-side deduplication, ground layering, source death, bounded pool, late loads, end/rebind/destroy cleanup');

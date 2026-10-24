@@ -1,325 +1,536 @@
 {
-"milu_star_leap":{
-  "id": "milu_star_leap",
-  "name": "星跃",
-  "effect": "starLeap",
-  "dmgType": "magic",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "starDamage": [
-    120,
-    180,
-    270
-  ],
-  "starLeap": {
-    "distance": 1
-  },
-  "description": "向靠近当前目标的相邻空格位移{控制:leapDistance}格，对当前目标造成{魔法+:dmg}魔法伤害。",
-  "statRows": [
-    {
-      "label": "伤害",
-      "value": "{魔法+:dmg}",
-      "stars": "120/180/270"
-    },
-    {
-      "label": "位移距离",
-      "value": "{控制:leapDistance}格",
-      "stars": "1/1/1格"
-    }
-  ],
-  "mechanics": [
-    "近战范围内蓝满且攻击冷却结束时施放；目标在施放前锁定。",
-    "从自身相邻的合法空格中按距当前目标最近、行、列稳定选择；没有合法空格则原地施放。",
-    "位移后同一逻辑Tick立即对当前目标造成一次单体魔法伤害，不附带控制、额外无敌或不可选中；视觉尾迹不参与结算。"
-  ]
-},
-"stellar_bulwark": {
-  "id":"stellar_bulwark","name":"恒星壁垒","dmgType":"physical","effect":"stellarBulwark","power":0,"radius":0,"targeting":"nearest",
-  "shieldScaling":"physical","shieldAmounts":[250,375,550],
-  "stellarBulwark":{"distance":2,"speedMultiplier":2,"shieldSeconds":4,"knockupSeconds":0.75},
-  "description":"获得{物理+:shield}点护盾，持续{控制:shieldDuration}秒，向当前目标方向直线冲刺最多{控制:chargeDistance}格。\n击飞沿途敌人{控制:knockup}秒。",
-  "statRows":[
-    {"label":"护盾","value":"{物理+:shield}","stars":"250/375/550"},
-    {"label":"护盾持续","value":"{控制:shieldDuration}秒","stars":"4/4/4秒"},
-    {"label":"冲刺距离","value":"{控制:chargeDistance}格","stars":"2/2/2格"},
-    {"label":"击飞时间","value":"{控制:knockup}秒","stars":"0.75/0.75/0.75秒"}
-  ],
-  "mechanics":["近战范围内蓝满施放，冲刺方向在施放时按当前攻击目标锁定，按正常移动速度2倍移动。","取前方2格射线上的最远空格为终点；没有空格时原地获得护盾。不会将友军作为击飞目标，也不造成额外技能伤害。","每名敌人每次冲刺最多击飞一次；冲刺可被控制打断，不提供不可选中。落点被占用时就近选择合法空格。","护盾按物理加成计算，持续4秒；重复施法刷新自身这层盾，不移除其他来源护盾。"]
-},
-"sky_annihilation": {
-  "id": "sky_annihilation",
-  "name": "天穹歼灭协议",
-  "dmgType": "physical",
-  "effect": "atlasMissiles",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "starDamage": [
-    280,
-    420,
-    5000
-  ],
-  "atlasMissiles": {
-    "targetCounts": [
-      3,
-      3,
-      99
+  "gravity_collapse": {
+    "id": "gravity_collapse",
+    "name": "引力坍缩",
+    "effect": "gravity",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 2,
+    "targeting": "nearest",
+    "castSeconds": 0.3,
+    "starDamage": [
+      80,
+      120,
+      400
     ],
-    "manaReductionPerCast": 5,
-    "maxManaReduction": 30
-  },
-  "burn": {
-    "durationSeconds": 1,
-    "untilBattleEnd": true,
-    "intervalSeconds": 1,
-    "maxHpFraction": 0.02,
-    "dmgType": "true"
-  },
-  "description": "向距离最近的{控制:count}名敌人发射导弹，每枚造成{物理+:dmg}点物理伤害，并使目标灼烧：每秒受到最大生命值{真实:burn}的真实伤害，持续至战斗结束。\n每次施法降低自身{控制:manaReduction}点法力上限，最多降低{控制:manaCap}点。",
-  "statRows": [
-    {
-      "label": "导弹伤害",
-      "value": "{物理+:dmg}",
-      "stars": "280/420/5000"
+    "gravity": {
+      "durationSeconds": 4,
+      "intervalSeconds": 0.5,
+      "resistancePerEnemy": [
+        10,
+        15,
+        40
+      ]
     },
-    {
-      "label": "目标数量",
-      "value": "{控制:count}",
-      "stars": "3/3/99"
-    },
-    {
-      "label": "每次蓝条降低",
-      "value": "{控制:manaReduction}",
-      "stars": "5/5/5"
-    },
-    {
-      "label": "最多降低",
-      "value": "{控制:manaCap}",
-      "stars": "30/30/30"
-    },
-    {
-      "label": "每秒生命伤害",
-      "value": "{真实:burn}",
-      "stars": "2%/2%/2%"
-    }
-  ],
-  "mechanics": [
-    "全场按六边形距离选不同敌人，同距离按单位ID排序；三星99为目标上限。",
-    "灼烧首次施加后一秒首次跳伤，同技能不同施法者及重复导弹不叠加、不刷新跳伤节奏；伤害归首次施加者，施法者死亡后仍持续。",
-    "灼烧固定为目标最大生命的2%真实伤害，不受加成、增伤、减伤或暴击影响，可被护盾吸收。",
-    "每场战斗最大法力130逐次降低为125/120/115/110/105/100，下一场重置，不修改原始配置或存档。"
-  ]
-},
-"furnace_overload": {
-  "id": "furnace_overload",
-  "name": "炉心过载",
-  "dmgType": "magic",
-  "effect": "furnaceDash",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "starDamage": [
-    200,
-    265,
-    3000
-  ],
-  "furnaceDash": {
-    "speedMultiplier": 1.5,
-    "trailDamage": [
-      70,
-      110,
-      1200
+    "description": "以自身为中心展开2格黑洞领域，持续{控制:duration}秒。每0.5秒对领域内敌人造成{魔法+:dmg}魔法伤害，并嘲讽领域内敌人，使其只能选中引力执行官为目标。\n领域内每有一名敌人，自身获得{控制:gravityResists}护甲与魔抗。",
+    "statRows": [
+      {
+        "label": "每次伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "80/120/400"
+      },
+      {
+        "label": "完整伤害",
+        "value": "{魔法+:total}",
+        "stars": "640/960/3200"
+      },
+      {
+        "label": "每名敌人双抗",
+        "value": "{控制:gravityResists}",
+        "stars": "10/15/40"
+      },
+      {
+        "label": "持续时间",
+        "value": "{控制:duration}秒",
+        "stars": "4/4/4秒"
+      }
     ],
-    "knockupSeconds": 1,
-    "targetRange": 3
-  },
-  "description": "以1.5倍移速冲向3格内距离最远的敌人，对沿途敌人造成{魔法+:trail}点魔法伤害。\n到达目标时，将其击飞{控制:knockup}秒，造成{魔法+:dmg}点魔法伤害；目标也会承受沿途伤害。",
-  "statRows": [
-    {
-      "label": "目标伤害",
-      "value": "{魔法+:dmg}",
-      "stars": "200/265/3000"
-    },
-    {
-      "label": "沿途伤害",
-      "value": "{魔法+:trail}",
-      "stars": "70/110/1200"
-    },
-    {
-      "label": "击飞时间",
-      "value": "{控制:knockup}秒",
-      "stars": "1/1/1秒"
-    }
-  ],
-  "mechanics": [
-    "两部分伤害均使用法术加成；每个沿途敌人每次冲刺最多命中一次，主目标额外承受一次沿途伤害。",
-    "施法锁定最远目标和相邻落点，按正常移速1.5倍经过直线格；目标移动后不追踪，抵达时仍相邻才结算主目标伤害和击飞。",
-    "冲刺可被控制打断，不获得不可选中；友军不受伤害，落点被占用时回到起点。"
-  ]
-},
-"rending_hunt": {
-  "id": "rending_hunt",
-  "name": "裂解猎杀",
-  "dmgType": "physical",
-  "effect": "spiderLeap",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "castSeconds": 0.3,
-  "starDamage": [
-    85,
-    130,
-    215
-  ],
-  "spiderLeap": {
-    "airborneSeconds": 0.3,
-    "missingHealthFractions": [
-      0.08,
-      0.1,
-      0.15
+    "mechanics": [
+      "黑洞随自身移动；每0.5秒伤害一次，共8次，首段在领域生成0.5秒后结算。",
+      "实时按领域内全部存活敌人数计算固定双抗，不受法术强度影响；控制免疫者仍计入人数并受伤害，但免疫嘲讽。",
+      "嘲讽限制敌方目标选择，不阻止自身增益、治疗友军或范围伤害；领域外敌人不受嘲讽，离开、领域结束或施法者死亡立即解除。",
+      "同时受多名引力执行官嘲讽时按单位id稳定选择；同一施法者再次释放会刷新领域，不叠加自身领域。"
     ]
   },
-  "description": "蓄力{控制:castDuration}秒后跃向距离最远的敌人。\n从天而降，造成{物理+:dmg}点物理伤害。\n额外造成目标已损失生命值{物理:missingHealth}的物理伤害。",
-  "statRows": [
-    {
-      "label": "基础伤害",
-      "value": "{物理+:dmg}",
-      "stars": "85/130/215"
-    },
-    {
-      "label": "已损失生命伤害",
-      "value": "{物理:missingHealth}",
-      "stars": "8%/10%/15%"
-    },
-    {
-      "label": "蓄力时间",
-      "value": "{控制:castDuration}秒",
-      "stars": "0.3/0.3/0.3秒"
-    }
-  ],
-  "mechanics": [
-    "0.3秒蓄力可被控制打断；之后腾空0.3秒不可选中，落地后恢复可选中。",
-    "选择全场最远可选中敌人，距离相同时按单位ID排序。目标死亡或没有相邻空位则取消伤害，不改选目标。",
-    "基础伤害吃物理加成；已损失生命部分在命中结算时读取，不吃物理或法术加成；两部分一起受护甲、增伤、减伤和技能暴击影响。"
-  ]
-},
-"turbo_hunt": {
-  "id": "turbo_hunt",
-  "name": "涡轮猎杀",
-  "dmgType": "physical",
-  "effect": "strikeHealOnKill",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "starDamage": [
-    50,
-    100,
-    150
-  ],
-  "healAmounts": [
-    100,
-    120,
-    200
-  ],
-  "description": "对当前目标造成{物理+:dmg}点物理伤害。\n若本次技能击杀目标，回复{治疗+:heal}点生命。",
-  "statRows": [
-    {
-      "label": "伤害",
-      "value": "{物理+:dmg}",
-      "stars": "50/100/150"
-    },
-    {
-      "label": "击杀治疗",
-      "value": "{治疗+:heal}",
-      "stars": "100/120/200"
-    }
-  ],
-  "mechanics": [
-    "伤害使用物理加成，击杀治疗仅使用法术加成。",
-    "仅本次技能命中直接击杀触发；普攻、队友击杀不触发，同Tick死亡不能复活。"
-  ]
-},
-"repair_protocol": {
-  "id": "repair_protocol",
-  "name": "维修协议",
-  "dmgType": "magic",
-  "effect": "lowestHealthHeal",
-  "power": 0,
-  "radius": 0,
-  "targeting": "lowestHp",
-  "healAmounts": [
-    160,
-    240,
-    390
-  ],
-  "healTargetCounts": [
-    1,
-    1,
-    2
-  ],
-  "description": "治疗生命比例最低的{控制:count}名友军，每名回复{治疗+:heal}点生命。",
-  "statRows": [
-    {
-      "label": "单目标治疗",
-      "value": "{治疗+:heal}",
-      "stars": "160/240/390"
-    },
-    {
-      "label": "治疗目标",
-      "value": "{控制:count}",
-      "stars": "1/1/2"
-    }
-  ],
-  "mechanics": [
-    "全场友军，包含自己；只选存活且受伤的不同目标，生命比例相同按单位ID排序。",
-    "每个目标获得完整治疗量，仅使用法术加成，实际治疗不超过其已损失生命。"
-  ]
-},
-"rail_execution": {
-  "id": "rail_execution",
-  "name": "磁轨贯杀",
-  "dmgType": "physical",
-  "effect": "railShot",
-  "power": 0,
-  "radius": 0,
-  "targeting": "nearest",
-  "castSeconds": 1,
-  "starDamage": [
-    190,
-    285,
-    460
-  ],
-  "description": "蓄力{控制:castDuration}秒后，向距离最远的目标发射子弹，造成{物理+:dmg}点物理伤害。",
-  "statRows": [
-    {
-      "label": "伤害",
-      "value": "{物理+:dmg}",
-      "stars": "190/285/460"
-    },
-    {
-      "label": "蓄力时间",
-      "value": "{控制:castDuration}秒",
-      "stars": "1/1/1秒"
-    }
-  ],
-  "mechanics": [
-    "蓄力开始选择全场最远可选中敌人，同距离按单位ID排序。",
-    "蓄力可被控制或死亡打断；发射时朝锁定目标当前位置作直线判定，命中沿途第一个可选中敌人，友军不阻挡，不贯穿。",
-    "沿用即时命中的磁轨弹道；锁定目标死亡或不可选中则取消射击。"
-  ]
-},
-"hydraulic_bulwark": {
-    "id": "hydraulic_bulwark", "name": "液压壁垒", "dmgType": "physical", "effect": "hydraulicBulwark",
-    "power": 0, "radius": 0, "targeting": "nearest",
-    "description": "进入壁垒状态，持续{控制:formDuration}秒。期间无法移动，获得{物理+:resists}点护甲和魔抗。\n壁垒状态结束时，回复{治疗+:heal}点生命。",
-    "hydraulicBulwark": { "durationSeconds": 3, "resistanceBonuses": [20, 30, 40], "healAmounts": [200, 400, 600] },
-    "statRows": [
-      { "label": "双抗提升", "value": "{物理+:resists}", "stars": "20/30/40" },
-      { "label": "结束治疗", "value": "{治疗+:heal}", "stars": "200/400/600" },
-      { "label": "持续时间", "value": "{控制:formDuration}秒", "stars": "3/3/3秒" }
+  "nebula_tide": {
+    "id": "nebula_tide",
+    "name": "星云潮汐",
+    "effect": "nebula",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 1,
+    "targeting": "nearest",
+    "castSeconds": 0.3,
+    "starDamage": [
+      60,
+      90,
+      135
     ],
-    "mechanics": ["双抗与结束治疗均乘以1+物理加成/100，不受法术加成、攻击力或伤害增幅影响。", "仅禁止移动，仍可普攻；状态期间不重复施法，正常获得法力。", "状态按固定Tick到期，不因眩晕延长；死亡或战斗结束清理状态且不触发结束治疗。"]
+    "nebula": {
+      "durationSeconds": 3,
+      "intervalSeconds": 0.5,
+      "attackSpeedPenalty": 0.2
+    },
+    "description": "在敌人最密集区域创造持续{控制:duration}秒的星云，覆盖中心及周围1格。\n每0.5秒对区域内敌人造成{魔法+:dmg}魔法伤害，并降低{攻速:slow}%攻击速度；离开区域后恢复。",
+    "statRows": [
+      {
+        "label": "每次伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "60/90/135"
+      },
+      {
+        "label": "完整伤害",
+        "value": "{魔法+:total}",
+        "stars": "360/540/810"
+      },
+      {
+        "label": "攻速降低",
+        "value": "{攻速:slow}%",
+        "stars": "20%/20%/20%"
+      },
+      {
+        "label": "持续时间",
+        "value": "{控制:duration}秒",
+        "stars": "3/3/3秒"
+      }
+    ],
+    "mechanics": [
+      "蓄力结束时搜索全棋盘合法格，以半径1格内可选中敌人数最多的格为中心；并列按行、列稳定选择。",
+      "区域固定持续3秒，首次伤害在生成后0.5秒，最后一次在第3秒，共6次；每次只伤害当时位于区域内的敌人。",
+      "攻速降低为绝对值-0.2，同类区域及其他区域减攻速取最高值，不叠加；控制免疫者免疫减速。",
+      "星云生成后独立持续至到期，不随施法者死亡或控制消失；战斗结束立即清除。"
+    ]
+  },
+  "moon_triple_arrow": {
+    "id": "moon_triple_arrow",
+    "name": "月痕三连矢",
+    "effect": "arrowVolley",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.2,
+    "starDamage": [
+      80,
+      120,
+      180
+    ],
+    "arrowVolley": {
+      "count": 3,
+      "intervalSeconds": 0.15
+    },
+    "description": "向当前目标连续射出3箭，每箭造成{物理+:dmg}物理伤害。",
+    "statRows": [
+      {
+        "label": "每箭伤害",
+        "value": "{物理+:dmg}",
+        "stars": "80/120/180"
+      },
+      {
+        "label": "三段总伤害",
+        "value": "{物理+:total}",
+        "stars": "240/360/540"
+      }
+    ],
+    "mechanics": [
+      "锁定施法时的当前目标；蓄力0.2秒后射出第一箭，后续每0.15秒射出一箭。",
+      "目标死亡或不可选中时停止剩余箭矢，不转火；施法者死亡或被硬控打断时停止连射。",
+      "三箭均为独立物理技能伤害，不触发普攻或普攻回蓝；技能数值与普通攻击力分离。"
+    ]
+  },
+  "milu_star_leap": {
+    "id": "milu_star_leap",
+    "name": "星跃",
+    "effect": "starLeap",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      120,
+      180,
+      270
+    ],
+    "starLeap": {
+      "distance": 1,
+      "durationSeconds": 0.2
+    },
+    "description": "向靠近当前目标的相邻空格位移{控制:leapDistance}格，抵达后对当前目标造成{魔法+:dmg}魔法伤害。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "120/180/270"
+      },
+      {
+        "label": "位移距离",
+        "value": "{控制:leapDistance}格",
+        "stars": "1/1/1格"
+      }
+    ],
+    "mechanics": [
+      "近战范围内蓝满且攻击冷却结束时施放；目标在施放前锁定。",
+      "从自身相邻的合法空格中按距当前目标最近、行、列稳定选择；没有合法空格则原地施放并立即命中。",
+      "位移持续0.2秒，沿路径移动；抵达后对锁定目标造成一次单体魔法伤害，不附带控制、无敌或不可选中。",
+      "位移期间不能普攻或再次施法；受控、死亡或战斗结束会中止位移与未结算伤害；锁定目标失效时不再命中。"
+    ]
+  },
+  "stellar_bulwark": {
+    "id": "stellar_bulwark",
+    "name": "恒星壁垒",
+    "dmgType": "magic",
+    "effect": "stellarBulwark",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "shieldScaling": "magic",
+    "shieldAmounts": [
+      250,
+      375,
+      550
+    ],
+    "stellarBulwark": {
+      "distance": 2,
+      "speedMultiplier": 2,
+      "shieldSeconds": 4,
+      "knockupSeconds": 0.75
+    },
+    "description": "获得{魔法+:shield}点护盾，持续{控制:shieldDuration}秒，向当前目标方向直线冲刺最多{控制:chargeDistance}格。\n击飞沿途敌人{控制:knockup}秒。",
+    "statRows": [
+      {
+        "label": "护盾",
+        "value": "{魔法+:shield}",
+        "stars": "250/375/550"
+      },
+      {
+        "label": "护盾持续",
+        "value": "{控制:shieldDuration}秒",
+        "stars": "4/4/4秒"
+      },
+      {
+        "label": "冲刺距离",
+        "value": "{控制:chargeDistance}格",
+        "stars": "2/2/2格"
+      },
+      {
+        "label": "击飞时间",
+        "value": "{控制:knockup}秒",
+        "stars": "0.75/0.75/0.75秒"
+      }
+    ],
+    "mechanics": [
+      "近战范围内蓝满施放，冲刺方向在施放时按当前攻击目标锁定，按正常移动速度2倍移动。",
+      "取前方2格射线上的最远空格为终点；没有空格时原地获得护盾。不会将友军作为击飞目标，也不造成额外技能伤害。",
+      "每名敌人每次冲刺最多击飞一次；冲刺可被控制打断，不提供不可选中。落点被占用时就近选择合法空格。",
+      "护盾按物理加成计算，持续4秒；重复施法刷新自身这层盾，不移除其他来源护盾。"
+    ]
+  },
+  "sky_annihilation": {
+    "id": "sky_annihilation",
+    "name": "天穹歼灭协议",
+    "dmgType": "physical",
+    "effect": "atlasMissiles",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      280,
+      420,
+      5000
+    ],
+    "atlasMissiles": {
+      "targetCounts": [
+        3,
+        3,
+        99
+      ],
+      "manaReductionPerCast": 5,
+      "maxManaReduction": 30
+    },
+    "burn": {
+      "durationSeconds": 1,
+      "untilBattleEnd": true,
+      "intervalSeconds": 1,
+      "maxHpFraction": 0.02,
+      "dmgType": "true"
+    },
+    "description": "向距离最近的{控制:count}名敌人发射导弹，每枚造成{物理+:dmg}点物理伤害，并使目标灼烧：每秒受到最大生命值{真实:burn}的真实伤害，持续至战斗结束。\n每次施法降低自身{控制:manaReduction}点法力上限，最多降低{控制:manaCap}点。",
+    "statRows": [
+      {
+        "label": "导弹伤害",
+        "value": "{物理+:dmg}",
+        "stars": "280/420/5000"
+      },
+      {
+        "label": "目标数量",
+        "value": "{控制:count}",
+        "stars": "3/3/99"
+      },
+      {
+        "label": "每次蓝条降低",
+        "value": "{控制:manaReduction}",
+        "stars": "5/5/5"
+      },
+      {
+        "label": "最多降低",
+        "value": "{控制:manaCap}",
+        "stars": "30/30/30"
+      },
+      {
+        "label": "每秒生命伤害",
+        "value": "{真实:burn}",
+        "stars": "2%/2%/2%"
+      }
+    ],
+    "mechanics": [
+      "全场按六边形距离选不同敌人，同距离按单位ID排序；三星99为目标上限。",
+      "灼烧首次施加后一秒首次跳伤，同技能不同施法者及重复导弹不叠加、不刷新跳伤节奏；伤害归首次施加者，施法者死亡后仍持续。",
+      "灼烧固定为目标最大生命的2%真实伤害，不受加成、增伤、减伤或暴击影响，可被护盾吸收。",
+      "每场战斗最大法力130逐次降低为125/120/115/110/105/100，下一场重置，不修改原始配置或存档。"
+    ]
+  },
+  "furnace_overload": {
+    "id": "furnace_overload",
+    "name": "炉心过载",
+    "dmgType": "magic",
+    "effect": "furnaceDash",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      200,
+      265,
+      3000
+    ],
+    "furnaceDash": {
+      "speedMultiplier": 1.5,
+      "trailDamage": [
+        70,
+        110,
+        1200
+      ],
+      "knockupSeconds": 1,
+      "targetRange": 3
+    },
+    "description": "以1.5倍移速冲向3格内距离最远的敌人，对沿途敌人造成{魔法+:trail}点魔法伤害。\n到达目标时，将其击飞{控制:knockup}秒，造成{魔法+:dmg}点魔法伤害；目标也会承受沿途伤害。",
+    "statRows": [
+      {
+        "label": "目标伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "200/265/3000"
+      },
+      {
+        "label": "沿途伤害",
+        "value": "{魔法+:trail}",
+        "stars": "70/110/1200"
+      },
+      {
+        "label": "击飞时间",
+        "value": "{控制:knockup}秒",
+        "stars": "1/1/1秒"
+      }
+    ],
+    "mechanics": [
+      "两部分伤害均使用法术加成；每个沿途敌人每次冲刺最多命中一次，主目标额外承受一次沿途伤害。",
+      "施法锁定最远目标和相邻落点，按正常移速1.5倍经过直线格；目标移动后不追踪，抵达时仍相邻才结算主目标伤害和击飞。",
+      "冲刺可被控制打断，不获得不可选中；友军不受伤害，落点被占用时回到起点。"
+    ]
+  },
+  "rending_hunt": {
+    "id": "rending_hunt",
+    "name": "裂解猎杀",
+    "dmgType": "physical",
+    "effect": "spiderLeap",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.3,
+    "starDamage": [
+      85,
+      130,
+      215
+    ],
+    "spiderLeap": {
+      "airborneSeconds": 0.3,
+      "missingHealthFractions": [
+        0.08,
+        0.1,
+        0.15
+      ]
+    },
+    "description": "蓄力{控制:castDuration}秒后跃向距离最远的敌人。\n从天而降，造成{物理+:dmg}点物理伤害。\n额外造成目标已损失生命值{物理:missingHealth}的物理伤害。",
+    "statRows": [
+      {
+        "label": "基础伤害",
+        "value": "{物理+:dmg}",
+        "stars": "85/130/215"
+      },
+      {
+        "label": "已损失生命伤害",
+        "value": "{物理:missingHealth}",
+        "stars": "8%/10%/15%"
+      },
+      {
+        "label": "蓄力时间",
+        "value": "{控制:castDuration}秒",
+        "stars": "0.3/0.3/0.3秒"
+      }
+    ],
+    "mechanics": [
+      "0.3秒蓄力可被控制打断；之后腾空0.3秒不可选中，落地后恢复可选中。",
+      "选择全场最远可选中敌人，距离相同时按单位ID排序。目标死亡或没有相邻空位则取消伤害，不改选目标。",
+      "基础伤害吃物理加成；已损失生命部分在命中结算时读取，不吃物理或法术加成；两部分一起受护甲、增伤、减伤和技能暴击影响。"
+    ]
+  },
+  "turbo_hunt": {
+    "id": "turbo_hunt",
+    "name": "涡轮猎杀",
+    "dmgType": "physical",
+    "effect": "strikeHealOnKill",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      50,
+      100,
+      150
+    ],
+    "healAmounts": [
+      100,
+      120,
+      200
+    ],
+    "description": "对当前目标造成{物理+:dmg}点物理伤害。\n若本次技能击杀目标，回复{治疗+:heal}点生命。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "50/100/150"
+      },
+      {
+        "label": "击杀治疗",
+        "value": "{治疗+:heal}",
+        "stars": "100/120/200"
+      }
+    ],
+    "mechanics": [
+      "伤害使用物理加成，击杀治疗仅使用法术加成。",
+      "仅本次技能命中直接击杀触发；普攻、队友击杀不触发，同Tick死亡不能复活。"
+    ]
+  },
+  "repair_protocol": {
+    "id": "repair_protocol",
+    "name": "维修协议",
+    "dmgType": "magic",
+    "effect": "lowestHealthHeal",
+    "power": 0,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "healAmounts": [
+      160,
+      240,
+      390
+    ],
+    "healTargetCounts": [
+      1,
+      1,
+      2
+    ],
+    "description": "治疗生命比例最低的{控制:count}名友军，每名回复{治疗+:heal}点生命。",
+    "statRows": [
+      {
+        "label": "单目标治疗",
+        "value": "{治疗+:heal}",
+        "stars": "160/240/390"
+      },
+      {
+        "label": "治疗目标",
+        "value": "{控制:count}",
+        "stars": "1/1/2"
+      }
+    ],
+    "mechanics": [
+      "全场友军，包含自己；只选存活且受伤的不同目标，生命比例相同按单位ID排序。",
+      "每个目标获得完整治疗量，仅使用法术加成，实际治疗不超过其已损失生命。"
+    ]
+  },
+  "rail_execution": {
+    "id": "rail_execution",
+    "name": "磁轨贯杀",
+    "dmgType": "physical",
+    "effect": "railShot",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 1,
+    "starDamage": [
+      190,
+      285,
+      460
+    ],
+    "description": "蓄力{控制:castDuration}秒后，向距离最远的目标发射子弹，造成{物理+:dmg}点物理伤害。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{物理+:dmg}",
+        "stars": "190/285/460"
+      },
+      {
+        "label": "蓄力时间",
+        "value": "{控制:castDuration}秒",
+        "stars": "1/1/1秒"
+      }
+    ],
+    "mechanics": [
+      "蓄力开始选择全场最远可选中敌人，同距离按单位ID排序。",
+      "蓄力可被控制或死亡打断；发射时朝锁定目标当前位置作直线判定，命中沿途第一个可选中敌人，友军不阻挡，不贯穿。",
+      "沿用即时命中的磁轨弹道；锁定目标死亡或不可选中则取消射击。"
+    ]
+  },
+  "hydraulic_bulwark": {
+    "id": "hydraulic_bulwark",
+    "name": "液压壁垒",
+    "dmgType": "physical",
+    "effect": "hydraulicBulwark",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "description": "进入壁垒状态，持续{控制:formDuration}秒。期间无法移动，获得{物理+:resists}点护甲和魔抗。\n壁垒状态结束时，回复{治疗+:heal}点生命。",
+    "hydraulicBulwark": {
+      "durationSeconds": 3,
+      "resistanceBonuses": [
+        20,
+        30,
+        40
+      ],
+      "healAmounts": [
+        200,
+        400,
+        600
+      ]
+    },
+    "statRows": [
+      {
+        "label": "双抗提升",
+        "value": "{物理+:resists}",
+        "stars": "20/30/40"
+      },
+      {
+        "label": "结束治疗",
+        "value": "{治疗+:heal}",
+        "stars": "200/400/600"
+      },
+      {
+        "label": "持续时间",
+        "value": "{控制:formDuration}秒",
+        "stars": "3/3/3秒"
+      }
+    ],
+    "mechanics": [
+      "双抗与结束治疗均乘以1+物理加成/100，不受法术加成、攻击力或伤害增幅影响。",
+      "仅禁止移动，仍可普攻；状态期间不重复施法，正常获得法力。",
+      "状态按固定Tick到期，不因眩晕延长；死亡或战斗结束清理状态且不触发结束治疗。"
+    ]
   },
   "abyss_bulwark": {
     "id": "abyss_bulwark",
@@ -420,124 +631,58 @@
     "radius": 2,
     "targeting": "nearest",
     "castSeconds": 0.3,
-    "description": "点亮魂灯4秒，自身获得{魔法+:shield}点护盾，并为生命比例最低的2名其他友军各提供{魔法+:allyShield}点护盾。\n领域随自身移动，2格内敌人的攻击速度降低{攻速:slow}。",
+    "description": "被动：每次参与击杀获得{治疗:permanentHealth}点永久最大生命，本局保留。已累计获得{生命:passiveHealth}。\n点亮魂灯4秒，随自身移动，每秒对两格内每个敌人造成{魔法+:lampBase}＋{生命:lampHp}点魔法伤害。",
     "shadow": {
+      "kind": "soulLamp",
       "durationSeconds": 4,
-      "allyShieldAmounts": [
-        130,
-        195,
-        300
+      "intervalSeconds": 1,
+      "maxHpFractions": [
+        0.01,
+        0.015,
+        0.02
       ],
-      "allyCount": 2,
-      "slowAmounts": [
-        0.15,
-        0.2,
-        0.25
-      ],
-      "kind": "domain"
+      "takedownHealth": [
+        10,
+        18,
+        30
+      ]
     },
     "statRows": [
       {
-        "label": "自身护盾",
-        "value": "{魔法+:shield}",
-        "stars": "260/390/600"
+        "label": "每秒伤害",
+        "value": "{魔法+:lampBase}＋{生命:lampHp}",
+        "stars": "25 / 40 / 60"
       },
       {
-        "label": "友军护盾",
-        "value": "{魔法+:allyShield}",
-        "stars": "130/195/300"
+        "label": "最大生命系数",
+        "value": "{治疗:lampRatio}%最大生命值",
+        "stars": "1% / 1.5% / 2%"
       },
       {
-        "label": "攻速降低",
-        "value": "{攻速:slow}",
-        "stars": "15%/20%/25%"
-      }
-    ],
-    "shieldAmounts": [
-      260,
-      390,
-      600
-    ],
-    "mechanics": [
-      "友军护盾使用施法者的法术加成，持续4秒；友军选择不限距离、排除自己。",
-      "减攻速是绝对减量；同类领域取最高减速。离开领域或领域结束时移除。"
-    ]
-  },
-  "shadow_seam": {
-    "id": "shadow_seam",
-    "name": "影缝",
-    "dmgType": "physical",
-    "effect": "shadow",
-    "power": 0,
-    "radius": 0,
-    "targeting": "nearest",
-    "castSeconds": 0.3,
-    "description": "瞬移至距离最远的敌人身后，每0.15秒攻击一次，共3次，每次造成{物理+:dmg}点物理伤害。\n目标在连击结束后3秒内死亡时，回复{控制:refund}点法力值。",
-    "shadow": {
-      "hits": 3,
-      "intervalSeconds": 0.15,
-      "refundMana": 35,
-      "refundWindowSeconds": 3,
-      "kind": "flurry"
-    },
-    "statRows": [
-      {
-        "label": "每段伤害",
-        "value": "{物理+:dmg}",
-        "stars": "90/135/210"
+        "label": "参与击杀永久生命",
+        "value": "{治疗:permanentHealth}",
+        "stars": "10 / 18 / 30"
       },
       {
-        "label": "三段总伤害",
-        "value": "{物理+:total}",
-        "stars": "270/405/630"
+        "label": "被动累计生命",
+        "value": "{生命:passiveHealth}",
+        "stars": "本局累计"
       },
       {
-        "label": "法力回复",
-        "value": "{控制:refund}",
-        "stars": "35/35/35"
+        "label": "持续时间",
+        "value": "4秒",
+        "stars": "4 / 4 / 4秒"
       }
     ],
     "mechanics": [
-      "三段均是技能伤害，分别判定技能暴击，不触发普攻回蓝或暗影普攻侵蚀。",
-      "技能末段击杀可以回蓝；前段已死亡则不在结束后死亡窗口内。"
+      "首次伤害在点灯1秒后，1/2/3/4秒各结算一次；重施刷新持续时间和周期，不叠加领域。",
+      "参与击杀要求近5秒造成实际生命伤害，结算时存活；永久生命在本局跨战斗保存，升星合并相加。",
+      "移除原有自身护盾、友军护盾和攻速降低。"
     ],
     "starDamage": [
-      90,
-      135,
-      210
-    ]
-  },
-  "soulcleaver_rift": {
-    "id": "soulcleaver_rift",
-    "name": "裂魂断界",
-    "dmgType": "physical",
-    "effect": "shadow",
-    "power": 0,
-    "radius": 2,
-    "targeting": "nearest",
-    "castSeconds": 0.2,
-    "description": "挥动巨剑，攻击朝向目标的前方2格扇形区域，各造成{物理+:dmg}点物理伤害。\n目标每损失1%生命值，本技能伤害提高1%，最多提高50%。",
-    "shadow": {
-      "coneDegrees": 60,
-      "missingHpBonusCap": 0.5,
-      "kind": "cleave"
-    },
-    "statRows": [
-      {
-        "label": "基础伤害",
-        "value": "{物理+:dmg}",
-        "stars": "260/390/650"
-      },
-      {
-        "label": "最高伤害",
-        "value": "{物理+:maximum}",
-        "stars": "390/585/975"
-      }
-    ],
-    "starDamage": [
-      260,
-      390,
-      650
+      25,
+      40,
+      60
     ]
   },
   "ghostflame_combo": {
@@ -873,57 +1018,6 @@
       "按附件固定星级基础值结算；普通攻击独立于主动技能。"
     ]
   },
-  "sunforge_bastion": {
-    "id": "sunforge_bastion",
-    "name": "铸日圣垒",
-    "dmgType": "magic",
-    "effect": "sunlight",
-    "power": 0,
-    "radius": 0,
-    "targeting": "nearest",
-    "castSeconds": 0,
-    "sunlight": {
-      "kind": "bastion",
-      "durationSeconds": 4,
-      "allyCount": 2,
-      "allyShields": [
-        130,
-        195,
-        300
-      ],
-      "heals": [
-        80,
-        120,
-        180
-      ]
-    },
-    "description": "自身获得{魔法+:shield}点护盾，并为生命比例最低的2名其他友军各提供{魔法+:allyShield}点护盾，持续4秒。友军护盾持续到结束且未被击碎时，回复{魔法+:heal}点生命。",
-    "statRows": [
-      {
-        "label": "自身护盾",
-        "value": "{魔法+:shield}",
-        "stars": "260/390/600"
-      },
-      {
-        "label": "友军护盾",
-        "value": "{魔法+:allyShield}",
-        "stars": "130/195/300"
-      },
-      {
-        "label": "治疗",
-        "value": "{魔法+:heal}",
-        "stars": "80/120/180"
-      }
-    ],
-    "mechanics": [
-      "按附件固定星级基础值结算；普通攻击独立于主动技能。"
-    ],
-    "shieldAmounts": [
-      260,
-      390,
-      600
-    ]
-  },
   "lightchaser_hunt": {
     "id": "lightchaser_hunt",
     "name": "逐光猎杀",
@@ -970,55 +1064,6 @@
       0.4,
       0.5,
       0.7
-    ]
-  },
-  "solar_cleave": {
-    "id": "solar_cleave",
-    "name": "烈阳开山",
-    "dmgType": "physical",
-    "effect": "sunlight",
-    "power": 0,
-    "radius": 2,
-    "targeting": "nearest",
-    "castSeconds": 0,
-    "starDamage": [
-      260,
-      390,
-      650
-    ],
-    "sunlight": {
-      "kind": "cleave",
-      "coneDegrees": 120,
-      "shieldTargetCap": 3,
-      "guardTargetCount": 3,
-      "guardReduction": 0.15,
-      "guardSeconds": 4
-    },
-    "description": "劈击朝向当前目标、半径2格的120°扇形，对每名敌人各造成{物理+:dmg}点物理伤害。每命中1名敌人获得{物理+:shield}点护盾，最多计算3名敌人。\n命中至少3名敌人时，额外获得15%伤害减免，持续4秒。",
-    "statRows": [
-      {
-        "label": "伤害",
-        "value": "{物理+:dmg}",
-        "stars": "260/390/650"
-      },
-      {
-        "label": "单目标护盾",
-        "value": "{物理+:shield}",
-        "stars": "70/105/170"
-      },
-      {
-        "label": "最高护盾",
-        "value": "{物理+:maximumShield}",
-        "stars": "210/315/510"
-      }
-    ],
-    "mechanics": [
-      "按附件固定星级基础值结算；普通攻击独立于主动技能。"
-    ],
-    "shieldAmounts": [
-      70,
-      105,
-      170
     ]
   },
   "ember_sacred_blade": {
@@ -1232,15 +1277,15 @@
   "corona_transit": {
     "id": "corona_transit",
     "name": "日冕跃迁",
-    "dmgType": "magic",
+    "dmgType": "physical",
     "effect": "sunlight",
     "power": 0,
     "radius": 0,
     "targeting": "nearest",
     "castSeconds": 0,
     "starDamage": [
-      110,
-      165,
+      90,
+      135,
       1600
     ],
     "sunlight": {
@@ -1252,14 +1297,14 @@
       ],
       "intervalSeconds": 0.2,
       "finalDamage": [
-        550,
-        825,
+        450,
+        675,
         8000
       ],
       "recastDamageLoss": 0.2,
       "recastDamageLossCap": 0.4
     },
-    "description": "跃向目标并连续斩击{控制:count}次，每0.2秒造成{魔法+:dmg}魔法伤害，最后一击造成{魔法+:final}魔法伤害。\n\n击杀目标后，跃向最近的敌人并再次施放此技能。本次连锁内，每次重放降低{控制:recastLoss}%伤害（至多{控制:recastCap}%）。",
+    "description": "跃向目标并连续斩击{控制:count}次，每0.2秒造成{物理+:dmg}物理伤害，最后一击造成{物理+:final}物理伤害。\n\n击杀目标后，跃向最近的敌人并再次施放此技能。本次连锁内，每次重放降低{控制:recastLoss}%伤害（至多{控制:recastCap}%）。",
     "statRows": [
       {
         "label": "连击次数",
@@ -1268,17 +1313,17 @@
       },
       {
         "label": "普通段伤害",
-        "value": "{魔法+:dmg}",
-        "stars": "110/165/1600"
+        "value": "{物理+:dmg}",
+        "stars": "90/135/1600"
       },
       {
         "label": "最后一击伤害",
-        "value": "{魔法+:final}",
-        "stars": "550/825/8000"
+        "value": "{物理+:final}",
+        "stars": "450/675/8000"
       }
     ],
     "mechanics": [
-      "按附件固定星级基础值结算；普通攻击独立于主动技能。"
+      "技能按星级基础物理伤害结算，受物理加成影响；普通攻击独立于主动技能。"
     ]
   },
   "monster_blast": {

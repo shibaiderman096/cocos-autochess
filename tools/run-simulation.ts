@@ -183,6 +183,8 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
           playerEquippedItems:playerUnits.flatMap(u=>u.equipment??[]),
           playerEquipmentCount:playerEquipmentInventory.length+playerUnits.reduce((n,u)=>n+(u.equipment?.length??0),0)}),
         ...wave.budget,globalWaveId:wave.id,budgetWaveIndex:wave.budget?.budgetWaveIndex??0,
+        ...(wave.enemyUpgrade ? { enemyUpgrade: wave.enemyUpgrade } : {}),
+        ...(wave.goldBudget ? { goldBudget: wave.goldBudget } : {}),
         enemyGenerationMode:mode,waveKind:wave.waveKind??(wave.stage===1?'intro':'normal'),encounterKind:wave.encounterKind,enemyBudget:wave.budget??null,
         formationVersion:finalized.version,formationLevel:finalized.level,formationStrength:finalized.strength,roleCounts:fd.roleCounts,
         templateId:fd.templateId,templateUsed:fd.templateUsed,formationScore:fd.score.total,spacingViolations:fd.spacingViolations,

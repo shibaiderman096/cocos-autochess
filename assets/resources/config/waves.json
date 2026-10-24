@@ -24,7 +24,7 @@
         "statMultiplier": 0.85
       },
       {
-        "unitId": "bronda",
+        "unitId": "nightmare_lamplighter",
         "x": 4,
         "y": 6,
         "star": 1,
@@ -71,7 +71,7 @@
         "statMultiplier": 1
       },
       {
-        "unitId": "leon",
+        "unitId": "ghostflame_blade",
         "x": 4,
         "y": 4,
         "star": 1,
@@ -91,7 +91,7 @@
     "name": "元素突袭",
     "enemies": [
       {
-        "unitId": "leon",
+        "unitId": "ghostflame_blade",
         "x": 1,
         "y": 4,
         "star": 2,
@@ -132,7 +132,7 @@
         "statMultiplier": 1.15
       },
       {
-        "unitId": "leon",
+        "unitId": "ghostflame_blade",
         "x": 4,
         "y": 4,
         "star": 2,
@@ -146,7 +146,7 @@
         "statMultiplier": 1.15
       },
       {
-        "unitId": "bronda",
+        "unitId": "nightmare_lamplighter",
         "x": 5,
         "y": 6,
         "star": 2,
@@ -173,7 +173,7 @@
         "statMultiplier": 1
       },
       {
-        "unitId": "leon",
+        "unitId": "ghostflame_blade",
         "x": 5,
         "y": 4,
         "star": 2,

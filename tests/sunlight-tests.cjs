@@ -6,7 +6,10 @@ const {CombatStatistics}=require('../assets/scripts/battle/CombatStatistics.ts')
 const {resolveTraits}=require('../assets/scripts/battle/Traits.ts');
 const {buildSkillDescription,buildSkillStatRows}=require('../assets/scripts/ui/SkillPresentation.ts');
 const {sunlightTierText}=require('../assets/scripts/ui/SunlightPresentation.ts');
-const roster=require('../assets/resources/config/units.json'),skills=require('../assets/resources/config/skills.json'),battle=require('../assets/resources/config/battle.json');
+const retired=require('./fixtures/retired-20261023.json');
+const roster=[...require('../assets/resources/config/units.json'),...retired.units],skills={...require('../assets/resources/config/skills.json'),...retired.skills},battle=structuredClone(require('../assets/resources/config/battle.json'));
+// Historical skill regression fixtures retain their original faction membership.
+for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','seraphiel'];t.members=old;}
 const clone=x=>JSON.parse(JSON.stringify(x)),trait=battle.traits.find(t=>t.id==='sunlight'),ids=trait.members;
 const dummy={id:'dummy',name:'target',hp:100000,atk:0,armor:0,mr:0,atkSpeed:.1,range:1,moveTicks:6,maxMana:0,startMana:0,manaPerHit:0,critChance:0};
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
@@ -142,19 +145,19 @@ for(const star of [1,2,3]){
  const j=create('oris',star,{enemies:[0,1,2,3,4,5].map(x=>({x,y:5})),bonuses:{spellPower:100}});activate(j);const expected=[3,4,6][star-1];assert.equal(j.s.events.filter(e=>e.t==='sun_pulse'&&e.effect==='warning').length,expected);advance(j.s,15);assert.equal(hits(j).length,0);advance(j.s,1);assert.equal(hits(j).length,expected*2);assert.equal(hits(j).find(e=>e.dmgType==='magic').dmg,[600,900,9000][star-1]);assert.equal(hits(j).find(e=>e.dmgType==='true').dmg,[100,150,1500][star-1]);
  assert.ok(j.targets.every(u=>!('sunlightJudged' in u.snapshot(j.s.tick))));
  const t=create('seraphiel',star,{enemies:[{x:2,y:5},{x:5,y:5}]});activate(t);assert.equal(t.src.skillUntargetable,false);advance(t.s,([2,4,10][star-1]-1)*4);assert.equal(t.src.skillUntargetable,false);
- assert.equal(hits(t).filter(e=>e.dmgType==='magic').length,[2,4,10][star-1]);assert.equal(hits(t).filter(e=>e.dmgType==='true').length,0,'end-of-transit mark damage and its bonus are removed');
- assert.equal(new Set(hits(t).map(e=>e.id)).size,1,'the whole combo locks one target');assert.equal(hits(t).at(-1).dmg,[550,825,8000][star-1]);
+ assert.equal(hits(t).filter(e=>e.dmgType==='physical').length,[2,4,10][star-1]);assert.equal(hits(t).filter(e=>e.dmgType==='true').length,0,'end-of-transit mark damage and its bonus are removed');
+ assert.equal(new Set(hits(t).map(e=>e.id)).size,1,'the whole combo locks one target');assert.equal(hits(t).at(-1).dmg,[450,675,8000][star-1]);
  assert.ok(!t.s.events.some(e=>e.t==='sun_pulse'&&e.kind==='transit'&&e.effect==='burst'));
 }
-const solo=create('seraphiel',1,{enemies:[{x:3,y:5}]});activate(solo);advance(solo.s,16);assert.deepEqual(hits(solo).map(e=>e.dmg),[110,550]);assert.equal(solo.src.skillUntargetable,false);
-const interrupted=create('seraphiel');activate(interrupted);interrupted.s.sunlight.interrupt(interrupted.src);advance(interrupted.s,20);assert.deepEqual(hits(interrupted).map(e=>[e.dmgType,e.dmg]),[['magic',110]]);assert.equal(interrupted.src.skillUntargetable,false);
+const solo=create('seraphiel',1,{enemies:[{x:3,y:5}]});activate(solo);advance(solo.s,16);assert.deepEqual(hits(solo).map(e=>e.dmg),[90,450]);assert.equal(solo.src.skillUntargetable,false);
+const interrupted=create('seraphiel');activate(interrupted);interrupted.s.sunlight.interrupt(interrupted.src);advance(interrupted.s,20);assert.deepEqual(hits(interrupted).map(e=>[e.dmgType,e.dmg]),[['physical',90]]);assert.equal(interrupted.src.skillUntargetable,false);
 const route=create('seraphiel',1,{enemies:[{x:1,y:5},{x:3,y:5},{x:5,y:5}]});activate(route);advance(route.s,16);assert.equal(new Set(hits(route).map(e=>e.id)).size,1,'surviving targets do not cause extra jumps');
 // A 10-trait judgment target grants neither removed skill bonus nor an end explosion.
 {
  const c=config([clone(trait)]),s=new BattleSim(c,[...ids.map((id,i)=>({cfg:{...dummy,id,hp:1000},side:0,x:i%7,y:Math.floor(i/7)})),{cfg:dummy,side:1,x:3,y:7}],{seed:19});
  s.start();advance(s,40);const bow=s.units[6],transit=s.units[9],target=s.units.at(-1);assert.equal(s.events.filter(e=>e.t==='hit').length,2);
  s.sunlight.activate(bow,c.getSkill('sunpiercer_lance'),target.id);settle(s);assert.ok(s.events.filter(e=>e.t==='hit'&&e.source===bow.id).every(e=>e.dmgType==='physical'));
- s.sunlight.activate(transit,c.getSkill('corona_transit'),target.id);settle(s);advance(s,16);const jumps=s.events.filter(e=>e.t==='hit'&&e.source===transit.id);assert.equal(jumps.length,2);assert.ok(jumps.every(e=>e.dmgType==='magic'));assert.equal(transit.skillUntargetable,false);
+ s.sunlight.activate(transit,c.getSkill('corona_transit'),target.id);settle(s);advance(s,16);const jumps=s.events.filter(e=>e.t==='hit'&&e.source===transit.id);assert.equal(jumps.length,2);assert.ok(jumps.every(e=>e.dmgType==='physical'));assert.equal(transit.skillUntargetable,false);
 }
 const timeout=create('phinia');activate(timeout);advance(timeout.s,120);assert.equal(timeout.src.skillAttackSpeedBonus,0);assert.equal(hits(timeout).length,0);
 // Shield groups cannot spend the same absorbed damage twice.
@@ -171,6 +174,7 @@ for(const id of ids){
  }
  const f=create(id);f.src.mana=f.src.cfg.maxMana;f.src.atkCd=0;f.s.step();assert.equal(f.s.events.find(e=>e.t==='cast')?.skillId,f.sk.id);advance(f.s,40);assert.ok(f.s.events.some(e=>e.t==='sun_pulse'),id+' real cast produces visual events');
  function replay(){const f=create(id);f.src.mana=f.src.cfg.maxMana;f.src.atkCd=0;return f.s.run();}assert.deepEqual(replay(),replay(),id+' deterministic');
+ if(retired.units.some(unit=>unit.id===id))continue; // Retired art is intentionally no longer shipped.
  const art=require('../assets/scripts/view/ArtPaths.ts');assert.ok(fs.existsSync(`assets/resources/${art.UNIT_ART[id].replace('/spriteFrame','.png')}`));assert.ok(art.UNIT_PORTRAIT[id]);
 }
 for(const tier of trait.breakpoints)assert.doesNotMatch(sunlightTierText(tier),/undefined|NaN/);

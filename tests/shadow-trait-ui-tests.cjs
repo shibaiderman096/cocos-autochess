@@ -7,7 +7,7 @@ const roster=require('../assets/resources/config/units.json');
 const flush=()=>{while(pending.length)pending.shift()();};
 const parent=new Node('UI'),panel=new TraitPanel(parent);
 panel.refresh(resolveTraits([{...shadow,members:[],pendingMembers:true}],roster.map(u=>u.id)),roster);assert.equal(panel.rows.children.length,0);
-const trait={...shadow,pendingMembers:false};
+const trait={...shadow,pendingMembers:false,members:[...shadow.members,...roster.filter(u=>!shadow.members.includes(u.id)).slice(0,2).map(u=>u.id)]}; // Synthetic ten-member rendering fixture.
 const textOf=node=>[...node.components.values()].map(component=>component.string??'').join(' ').replace(/<[^>]*>/g,'');
 for(const n of [3,5,7,10]) {
   panel.refresh(resolveTraits([trait],trait.members.slice(0,n)),roster);flush();

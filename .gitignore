@@ -7,7 +7,17 @@ temp/
 local/
 build/
 profiles/
-native
+/native/**
+!/native/engine/
+!/native/engine/android/
+!/native/engine/android/app/
+!/native/engine/android/app/build.gradle
+!/native/engine/android/app/src/
+!/native/engine/android/app/src/com/
+!/native/engine/android/app/src/com/cocos/
+!/native/engine/android/app/src/com/cocos/game/
+!/native/engine/android/app/src/com/cocos/game/AppActivity.java
+!/native/engine/android/app/src/com/cocos/game/SkyVideoBackground.java
 # Local editor integrations and generated templates
 extensions/
 .creator/

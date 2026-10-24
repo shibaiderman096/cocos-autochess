@@ -12,7 +12,7 @@
   },
   "preparationSeconds": 1,
   "nextWaveDelaySeconds": 1,
-  "initialHealth": 20,
+  "initialHealth": 100,
   "lossPerEnemy": 2,
   "starScaling": [
     {
@@ -43,8 +43,8 @@
       "id": "astral",
       "name": "星穹",
       "glyph": "星",
-      "description": "激活后，己方棋盘随机生成星穹格。战斗开始时，位于星穹格上的己方棋子获得物理加成、法术加成与最大生命值，星穹棋子获得双倍。",
-      "members": ["oris", "blackstar_warlock", "star_armor_guard", "milu"],
+      "description": "激活后随机生成星穹格，本局位置固定，升档只新增格子。战斗开始时，格上己方棋子获得物理加成、法术加成与最大生命值，星穹棋子获得双倍。",
+      "members": ["oris", "blackstar_warlock", "star_armor_guard", "milu", "xiya", "nebula_weaver", "gravity_executor"],
       "pendingMembers": false,
       "breakpoints": [
         { "count": 3, "tier": "bronze", "astral": { "cellCount": 7, "power": 15, "maxHpBonus": 0.1, "memberMultiplier": 2 } },
@@ -354,8 +354,6 @@
         "abyss_iron_guard",
         "blackfeather_hunter",
         "nightmare_lamplighter",
-        "shadow_seam_assassin",
-        "soulcleaver_general",
         "ghostflame_blade",
         "eclipse_crossbow",
         "nether_lantern_witch",
@@ -416,9 +414,7 @@
       "members": [
         "helion",
         "saiph",
-        "bronda",
         "kaeru",
-        "leon",
         "phinia",
         "aurelia",
         "celine",

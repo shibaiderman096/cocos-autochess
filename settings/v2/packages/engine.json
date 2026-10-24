@@ -230,5 +230,17 @@
       "pipeline": "custom-pipeline",
       "custom-pipeline-post-process": false
     }
+  },
+  "macroConfig": {
+    "ENABLE_TILEDMAP_CULLING": true,
+    "TOUCH_TIMEOUT": 5000,
+    "ENABLE_TRANSPARENT_CANVAS": true,
+    "ENABLE_WEBGL_ANTIALIAS": true,
+    "ENABLE_FLOAT_OUTPUT": false,
+    "CLEANUP_IMAGE_CACHE": false,
+    "ENABLE_MULTI_TOUCH": true,
+    "MAX_LABEL_CANVAS_POOL_SIZE": 20,
+    "ENABLE_WEBGL_HIGHP_STRUCT_VALUES": false,
+    "BATCHER2D_MEM_INCREMENT": 144
   }
 }

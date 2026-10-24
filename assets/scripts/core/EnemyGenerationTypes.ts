@@ -63,8 +63,19 @@ export function combatEquipmentIdentity(items: unknown): unknown {
   return items.map(item => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Invalid equipment identity');
     return Object.fromEntries(Object.entries(item).filter(([key]) =>
-      !['name', 'icon', 'description', 'effectDescription'].includes(key)));
+      !['name', 'icon', 'description', 'effectDescription', 'introduction'].includes(key)));
   });
+}
+
+/** Adding items preserves existing saved inventories; existing mechanical fields still compare normally. */
+export function adoptEquipmentCatalogueAdditions(previous: unknown, next: unknown): unknown {
+  if (!Array.isArray(previous) || !Array.isArray(next) || !previous.length || next.length <= previous.length) return previous;
+  const valid = (items: any[]) => items.every(item => item && typeof item.id === 'string')
+    && new Set(items.map(item => item.id)).size === items.length;
+  if (!valid(previous) || !valid(next)) return previous;
+  const old = new Map(previous.map(item => [item.id, item]));
+  if (previous.some(item => !next.some(candidate => candidate.id === item.id))) return previous;
+  return next.map(item => old.get(item.id) ?? item);
 }
 
 /** Display copy and table templates do not change difficulty or formation rules. */
@@ -91,14 +102,30 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
       });
       return identity;
     }) } : battle;
-  return stableEnemyJson({ ...value, ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
+  // Opening rewards do not change enemy generation and must not invalidate existing saves.
+  const run = value.run && typeof value.run === 'object' ? Object.fromEntries(Object.entries(value.run).filter(([key]) => key !== 'openingEncounter')) : value.run;
+  return stableEnemyJson({ ...value, ...(value.run === undefined ? {} : { run }), ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
     ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
 }
 
 /** Legacy saves may contain presentation fields; all combat fields must still match. */
 export function sameCombatConfigurationIdentity(saved: string, current: string): boolean {
   try {
-    return combatConfigurationIdentity(JSON.parse(saved)) === combatConfigurationIdentity(JSON.parse(current));
+    const previous=JSON.parse(saved),next=JSON.parse(current);
+    // Shop prices do not change generated enemies and must not invalidate existing campaigns.
+    if (previous.run?.stageEncounters?.shop && next.run?.stageEncounters?.shop)
+      previous.run.stageEncounters.shop.equipmentPrices = next.run.stageEncounters.shop.equipmentPrices;
+    if (previous.equipment && next.equipment) previous.equipment = adoptEquipmentCatalogueAdditions(previous.equipment, next.equipment);
+      // Existing campaigns may adopt the newly introduced post-campaign portal rules.
+      // Every pre-existing combat field still participates in identity validation.
+      if (previous.run && next.run?.endlessProgression && previous.run.endlessProgression === undefined)
+        previous.run.endlessProgression = next.run.endlessProgression;
+    const before=previous.run?.stageEncounters?.basicEquipmentIds,after=next.run?.stageEncounters?.basicEquipmentIds;
+    const catalogue=Array.isArray(next.equipment)?next.equipment.filter(item=>!item.specialShopOnly).map(item=>item.id):[];
+    if(Array.isArray(before)&&Array.isArray(after)&&catalogue.length>0
+      &&after.length===catalogue.length&&new Set(after).size===catalogue.length&&catalogue.every(id=>after.includes(id))
+      &&before.every(id=>catalogue.includes(id))) previous.run.stageEncounters.basicEquipmentIds=after;
+    return combatConfigurationIdentity(previous) === combatConfigurationIdentity(next);
   } catch {
     return false;
   }

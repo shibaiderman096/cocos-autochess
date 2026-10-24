@@ -30,6 +30,14 @@ for(let round=1;round<=3;round++){
 console.log('PASS first monster stage: 3 value2 chests, explicit claim, reload persistence, no duplicate units and advancement gate');
 
 for(const mode of ['legacy','budget-v1']){
+ const populationSession=make(undefined,mode);
+ for(const wave of populationSession.waves.filter(w=>w.stage>=2&&w.encounterKind!=='specialShop')){
+  if(wave.encounterKind==='monster'&&wave.enemies.some(e=>inputs.run.stageEncounters.strongMonster.unitIds.includes(e.unitId)))continue;
+  const expected=wave.stage===2?(wave.round<5?3:4):wave.stage===3?(wave.round<2?4:5):Math.min(10,wave.stage+2);
+  assert.equal(wave.enemies.length,expected,`${mode} ${wave.stage}-${wave.round} population`);
+  if(wave.budget)assert.equal(wave.budget.population,expected,'budget bounds use the actual population');
+ }
+ assert.deepEqual(make(populationSession.snapshot(),mode).waves,populationSession.waves,'population schedule survives save/resume');
  for(const stage of [2,3]){
   const early=make(undefined,mode),waves=early.waves.filter(w=>w.stage===stage);
   assert.equal(waves.filter(w=>w.encounterKind==='monster').length,1);assert.equal(waves.filter(w=>w.encounterKind==='specialShop').length,1);
@@ -48,17 +56,16 @@ for(const mode of ['legacy','budget-v1']){
   assert.equal(monsterSession.canAdvanceWave(),false);assert.ok(choose(monsterSession,'claim').ok);assertLegalSession(monsterSession);
  }
  jump(s,'boss');win(s);assert.equal(s.pendingStageReward.kind,'bossChoice');assert.equal(s.pendingEquipmentReward,undefined,'old automatic equipment reward is disabled');
- const stale=s.pendingStageReward.id;assert.ok(choose(s,'equipment').ok);assert.equal(s.pendingStageReward.kind,'equipmentChoice');
- const choices=s.pendingStageReward.candidates;assert.equal(new Set(choices).size,4);assert.ok(choices.every(id=>inputs.run.stageEncounters.basicEquipmentIds.includes(id)));
- assert.deepEqual(make(s.snapshot(),mode).pendingStageReward.candidates,choices,'four choices persist without reroll');
- const count=s.owned.equipmentReserve.length;assert.ok(choose(s,'claim',2).ok);assert.equal(s.owned.equipmentReserve.length,count+1);
- assert.equal(s.act({type:'stageChoice',rewardId:stale,choice:'equipment'}).ok,false);assertLegalSession(s);
- const units=make(undefined,mode);jump(units,'boss');win(units);assert.ok(choose(units,'units').ok);assert.equal(units.pendingStageReward.value,8);assert.ok(choose(units,'claim').ok);assertLegalSession(units);
+ const stale=s.pendingStageReward.id, restoredBoss=make(s.snapshot(),mode);
+ const opened=choose(s,'claim');assert.ok(opened.ok);assert.ok(['units','equipment','health'].includes(opened.stageReward.kind));
+ assert.deepEqual(choose(restoredBoss,'claim'),opened,'unopened chest result persists without reroll');
+ assert.equal(s.pendingStageReward,undefined,'random boss reward is delivered in one click');
+ assert.equal(s.act({type:'stageChoice',rewardId:stale,choice:'claim'}).ok,false);assertLegalSession(s);
  const elite=make(undefined,mode);jump(elite,'elite');win(elite);assert.equal(elite.pendingStageReward,undefined,'only boss offers category choice');
 }
-console.log('PASS both generation modes: exact stage encounters, real monster configs, boss branches, four distinct basic items, persistence, stale actions and no elite category reward');
+console.log('PASS both generation modes: exact stage encounters, real monster configs, random boss chest, persistence, stale actions and no elite reward');
 
-const shop=make();jump(shop,'specialShop');assert.equal(shop.pendingStageReward.offers.length,5);assert.equal(shop.startBattle(),null);
+const shop=make();shop.level.level=10;jump(shop,'specialShop');assert.equal(shop.pendingStageReward.offers.length,5);assert.equal(shop.startBattle(),null);
 const p=shop.pendingStageReward,eq=p.offers.findIndex(i=>i.kind==='equipment'),unit=p.offers.findIndex(i=>i.kind==='unit');
 const state=shop.state,streak=shop.economy.snapshot();assert.equal(choose(shop,'buy',eq).ok,false);shop.economy.add(100);
 const gold=shop.economy.gold;assert.ok(choose(shop,'buy',eq).ok);assert.equal(shop.economy.gold,gold-p.offers[eq].price);assert.equal(choose(shop,'buy',eq).ok,false);
@@ -67,6 +74,31 @@ assert.ok(choose(sameShop,'continue').ok);assert.equal(sameShop.save.lastReward.
 assert.equal(sameShop.economy.winStreak,streak.winStreak);assert.equal(sameShop.economy.loseStreak,streak.loseStreak);assert.ok(sameShop.nextWave());
 const skip=make();jump(skip,'specialShop');const prior=skip.economy.gold;assert.ok(choose(skip,'continue').ok);assert.equal(skip.economy.gold,prior);
 console.log('PASS special shop: 5 persisted mixed offers, insufficient money, actual charges, duplicate prevention, buy/reload, skip, and no combat income/XP/streak/HP change');
+
+for(const [emblem,price] of [[false,6],[true,10]]){
+ let priced,index;
+ for(let seed=1;seed<=100;seed++){
+  const candidate=make(undefined,'legacy',seed);jump(candidate,'specialShop');
+  index=candidate.pendingStageReward.offers.findIndex(o=>o.kind==='equipment'&&!o.id.startsWith('basic_')&&(o.id==='trait_emblem')===emblem);
+  if(index>=0){priced=candidate;break;}
+ }
+ assert.ok(priced);assert.equal(priced.pendingStageReward.offers[index].price,price);
+ priced.economy.add(price-1);assert.equal(choose(priced,'buy',index).error,'not_enough_gold');
+ assert.equal(priced.economy.gold,price-1);priced.economy.add(1);assert.ok(choose(priced,'buy',index).ok);
+ assert.equal(priced.economy.gold,0);assert.ok(priced.owned.equipmentReserve.includes(priced.pendingStageReward.offers[index].id));
+ assert.ok(make(priced.snapshot(),'legacy',priced.save.runSeed).pendingStageReward.offers[index].bought);
+}
+const oldRules=JSON.parse(JSON.stringify(inputs.run));oldRules.stageEncounters.shop.equipmentPrices={basic:3,advanced:6,special:8};
+const compatibility=make(undefined,'budget-v1'),oldCampaign=new RunSession(compatibility.cfg,oldRules,inputs.waves,{...deps,stageCount:6,runSeed:11,enemyGenerationMode:'budget-v1'});
+jump(oldCampaign,'specialShop');oldCampaign.economy.add(8);
+assert.ok(choose(oldCampaign,'buy',oldCampaign.pendingStageReward.offers.findIndex(o=>o.kind==='equipment')).ok);
+const oldOffers=oldCampaign.pendingStageReward.offers;
+const resumedPricing=make(oldCampaign.snapshot(),'budget-v1');assert.deepEqual(resumedPricing.pendingStageReward.offers,oldOffers.map(o=>({...o,price:o.kind==='equipment'?(inputs.equipment.find(e=>e.id===o.id).shopPrice??(o.id==='trait_emblem'?10:6)):o.price})));
+assert.equal(resumedPricing.economy.gold,oldCampaign.economy.gold,'price migration never charges gold');
+assert.ok(choose(resumedPricing,'continue').ok);assert.ok(resumedPricing.nextWave());
+const nextShop=resumedPricing.waves.find(w=>w.stage===5&&w.encounterKind==='specialShop');assert.ok(resumedPricing.debugJump(5,nextShop.round));
+for(const offer of resumedPricing.pendingStageReward.offers.filter(o=>o.kind==='equipment'))assert.equal(offer.price,inputs.equipment.find(e=>e.id===offer.id).shopPrice??(offer.id==='trait_emblem'?10:6));
+console.log('PASS special shop prices: ordinary 6, emblem 10, exact funds, inventory delivery, reload and old-budget-save compatibility');
 
 const full=make();full.moveUnit(1,{location:'board',x:3,y:3});
 for(const card of full.cfg.allUnits().filter(u=>u.id!==full.owned.onBoard()[0].unitId).slice(0,9)){

@@ -88,6 +88,7 @@ test('shop, combat and preview RNG are isolated from enemy and bot streams (C/D/
 test('save/load keeps shop refresh indices, UID allocation and deterministic continuation', () => {
   const a = make(12345); const bot = new MinimalBaselineBot();
   for(let i=0;i<4;i++) {bot.claimRewards(a.playerPort());if(a.flow.wave.encounterKind==='specialShop'){assert.equal(a.nextWave(),true);bot.claimRewards(a.playerPort());}bot.prepare(a.playerPort());a.startBattle().run();a.settleBattle();bot.claimRewards(a.playerPort());a.nextWave();}
+  if(a.pendingStageReward?.kind==='specialShop'){assert.equal(a.refreshShop().error,'shop_occupied');assert.ok(a.claimStageReward({type:'stageChoice',rewardId:a.pendingStageReward.id,choice:'continue'}).ok);assert.ok(a.nextWave());}
   assert.equal(a.refreshShop().ok,true); const saved = a.snapshot();
   const b = make(12345,{save:saved}); assert.deepEqual(b.snapshot(),saved);
   for(let i=0;i<4&&a.flow.phase!=='ended';i++) {
@@ -100,7 +101,7 @@ test('save/load keeps shop refresh indices, UID allocation and deterministic con
   }
   const uidSave = freshSaveV2(3,9); uidSave.shopReserved=true; uidSave.nextOwnedUid=70;
   uidSave.gold=10;uidSave.shop[0]={unitId:'saiph'};
-  uidSave.owned=[{uid:15,unitId:'leon',star:1,location:'board',x:3,y:3}];
+  uidSave.owned=[{uid:15,unitId:'ghostflame_blade',star:1,location:'board',x:3,y:3}];
   const c=make(9,{save:uidSave}); assert.equal(c.owned.all()[0].uid,15); assert.equal(c.owned.nextUnitUid,70);
   assert.equal(c.buyShopSlot(0).uid,70);assert.equal(c.owned.nextUnitUid,71);
   assert.equal(make(9,{save:c.snapshot()}).owned.nextUnitUid,71);
@@ -109,8 +110,8 @@ test('save/load keeps shop refresh indices, UID allocation and deterministic con
 });
 test('old saves migrate deterministically without rerolling offers or granting duplicate starter', () => {
   const old={gold:20,level:3,stageCount:4,runRulesVersion:1,shopReserved:true,
-    owned:[{uid:31,unitId:'leon',star:2,location:'board',x:3,y:3}],
-    shop:[{unitId:'saiph'},{unitId:null},{unitId:'bronda'},{unitId:null},{unitId:null}],
+    owned:[{uid:31,unitId:'ghostflame_blade',star:2,location:'board',x:3,y:3}],
+    shop:[{unitId:'saiph'},{unitId:null},{unitId:'nightmare_lamplighter'},{unitId:null},{unitId:null}],
     round:{phase:'prepare',waveIndex:18,health:18,result:null,lastSettlement:null}};
   const migrated=migrateSaveV2(old);assert.equal(migrated.runSeed,1);assert.equal(migrated.runSeedSource,'legacy-default');
   const a=make(1,{save:old}),b=make(1,{save:clone(old)});
@@ -124,9 +125,9 @@ test('old saves migrate deterministically without rerolling offers or granting d
 });
 test('legal swaps, full bench merge, sale/equipment return and combat shopping share existing rules', () => {
   const saved=freshSaveV2(3,2);saved.gold=20;saved.level=1;saved.benchSlots=2;saved.shopReserved=true;
-  saved.owned=[{uid:1,unitId:'leon',star:1,location:'board',x:3,y:3,equipment:['guinsoo']},
-    {uid:2,unitId:'leon',star:1,location:'bench',x:-1,y:0},{uid:3,unitId:'saiph',star:1,location:'bench',x:-1,y:1}];
-  saved.shop=[{unitId:'leon'},...Array.from({length:4},()=>({unitId:null}))];
+  saved.owned=[{uid:1,unitId:'ghostflame_blade',star:1,location:'board',x:3,y:3,equipment:['guinsoo']},
+    {uid:2,unitId:'ghostflame_blade',star:1,location:'bench',x:-1,y:0},{uid:3,unitId:'saiph',star:1,location:'bench',x:-1,y:1}];
+  saved.shop=[{unitId:'ghostflame_blade'},...Array.from({length:4},()=>({unitId:null}))];
   const s=make(2,{save:saved});assert.equal(s.buyShopSlot(0).ok,true);assert.equal(s.owned.get(1).star,2);
   assert.equal(s.owned.onBoard().length,1);assert.deepEqual(s.owned.get(1).equipment,['guinsoo']);legalAccounting(s);
   assert.equal(s.moveUnit(3,{location:'board',x:2,y:3}).error,'population_cap');

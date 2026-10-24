@@ -74,6 +74,7 @@ ft.show('+100',Color.WHITE,new Vec3(),root);
 assert.equal(label.fontSize,22);assert.equal(label.isBold,false);assert.equal(ft.node.scale.x,1);
 assert.equal(opacity.opacity,255);assert.equal(active.filter(t=>t.target===ft.node).length,1);
 const {BattleReplayer}=load(require.resolve('../assets/scripts/view/BattleReplayer.ts'),{
+  './GameAudio':{GameAudio:{play(){}}},
   './FloatText':floats,
   './ArtPaths':load(require.resolve('../assets/scripts/view/ArtPaths.ts')),
 });
@@ -102,4 +103,13 @@ sim.events.push({t:'swiftmartialist_stack',id:2,stacks:3,maxStacks:5,attackSpeed
 const stackText=root.children.at(-1).getComponent(Label);
 assert.equal(stackText.string,'3/5层 +24%攻速');assert.deepEqual([stackText.color.r,stackText.color.g,stackText.color.b],[242,208,75]);
 const afterStack=root.children.length;replay.consumeEvents();assert.equal(root.children.length,afterStack,'stack feedback is consumed once');
+// Display preferences suppress numbers while hit animation and unrelated feedback continue.
+const beforeHidden=root.children.length, hitsBefore=hitAnimations;
+target.side=1;replay.damageNumbers=false;replay.healingNumbers=false;
+sim.events.push({t:'hit',id:2,source:1,dmg:40,dmgType:'magic'},{t:'heal',id:2,source:2,amount:9});replay.consumeEvents();
+assert.equal(root.children.length,beforeHidden,'disabled damage and healing produce no floating text');
+assert.equal(hitAnimations,hitsBefore+1,'damage-number preference preserves hit animation');
+replay.damageNumbers=true;replay.healingNumbers=true;
+sim.events.push({t:'hit',id:2,source:1,dmg:40,dmgType:'magic'},{t:'heal',id:2,source:2,amount:9});replay.consumeEvents();
+assert.equal(root.children.length,beforeHidden+2,'reenabling preferences restores both kinds of number');
 console.log('PASS floating text: damage scaling/cap, critical prefix, impact direction, arc, fade timing, pooled reset and replay integration');
