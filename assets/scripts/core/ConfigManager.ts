@@ -59,7 +59,12 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign';
+  chargedKnockup?: import('../battle/types').ChargedKnockupConfig;
+  bloodDrain?: import('../battle/types').BloodDrainConfig;
+  lineFear?: import('../battle/types').LineFearConfig;
+  bloodAid?: import('../battle/BloodAid').BloodAidConfig;
+  bloodReign?: import('../battle/types').BloodReignConfig;
   starLeap?: import('../battle/types').StarLeapConfig;
   arrowVolley?: import('../battle/types').ArrowVolleyConfig;
   nebula?: import('../battle/types').NebulaConfig;
@@ -261,6 +266,8 @@ export class ConfigManager {
   }
   equipmentStats(cfg: UnitConfigData, ids: string[] = []): UnitConfigData {
     const items = this.getEquipment(ids);
+    const grantedTraitIds = Array.from(new Set([...(cfg.grantedTraitIds ?? []), ...items.flatMap(item => item.grantedTraitId ? [item.grantedTraitId] : [])]));
+    const innateGain = this.innateTraitLifesteal({ ...cfg, grantedTraitIds }) - this.innateTraitLifesteal(cfg);
     const hp = Math.round((cfg.hp + items.reduce((sum, item) => sum + (item.hp ?? 0), 0))
       * (1 + items.reduce((sum, item) => sum + (item.maxHpBonus ?? 0), 0)));
     const hpResistance = equipmentMaxHpResistance(hp, items);
@@ -278,7 +285,7 @@ export class ConfigManager {
       return sum + (effect && armor > effect.threshold ? effect.bonus : 0);
     }, 0));
     return { ...cfg,
-      grantedTraitIds: Array.from(new Set([...(cfg.grantedTraitIds ?? []), ...items.flatMap(item => item.grantedTraitId ? [item.grantedTraitId] : [])])),
+      grantedTraitIds,
       hp,
       maxMana, startMana: Math.min(maxMana, cfg.startMana),
       manaPerSecond: (cfg.manaPerSecond ?? 0) + items.reduce((sum, item) => sum + (item.manaPerSecond ?? 0), 0),
@@ -287,7 +294,7 @@ export class ConfigManager {
       physicalPower: (cfg.physicalPower ?? 0) + items.reduce((sum, item) => sum + (item.physicalPower ?? 0), 0),
       critChance: Math.min(1, combatAttributes(cfg).critChance + items.reduce((sum, item) => sum + (item.critChance ?? 0), 0)),
       skillCanCrit: cfg.skillCanCrit === true || items.some(item => item.skillCanCrit),
-      lifesteal: Math.min(1, (cfg.lifesteal ?? 0) + items.reduce((sum, item) => sum + (item.lifesteal ?? 0), 0)),
+      lifesteal: Math.min(1, (cfg.lifesteal ?? 0) + innateGain + items.reduce((sum, item) => sum + (item.lifesteal ?? 0), 0)),
       damageAmp, damageReduction, spellPower };
   }
   battle: BattleConfigData = {
@@ -301,7 +308,7 @@ export class ConfigManager {
     attackSpeedCap: 5,
     legendaryThreeStarBonusHp: 5000,
     roleMana: { casterPerSecond: 2, damageTakenFraction: 0.1 },
-    starScaling: [{ hp: 1, atk: 1, skill: 1 }, { hp: 1.8, atk: 1.8, skill: 1.8 }, { hp: 3.24, atk: 3.24, skill: 3.24 }],
+    starScaling: [{ hp: 1, atk: 1, skill: 1 }, { hp: 1.8, atk: 1.2, skill: 1.8 }, { hp: 3.24, atk: 1.5, skill: 3.24 }],
     initialHealth: 20,
     lossPerEnemy: 2,
   };
@@ -313,6 +320,32 @@ export class ConfigManager {
 
   setSkills(data: Record<string, SkillConfigData>): void {
     for (const skill of Object.values(data)) {
+      if (skill.effect === 'bloodReign') {
+        const e = skill.bloodReign;
+        if (!e || skill.dmgType !== 'physical' || skill.radius !== 0
+          || ![skill.starDamage,e.healthGains].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&n>0))
+          || ![e.length,e.width,e.attackWindupSeconds,e.rebirthSeconds,e.rebirthHealMaxHpFraction].every(n=>Number.isFinite(n)&&n>0)
+          || !Number.isFinite(e.rebirthThreshold) || e.rebirthThreshold<=0 || e.rebirthThreshold>=1) throw new Error('Invalid blood reign skill');
+      }
+      if (skill.effect === 'bloodAid') {
+        const e=skill.bloodAid;
+        if(!e||skill.radius!==0||skill.dmgType!=='magic'
+          ||![e.healAmounts,e.resistanceBonuses,e.attackBonusDamage].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&n>=0))
+          ||![e.staySeconds,e.resistanceSeconds].every(n=>Number.isFinite(n)&&n>0))throw new Error('Invalid blood aid skill');
+      }
+      if (skill.effect === 'lineFear') {
+        const e = skill.lineFear;
+        if (!e || !Number.isFinite(e.length) || e.length <= 0 || !Number.isFinite(e.width) || e.width <= 0
+          || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0
+          || ![skill.starDamage,e.fearSeconds].every(v => Array.isArray(v) && v.length === 3 && v.every(n => Number.isFinite(n) && n > 0))) throw new Error('Invalid line fear skill');
+      }
+      if (skill.effect === 'chargedKnockup' || skill.effect === 'bloodDrain') {
+        const triple = (values?: number[]) => Array.isArray(values) && values.length === 3 && values.every(v => Number.isFinite(v) && v >= 0);
+        if (!triple(skill.starDamage) || skill.radius !== 0) throw new Error('Invalid bloodfiend skill');
+        if (skill.effect === 'chargedKnockup' && (!triple(skill.chargedKnockup?.durationsSeconds)
+          || skill.chargedKnockup!.durationsSeconds.some(v => v <= 0) || !Number.isFinite(skill.castSeconds) || skill.castSeconds! <= 0)) throw new Error('Invalid charged knockup skill');
+        if (skill.effect === 'bloodDrain' && (!triple(skill.bloodDrain?.healAmounts) || !triple(skill.bloodDrain?.spellPowerPerKill))) throw new Error('Invalid blood drain skill');
+      }
       if (skill.shieldScaling !== undefined && !['physical', 'magic', 'fixed'].includes(skill.shieldScaling)) throw new Error('Invalid shield scaling');
       if (skill.effect === 'shadow') validateShadowSkill(skill);
       if (skill.effect === 'sunlight') validateSunlightSkill(skill);
@@ -399,10 +432,11 @@ export class ConfigManager {
         if (trait.selector && (!['tank', 'marksman', 'assassin', 'warrior', 'caster'].includes(trait.selector.role)
           || (trait.selector.damageType !== undefined && !['physical', 'magic'].includes(trait.selector.damageType)))) throw new Error('Invalid trait selector');
         ids.add(trait.id);
+        if (trait.innateLifesteal !== undefined && (!Number.isFinite(trait.innateLifesteal) || trait.innateLifesteal < 0 || trait.innateLifesteal > 1)) throw new Error('Invalid innate trait lifesteal');
         let previous = 0;
         for (const tier of trait.breakpoints) {
           if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
-            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral)
+            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral && !tier.bloodfiend)
             || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
             || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
           if (tier.formation) {
@@ -418,6 +452,13 @@ export class ConfigManager {
             }
             if ((bonus.critChance ?? 0) > 1 || (bonus.executeThreshold ?? 0) >= 1
               || (bonus.skillCanCrit !== undefined && typeof bonus.skillCanCrit !== 'boolean')) throw new Error('Invalid trait stat bonus');
+          }
+          if (tier.bloodfiend) {
+            const e = tier.bloodfiend;
+            if (!Number.isFinite(e.attackSpeedBonus) || e.attackSpeedBonus < 0
+              || !Number.isFinite(e.healMaxHpFraction) || e.healMaxHpFraction < 0 || e.healMaxHpFraction > 1
+              || !Number.isFinite(e.durationSeconds) || e.durationSeconds <= 0
+              || !Number.isFinite(e.overhealShieldRatio ?? 0) || (e.overhealShieldRatio ?? 0) < 0 || (e.overhealShieldRatio ?? 0) > 1) throw new Error('Invalid bloodfiend trait');
           }
           if (tier.mechanicalPioneer) {
             const e = tier.mechanicalPioneer;
@@ -495,10 +536,15 @@ export class ConfigManager {
 
   allUnits(): UnitConfigData[] { return Object.values(this.units); }
 
+  private innateTraitLifesteal(cfg: UnitConfigData): number {
+    return (this.battle.traits ?? []).reduce((sum, trait) => sum
+      + (trait.members.includes(cfg.id) || cfg.grantedTraitIds?.includes(trait.id) ? trait.innateLifesteal ?? 0 : 0), 0);
+  }
+
   scaleUnit(cfg: UnitConfigData, star = 1, multiplier = 1): UnitConfigData {
     const scale = this.battle.starScaling[Math.max(0, Math.min(2, Math.floor(star) - 1))];
     const bonusHp = cfg.cost === 5 && Math.floor(star) >= 3 ? (this.battle.legendaryThreeStarBonusHp ?? 5000) : 0;
-    return { ...cfg, ...combatAttributes(cfg), hp: Math.round(cfg.hp * scale.hp * multiplier) + bonusHp,
+    return { ...cfg, ...combatAttributes(cfg), lifesteal: Math.min(1, combatAttributes(cfg).lifesteal + this.innateTraitLifesteal(cfg)), hp: Math.round(cfg.hp * scale.hp * multiplier) + bonusHp,
       atkSpeed: Math.min(this.battle.attackSpeedCap ?? 5, cfg.atkSpeed),
       atk: Math.round(cfg.atk * scale.atk * multiplier),
       armor: Math.round(cfg.armor * multiplier), mr: Math.round(cfg.mr * multiplier) };

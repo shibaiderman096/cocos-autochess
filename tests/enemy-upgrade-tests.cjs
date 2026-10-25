@@ -40,6 +40,8 @@ for(let seed=17;seed<27;seed++){
   assert.equal(upgrade.goldSpent,upgrade.equipmentIds.reduce((n,id)=>n+(tags[id].goldCost??cost),0));assert.equal(upgrade.goldRemaining,upgrade.goldBudget-upgrade.goldSpent);
   assert.ok(upgrade.goldRemaining>=0);if(upgrade.itemCount<wave.enemies.length*3)assert.ok(upgrade.goldRemaining<3);
   assert.equal(upgrade.itemCount,wave.enemies.reduce((n,e)=>n+e.equipment.length,0));
+  assert.ok(wave.enemies.filter(e=>e.equipment.length>0&&e.equipment.length<3).length<=1,'only the final carrier may have a partial loadout');
+  assert.equal(wave.enemies.filter(e=>e.equipment.length>0).length,Math.ceil(upgrade.itemCount/3),'fill one three-slot loadout before starting another');
   for(const enemy of wave.enemies){
    const unit=input.units.find(u=>u.id===enemy.unitId);assert.ok(enemy.equipment.length<=3);assert.equal(enemy.healthMultiplier,rule.healthMultiplier??1);
    for(const id of enemy.equipment){seen.add(id);assert.ok(enemyEquipmentFits(unit,role(unit),tags[id]),`${unit.id}: ${id} must fit`);}
@@ -47,6 +49,11 @@ for(let seed=17;seed<27;seed++){
  }
 }
 assert.deepEqual([...seen].sort(),Object.keys(tags).filter(id=>tags[id].enabled).sort(),'new uncalibrated items also reach enemies');
+const concentrated=applyEnemyUpgrades({id:2001,stage:2,encounterKind:'normal',enemies:[
+ {unitId:tank.id,star:1,x:2,y:4,equipment:[]},{unitId:tank.id,star:2,x:3,y:4,equipment:[]},
+]},p,input.units,new RunRandomContext(17),deps.enemyRoles);
+assert.equal(concentrated.enemies[0].equipment.length,0);
+assert.ok(concentrated.enemies[1].equipment.length>0,'the more invested eligible unit receives the concentrated equipment');
 for(const kind of ['elite','boss']){
  const w=waves.find(w=>w.stage===4&&w.encounterKind===kind);
  assert.equal(w.enemyUpgrade.goldBudget,kind==='elite'?22:26);

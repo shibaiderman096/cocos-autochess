@@ -1,3 +1,4 @@
+import { applyHealing } from './Healing';
 import { ConfigManager, SkillConfigData, configuredShieldAmount } from '../core/ConfigManager';
 import { Unit } from './Unit';
 import { BattleEvent, DmgType, Pos, Side, SunlightTraitEffect, SunlightPulse, SunlightSkillData } from './types';
@@ -287,9 +288,7 @@ export class SunlightCombat {
     return amount;
   }
   private heal(source: Unit, target: Unit, raw: number): void {
-    const amount = Math.min(target.cfg.hp - target.hp, Math.round(raw * (1 + (source.cfg.spellPower ?? 0) / 100)));
-    if (amount <= 0) return; target.hp += amount;
-    this.host.events.push({ t: 'heal', tick: this.tick, id: target.id, source: source.id, amount, hp: target.hp });
+    applyHealing(source, target, raw * (1 + (source.cfg.spellPower ?? 0) / 100), this.tick, this.host.events);
   }
   interrupt(source: Unit): void { this.channels.delete(source.id); source.skillUntargetable = false; }
   onDeath(source: Unit): void {

@@ -45,6 +45,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item -Recurse -Force assets\resources .test-build\assets\
 $taskFailures = @()
 $taskTests = @(
+  'tests/recycle-settings-tests.cjs'
   'tests/enemy-gold-budget-tests.cjs'
   'tests/basic-equipment-tests.cjs'
   'tests/enemy-upgrade-tests.cjs'
@@ -82,6 +83,13 @@ $taskTests = @(
   'tests/deferred-merge-tests.cjs'
   'tests/drag-range-tests.cjs'
   'tests/trait-tests.cjs'
+  'tests/bloodfiend-trait-tests.cjs'
+  'tests/bloodfiend-trait-ui-tests.cjs'
+  'tests/bloodfiend-units-tests.cjs'
+  'tests/bloodfiend-roar-tests.cjs'
+  'tests/scarlet-enchantress-tests.cjs'
+  'tests/blood-reign-tests.cjs'
+  'tests/bloodfiend-animation-tests.cjs'
   'tests/milu-tests.cjs'
   'tests/xiya-tests.cjs'
   'tests/nebula-weaver-tests.cjs'

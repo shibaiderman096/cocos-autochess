@@ -23,8 +23,8 @@ function strike(sim, src, dst, amount, type='true', basic=false) {
   sim.damage(src,dst,amount,type,basic);sim.resolveDamage();sim.pendingDamage.length=0;
 }
 const all = resolveTraits(traits,roster.map(u=>u.id),roster);
-assert.deepEqual(all.find(t=>t.config.id==='conqueror').memberIds,['seraphiel','turbo_fist_tiger']);
-assert.deepEqual(all.find(t=>t.config.id==='spellblade').memberIds,['furnace_executioner','ghostflame_blade','phinia']);
+assert.deepEqual(all.find(t=>t.config.id==='conqueror').memberIds,['crimson_demon_knight','seraphiel','turbo_fist_tiger']);
+assert.deepEqual(all.find(t=>t.config.id==='spellblade').memberIds,['bloodline_earl','furnace_executioner','ghostflame_blade','phinia']);
 for (const trait of traits) for(let n=1;n<=8;n++) for(const side of [0,1]) {
   const sim=create(trait.id,n,side),tier=trait.breakpoints.filter(t=>t.count<=n).at(-1),u=sim.units[0];
   assert.equal(u.damageAmp,tier?.conqueror?.damageAmp??0);
@@ -96,9 +96,9 @@ for(const count of [2,4,6,8]) {
   if(count===8){u.spellbladeAttacks=1;sim.cast(u,sim.configs.getSkill('test_spell'),enemy);assert.equal(u.spellbladeAttacks,3);}
 }
 // Real full-mana casts use each current magic warrior's authored skill and activation path.
-for(const id of ['furnace_executioner','ghostflame_blade','phinia']) {
+for(const id of ['bloodline_earl','furnace_executioner','ghostflame_blade','phinia']) {
   const unit=roster.find(u=>u.id===id),sim=create('spellblade',2,0,{unit:{...unit,startMana:unit.maxMana}});
-  sim.configs.setSkills(require('../assets/resources/config/skills.json'));if(id==='furnace_executioner'){sim.units.at(-1).x=0;sim.units.at(-1).y=5;}sim.step();
+  sim.configs.setSkills(require('../assets/resources/config/skills.json'));if(id==='furnace_executioner'){sim.units.at(-1).x=0;sim.units.at(-1).y=5;}if(id==='bloodline_earl'){sim.units.at(-1).x=0;sim.units.at(-1).y=3;}sim.step();
   const u=sim.units[0];assert.ok(sim.events.some(e=>e.t==='cast'&&e.id===u.id));
   assert.equal(u.spellbladeUntilTick,81);assert.ok(Math.abs(u.attackSpeed-(unit.atkSpeed+.15+u.skillAttackSpeedBonus))<1e-9,'trait stacks with the personal skill');
 }

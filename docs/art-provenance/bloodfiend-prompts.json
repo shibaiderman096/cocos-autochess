@@ -1,0 +1,66 @@
+{
+  "route": "Built-in image_gen",
+  "entries": [
+    {
+      "id": "voidscar_blood",
+      "prompt": "Use case: precise-object-edit. Edit target is the attached existing game character cutout. Preserve EXACT character identity, crouching forward lunge pose, face obscured by hood, long silver hair, black ornate fitted armor, bladed claw gauntlets, flowing torn cloak, full body silhouette and original camera. Add BLOODFIEND elements organically: deep crimson wet blood filaments winding along the claw blades, blood-red veins glowing in armor seams and eye slit, suspended tiny blood droplets and ribbon-like liquid blood wisps following existing purple void trails. Retain some violet void glow as secondary color so he remains the same void assassin. Crimson dominates the energy, not a global red tint on metal. Do not add wounds or gore. Crisp high detail fantasy game illustration, same polished rendering as original. One character only, full body completely inside image, generous transparent margins. Preserve real transparent background; no floor, cast shadow, text, label, border, grid or watermark. Output portrait ratio close to source 1086x1448. This is a sprite identity-preserving update, not a redesign.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-b6b87572-1a83-47dc-935c-5df0b91b8bd9.png",
+      "route": "host_image"
+    },
+    {
+      "id": "crimson_upheaval",
+      "prompt": "Use case: stylized-concept. Asset type: transparent 2D fantasy game VFX SPRITE SHEET, exactly 4 columns x 2 rows, eight sequential animation cels left to right then next row. One single action: a BLOOD CLAW UPPERCUT slash. Effects only, no character, hands, weapons, text, ground or background. Deep red liquid blood ribbons with sharp glowing scarlet edges and dark burgundy interior, a few bright crimson droplets, clean premium painted fantasy game effects. Each cel has the SAME center and canvas, clear empty gutters on all four edges. Across the eight cels: tiny three curved red claw sparks; gathering three crescents at lower left; accelerating upward-right red triple claw slash; broad curved rising blood arcs; peak brilliant three distinct upward rake crescents and small droplets; arcs stretch upward and break into droplets; thin fading crimson shards; a few dim embers fade. The primary slash movement rises from lower left to upper right, with no baked perspective or camera. Transparent background with real alpha, NOT checkerboard. No cell lines, no numbers, no text, no full black rectangle. Make every cell independent and well separated by at least 12% cell margin. Square overall sheet, cells are wide horizontal rectangles. Consistent hue and stroke identity, strong readable forms when each cel is scaled to 128 pixels wide.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-ff99c2bc-59c4-4807-a10d-3d2633875fee.png",
+      "route": "host_image"
+    },
+    {
+      "id": "bloodline_siphon",
+      "prompt": "Use case: stylized-concept. Asset type: transparent 2D fantasy game VFX SPRITE SHEET, exactly 4 columns x 2 rows, eight sequential animation cels left to right then next row. Effects only, no character, hand, face, weapon, lettering, runes, ground or background. One single BLOOD SIPHON ribbon animation: elegant crimson liquid blood tendrils swirl into an elongated fluid red spiral with a bright ruby core, luminous scarlet edges and deep wine-red translucent interior, a handful of blood beads. Across the eight cels: small separated ruby beads; beads stretch into two flowing blood strands; strands curl into an elongated horizontal clockwise spiral; spiral compresses and ruby core brightens; peak rich scarlet coiled blood ribbon, glowing red-gold heartlike pulse abstract shape; ribbon contracts into core; core breaks into small droplets; residual red sparks. Keep the SAME centered pivot and entire motion in each cell, all cells have at least 12% empty margin, completely separate cels with NO touching neighbors. Clear distinct changes of shape and brightness, no duplicated static images. Premium hand-painted dark fantasy VFX matching a refined vampire earl. Square overall sheet 4x2, real transparent background, no checkerboard, no grids, no numbers, no borders.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-85fc6584-ffaa-4beb-b45f-f5676bf3fd6d.png",
+      "route": "host_image"
+    },
+    {
+      "id": "voidscar_transit",
+      "prompt": "Use case: stylized-concept. Asset type: transparent 2D fantasy game VFX SPRITE SHEET exactly 4 columns x 2 rows. Eight sequential cels in reading order of ONE BLOOD-VOID RIFT STRIKE action. Effects only, no humanoid, face, claws, weapons, text, rune words, terrain or opaque background. A horizontal-to-diagonal angular dimensional tear edged by dark violet shards, bright scarlet blood streams and ruby droplets, black-purple inner void with luminous violet edges, crimson dominates. Eight phases: thin violet-red crack; crack opening with two scarlet tendrils; curved crimson slash crosses the crack; sharp layered blood-violet crescent expands; peak angular luminous red-violet explosion with liquid blood filaments; shards and droplets scatter; narrow crimson threads shrink; dim fading violet-red sparks. Same central pivot, bounded motion envelope, fixed scale across all cels, generous 12% transparent gutters, no effect crossing cell boundaries. High detail premium painted fantasy game spell effects, strong clean silhouette at 128 pixel width. Square overall canvas with 4x2 equal cells, genuine transparent background, no checkerboard, no grid lines, no numbers, no text.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-19c4cff1-0a9c-4ae4-8c6e-a22a43c2549f.png",
+      "route": "host_image"
+    },
+    {
+      "id": "crimson_devourer",
+      "prompt": "Use case: background-extraction. Edit target: attached red crystal and ivory armored beast illustration. Remove the red smoky backdrop and every ground/background pixel to create a clean truly transparent game character cutout. Preserve the exact beast identity, fierce open roaring mouth with fangs, ivory bone-like armor, translucent crimson crystal spikes, huge claws, long sweeping tail, red muscular body, forward crouching quadrupedal pose, side-facing three-quarter camera. Reconstruct only the tiny tips cut off by canvas so the ENTIRE creature including tail and feet fits with at least 5% transparent margins. No new anatomy, no design changes, no text, no checkerboard, no floor, no ground shadow. Crisp painted fantasy game asset, high detail, faithful proportions, landscape composition close to original. Alpha transparency.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-940a7cb3-446c-4388-bcb2-5f0df0a37d1e.png",
+      "route": "host_image"
+    },
+    {
+      "id": "frostblood_roar",
+      "prompt": "Use case: stylized-concept. Asset type: transparent painted 2D game spell VFX SPRITE SHEET, exactly four columns and two rows, eight sequential cels of ONE linear roaring soundwave. Effects only; no character, head, face, text, runes, ground or background. A ruby crimson and ivory-white frost-blood sonic shock wave aimed horizontally RIGHT, tightly directed, composed of several curved concentric crescent ripples and needlelike small red crystal glints. Eight phases left-to-right then next row: compressed red-white spark on left; narrow first curved ripple emerging; two crescent ripples expanding toward right; three clear ripples plus crimson crystal wisps; peak long narrow roar with white core and crimson edge; ripples break into translucent red shards; faint ripples and tiny flecks; few disappearing scarlet embers. Keep left-to-right axis and same centered pivot in EVERY frame. Each frame has large at least 12% transparent margins on all edges, no contact between cells, same artwork scale, no perspective ground. Strong readable shapes at 128 pixels, premium fantasy painted style. Genuine alpha transparent background, no black panel, no checkerboard, no numbers, no grid lines.",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-5d5f96e7-3850-45f6-a78a-7236d06b2e0b.png",
+      "route": "host_image"
+    },
+    {
+      "id": "crimson_devourer_cutout",
+      "prompt": "BACKGROUND REMOVAL / precise cutout. The image contains a huge red-and-ivory crystal armored beast on an opaque RED SMOKY BACKGROUND. You MUST remove ALL of that red smoke/backdrop and make every pixel outside the beast alpha zero. Do NOT keep any rectangular red gradient. Preserve only the solid creature: ivory armored head and plates, red crystals, four clawed legs, muscular body, tail and attached thin membranes. Keep transparent holes between limbs and tail. Output a crisp, isolated complete full-body creature centered on a TRULY TRANSPARENT background with generous clear margins. No scenery, no ground, no floor shadow, no colored aura or surrounding red fog. Maintain the exact original character design and camera angle. This task is ONLY a background extraction; show checkerboard nowhere.",
+      "route": "host_image",
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-ddf56c15-81f7-402d-9e9d-f59be0e6ce32.png"
+    },
+    {
+      "id": "crimson_upheaval",
+      "prompt": "NEW painted game effect atlas, landscape 2:1 aspect ratio. Exactly eight VERY SMALL isolated crimson claw slashes in precise four columns by two rows, equal SQUARE cells. Each effect must occupy only the central HALF of its cell, with enormous transparent empty space around it on all sides. All shapes entirely complete, no cuts, no crossing into another cell. Evolution 1 tiny anticipation, 2 three tiny crescents, 3 upward three claw crescents, 4 bright triple slash, 5 curved blood arc, 6 broken arc, 7 dissolving wisps, 8 tiny droplets. Organic liquid scarlet red glossy blood magic, thin ivory highlights, elegant fantasy painting. Claws sweep diagonally lower-left to upper-right. Transparent background, no text, no lines or panels, no character. Eight SMALL clearly separated shapes with 25 percent cell margins, NOT a large connected composition.",
+      "route": "host_image",
+      "selected": true,
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-8469575b-7b80-4fb0-a928-26a36f710bd7.png"
+    },
+    {
+      "id": "frostblood_roar",
+      "prompt": "Generate a NEW clean game VFX atlas, do not imitate an existing layout. Exactly eight small complete scarlet crystal sonic-roar effects, in a precise 4-column 2-row grid. Canvas landscape 2:1, each cell square. All effects travel left to right. Every effect is centered inside its own cell, occupying no more than 50% of that cell's width or height. Huge empty transparent gutters: HALF of the sheet remains empty spacing! Rows separated by broad empty space. All eight isolated effects have complete silhouettes without any cut/crop. Evolution: small star, one crescent, two crescents, three crescents, broad ripple, broken ripple, wisps, tiny sparks. Crimson red and luminous ivory painted fantasy spell textures, no character. TRANSPARENT BACKGROUND. No grid, captions, border. Each individual effect MUST stay small so no pixels touch any cell edges. Essential: 4x2 SMALL separated effects, 20% minimum blank margins inside every cell.",
+      "route": "host_image",
+      "selected": true,
+      "source": "C:\\Users\\man\\.codex\\generated_images\\01a1714f-1a9c-7d52-93e8-c135c543ab04\\exec-9e1d25aa-e522-49ec-9e54-bc005895554c.png"
+    }
+  ],
+  "userReference": {
+    "filename": "赤晶霜血巨兽.png",
+    "sha256": "0bf2ce9e7e8c92e46e93a2e8ba9b8ef97e03fd99488e2ec139eb9de6b87c0e1f",
+    "role": "crimson_devourer cutout reference"
+  }
+}

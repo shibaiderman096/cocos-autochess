@@ -62,6 +62,7 @@ class Color {
 class Graphics { isValid=true; clear(){this.points=[];this.lastRect=null;} moveTo(x,y){this.points=[[x,y]];} lineTo(x,y){this.points.push([x,y]);} close(){} fill(){} stroke(){} rect(...args){this.lastRect=args;} roundRect(...args){this.roundedRect=args;} ellipse(){} }
 class Mask { static Type={GRAPHICS_RECT:0,GRAPHICS_STENCIL:2}; }
 class Vec2 { constructor(x=0,y=0){Object.assign(this,{x,y});} }
+class Vec3 { constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z});} }
 // Geometry-only ScrollView double: actual input/inertia is checked in the browser.
 class ScrollView {
   static EventType={SCROLL_BEGAN:'scroll-began',SCROLL_ENDED:'scroll-ended'};
@@ -81,7 +82,7 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Vec3,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
   input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
   ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},

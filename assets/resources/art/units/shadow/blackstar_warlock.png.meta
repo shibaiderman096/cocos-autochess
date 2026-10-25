@@ -115,7 +115,7 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "d4b4c597-8141-426c-b985-1763604e3037@6c48a",
         "atlasUuid": "",
-        "trimType": "none"
+        "trimType": "custom"
       },
       "ver": "1.0.12",
       "imported": true,

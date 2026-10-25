@@ -42,6 +42,7 @@ for(const mode of ['legacy','budget-v1']) {
     assert.equal(s.claimStageReward({...action,choice:'units'}).ok,false,'caller cannot select a reward category');
     assert.equal(s.claimStageReward({...action,choice:'equipment'}).ok,false);
     const equipmentCount=s.owned.equipmentReserve.length;
+    const oldEquipmentCredit=s.save.stageProgress.equipmentCredit??0;
     const result=s.claimStageReward(action);assert.ok(result.ok);assert.ok(result.stageReward);
     seen.add(result.stageReward.kind);
     assert.deepEqual(restored.claimStageReward(action),result,'reload keeps the seeded reward');
@@ -53,9 +54,13 @@ for(const mode of ['legacy','budget-v1']) {
       assert.equal(s.owned.equipmentReserve.length,equipmentCount);
     } else if(result.stageReward.kind==='equipment') {
       assert.equal(s.flow.health,oldHealth);
-      assert.equal(s.owned.equipmentReserve.length,equipmentCount+1);
-      assert.equal(s.owned.equipmentReserve.at(-1),result.stageReward.equipmentId);
-      assert.ok(inputs.run.stageEncounters.basicEquipmentIds.includes(result.stageReward.equipmentId));
+      const ids=result.stageReward.equipmentIds;
+      assert.equal(s.owned.equipmentReserve.length,equipmentCount+ids.length);
+      assert.deepEqual(s.owned.equipmentReserve.slice(equipmentCount),ids);
+      assert.ok(ids.every(id=>inputs.run.stageEncounters.basicEquipmentIds.includes(id)));
+      const spent=ids.reduce((sum,id)=>sum+s.cfg.equipmentPrice(id,inputs.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0);
+      assert.equal(spent+result.stageReward.equipmentCredit,8+oldEquipmentCredit,'equipment preserves the full card budget');
+      assert.equal(s.save.stageProgress.equipmentCredit,result.stageReward.equipmentCredit);
     } else {
       assert.equal(s.flow.health,oldHealth);
       assert.equal(result.stageReward.units.reduce((sum,id)=>sum+s.cfg.getUnit(id).cost,0),8);
@@ -67,6 +72,29 @@ for(const mode of ['legacy','budget-v1']) {
     if(seen.size===3&&seed>=12)break;
   }
   assert.deepEqual([...seen].sort(),['equipment','health','units']);
+}
+// Credit is retained across stage changes and reloads and contributes to later equipment grants.
+for(const mode of ['legacy','budget-v1']) {
+ let s;
+ for(let seed=1;seed<=200;seed++) {
+  const run=make(seed,undefined,mode);
+  if([4,5,6].every(stage=>run.random.stream('reward',run.waves.find(w=>w.stage===stage&&w.encounterKind==='boss').id,4300).int(0,2)===1)){s=run;break;}
+ }
+ assert.ok(s,'find deterministic consecutive equipment chests');
+ let budget=0,spent=0;
+ for(const stage of [4,5,6]) {
+  const boss=s.waves.find(w=>w.stage===stage&&w.encounterKind==='boss');assert.ok(s.debugJump(stage,boss.round));
+  if(!s.owned.onBoard().length)assert.ok(s.moveUnit(s.owned.all()[0].uid,{location:'board',x:3,y:3}).ok);
+  const sim=s.startBattle();sim.end(0);s.settleBattle();budget+=s.pendingStageReward.value;
+  const result=s.claimStageReward({type:'stageChoice',rewardId:s.pendingStageReward.id,choice:'claim'});
+  assert.equal(result.stageReward.kind,'equipment');
+  spent+=result.stageReward.equipmentIds.reduce((sum,id)=>sum+s.cfg.equipmentPrice(id,inputs.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0);
+  assert.equal(spent+result.stageReward.equipmentCredit,budget);
+  if(stage===4)assert.equal(result.stageReward.equipmentCredit,2);
+  if(stage===5)assert.equal(result.stageReward.equipmentCredit,0,'saved 2 plus new 10 funds exactly 12 gold of equipment');
+  const saved=s.snapshot();s=make(saved.runSeed,saved,mode);assert.deepEqual(s.snapshot(),saved);
+ }
+ assert.equal(spent,27);assert.equal(s.save.stageProgress.equipmentCredit,1);
 }
 const {RoundFlow}=require('../assets/scripts/core/RoundFlow.ts');
 const flow=new RoundFlow([{id:1,name:'test',enemies:[]}],inputs.battle);

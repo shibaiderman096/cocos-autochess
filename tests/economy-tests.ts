@@ -120,6 +120,13 @@ console.log('[6] 等级经验');
   const lv3 = new LevelSystem();
   lv3.addExp(3); // 1→2 需 2，剩 1
   assert(lv3.level === 2 && lv3.exp === 1, `3 经验应升 2 级剩 1，得 Lv.${lv3.level} exp=${lv3.exp}`);
+  for (const [index, need] of [32, 48, 74, 96, 128].entries()) {
+    const level = index + 5, boundary = new LevelSystem({ level, exp: need - 1 });
+    assert(boundary.expToNext() === need, `${level}→${level + 1} 应需 ${need} 经验`);
+    assert(boundary.level === level, '未达到门槛时保留当前等级');
+    boundary.addExp(1);
+    assert(boundary.level === level + 1 && boundary.exp === 0, '达到新门槛时准确升级');
+  }
 }
 
 // ─── 7. 10 级上限 ───

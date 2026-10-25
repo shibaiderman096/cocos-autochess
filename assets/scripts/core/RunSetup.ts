@@ -156,7 +156,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     const rules = config.stageEncounters; if (!rules) return wave;
     const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage, generation?.earlyEncounterLayout !== 'legacy')[wave.round! - 1];
     const result = { ...wave, encounterKind: kind, waveKind: wave.stage === 1 ? 'intro' as const : kind === 'elite' || kind === 'boss' ? kind : 'normal' as const };
-    if (kind === 'specialShop') return { ...result, name: '特殊商店', enemies: [], budget: undefined };
+    if (kind === 'specialShop') return { ...result, name: '秘境行商', enemies: [], budget: undefined };
     if (kind === 'monster' && wave.stage! > 1) {
       if (strong && wave.stage! >= strong.startStage && (wave.stage! - strong.startStage) % strong.everyStages === 0) {
         const rng = encounterRandom.stream('encounter', wave.id, 4502);

@@ -14,9 +14,9 @@ const build = (count, config = runConfig) => buildRunWaves(count,config,template
 const waves = build(3);
 const cfg = new ConfigManager(); cfg.setUnits(units); cfg.setSkills(skills); cfg.setBattle(rules);
 cfg.setEnemyUnits(buildMonsterUnits(runConfig,units));
-assert.equal(units.length, 28);
-assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [8,5,4,6,5]);
-assert.equal(cfg.allUnits().length,28,'monsters must stay out of shop inventory');
+assert.equal(units.length, 33);
+assert.deepEqual([1,2,3,4,5].map(cost => units.filter(u => u.cost === cost).length), [9,6,6,6,6]);
+assert.equal(cfg.allUnits().length,33,'monsters must stay out of shop inventory');
 assert.equal(waves.length,14); assert.deepEqual([1,2,3].map(s=>waves.filter(w=>w.stage===s).length),[3,5,6]);
 assert.deepEqual([waves[0],waves[2],waves[3],waves[7],waves[8],waves[13]].map(w=>`${w.stage}-${w.round}`),['1-1','1-3','2-1','2-5','3-1','3-6']);
 assert.equal(build(4).length,21);
@@ -132,12 +132,22 @@ for (const [id, skill] of Object.entries(skills)) {
   const caster = {...castingBase, skillId:id, range:4, maxMana:100, startMana:100};
   const target = {...cfg.getUnit('helion'), hp:10000, skillId:undefined, maxMana:0, startMana:0};
   const sim = new BattleSim(cfg,[{cfg:caster,side:0,x:3,y:3},
-    {cfg:target,side:1,x:3,y:4},{cfg:target,side:1,x:3,y:5}],{seed:42,w:7,h:8});
+    {cfg:target,side:1,x:3,y:4},{cfg:target,side:1,x:3,y:5},
+    ...(skill.effect==='bloodAid'?[{cfg:target,side:0,x:2,y:3}]:[])],{seed:42,w:7,h:8});
+  if(skill.effect==='bloodAid'){sim.units[3].hp=100;sim.units[3].atkCd=sim.units[3].moveCd=100000;}
   sim.units[2].hp=500;
   sim.units[0].hp=Math.round(sim.units[0].cfg.hp*.5);
   sim.start(); sim.step();
   const cast = sim.events.find(e=>e.t==='cast');
   assert.ok(cast,`${id} must start casting with full mana`);
+  if(skill.effect==='bloodReign'){
+    assert.equal(cast.target,2);assert.equal(sim.units[0].bloodCleaveReady,true);assert.equal(sim.units[0].bloodReignHealth,300);
+    assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);continue;
+  }
+  if(skill.effect==='bloodAid'){
+    assert.equal(cast.target,4);assert.equal(sim.units[3].hp,300);assert.equal(sim.units[3].armor,target.armor+30);
+    assert.equal(sim.units[0].bloodAidUntilTick,81);assert.equal(sim.events.filter(e=>e.t==='hit'&&e.source===1).length,0);continue;
+  }
   const shadowTarget = ['bulwark','domain','soulLamp','empower'].includes(skill.shadow?.kind) ? 1 : ['flurry','execute'].includes(skill.shadow?.kind) ? 3 : 2;
   const sunlightTarget = ['bulwark','bastion','empower','prayer'].includes(skill.sunlight?.kind) ? 1 : ['hunt','crossbow'].includes(skill.sunlight?.kind) ? 3 : 2;
   assert.equal(cast.target,skill.effect==='sunlight'?sunlightTarget:skill.effect==='shadow'?shadowTarget:['susanoo','healChannel','selfShield','healAlly','hydraulicBulwark','lowestHealthHeal'].includes(skill.effect)?1:['railShot','spiderLeap','furnaceDash'].includes(skill.effect)?3:skill.targeting==='lowestHp'?3:2,id);

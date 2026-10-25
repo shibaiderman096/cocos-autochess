@@ -16,6 +16,7 @@ export interface OwnedUnit {
   unitId: string;
   star: number;
   permanentMaxHp?: number;
+  permanentSpellPower?: number;
   /** Health earned specifically by the soul-lamp passive, before stat multipliers. */
   soulLampHealth?: number;
   equipment?: string[];
@@ -185,6 +186,8 @@ export class OwnedUnits {
         const permanentMaxHp = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.permanentMaxHp ?? 0), 0);
         if (permanentMaxHp) keep.permanentMaxHp = permanentMaxHp;
         keep.soulLampHealth = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.soulLampHealth ?? 0), 0);
+        const permanentSpellPower = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.permanentSpellPower ?? 0), 0);
+        if (permanentSpellPower) keep.permanentSpellPower = permanentSpellPower;
         const equipment = same.slice(0, MERGE_COUNT).flatMap(unit => unit.equipment ?? []);
         keep.equipment = equipment.slice(0, MAX_EQUIPMENT);
         this.equipmentReserve.push(...equipment.slice(MAX_EQUIPMENT));

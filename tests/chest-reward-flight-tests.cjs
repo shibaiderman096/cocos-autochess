@@ -58,4 +58,11 @@ for(let cycle=0;cycle<20;cycle++){
  v.fx.update(10);v.node.destroy();pending.splice(0).forEach(cb=>cb(null,{}));assert.equal(v.canvas.children.length,0);
 }
 const empty=fixture();empty.fx.play(()=>new Vec3(),[],()=>complete++);assert.equal(complete,2);
+const health=fixture(),hud=new Node('health');hud.addComponent(UIOpacity).opacity=230;let healed=0;
+health.fx.play(()=>new Vec3(),[{art:'heart',recipient:hud,hideRecipient:false,size:{width:48,height:48},position:()=>new Vec3(100,200),land:()=>healed++}],()=>{});
+assert.equal(hud.getComponent(UIOpacity).opacity,230,'the destination HUD remains visible');
+health.fx.update(.97);assert.equal(healed,0);health.fx.update(.02);assert.equal(healed,1,'health display updates on arrival even without a hidden recipient');
+health.fx.update(1);assert.equal(healed,1,'arrival settles once');
+const top=fixture();top.fx.play(()=>new Vec3(0,180),[{art:'heart',position:()=>new Vec3(490,320)}],()=>{});
+for(let i=0;i<20;i++){top.fx.update(.045);assert.ok(top.fx.orbs[0].sprite.position.y<=328,'health arc keeps the full heart below the top edge');}top.fx.update(2);
 console.log('PASS actual reward/merge destinations, storage fallback, live target tracking, bounded particles, arrivals, cancellation and 20 cleanup cycles');

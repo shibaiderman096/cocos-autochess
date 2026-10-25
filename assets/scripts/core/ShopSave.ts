@@ -150,7 +150,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       while (used.has(nextUid)) nextUid++;
       const uid = Number.isSafeInteger(u.uid) && u.uid > 0 && u.uid < Number.MAX_SAFE_INTEGER && !used.has(u.uid) ? u.uid : nextUid;
       used.add(uid);
-      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
+      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentSpellPower === undefined ? {} : { permanentSpellPower: safeInt(u.permanentSpellPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
     }
   }
 

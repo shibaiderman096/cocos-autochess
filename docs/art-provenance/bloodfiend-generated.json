@@ -1,0 +1,700 @@
+{
+  "route": "host_image",
+  "sources": "art-source/bloodfiend-update/manifest.json",
+  "assets": [
+    {
+      "file": "assets/resources/art/units/shadow/voidscar_reaver.png",
+      "width": 1086,
+      "height": 1448,
+      "transparentFraction": 0.30696305566578147,
+      "sha256": "32d1cb26b4a21eb6db17588ac628c317b195228f323f30d2b6cb0c6b410a94fe"
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/crimson_devourer.png",
+      "width": 1536,
+      "height": 1024,
+      "transparentFraction": 0.41965675354003906,
+      "sha256": "4cbed7df4016769db7a54dcda2b8f6921a6703e6025484dbecb8f0a797743141"
+    },
+    {
+      "file": "assets/resources/art/fx/crimson_upheaval.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.9138221740722656,
+      "sha256": "4918df54f93321504700fdf673cd5737f6abcc5f0088f3d347d44923ed16cd1d",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            33,
+            160,
+            444,
+            427
+          ],
+          "paintedSize": [
+            208,
+            135
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            444,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            63,
+            443,
+            444
+          ],
+          "paintedSize": [
+            224,
+            193
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            887,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            1,
+            71,
+            436,
+            444
+          ],
+          "paintedSize": [
+            220,
+            189
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            1330,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            37,
+            422,
+            444
+          ],
+          "paintedSize": [
+            213,
+            206
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            82,
+            6,
+            438,
+            408
+          ],
+          "paintedSize": [
+            180,
+            203
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            444,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            395
+          ],
+          "paintedSize": [
+            224,
+            200
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            887,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            1,
+            0,
+            443,
+            419
+          ],
+          "paintedSize": [
+            223,
+            212
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            1330,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            404,
+            425
+          ],
+          "paintedSize": [
+            204,
+            215
+          ]
+        }
+      ],
+      "scale": 0.5056433408577878
+    },
+    {
+      "file": "assets/resources/art/fx/bloodline_siphon.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.6518650054931641,
+      "sha256": "5a06f252048da8b6984ffa8045723130fe142cdc3b4d2d3538a51492d3991abb",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            17,
+            23,
+            444,
+            444
+          ],
+          "paintedSize": [
+            216,
+            213
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            444,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            31,
+            443,
+            444
+          ],
+          "paintedSize": [
+            224,
+            209
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            887,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            9,
+            443,
+            444
+          ],
+          "paintedSize": [
+            224,
+            220
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            1330,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            17,
+            426,
+            444
+          ],
+          "paintedSize": [
+            215,
+            216
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            9,
+            0,
+            444,
+            443
+          ],
+          "paintedSize": [
+            220,
+            224
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            444,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            224,
+            224
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            887,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            224,
+            224
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            1330,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            420,
+            443
+          ],
+          "paintedSize": [
+            212,
+            224
+          ]
+        }
+      ],
+      "scale": 0.5056433408577878
+    },
+    {
+      "file": "assets/resources/art/fx/voidscar_transit.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.6343421936035156,
+      "sha256": "2cf45be10932c3ef11a9d9c553be8d95bdcc596964000fdf65fc0f8ea3f678e1",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            4,
+            444,
+            444
+          ],
+          "paintedSize": [
+            224,
+            222
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            444,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            15,
+            443,
+            444
+          ],
+          "paintedSize": [
+            223,
+            216
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            887,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            444
+          ],
+          "paintedSize": [
+            223,
+            224
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            1330,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            13,
+            444,
+            444
+          ],
+          "paintedSize": [
+            224,
+            217
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            444,
+            443
+          ],
+          "paintedSize": [
+            224,
+            223
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            444,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            223,
+            223
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            887,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            223,
+            223
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            1330,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            444,
+            443
+          ],
+          "paintedSize": [
+            224,
+            223
+          ]
+        }
+      ],
+      "scale": 0.5045045045045045
+    },
+    {
+      "file": "assets/resources/art/fx/frostblood_roar.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.7719554901123047,
+      "sha256": "277c15108367ef587c5174c0b5d5b3fd865609abce716bda51e0c387b03b6715",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            15,
+            17,
+            444,
+            444
+          ],
+          "paintedSize": [
+            216,
+            215
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            444,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            9,
+            443,
+            444
+          ],
+          "paintedSize": [
+            223,
+            219
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            887,
+            0,
+            443,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            13,
+            443,
+            444
+          ],
+          "paintedSize": [
+            223,
+            217
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            1330,
+            0,
+            444,
+            444
+          ],
+          "sourceAlphaBounds": [
+            0,
+            17,
+            444,
+            444
+          ],
+          "paintedSize": [
+            224,
+            215
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            25,
+            0,
+            444,
+            443
+          ],
+          "paintedSize": [
+            211,
+            223
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            444,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            223,
+            223
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            887,
+            444,
+            443,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            443,
+            443
+          ],
+          "paintedSize": [
+            223,
+            223
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            1330,
+            444,
+            444,
+            443
+          ],
+          "sourceAlphaBounds": [
+            0,
+            0,
+            444,
+            443
+          ],
+          "paintedSize": [
+            224,
+            223
+          ]
+        }
+      ],
+      "scale": 0.5045045045045045
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "route": "Built-in image_gen",
+  "reference": {
+    "filename": "血色流光中的鬼角少女.png",
+    "sha256": "77b07cde9b12f09eef861389fcf54825be0e128b93189eaba22be83e15bd60ce"
+  },
+  "prompts": "scarlet-enchantress-prompts.json",
+  "assets": [
+    {
+      "file": "assets/resources/art/units/bloodfiend/scarlet_enchantress.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentFraction": 0.4250329335530599,
+      "sha256": "72f9605625bf25bec34dfba8d4892bcfa3ff78c1cf7ecc721824efffd33f4176"
+    },
+    {
+      "file": "assets/resources/art/fx/scarlet_aid.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.7527847290039062,
+      "sha256": "5fea72b35c26e631814db348f958c1c81bce7d40d43fcc17932f8479958cf268",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "sourceAlphaBounds": [
+        [
+          0,
+          9,
+          444,
+          444
+        ],
+        [
+          0,
+          9,
+          443,
+          444
+        ],
+        [
+          1,
+          19,
+          443,
+          444
+        ],
+        [
+          0,
+          9,
+          428,
+          444
+        ],
+        [
+          25,
+          0,
+          444,
+          443
+        ],
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          1,
+          0,
+          443,
+          443
+        ],
+        [
+          0,
+          0,
+          438,
+          443
+        ]
+      ],
+      "scale": 0.5045045045045045
+    }
+  ]
+}

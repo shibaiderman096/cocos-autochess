@@ -8,7 +8,7 @@ for(const trait of battle.traits.filter(t=>!t.selector)){
   assert.equal(state.count,0);assert.equal(state.active,null);continue;
  }
  // 星穹 has seven authored members; later members are not invented to fill tiers.
- assert.equal(trait.members.length,trait.id==='astral'?7:trait.id==='mechanical_pioneer'?7:8);
+ assert.equal(trait.members.length,trait.id==='bloodfiend'?7:trait.id==='astral'?7:trait.id==='mechanical_pioneer'?7:8);
  for(let n=0;n<=trait.members.length;n++){
   const ids=trait.members.slice(0,n),state=resolveTraits([trait],[...ids,...ids],roster)[0];
   assert.equal(state.count,n,'duplicate copies count once');

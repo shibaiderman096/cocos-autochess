@@ -49,6 +49,7 @@ export type RunAction =
   | { type: 'sell'; uid: number }
   | { type: 'equip'; uid: number; reserveIndex: number }
   | { type: 'unequip'; uid: number; slot: number }
+  | { type: 'recycleEquipment'; reserveIndex: number; equipmentId: string }
   | { type: 'claimEquipmentReward'; index:number };
 
 export interface ActionResult {

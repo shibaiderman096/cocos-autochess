@@ -1,0 +1,149 @@
+{
+  "route": "Built-in image_gen",
+  "art_source": "host_image",
+  "model": "Tool-managed, not exposed",
+  "estimateUsd": null,
+  "prompts": "demon-knight-prompts.json",
+  "referenceSha256": "a712045af6837baa960c77a09d45f68c125ece88034c6c837ccfef419ecdafb5",
+  "assets": [
+    {
+      "file": "assets/resources/art/units/bloodfiend/crimson_demon_knight.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentFraction": 0.3211313883463542,
+      "sha256": "8db3b44c55453e435ae0d675431c9774855abb21835ce0080857ceeb279732fe"
+    },
+    {
+      "file": "assets/resources/art/fx/blood_rebirth.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.5664024353027344,
+      "sha256": "e563618b579a302275e374626161281cbaa60032cd838d3a0e5be190ef92bdaf",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "sourceAlphaBounds": [
+        [
+          33,
+          17,
+          444,
+          444
+        ],
+        [
+          0,
+          0,
+          443,
+          444
+        ],
+        [
+          1,
+          0,
+          443,
+          444
+        ],
+        [
+          0,
+          0,
+          428,
+          444
+        ],
+        [
+          0,
+          0,
+          444,
+          443
+        ],
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          0,
+          0,
+          430,
+          443
+        ]
+      ],
+      "scale": 0.5045045045045045
+    },
+    {
+      "file": "assets/resources/art/fx/blood_cleave.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.8824558258056641,
+      "sha256": "1b9a05416eebe3c05cb3a9d2f90d641283e7fe2bb0f37908f94f298ca8047f7f",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "sourceAlphaBounds": [
+        [
+          21,
+          0,
+          444,
+          444
+        ],
+        [
+          0,
+          9,
+          443,
+          444
+        ],
+        [
+          0,
+          19,
+          443,
+          444
+        ],
+        [
+          0,
+          32,
+          420,
+          444
+        ],
+        [
+          41,
+          0,
+          444,
+          443
+        ],
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          0,
+          0,
+          430,
+          443
+        ]
+      ],
+      "scale": 0.5045045045045045
+    }
+  ]
+}

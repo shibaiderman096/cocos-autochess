@@ -108,7 +108,9 @@ const { BattleUI } = harness.load(path.join(root, 'assets/scripts/ui/BattleUI.ts
 const ui = new BattleUI(); ui.node = new harness.Node('BattleUI'); ui.buildMainMenu(); ui.buildDebugMenu();
 ui.refreshSettingsLabels(); const musicRow = ui.mainMenuContent.getChildByName('settingMusicVolume');
 assert.ok(musicRow); const before = UIAudio.volume;
-musicRow.events.get(harness.Node.EventType.TOUCH_END)(); assert.equal(UIAudio.musicVolume, .6); assert.equal(UIAudio.volume, before);
+const musicBefore = UIAudio.musicVolume;
+musicRow.getChildByName('volumeIncrease').events.get(harness.Node.EventType.TOUCH_END)();
+assert.equal(UIAudio.musicVolume, Math.min(1, Math.round((musicBefore + .05) * 100) / 100)); assert.equal(UIAudio.volume, before);
 const rows = ['settingSpeed', 'settingDamageNumbers', 'settingHealingNumbers', 'settingSoundVolume', 'settingMusicVolume', 'debugToggle', 'returnHome'].map(n => ui.mainMenuContent.getChildByName(n));
 for (let i = 1; i < rows.length; i++) {
   const upper = rows[i - 1], lower = rows[i];

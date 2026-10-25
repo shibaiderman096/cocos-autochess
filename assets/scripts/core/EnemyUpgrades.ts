@@ -31,18 +31,16 @@ export function applyEnemyUpgrades(wave: WaveConfig, policy: EquipmentPolicyConf
     const unit = roster.find(u => u.id === enemy.unitId);
     if (!unit) throw new Error('Unknown enemy equipment carrier: ' + enemy.unitId);
     const role = resolveEnemyRole(unit, {}, roles ?? { version: 'equipment-fallback', units: {} }).role;
-    return { index, ids: ids.filter(id => enemyEquipmentFits(unit, role, tags[id])) };
-  });
+    return { index, value: (unit.cost ?? 1) * 3 ** (enemy.star - 1), ids: ids.filter(id => enemyEquipmentFits(unit, role, tags[id])) };
+  }).sort((a, b) => enemies[b.index].equipment.length - enemies[a.index].equipment.length || b.value - a.value || a.index - b.index);
   let remaining = gold;
   const bought: string[] = [];
   while (remaining > 0) {
     const available = carriers.map(c => ({ ...c, ids: c.ids.filter(id => price(id) <= remaining) }))
       .filter(c => c.ids.length && enemies[c.index].equipment.length < MAX_EQUIPMENT);
     if (!available.length) break;
-    // Spread first items across the army, then fill legal three-slot loadouts. Tie RNG is isolated per wave.
-    const fewest = Math.min(...available.map(c => enemies[c.index].equipment.length));
-    const preferred = available.filter(c => enemies[c.index].equipment.length === fewest);
-    const carrier = preferred[rng.int(0, preferred.length - 1)], equipped = enemies[carrier.index].equipment;
+    // Fill the strongest eligible carrier's three slots before investing in the next one.
+    const carrier = available[0], equipped = enemies[carrier.index].equipment;
     const distinct = carrier.ids.filter(id => !equipped.includes(id)), pool = distinct.length ? distinct : carrier.ids;
     const item = pool[rng.int(0, pool.length - 1)];
     equipped.push(item); bought.push(item); remaining -= price(item);

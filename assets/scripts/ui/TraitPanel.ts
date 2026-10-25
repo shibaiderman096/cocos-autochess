@@ -231,7 +231,8 @@ export class TraitPanel {
     const shadow = state.config.breakpoints.some(tier => !!tier.shadow);
     const spellchanter = state.config.breakpoints.some(tier => !!tier.spellchanter);
     const swift = state.config.breakpoints.some(tier => !!tier.swiftmartialist);
-    const warrior = state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
+    const bloodfiend = state.config.breakpoints.some(tier => !!tier.bloodfiend);
+    const warrior = bloodfiend || state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
     const tall = formation || shadow || swift;
     const headerY = shadow || warrior ? 264 : tall ? 232 : 177;
     const card = panel(this.parent, 'traitDetail', shadow || warrior ? -184 : -206, shadow || warrior ? 0 : tall ? 10 : 40, shadow || warrior ? 440 : 390, shadow || warrior ? 610 : tall ? 540 : 430,
@@ -243,7 +244,7 @@ export class TraitPanel {
     left(card, state.config.name, shadow ? -137 : -110, headerY + 13, 23, 240).isBold = true;
     left(card, `${state.count}名上场 · ${state.active ? {bronze:'黄铜',silver:'白银',gold:'黄金',prismatic:'棱彩'}[state.active.tier] : '未激活'}`, shadow ? -137 : -110, headerY - 19, 14, 230, COLORS[state.active?.tier ?? 'inactive']);
     button(card, '×', shadow ? 193 : 167, headerY + 21, 26, 26, () => this.hideDetail());
-    const atlas = shadow || warrior || spellchanter || swift ? new SpriteAtlas() : null;
+    const atlas = shadow || warrior || spellchanter || swift || bloodfiend ? new SpriteAtlas() : null;
     const copies: Array<{ view: RichText; markup: string }> = [];
     const rich = (parent: Node, name: string, markup: string, x: number, y: number, width: number, size = 15): void => {
       const node = new Node(name); parent.addChild(node);
@@ -253,7 +254,12 @@ export class TraitPanel {
       // Do not reference images until their asynchronously loaded frames exist.
       view.string = markup.replace(/<img[^>]*\/>/g, ''); copies.push({ view, markup });
     };
-    if (shadow) {
+    if (bloodfiend) {
+      const description = state.config.description.replace('10%全能吸血', "<img src='attr_lifesteal' width=16 height=16 align=center offset=4/>10%全能吸血")
+        .replace(/生命/g, "<img src='stat_hp' width=16 height=16 align=center offset=4/>")
+        .replace(/攻速/g, "<img src='attr_aspd' width=16 height=16 align=center offset=4/>");
+      rich(card, 'traitDescription', `<color=#eae7d7>${description}</color>`, -198, 185, 396, 15);
+    } else if (shadow) {
       rich(card, 'shadowDescription', '<color=#eae7d7>暗影棋子的普攻会使目标<color=#c6acff><b>沾染暗影</b></color>，<br/>侵蚀持续至战斗结束。</color>', -198, 194, 396, 16);
     } else {
       const body = left(card, state.config.description, warrior ? -198 : -172, warrior ? 185 : tall ? 163 : 115, 16, warrior ? 396 : 344);
@@ -266,7 +272,15 @@ export class TraitPanel {
       const row = panel(card, 'traitBreakpoint', 0, warrior ? [105, 63, 21, -49][index] : shadow ? [123, 58, -10, -94][index] : swift ? 80 - index * 60 : formation ? 80 - index * 72 : 48 - index * 36, shadow || warrior ? 400 : 350, warrior ? (index === 3 ? 88 : 36) : shadow ? (tier.shadow?.board ? 96 : index === 0 ? 56 : 64) : swift ? 56 : formation ? 64 : 32,
         active ? new Color(39, 43, 57) : new Color(15, 23, 34), active ? COLORS[tier.tier] : new Color(30, 42, 52), null);
       left(row, `(${tier.count})`, shadow || warrior ? -188 : -163, 0, shadow || warrior ? 18 : 16, 42, active ? COLORS[tier.tier] : MUTED).isBold = shadow || warrior;
-      if (tier.swiftmartialist) {
+      if (tier.bloodfiend) {
+        const e = tier.bloodfiend, reached = state.count >= tier.count;
+        const percent = (value: number) => `${Number((value * 100).toFixed(2))}%`;
+        const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;
+        const icon = (key: string) => `<img src='${key}' width=16 height=16 align=center offset=4/>`;
+          const text = `友方击杀：${icon('attr_aspd')} ${number(`+${percent(e.attackSpeedBonus)}`, '#f2d04b')}，每层${number(`${e.durationSeconds}秒`, '#b57fe6')}<br/>立即回复${number(percent(e.healMaxHpFraction), '#7bf59a')}最大${icon('stat_hp')}`
+          + (e.overhealShieldRatio ? `<br/>所有溢出治疗的${number(percent(e.overhealShieldRatio), '#7bf59a')}转为${icon('blood_shield')}护盾<br/>护盾可叠加，持续至战斗结束` : '');
+        rich(row, 'bloodfiendEffect', `<color=${reached ? '#eae7d7' : '#8a99a4'}>${text}</color>`, -140, 0, 330, 14);
+      } else if (tier.swiftmartialist) {
         const e = tier.swiftmartialist, reached = state.count >= tier.count;
         const number = (value: string, tone: string) => `<color=${reached ? tone : '#8a99a4'}><b>${value}</b></color>`;
         const percent = Number((e.attackSpeedPerCast * 100).toFixed(2));
@@ -334,10 +348,11 @@ export class TraitPanel {
         if (tier.regenPerSecond) statBonus(row, 'stat_hp', `+${tier.regenPerSecond * 100}%/s`, 86, HEALING, active);
       }
     });
-    if (shadow || warrior || spellchanter || swift) {
+    if (shadow || warrior || spellchanter || swift || bloodfiend) {
       const icons = { attr_armor: M2_UI_SPRITE.attr_armor, attr_mr: M2_UI_SPRITE.attr_mr,
         attr_phys_bonus: M2_UI_SPRITE.attr_phys_bonus, attr_spell_bonus: M2_UI_SPRITE.attr_spell_bonus,
-        attr_dmg_amp: M2_UI_SPRITE.attr_dmg_amp, attr_aspd: M2_UI_SPRITE.attr_aspd, attr_lifesteal: M2_UI_SPRITE.attr_lifesteal, shadow_damage: FX_SPRITE.shadowProjectile };
+        attr_dmg_amp: M2_UI_SPRITE.attr_dmg_amp, attr_aspd: M2_UI_SPRITE.attr_aspd, attr_lifesteal: M2_UI_SPRITE.attr_lifesteal,
+        stat_hp: M2_UI_SPRITE.stat_hp, blood_shield: M2_UI_SPRITE.attr_dmg_reduce, shadow_damage: FX_SPRITE.shadowProjectile };
       let remaining = Object.keys(icons).length;
       Object.entries(icons).forEach(([key, path]) => loadArtSprite(path, (error, frame) => {
         if (this.detail !== card) return;

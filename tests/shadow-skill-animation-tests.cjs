@@ -11,12 +11,12 @@ class Node {
 }
 class UITransform{setContentSize(width,height){this.contentSize={width,height};}}
 class Sprite{static SizeMode={CUSTOM:1};}class UIOpacity{opacity=255;}class Color{constructor(...rgba){this.rgba=rgba;}}
-const cc={Node,Vec3,Sprite,SpriteFrame:class{},UITransform,UIOpacity,Color,Component:class{},_decorator:{ccclass:()=>T=>T},resources:{load:(path,T,callback)=>pending.push({path,callback})},tween:()=>({to(){return this;},call(){return this;},start(){}})};
+const cc={Node,Vec3,Sprite,SpriteFrame:class{destroy(){}},Texture2D:class{},Rect:class{constructor(x,y,width,height){Object.assign(this,{x,y,width,height});}},Size:class{constructor(width,height){Object.assign(this,{width,height});}},UITransform,UIOpacity,Color,Component:class{},_decorator:{ccclass:()=>T=>T},resources:{load:(path,T,callback)=>pending.push({path,callback})},tween:()=>({to(){return this;},call(){return this;},start(){}})};
 const cache={};function load(file){if(cache[file])return cache[file];const exports={};cache[file]=exports;
- new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./GameAudio'?{GameAudio:{play(){}}}:name==='./ArtPaths'?art:name==='./ShadowSkillVfx'?load('assets/scripts/view/ShadowSkillVfx.ts'):{},exports);return exports;}
+ new Function('require','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,experimentalDecorators:true}}).outputText)(name=>name==='cc'?cc:name==='./GameAudio'?{GameAudio:{play(){}}}:name==='./ArtPaths'?art:name==='./ShadowSkillVfx'?load('assets/scripts/view/ShadowSkillVfx.ts'):name==='./BloodfiendVfx'?load('assets/scripts/view/BloodfiendVfx.ts'):{},exports);return exports;}
 const {ShadowSkillVfx}=load('assets/scripts/view/ShadowSkillVfx.ts');
 const root=new Node('fx'),owner=new Node('owner');const vfx=new ShadowSkillVfx(root,56,50,id=>id===1?owner:undefined);
-const flush=()=>{while(pending.length){const {path,callback}=pending.shift();callback(null,{name:path});}};
+const flush=()=>{while(pending.length){const {path,callback}=pending.shift();callback(null,{name:path,width:1024,height:512});}};
 const snapshot=()=>vfx.slots.filter(slot=>slot.layer).map(slot=>({position:{...slot.node.position},scale:{...slot.node.scale},angle:slot.node.angle,opacity:slot.opacity.opacity,active:slot.node.active}));
 const effects=['bulwark','bulwarkBurst','domain','piercing','flurry','cleave','empower','flameBurst','execute','lanterns','blackstars','collapse','void','voidMark'];
 for(const effect of effects){vfx.play(effect,1,new Vec3(),effect==='empower'?new Vec3():new Vec3(60,45),0,1,4);flush();vfx.update(2);assert.ok(vfx.slots.some(slot=>slot.layer&&slot.node.active),effect+' has loaded animated layers');vfx.clear();}

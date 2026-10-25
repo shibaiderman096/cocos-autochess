@@ -1,12 +1,12 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.ENCOUNTER_PLAYWRIGHT||'playwright');
-const output=path.resolve('docs/evidence/encounter-chest');fs.mkdirSync(output,{recursive:true});
+const output=path.resolve('.test-build/encounter-chest');fs.mkdirSync(output,{recursive:true});
 (async()=>{
  const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true});
  try {
   const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('http://127.0.0.1:7456/',{waitUntil:'networkidle'});
+  await page.goto('http://localhost:7456/?scene=e3041672-7bfd-46bb-a833-416a349ab97b',{waitUntil:'networkidle'});
   await page.evaluate(async()=>{
    const cc=window.cc||await System.import('cc');window.ccTest=cc;
    if(!cc.find('Canvas/Stage')?.getComponent('BattleStage')&&!cc.find('Canvas')?.getComponentInChildren('MainMenu'))
@@ -62,6 +62,7 @@ const output=path.resolve('docs/evidence/encounter-chest');fs.mkdirSync(output,{
     const unit=stage.owned.all()[0];stage.session.moveUnit(unit.uid,{location:'board',x:3,y:3});
     const sim=stage.session.startBattle();sim.end(0);stage.session.settleBattle();
     stage.resultShown=true;stage.fighting=false;stage.resetBattle(false);stage.refreshShopUI();stage.refreshEconomyUI();stage.refreshRunUI();
+    stage.enabled=false;
     window.lastGrant=null;const original=stage.session.claimStageReward.bind(stage.session);
     stage.session.claimStageReward=action=>{const result=original(action);lastGrant=result.stageReward;return result;};
    },{seed});
@@ -70,18 +71,37 @@ const output=path.resolve('docs/evidence/encounter-chest');fs.mkdirSync(output,{
    await page.screenshot({path:path.join(output,`04-${kind}-unopened.png`)});
    const chest=await page.evaluate(()=>point(stage.bossChest.root));await page.mouse.click(chest.x,chest.y);
    await page.waitForFunction(()=>!!lastGrant,null,{timeout:10000});
+   await page.evaluate(()=>{window.advanceRewardFlight=stage.rewardFlight.update.bind(stage.rewardFlight);stage.rewardFlight.update=()=>{};});
    const result=await page.evaluate(()=>({grant:lastGrant,health:stage.flow.health,label:stage.ui.healthLabel.string,pending:stage.session.pendingStageReward??null,equipment:[...stage.owned.equipmentReserve],flight:!!stage.rewardFlight}));
    assert.equal(result.grant.kind,kind);assert.equal(result.pending,null);
-   if(kind==='health'){assert.equal(result.health,65);assert.equal(result.label,'65 / 100');}
-   if(kind==='equipment')assert.ok(result.equipment.includes(result.grant.equipmentId));
+   if(kind==='health'){assert.equal(result.health,65);assert.equal(result.label,'60 / 100','health display waits for arrival');}
+   if(kind==='equipment'){
+    assert.ok(result.grant.equipmentIds.every(id=>result.equipment.includes(id)));
+    assert.equal(result.grant.equipmentCredit,2);
+    assert.equal(await page.evaluate(()=>stage.ui.sideTab),'backpack');
+   }
    if(kind==='units')assert.ok(result.grant.units.length>0);
-   report.boss.push({seed,...result});
+   assert.ok(result.flight,'all boss reward categories play a flight before advancing');
+   await page.waitForFunction(()=>stage.rewardFlight.orbs.every(orb=>!!orb.sprite.getComponent('cc.Sprite').spriteFrame));
+   await page.evaluate(()=>advanceRewardFlight(.45));
+   await page.waitForTimeout(150);
+   result.midFlight=await page.evaluate(()=>stage.rewardFlight.orbs.map(orb=>({art:orb.target.art,position:orb.sprite.position.clone(),destination:orb.target.position(),active:orb.sprite.active})));
    await page.screenshot({path:path.join(output,`05-${kind}-opened.png`)});
-   await page.waitForFunction(()=>!stage.rewardFlight);
-   await page.evaluate(()=>{stage.nextWaveRemaining=null;});
+   assert.equal(await page.evaluate(()=>stage.nextWaveRemaining),null,'next wave waits for the flight');
+   await page.evaluate(()=>advanceRewardFlight(5));
+   await page.waitForTimeout(150);
+   assert.equal(await page.evaluate(()=>!!stage.rewardFlight),false);
+   if(kind==='health')assert.equal(await page.evaluate(()=>stage.ui.healthLabel.string),'65 / 100');
+   if(kind==='equipment')assert.ok((await page.evaluate(()=>stage.ui.rewardStorage.string)).includes('装备额度：2金币'));
+   result.arrival=await page.evaluate(()=>({label:stage.ui.healthLabel.string,next:stage.nextWaveRemaining,visible:stage.ui.backpackSlots.filter(s=>s.icon.node.activeInHierarchy).map(s=>s.icon.node.getComponent('cc.UIOpacity')?.opacity??255)}));
+   assert.ok(result.arrival.next!==null,'automatic progression resumes after arrival');
+   assert.ok(result.arrival.visible.every(v=>v===255));
+   report.boss.push({seed,...result});
+   await page.screenshot({path:path.join(output,`06-${kind}-arrived.png`)});
+   await page.evaluate(()=>{stage.nextWaveRemaining=null;stage.enabled=true;});
   }
   report.errors=errors;assert.deepEqual(errors,[]);
   fs.writeFileSync(path.join(output,'browser-acceptance.json'),JSON.stringify(report,null,2));
-  console.log('PASS actual browser pointer interactions: 100 health, frame-by-frame special-shop exit, three random boss rewards, direct equipment delivery, +5 health and unit flight');
+  console.log('PASS actual browser pointer interactions: special-shop exit, three boss reward flights, equipment value/credit/backpack arrival, health arrival and deferred auto progression');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

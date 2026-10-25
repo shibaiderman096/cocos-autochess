@@ -1,6 +1,7 @@
 import { BurnRuntime, Side, EquipmentConfigData, ShadowTraitEffect, ShadowCorruption, ConquerorTraitEffect, SpellbladeTraitEffect, SpellchanterTraitEffect, SwiftmartialistTraitEffect } from './types';
 import { UnitConfigData } from '../core/ConfigManager';
 import type { MechanicalPioneerTraitEffect } from './types';
+import type { BloodfiendTraitEffect } from './types';
 import type { HydraulicBulwarkRuntime, SpiderLeapRuntime, FurnaceDashRuntime } from './types';
 
 export class Unit {
@@ -21,6 +22,30 @@ export class Unit {
   swiftmartialist?: SwiftmartialistTraitEffect;
   swiftmartialistStacks = 0;
   mechanicalPioneer?: MechanicalPioneerTraitEffect;
+  bloodfiend?: BloodfiendTraitEffect;
+  bloodfiendUntilTick = 0;
+  bloodfiendStackExpiries: number[] = [];
+  get bloodfiendStackCount(): number {
+    if (!this.alive) return 0;
+    let count=0;
+    for (const until of this.bloodfiendStackExpiries) if (this.combatTick<until) count++;
+    return count;
+  }
+  bloodAidUntilTick = 0;
+  bloodRebirthUsed = false;
+  bloodRebirth: import('./types').BloodRebirthRuntime | null = null;
+  bloodCleaveReady = false;
+  bloodCleaveWindup: {targetId: number; startTick: number; endTick: number} | null = null;
+  bloodReignHealth = 0;
+  bloodReignResistance = 0;
+  bloodReignReduction = 0;
+  bloodAidResistances = new Map<number,{amount:number;untilTick:number}>();
+  get bloodAidResistanceBonus():number {
+    if(!this.alive)return 0;
+    let total=0;
+    for(const buff of this.bloodAidResistances.values())if(this.combatTick<buff.untilTick)total+=buff.amount;
+    return total;
+  }
   overclockUntilTick = 0;
   overclockNextTick = 0;
   overclockHealTick = 0;
@@ -63,8 +88,8 @@ export class Unit {
   domainRadius = 0;
   fearUntilTick = 0;
   fearOrigin = { x: 0, y: 0 };
-  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
-  get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
   gainMana(amount: number): void {
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
@@ -79,7 +104,7 @@ export class Unit {
   alive = true;
   star = 1;
   skillScale = 1;
-  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; nextHealTick?: number; shotsRemaining?: number } | null = null;
+  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; direction?: {x:number;y:number}; nextHealTick?: number; shotsRemaining?: number } | null = null;
   burns: BurnRuntime[] = [];
   empoweredAttacks = 0;
   permanentEmpower = false;
@@ -101,6 +126,9 @@ export class Unit {
     return this.equipment.reduce((sum, item) => sum + (item.damageTakenStacks && this.equipmentDamageStacks >= item.damageTakenStacks.maxStacks ? item.damageTakenStacks.maxStackDamageReduction : 0), 0);
   }
   permanentHealthGained = 0;
+  permanentSpellPowerGained = 0;
+  /** Total earned across this expedition, including the entry placement. */
+  permanentSpellPower = 0;
   soulLampHealth = 0;
   maxHpGrowthMultiplier = 1;
   equipmentCastSpeedUntil = new Map<number, number>();
@@ -147,6 +175,7 @@ export class Unit {
     const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - penalty
       + (this.combatTick < this.spellbladeUntilTick ? this.spellblade?.attackSpeedBonus ?? 0 : 0)
       + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
+      + this.bloodfiendStackCount * (this.bloodfiend?.attackSpeedBonus ?? 0)
       + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0);
     return Math.min(this.attackSpeedCap, penalty > 0 ? Math.max(.1, speed) : speed);
   }
@@ -167,6 +196,10 @@ export class Unit {
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */
   snapshot(tick = 0) {
     return {
+      bloodAidActive: this.alive && tick < this.bloodAidUntilTick,
+      bloodRebirthActive: this.alive && !!this.bloodRebirth,
+      bloodCleaveReady: this.alive && this.bloodCleaveReady,
+      bloodAidProtected: this.alive && this.bloodAidResistanceBonus > 0,
       hydraulicBulwarkActive: this.alive && !!this.hydraulicBulwark && tick < this.hydraulicBulwark.untilTick,
       ...(this.shadowCorruption ? { shadowCorrupted: this.alive } : {}),
       ...(this.domainRadius ? { domainRadius: this.alive && tick < this.domainUntilTick ? this.domainRadius : 0 } : {}),
@@ -189,7 +222,7 @@ export class Unit {
       sunlightShield: this.sunlightShield,
       spiderAirborne: this.alive && !!this.spiderLeap,
       atlasBurning: this.alive && this.burns.some(b=>b.untilBattleEnd),
-      untargetable: !!this.spiderLeap || this.skillUntargetable || tick < this.untargetableUntilTick,
+      untargetable: !!this.bloodRebirth || !!this.spiderLeap || this.skillUntargetable || tick < this.untargetableUntilTick,
     };
   }
 }

@@ -264,6 +264,58 @@
       "source": "explicit",
       "confidence": "high",
       "reason": "塞拉菲尔：物理战士，跃迁连斩与击杀追击。"
+    },
+    "crimson_riftclaw": {
+      "role": "tank",
+      "tags": [
+        "control",
+        "durable"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "猩红裂爪：1费魔法坦克，蓄力后单体魔法伤害与击飞。"
+    },
+    "bloodline_earl": {
+      "role": "melee_dps",
+      "tags": [
+        "healing"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "血裔伯爵：2费魔法战士，2格攻击距离，单体汲血治疗与亲自击杀永久法术加成。"
+    },
+    "crimson_devourer": {
+      "role": "tank",
+      "tags": [
+        "aoe",
+        "control",
+        "durable"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "猩红巨噬兽：三费血魔魔法坦克，蓄力后直线震吼，伤害并使敌人无法施法。"
+    },
+    "scarlet_enchantress": {
+      "role": "support",
+      "tags": [
+        "heal",
+        "support",
+        "ranged"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "绯血妖姬：三费血魔魔法射手、迅捷射手，位移治疗并给予双抗，停留时强化普攻，结束返回。"
+    },
+    "crimson_demon_knight": {
+      "role": "melee_dps",
+      "tags": [
+        "aoe",
+        "durable",
+        "scaling"
+      ],
+      "source": "explicit",
+      "confidence": "high",
+      "reason": "蚀血魔君：五费血魔物理战士，本场叠加生命并强化前方直线普攻，低血量一次恢复。"
     }
   }
 }

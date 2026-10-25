@@ -28,12 +28,13 @@ export type StagePending =
   | { id: string; waveId: number; kind: 'specialShop'; offers: StageOffer[] };
 export interface StageProgressState {
   lastUnitDrop?: { waveId: number; value: number; units: string[]; deferredValue: number };
-  lastRewardWave: number; unitReserve: string[]; unitCredit: number; creditRoll: number; pending?: StagePending;
+  lastRewardWave: number; unitReserve: string[]; unitCredit: number; equipmentCredit?: number; creditRoll: number; pending?: StagePending;
 }
 export interface StageChoice { type: 'stageChoice'; rewardId: string; choice: 'units' | 'equipment' | 'claim' | 'buy' | 'continue'; index?: number }
 export type StageRewardGrant = { kind: 'units'; units: string[] }
-  | { kind: 'equipment'; equipmentId: string } | { kind: 'health'; amount: number };
+  | { kind: 'equipment'; equipmentIds: string[]; value: number; equipmentCredit: number } | { kind: 'health'; amount: number };
 export const freshStageProgress = (): StageProgressState => ({ lastRewardWave: 0, unitReserve: [], unitCredit: 0, creditRoll: 0 });
+export const isChestlessBoss = (wave: WaveConfig): boolean => wave.stage === 10 && wave.round === 10 && wave.encounterKind === 'boss';
 
 /** Inventory and rewards only; all randomness uses persisted encounter identities. */
 export class StageProgression {
@@ -46,6 +47,7 @@ export class StageProgression {
       || rules.basicEquipmentIds.some(id => !cfg.getEquipmentReserve([id]).length || !['basic', 'advanced'].includes(tiers[id]))
       || ![rules.monsterReward.initialValue, rules.monsterReward.valuePerStage, rules.monsterReward.maxValue, ...Object.values(rules.shop.equipmentPrices)].every(n => Number.isSafeInteger(n) && n > 0)) throw new Error('Invalid stage encounter rules');
     if (!state || ![state.lastRewardWave, state.unitCredit, state.creditRoll].every(n => Number.isSafeInteger(n) && n >= 0)
+      || (state.equipmentCredit !== undefined && (!Number.isSafeInteger(state.equipmentCredit) || state.equipmentCredit < 0))
       || !Array.isArray(state.unitReserve) || state.unitReserve.some(id => !cfg.allUnits().some(u => u.id === id))) throw new Error('Invalid stage reward save');
     this.validateSavedRewards();
   }
@@ -60,6 +62,8 @@ export class StageProgression {
       && Number.isSafeInteger(b.deferredValue) && b.deferredValue >= 0
       && b.units.reduce((n, id) => n + COST_PRICE[validCost(roster.get(id)!.cost)], b.deferredValue) === b.value;
     const bad = () => { throw new Error('Invalid stage reward save'); };
+    const cheapestEquipment = Math.min(...this.rules.basicEquipmentIds.map(id => this.cfg.equipmentPrice(id, this.rules.shop.equipmentPrices[this.tiers[id]])));
+    if ((this.state.equipmentCredit ?? 0) >= cheapestEquipment) bad();
     const drop = this.state.lastUnitDrop;
     if (drop !== undefined && (!drop || !positive(drop.waveId) || !bundle(drop))) bad();
     const p = this.state.pending;
@@ -83,10 +87,25 @@ export class StageProgression {
   }
   value(stage: number): number { const r = this.rules.monsterReward; return Math.min(r.maxValue, r.initialValue + (stage - 1) * r.valuePerStage); }
   private id(wave: WaveConfig, kind: string): string { return `${this.rules.version}:${this.random.runSeed}:${wave.id}:${kind}`; }
-  private shuffle<T>(items: T[], waveId: number, salt: number): T[] {
-    const rng = this.random.stream('reward', waveId, salt);
-    for (let i = items.length - 1; i > 0; i--) { const j = rng.int(0, i); [items[i], items[j]] = [items[j], items[i]]; }
-    return items;
+  /** Equipment uses the same gold budget as cards; unspendable value stays in the run. */
+  private reserveEquipment(value: number, waveId: number): StageRewardGrant & { kind: 'equipment' } {
+    const catalogue = this.rules.basicEquipmentIds.slice().sort().map(id => ({ id,
+      price: this.cfg.equipmentPrice(id, this.rules.shop.equipmentPrices[this.tiers[id]]) }));
+    const budget = value + (this.state.equipmentCredit ?? 0);
+    if (!Number.isSafeInteger(budget)) throw new Error('Invalid equipment reward budget');
+    // Saved credit is below the cheapest price, so the change-making table stays bounded.
+    const reachable = Array(budget + 1).fill(false); reachable[0] = true;
+    for (let n = 1; n <= budget; n++) reachable[n] = catalogue.some(item => item.price <= n && reachable[n-item.price]);
+    let remaining = budget; while (remaining > 0 && !reachable[remaining]) remaining--;
+    const equipmentCredit = budget-remaining, equipmentIds: string[] = [], rng = this.random.stream('reward', waveId, 4301);
+    while (remaining > 0) {
+      const choices = catalogue.filter(item => item.price <= remaining && reachable[remaining-item.price]);
+      const item = choices[rng.int(0, choices.length-1)];
+      equipmentIds.push(item.id); remaining -= item.price;
+    }
+    this.owned.equipmentReserve.push(...equipmentIds);
+    this.state.equipmentCredit = equipmentCredit;
+    return { kind: 'equipment', equipmentIds, value, equipmentCredit };
   }
   /** Bounded change-making preserves exact card value when stocks permit it. */
   private reserveCards(value: number, waveId: number, salt: number): { units: string[]; deferredValue: number } {
@@ -153,7 +172,7 @@ export class StageProgression {
       const drop = this.state.lastUnitDrop;
       this.state.pending = { id: this.id(wave, 'units'), kind: 'unitBundle', ...drop };
     }
-    else if (wave.encounterKind === 'boss') this.state.pending = { id: this.id(wave, 'boss'), waveId: wave.id, kind: 'bossChoice', value: this.value(wave.stage!) };
+    else if (wave.encounterKind === 'boss' && !isChestlessBoss(wave)) this.state.pending = { id: this.id(wave, 'boss'), waveId: wave.id, kind: 'bossChoice', value: this.value(wave.stage!) };
   }
   act(action: StageChoice, wave: WaveConfig): { ok: boolean; error?: string; completeShop?: boolean; stageReward?: StageRewardGrant } {
     const p = this.state.pending;
@@ -166,9 +185,7 @@ export class StageProgression {
       if (kind === 0) {
         stageReward = { kind: 'units', units: this.reserveCards(p.value, wave.id, 4101).units };
       } else if (kind === 1) {
-        const equipmentId = this.shuffle(this.rules.basicEquipmentIds.slice().sort(), wave.id, 4301)[0];
-        this.owned.equipmentReserve.push(equipmentId);
-        stageReward = { kind: 'equipment', equipmentId };
+        stageReward = this.reserveEquipment(p.value, wave.id);
       } else stageReward = { kind: 'health', amount: this.rules.bossReward?.healAmount ?? 5 };
       delete this.state.pending; this.collect(wave);
       return { ok: true, stageReward };

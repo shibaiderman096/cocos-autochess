@@ -8,6 +8,11 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  crimson_riftclaw: 'art/units/bloodfiend/crimson_riftclaw/spriteFrame',
+  bloodline_earl: 'art/units/bloodfiend/bloodline_earl/spriteFrame',
+  crimson_devourer: 'art/units/bloodfiend/crimson_devourer/spriteFrame',
+  scarlet_enchantress: 'art/units/bloodfiend/scarlet_enchantress/spriteFrame',
+  crimson_demon_knight: 'art/units/bloodfiend/crimson_demon_knight/spriteFrame',
   milu: 'art/units/astral/milu/spriteFrame',
   xiya: 'art/units/astral/xiya/spriteFrame',
   nebula_weaver: 'art/units/astral/nebula_weaver/spriteFrame',
@@ -53,13 +58,18 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
+  crimson_riftclaw:'760,350,300,300',
+  bloodline_earl:'450,10,310,310',
+  crimson_devourer:'1110,120,420,420',
+  scarlet_enchantress:'380,80,350,350',
+  crimson_demon_knight:'350,0,340,340',
   milu:'795,170,360,360',
   xiya:'400,160,340,340',
   nebula_weaver:'320,100,350,350',
   gravity_executor:'400,230,340,340',
   star_armor_guard:'470,160,340,340',
   turbo_fist_tiger:'570,390,400,400', arc_repairer:'380,90,400,400', rail_hunter_07:'300,25,400,400',
-  ripsaw_spider:'400,500,400,400',
+  ripsaw_spider:'450,420,430,430',
   furnace_executioner:'410,30,400,400',
   atlas:'300,440,450,450',
   bao_zero:'360,220,400,400',
@@ -81,6 +91,15 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  crimsonUpheaval: 'art/fx/crimson_upheaval/spriteFrame',
+  bloodlineSiphon: 'art/fx/bloodline_siphon/spriteFrame',
+  voidscarTransit: 'art/fx/voidscar_transit/spriteFrame',
+  frostbloodRoar: 'art/fx/frostblood_roar/spriteFrame',
+  scarletAid: 'art/fx/scarlet_aid/spriteFrame',
+  bloodRebirth: 'art/fx/blood_rebirth/spriteFrame',
+  bloodCleave: 'art/fx/blood_cleave/spriteFrame',
+  bloodfiendRevel: 'art/fx/bloodfiend_revel/spriteFrame',
+  mechanicalOverclock: 'art/fx/mechanical_overclock/spriteFrame',
   miluSkillSheet: 'art/fx/milu_skill_sheet/spriteFrame',
   stellarSkillSheet: 'art/fx/stellar_skill_sheet/spriteFrame',
   moonArrowSheet: 'art/fx/moon_arrow_sheet/spriteFrame',
@@ -124,9 +143,6 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
 
 /** Current M2 interface textures. */
 export const M2_UI_SPRITE = {
-  special_shop_panel: 'art/ui/special_shop_panel/spriteFrame',
-  special_shop_card: 'art/ui/special_shop_card/spriteFrame',
-  special_shop_button: 'art/ui/special_shop_button/spriteFrame',
   attr_phys_atk: 'art/ui_m2/attr_phys_atk/spriteFrame',
   attr_armor: 'art/ui_m2/attr_armor/spriteFrame',
   attr_mr: 'art/ui_m2/attr_mr/spriteFrame',

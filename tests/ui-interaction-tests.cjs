@@ -216,7 +216,7 @@ assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,potionIcon.icon,'late cal
 assert.equal(ui.backpackSlots[1].icon.spriteFrame.name,guinsoo.icon);
 ui.refreshBackpack([{...guinsoo,kind:'equipment'}],true);flush();
 assert.equal(ui.node.getChildByName('backpack').position.x,-510);
-let bagClicks=0;ui.onBackpack=()=>bagClicks++;ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_END)();assert.equal(bagClicks,1);
+let bagClicks=0;ui.onInspectBackpack=()=>bagClicks++;ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_END)();assert.equal(bagClicks,1);
 ui.refreshBackpack([],false);assert.equal(ui.backpackSlots[0].index,-1);
 let equipmentClicks=0;ui.onEquipment=()=>equipmentClicks++;
 ui.equipmentSlots[0].node.events.get(Node.EventType.TOUCH_END)();assert.equal(equipmentClicks,1);

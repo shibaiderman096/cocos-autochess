@@ -48,6 +48,28 @@ const oneCost=Array.from({length:8},(_,n)=>({...i.units[0],id:'theme_'+n,cost:1,
 const theme={id:'fixture',name:'fixture',glyph:'F',description:'',members:oneCost.map(u=>u.id),breakpoints:[{count:3,tier:'bronze'}]};
 const themed=generateGoldArmy({...rules,themeTraits:['fixture']},2,3,7,'normal',3,oneCost,[theme],new RunRandomContext(3));
 assert.equal(themed.diagnostics.distinctUnits,3);assert.equal(themed.diagnostics.themeMembers,3);
+// An independent exhaustive oracle checks actual gold per unit, rather than comparing star counts.
+const balancedRoster=[1,2,3].flatMap(cost=>Array.from({length:5},(_,n)=>({...i.units[0],id:`balanced_${cost}_${n}`,cost})));
+const balancedTheme={...theme,members:balancedRoster.map(u=>u.id)};
+const values=[1,2,3,6,9,18,27],oracle=new Map();
+function enumerate(count,start,sum,squares){
+ if(!count){oracle.set(sum,Math.min(oracle.get(sum)??Infinity,squares));return;}
+ for(let n=start;n<values.length;n++)enumerate(count-1,n,sum+values[n],squares+values[n]**2);
+}
+enumerate(4,0,0,0);
+for(let budget=4;budget<=60;budget++){
+ const result=generateGoldArmy({...rules,initialGold:budget,themeTraits:['fixture']},2,0,budget,'normal',4,balancedRoster,[balancedTheme],new RunRandomContext(17));
+ const invested=result.enemies.map(u=>enemyUnitGold(balancedRoster.find(v=>v.id===u.unitId),u.star));
+ const expectedSpend=Math.max(...[...oracle.keys()].filter(n=>n<=budget));
+ assert.equal(result.diagnostics.spentGold,expectedSpend);
+ assert.equal(invested.reduce((n,gold)=>n+gold**2,0),oracle.get(expectedSpend),'same-budget armies minimize per-unit investment variance');
+ assert.equal(result.diagnostics.distinctUnits,4);assert.equal(result.diagnostics.themeMembers,4);
+}
+const interchangeable=[1,3].flatMap(cost=>Array.from({length:6},(_,n)=>({...i.units[0],id:`equal_gold_${cost}_${n}`,cost})));
+const uniqueEven=generateGoldArmy({...rules,initialGold:72,themeTraits:['fixture']},2,0,900,'normal',8,
+ interchangeable,[{...theme,members:interchangeable.map(u=>u.id)}],new RunRandomContext(17));
+assert.equal(uniqueEven.diagnostics.distinctUnits,8,'equal-investment fee/rank alternatives avoid unnecessary repeated units');
+assert.ok(uniqueEven.enemies.every(u=>enemyUnitGold(interchangeable.find(v=>v.id===u.unitId),u.star)===9));
 const placements=tidyEnemyRows(Array.from({length:10},(_,n)=>({unitId:oneCost[n%8].id,star:1,x:0,y:4,statMultiplier:1})),oneCost);
 assert.equal(new Set(placements.map(u=>u.x+','+u.y)).size,10);
 for(const bad of [{...rules,initialGold:-1},{...rules,maxShopRolls:0},{...rules,goldPerStage:NaN}])assert.throws(()=>validateEnemyGoldRules(bad),/Invalid enemy gold/);

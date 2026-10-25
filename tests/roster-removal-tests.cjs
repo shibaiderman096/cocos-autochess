@@ -9,12 +9,12 @@ const {UNIT_ART,UNIT_PORTRAIT,FX_SPRITE}=require('../assets/scripts/view/ArtPath
 const inputs=loadRunInputs(),root=path.resolve(__dirname,'..');
 const retired=['bronda','leon','shadow_seam_assassin','soulcleaver_general','scout','warrior','champion','young_sasuke','sasuke','sakura','itachi','madara','archer','guardian','duelist','ranger','shaman','mage','sorcerer','iron_golem','enderman'];
 const retained=new Set(inputs.units.map(u=>u.id));
-assert.equal(retained.size,28);
-assert.deepEqual(inputs.battle.traits.filter(t=>!t.selector && !t.pendingMembers).map(t=>t.id).sort(),['astral','mechanical_pioneer','shadow','sunlight']);
+assert.equal(retained.size,33);
+assert.deepEqual(inputs.battle.traits.filter(t=>!t.selector && !t.pendingMembers).map(t=>t.id).sort(),['astral','bloodfiend','mechanical_pioneer','shadow','sunlight']);
 assert.ok(inputs.battle.traits.filter(t=>t.pendingMembers).every(t=>t.members.length===0),'reserved traits do not restore removed roster members');
 for(const id of retired){assert.ok(!retained.has(id));assert.ok(!UNIT_ART[id]);assert.ok(!UNIT_PORTRAIT[id]);}
 for(const t of inputs.battle.traits)for(const id of t.members)assert.ok(retained.has(id));
-for(const cost of [1,2,3,4,5])assert.equal(inputs.units.filter(u=>u.cost===cost).length,[8,5,4,6,5][cost-1]);
+for(const cost of [1,2,3,4,5])assert.equal(inputs.units.filter(u=>u.cost===cost).length,[9,6,6,6,6][cost-1]);
 const monsters=buildMonsterUnits(inputs.run,inputs.units),all=new Set([...retained,...monsters.map(u=>u.id)]);
 assert.equal(monsters.length,30);
 const consumed=new Set([...inputs.units,...monsters].map(u=>u.skillId).filter(Boolean));
@@ -52,4 +52,4 @@ for(const seed of [19,1019,20261019]){
  const sanitized=session(seed,corrupted);
  assert.ok(sanitized.owned.all().every(u=>retained.has(u.unitId)),'legacy save sanitization excludes removed units');
 }
-console.log('PASS roster removal: 28 retained units, current factions, all costs, 99-stage enemies, monster/skill references, exclusive images/metas/source removal, shop, rewards, save sanitization and deterministic combat restore');
+console.log('PASS roster removal: 30 retained units, current factions, all costs, 99-stage enemies, monster/skill references, exclusive images/metas/source removal, shop, rewards, save sanitization and deterministic combat restore');

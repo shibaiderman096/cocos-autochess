@@ -63,54 +63,61 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
     available:affordable.filter(u=>t.members.includes(u.id)).length,threshold:t.breakpoints[0]?.count??3})).filter(t=>t.available>0);
   const feasible=themes.filter(t=>t.available>=Math.min(population,t.threshold));
   const themePool=feasible.length?feasible:themes.sort((a,b)=>b.available-a.available||a.id.localeCompare(b.id)).slice(0,1);
-  const theme=themePool.length?themePool[themeRng.int(0,themePool.length-1)]:undefined;
+  let theme=themePool.length?themePool[themeRng.int(0,themePool.length-1)]:undefined;
   const team: Array<{unit:UnitConfigData;star:number}>=[];let remaining=totalGold;
-  const choose=(choices:UnitConfigData[],excludeIndex=-1):UnitConfigData=>{
-    const existing=new Set(team.filter((_u,i)=>i!==excludeIndex).map(u=>u.unit.id));
+  const choose=(choices:UnitConfigData[]):UnitConfigData=>{
+    const existing=new Set(team.map(u=>u.unit.id));
     const unique=choices.filter(u=>!existing.has(u.id)),pool=unique.length?unique:choices;
     const themed=pool.filter(u=>theme?.members.has(u.id)),cohort=themed.length?themed:pool;
     return cohort[rng.int(0,cohort.length-1)];
   };
+  // Sample the same shop table as the player. Only rolled costs can enter the army,
+  // except the cheapest supported tier needed to guarantee a complete starting lineup.
   for(let roll=0;roll<rules.maxShopRolls;roll++){
-    if(team.length===population&&remaining===0)break;
-    const cost=rollShopCost(shopRates,()=>rng.next());if(!cost)break;costDraws[cost-1]++;
-    if(team.length<population){
-      const reserve=population-team.length-1;
-      const choices=sorted.filter(u=>u.cost===cost&&enemyUnitGold(u,1)<=remaining-reserve);
-      if(!choices.length)continue;const unit=choose(choices);team.push({unit,star:1});remaining-=enemyUnitGold(unit,1);continue;
-    }
-    const upgrades=team.map((u,i)=>({u,i,price:u.star<3?enemyUnitGold(u.unit,u.star+1)-enemyUnitGold(u.unit,u.star):Infinity}))
-      .filter(v=>v.u.unit.cost===cost&&v.price<=remaining).sort((a,b)=>a.u.star-b.u.star
-        ||Number(!!theme?.members.has(b.u.unit.id))-Number(!!theme?.members.has(a.u.unit.id))||a.i-b.i);
-    if(upgrades.length){const selected=upgrades[0];selected.u.star++;remaining-=selected.price;continue;}
-    const replacements=team.map((u,i)=>({u,i,price:(COST_PRICE[cost]-COST_PRICE[validCost(u.unit.cost)])*3**(u.star-1)}))
-      .filter(v=>v.price>0&&v.price<=remaining).sort((a,b)=>a.price-b.price||a.i-b.i);
-    for(const target of replacements){
-      const choices=sorted.filter(u=>u.cost===cost&&!team.some((v,i)=>i!==target.i&&v.unit.id===u.id));
-      // Retain an established faction whenever upgrading card cost permits it.
-      const themed=choices.filter(u=>theme?.members.has(u.id));
-      if(theme?.members.has(target.u.unit.id)&&!themed.length)continue;
-      if(!choices.length)continue;target.u.unit=choose(themed.length?themed:choices,target.i);remaining-=target.price;break;
-    }
+    const cost=rollShopCost(shopRates,()=>rng.next());if(cost)costDraws[cost-1]++;
   }
-  while(team.length<population){
-    const reserve=population-team.length-1,choices=sorted.filter(u=>shopRates[validCost(u.cost)-1]>0&&enemyUnitGold(u,1)<=remaining-reserve);
-    const min=Math.min(...choices.map(u=>enemyUnitGold(u,1))),unit=choose(choices.filter(u=>enemyUnitGold(u,1)===min));
-    team.push({unit,star:1});remaining-=min;
-  }
-  // Reconcile three-copy upgrades jointly, so an early purchase never strands an otherwise spendable budget.
-  let states=new Map<number,{stars:number[];score:number}>([[0,{stars:[],score:0}]]);
-  for(const member of team){
-    const next=new Map<number,{stars:number[];score:number}>();
-    for(const [sum,state] of states)for(const star of [1,2,3]){
-      const value=sum+enemyUnitGold(member.unit,star);if(value>totalGold)continue;
-      const score=state.score+star*star,previous=next.get(value);
-      if(!previous||score<previous.score)next.set(value,{stars:[...state.stars,star],score});
+  const cheapest=Math.min(...affordable.map(u=>validCost(u.cost)));
+  const costs=[...new Set(affordable.map(u=>validCost(u.cost)))].filter(cost=>costDraws[cost-1]>0||cost===cheapest).sort((a,b)=>a-b);
+  const options=costs.flatMap(cost=>[1,2,3].map(star=>({cost,star,gold:COST_PRICE[cost]*3**(star-1)})));
+  type Purchase = typeof options[number];
+  type Allocation = {purchases:Purchase[];squares:number;shopWeight:number};
+  let states=new Map<number,Allocation>([[0,{purchases:[],squares:0,shopWeight:0}]]);
+  for(let slot=0;slot<population;slot++){
+    const next=new Map<number,Allocation>();
+    for(const [sum,state] of states)for(const option of options){
+      const value=sum+option.gold;
+      if(value+(population-slot-1)*cheapest>totalGold)continue;
+      // At the same total spend, minimum squared gold is exactly minimum variance.
+      const squares=state.squares+option.gold**2,shopWeight=state.shopWeight+costDraws[option.cost-1],previous=next.get(value);
+      if(!previous||squares<previous.squares||(squares===previous.squares&&shopWeight>previous.shopWeight))
+        next.set(value,{purchases:[...state.purchases,option],squares,shopWeight});
     }
     states=next;
   }
-  const spent=Math.max(...states.keys()),ranks=states.get(spent)!;
-  team.forEach((member,i)=>member.star=ranks.stars[i]);remaining=totalGold-spent;
+  if(!states.size)throw new Error('Enemy gold budget cannot fund supported shop costs');
+  const spent=Math.max(...states.keys()),allocation=states.get(spent)!;
+  const slotsByCost=costs.map(cost=>({cost,count:allocation.purchases.filter(p=>p.cost===cost).length}));
+  const themeCoverage=(candidate:typeof theme)=>slotsByCost.reduce((n,{cost,count})=>n+Math.min(count,
+    sorted.filter(u=>validCost(u.cost)===cost&&candidate?.members.has(u.id)).length),0);
+  // An even allocation can change the usable fees. Keep a coherent faction supported by that lineup.
+  if(themeCoverage(theme)<Math.min(2,population))
+    theme=themes.slice().sort((a,b)=>themeCoverage(b)-themeCoverage(a)||a.id.localeCompare(b.id))[0];
+  for(const purchase of allocation.purchases){
+    const unit=choose(sorted.filter(u=>validCost(u.cost)===purchase.cost));
+    team.push({unit,star:purchase.star});
+  }
+  // Equal gold can have different fee/rank combinations (for example 1-cost 3-star and 3-cost 2-star).
+  // Use those ties to retain unique units and the common faction without changing the allocation.
+  for(const member of team){
+    const gold=enemyUnitGold(member.unit,member.star),duplicate=team.filter(u=>u.unit.id===member.unit.id).length>1;
+    const alternatives=sorted.filter(unit=>!team.some(u=>u.unit.id===unit.id)
+      &&options.some(p=>p.cost===validCost(unit.cost)&&p.gold===gold)
+      &&(duplicate||(!theme?.members.has(member.unit.id)&&theme?.members.has(unit.id))));
+    if(alternatives.length){
+      member.unit=choose(alternatives);member.star=options.find(p=>p.cost===validCost(member.unit.cost)&&p.gold===gold)!.star;
+    }
+  }
+  remaining=totalGold-spent;
   const enemies=tidyEnemyRows(team.map(({unit,star})=>({unitId:unit.id,star,x:0,y:4,statMultiplier:1,equipment:[]})),roster);
   return {enemies,diagnostics:{version:'gold-v1',baseGold,bonusGold,totalGold,spentGold:totalGold-remaining,remainingGold:remaining,
     population,shopLevel:population,shopRates,costDraws,themeTrait:theme?.id,

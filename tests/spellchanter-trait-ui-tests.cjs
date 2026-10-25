@@ -6,7 +6,7 @@ const battle=require('../assets/resources/config/battle.json'),roster=require('.
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();},text=n=>[...n.components.values()].find(c=>c.string!==undefined);
 const states=resolveTraits(battle.traits,roster.map(u=>u.id),roster),state=states.find(s=>s.config.id==='spellchanter');
-ui.refreshTraits(states,roster);flush();assert.equal(ui.traitPanel.rows.children.length,13);
+ui.refreshTraits(states,roster);flush();assert.equal(ui.traitPanel.rows.children.length,14);
 for(const row of ui.traitPanel.rows.children)assert.ok(-row.position.y+row.getComponent(UITransform).contentSize.height/2<=ui.traitPanel.rows.getComponent(UITransform).contentSize.height);
 for(const tier of state.config.breakpoints) {
   ui.refreshTraits([{...state,count:tier.count,active:tier}],roster);flush();

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "crimson_riftclaw",
+    "art_source": "existing",
+    "route": "user-supplied original",
+    "filename": "ChatGPT 图像 2026年10月25日 12_14_43.png",
+    "sha256": "4ac0c48fbaf14faf9fd0ac490fb43d9dd34690f3d029d76d867e43f9e3e98fb6",
+    "width": 1086,
+    "height": 1448,
+    "mode": "RGBA"
+  },
+  {
+    "id": "bloodline_earl",
+    "art_source": "existing",
+    "route": "user-supplied original",
+    "filename": "ChatGPT 图像 2026年10月25日 12_14_58.png",
+    "sha256": "998c60ff29530558c9725f253632c1a4ca41cbf42ccfc6446d759af21bb1b37b",
+    "width": 1086,
+    "height": 1448,
+    "mode": "RGBA"
+  }
+]

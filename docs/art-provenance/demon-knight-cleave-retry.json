@@ -1,0 +1,6 @@
+{
+  "route": "Built-in image_gen",
+  "reason": "Original wave overlapped cell borders; regenerated as smaller isolated effects.",
+  "selected": "art-source/demon-knight/blood_cleave.png",
+  "prompt": "Create a production sprite atlas with EXACTLY EIGHT SMALL SEPARATE EFFECTS. 4 columns x 2 rows, 1536x768 landscape, transparent RGBA. Each 384x384 tile contains ONE SMALL centered rightward red crystal sword wave, no larger than 200x160 pixels. Every tile MUST keep at least 80 pixels COMPLETELY EMPTY transparent margin on all four sides. Effects NEVER touch tile borders and NEVER overlap neighboring tiles. No full-width streaks, no text/grid/background. Dark fantasy painted glowing scarlet crystal blade wave pointing RIGHT, ivory core and fading red shards. Eight phases: faint tiny charging glint, short crystal blade, brighter blade, full small blade wave, breaking blade, scattered fragments, fewer dim fragments, final tiny sparks. Fixed central anchor and scale, each contained compact effect fully visible, blade tip and tail both safely inside its own tile. The eight small separate spell effects float on a large completely transparent canvas."
+}

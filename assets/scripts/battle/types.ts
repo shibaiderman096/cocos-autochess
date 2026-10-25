@@ -18,6 +18,25 @@ export interface BattleClockState {
 export type TraitTier = 'bronze' | 'silver' | 'gold' | 'prismatic';
 export interface SpiderLeapConfig { airborneSeconds: number; missingHealthFractions: number[]; }
 export interface ArrowVolleyConfig { count: number; intervalSeconds: number; }
+export interface ChargedKnockupConfig { durationsSeconds: number[]; }
+export interface BloodDrainConfig { healAmounts: number[]; spellPowerPerKill: number[]; }
+export interface BloodReignConfig {
+  healthGains: number[];
+  attackWindupSeconds: number;
+  length: number;
+  width: number;
+  rebirthThreshold: number;
+  rebirthSeconds: number;
+  rebirthHealMaxHpFraction: number;
+}
+export interface BloodRebirthRuntime {
+  startTick: number;
+  durationTicks: number;
+  total: number;
+  delivered: number;
+  wasManaLocked: boolean;
+}
+export interface LineFearConfig { length: number; width: number; fearSeconds: number[] }
 export interface NebulaConfig { durationSeconds: number; intervalSeconds: number; attackSpeedPenalty: number; }
 export interface GravityConfig { durationSeconds: number; intervalSeconds: number; resistancePerEnemy: number[]; }
 export interface SpiderLeapRuntime { landTick: number; targetId: number; }
@@ -81,6 +100,15 @@ export interface TraitBreakpoint {
   swiftmartialist?: SwiftmartialistTraitEffect;
   mechanicalPioneer?: MechanicalPioneerTraitEffect;
   astral?: AstralTraitEffect;
+  bloodfiend?: BloodfiendTraitEffect;
+}
+export interface BloodfiendTraitEffect {
+  /** Absolute attacks/second per allied kill; each stack expires independently. */
+  attackSpeedBonus: number;
+  healMaxHpFraction: number;
+  durationSeconds: number;
+  /** Fraction of overhealing converted to a persistent, additive battle shield. */
+  overhealShieldRatio?: number;
 }
 export interface AstralTraitEffect {
   cellCount: number | 'all';
@@ -187,6 +215,8 @@ export interface TraitConfigData {
   members: string[];
   /** Explicitly reserved until this trait's characters are designed. Never activates without members. */
   pendingMembers?: boolean;
+  /** Always granted to carriers, even below the first breakpoint. */
+  innateLifesteal?: number;
   /** Resolve members from the current roster rather than a hand-maintained ID list. */
   selector?: TraitSelector;
   breakpoints: TraitBreakpoint[];
@@ -297,6 +327,9 @@ export type BattleEvent =
   | { t: 'skill_pulse'; tick: number; id: number; skillId: string; effect: ShadowPulseEffect; center: Pos; radius: number; duration?: number; selfCast?: boolean }
   | { t: 'fear'; tick: number; id: number; source: number; duration: number }
   | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; critical?: boolean; executed?: boolean }
+  | { t: 'bloodfiend_revel'; tick: number; id: number; untilTick: number; attackSpeedBonus: number }
+  | { t: 'blood_cleave_charge'; tick: number; id: number; target: number; untilTick: number }
+  | { t: 'permanent_spell_power'; tick: number; id: number; amount: number; total: number }
   | { t: 'heal';   tick: number; id: number; source: number; amount: number; hp: number }
   | { t: 'trait_mana'; tick: number; id: number; amount: number; mana: number }
   | { t: 'swiftmartialist_stack'; tick: number; id: number; stacks: number; maxStacks: number; attackSpeedBonus: number }
@@ -309,6 +342,10 @@ export type BattleEvent =
   | { t: 'knockup'; tick: number; id: number; source: number; duration: number }
   | { t: 'guard'; tick: number; id: number; duration: number; reduction: number }
   | { t: 'skill_impact'; tick: number; id: number; target: number; skillId: string }
+  | { t: 'line_roar'; tick: number; id: number; skillId: string; from: Pos; toward: Pos; length: number; width: number }
+  | { t: 'blood_aid'; tick: number; id: number; target: number; skillId: string; phase: 'arrive' | 'return'; from: Pos; to: Pos; untilTick: number }
+  | { t: 'blood_rebirth'; tick: number; id: number; skillId: string; untilTick: number }
+  | { t: 'blood_cleave'; tick: number; id: number; skillId: string; from: Pos; toward: Pos; length: number; width: number }
   | { t: 'rail_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'moon_arrow'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'nebula'; tick: number; id: number; center: Pos; radius: number; durationTicks: number }
@@ -337,6 +374,10 @@ export interface CombatStatRow {
 }
 
 export interface UnitRuntime {
+  bloodAidActive?: boolean;
+  bloodRebirthActive?: boolean;
+  bloodCleaveReady?: boolean;
+  bloodAidProtected?: boolean;
   atlasBurning?: boolean;
   spiderAirborne?: boolean;
   hydraulicBulwarkActive?: boolean;

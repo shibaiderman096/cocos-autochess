@@ -1,3 +1,4 @@
+import { SettingsPanel } from './SettingsPanel';
 import { _decorator, Component, Node, UITransform, Graphics, Color, Label, Sprite, resources, JsonAsset, SpriteFrame, director } from 'cc';
 import { button, label, panel, fillScreen } from './BattleUI';
 import { loadSaveV2, writeSaveV2, freshSaveV2, SAVE_KEY } from '../core/ShopSave';
@@ -19,6 +20,7 @@ export class MainMenu extends Component {
   private readonly stageCount = DEFAULT_STAGE_COUNT;
   private cfg = new ConfigManager();
   private collection: CollectionPanel;
+  private settingsPanel: SettingsPanel;
   private runConfig: RunConfig;
   private countLabel: Label;
   private summary: Label;
@@ -86,13 +88,13 @@ export class MainMenu extends Component {
     setSkyBackground(background, g, new Color(105, 130, 150));
     const header = panel(this.node, 'menuHeader', 0, 300, 1184, 68, new Color(12, 28, 40, 238), new Color(75, 105, 115), null);
     label(header, '浮空棋境  /  远征', -364, 0, 22, GOLD, 350);
-    label(header, '图鉴', 66, 0, 16, TEAL, 80);
-    const categories = [['units', '棋子'], ['traits', '羁绊'], ['equipment', '装备']] as const;
-    categories.forEach(([category, title], i) => {
-      button(header, title, 190 + i * 144, 0, 128, 44, () => {
-        if (this.collection && !this.loading) this.collection.show(category);
-      }).name = `openCollection_${category}`;
-    });
+    button(header, '图鉴', 310, 0, 128, 44, () => {
+      if (this.collection && !this.loading) this.collection.show();
+    }).name = 'openCollection';
+    button(header, '设置', 480, 0, 128, 44, () => {
+      if (!this.loading) this.settingsPanel.show();
+    }).name = 'openSettings';
+    this.settingsPanel = new SettingsPanel(this.node);
     const intro = panel(this.node, 'expeditionIntro', -345, 34, 460, 376, new Color(9, 25, 36, 235), new Color(62, 99, 109), null);
     label(intro, '浮 空 棋 境', 0, 118, 48, GOLD, 440).isBold = true;
     label(intro, '布阵成军 · 羁绊同行', 0, 63, 20, TEAL, 420);
@@ -108,17 +110,6 @@ export class MainMenu extends Component {
     }
     label(this.node, '11 阶段起：每小关增伤 +1% · 每阶段减伤 +1%（上限 95%）', -220, -259, 15, new Color(174, 198, 201), 720);
     this.status = label(this.node, '正在加载关卡配置…', 0, -324, 14, GOLD, 1100);
-    const sound = button(this.node, '', 310, 232, 176, 36, () => {
-      GameAudio.setVolume(GameAudio.volume > 0 ? 0 : .6);
-      sound.getChildByName('text')!.getComponent(Label)!.string = `音效：${GameAudio.volume > 0 ? '开' : '关'}`;
-      GameAudio.play('click');
-    }); sound.name = 'menuSound';
-    sound.getChildByName('text')!.getComponent(Label)!.string = `音效：${GameAudio.volume > 0 ? '开' : '关'}`;
-    const music = button(this.node, '', 500, 232, 176, 36, () => {
-      GameAudio.setMusicVolume(GameAudio.musicVolume > 0 ? 0 : .3);
-      music.getChildByName('text')!.getComponent(Label)!.string = `音乐：${GameAudio.musicVolume > 0 ? '开' : '关'}`;
-    }); music.name = 'menuMusic';
-    music.getChildByName('text')!.getComponent(Label)!.string = `音乐：${GameAudio.musicVolume > 0 ? '开' : '关'}`;
   }
 
   private drawArena(): void {

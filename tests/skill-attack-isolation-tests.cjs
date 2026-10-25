@@ -12,11 +12,16 @@ function firstHit(id, star, changes = {}) {
   const source = { ...cfg.getUnit(id), critChance: 0, ...changes };
   const target = { ...cfg.getUnit('helion'), id: 'dummy', hp: 1000000, armor: 0, mr: 0, atk: 0,
     critChance: 0, skillId: undefined, maxMana: 0, startMana: 0 };
-  const sim = new BattleSim(cfg, [{ cfg: source, star, side: 0, x: 3, y: 3 }, { cfg: target, side: 1, x: 3, y: 4 }], { seed: 9 });
+  const aid=source.skillId&&cfg.getSkill(source.skillId).effect==='bloodAid';
+  const reign=source.skillId&&cfg.getSkill(source.skillId).effect==='bloodReign';
+  const sim = new BattleSim(cfg, [{ cfg: source, star, side: 0, x: 3, y: 3 }, { cfg: target, side: 1, x: 3, y: 4 },
+    ...(aid?[{cfg:target,side:0,x:3,y:2}]:[])], { seed: 9 });
+  if(aid){sim.units[2].hp=10;sim.units[2].atkCd=sim.units[2].moveCd=100000;}
   if (source.skillId) sim.units[0].mana = sim.units[0].cfg.maxMana;
   for (let i = 0; i < 240; i++) {
     sim.step();
-    const hit = sim.events.find(event => event.t === 'hit' && event.source === 1 && event.id === 2);
+    const hits=sim.events.filter(event => event.t === 'hit' && event.source === 1 && event.id === 2 && (!aid||event.dmgType==='magic'));
+    const hit=reign?hits[1]:hits[0]; // The first physical hit is still the ordinary basic.
     if (hit) return { hit, unit: sim.units[0] };
   }
   throw new Error(`${id}: no hit`);

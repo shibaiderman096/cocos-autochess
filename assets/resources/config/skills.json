@@ -1,4 +1,100 @@
 {
+  "crimson_upheaval": {
+    "id": "crimson_upheaval",
+    "name": "猩红掀袭",
+    "effect": "chargedKnockup",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.8,
+    "starDamage": [
+      120,
+      180,
+      270
+    ],
+    "chargedKnockup": {
+      "durationsSeconds": [
+        1,
+        1.25,
+        1.5
+      ]
+    },
+    "description": "蓄力{控制:castDuration}秒后，猛力上挑当前目标，造成{魔法+:dmg}魔法伤害并击飞{控制:knockup}秒。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "120/180/270"
+      },
+      {
+        "label": "击飞时间",
+        "value": "{控制:knockup}秒",
+        "stars": "1/1.25/1.5秒"
+      },
+      {
+        "label": "蓄力时间",
+        "value": "{控制:castDuration}秒",
+        "stars": "0.8/0.8/0.8秒"
+      }
+    ],
+    "mechanics": [
+      "蓄力可被控制打断；结束时原目标须存活、可被选中且位于攻击范围，否则落空。"
+    ]
+  },
+  "bloodline_siphon": {
+    "id": "bloodline_siphon",
+    "name": "血裔汲取",
+    "effect": "bloodDrain",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      160,
+      240,
+      360
+    ],
+    "bloodDrain": {
+      "healAmounts": [
+        100,
+        150,
+        225
+      ],
+      "spellPowerPerKill": [
+        2,
+        3,
+        5
+      ]
+    },
+    "description": "汲取当前目标的鲜血，造成{魔法+:dmg}魔法伤害，并回复自身{治疗:heal}生命。\n每次亲自击杀敌人，永久获得{魔法:killPower}法术加成，持续至本局远征结束。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "160/240/360"
+      },
+      {
+        "label": "治疗",
+        "value": "{治疗:heal}",
+        "stars": "100/150/225"
+      },
+      {
+        "label": "击杀法术加成",
+        "value": "{魔法:killPower}",
+        "stars": "2/3/5"
+      },
+      {
+        "label": "本局累计法术加成",
+        "value": "{魔法:permanentPower}",
+        "stars": "本局累计"
+      }
+    ],
+    "mechanics": [
+      "普通攻击、主动及个人持续伤害的亲自击杀均可成长；助攻及羁绊独立伤害不触发。",
+      "主动伤害和治疗均使用击杀成长前的法术加成。"
+    ]
+  },
   "gravity_collapse": {
     "id": "gravity_collapse",
     "name": "引力坍缩",
@@ -782,7 +878,7 @@
     "radius": 1,
     "targeting": "nearest",
     "castSeconds": 0.3,
-    "description": "在敌人最密集的区域召唤3盏冥灯，每0.3秒引爆一盏，各对1格内敌人造成{魔法+:dmg}点魔法伤害，并使其恐惧{控制:fear}秒。\n同一目标受到本次施法第二盏及后续冥灯时，仅承受该盏60%的伤害。",
+    "description": "在敌人最密集的区域召唤3盏冥灯，每0.3秒引爆一盏，各对1格内敌人造成{魔法+:dmg}点魔法伤害，并使其恐惧{控制:fear}秒。\n同一目标受到本次施法第二盏及后续冥灯时，仅承受该盏60%的伤害。\n恐惧期间无法释放技能，仍可正常移动和普攻。",
     "shadow": {
       "count": 3,
       "intervalSeconds": 0.3,
@@ -813,7 +909,7 @@
     ],
     "mechanics": [
       "施法完成时选定三个最密集敌方格，优先不同格；不足三个时重复。",
-      "恐惧使目标停止攻击施法并远离该灯中心；无可走格时停留。",
+      "恐惧仅禁止释放技能，仍可普通攻击和正常移动；命中时打断当前施法。",
       "已召唤的冥灯不会因施法者阵亡而消失。"
     ],
     "starDamage": [
@@ -1350,6 +1446,187 @@
         "value": "{魔法+:dmg}",
         "stars": "320/320/320"
       }
+    ]
+  },
+  "frostblood_roar": {
+    "id": "frostblood_roar",
+    "name": "霜血震吼",
+    "effect": "lineFear",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.6,
+    "starDamage": [
+      180,
+      270,
+      405
+    ],
+    "lineFear": {
+      "length": 4,
+      "width": 1,
+      "fearSeconds": [
+        1.5,
+        2,
+        2.5
+      ]
+    },
+    "description": "短暂蓄力{控制:castDuration}秒后，朝当前目标方向怒吼，对前方{控制:lineLength}格直线内敌人造成{魔法+:dmg}魔法伤害，并施加{控制:fear}秒恐惧。\n恐惧期间无法释放技能，仍可正常移动和普攻。",
+    "statRows": [
+      {
+        "label": "伤害",
+        "value": "{魔法+:dmg}",
+        "stars": "180/270/405"
+      },
+      {
+        "label": "恐惧时间",
+        "value": "{控制:fear}秒",
+        "stars": "1.5/2/2.5秒"
+      },
+      {
+        "label": "怒吼距离",
+        "value": "{控制:lineLength}格",
+        "stars": "4/4/4格"
+      },
+      {
+        "label": "蓄力时间",
+        "value": "{控制:castDuration}秒",
+        "stars": "0.6/0.6/0.6秒"
+      }
+    ],
+    "mechanics": [
+      "蓄力时锁定朝向；结算以施法者所在格为起点。敌军不阻挡穿透；目标死亡不改变已锁定朝向。",
+      "直线宽1格，按格中心到前向线段的距离判定；控制可打断蓄力。"
+    ]
+  },
+  "scarlet_aid_dance": {
+    "id": "scarlet_aid_dance",
+    "name": "绯血援舞",
+    "effect": "bloodAid",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "bloodAid": {
+      "healAmounts": [
+        200,
+        300,
+        450
+      ],
+      "resistanceBonuses": [
+        30,
+        45,
+        65
+      ],
+      "attackBonusDamage": [
+        30,
+        45,
+        70
+      ],
+      "staySeconds": 4,
+      "resistanceSeconds": 4
+    },
+    "description": "位移至生命百分比最低的其他友军身旁，为其回复{治疗+:heal}生命，并使其获得{控制:resists}双抗，持续{控制:aidResistanceDuration}秒。\n\n自身停留{控制:aidStayDuration}秒，期间可以普攻，每次附加{魔法+:aidAttackDamage}魔法伤害；结束后返回施法起点。",
+    "statRows": [
+      {
+        "label": "治疗",
+        "value": "{治疗+:heal}",
+        "stars": "200/300/450"
+      },
+      {
+        "label": "双抗提升",
+        "value": "{控制:resists}",
+        "stars": "30/45/65"
+      },
+      {
+        "label": "普攻附伤",
+        "value": "{魔法+:aidAttackDamage}",
+        "stars": "30/45/70"
+      },
+      {
+        "label": "停留时间",
+        "value": "{控制:aidStayDuration}秒",
+        "stars": "4/4/4秒"
+      },
+      {
+        "label": "双抗持续",
+        "value": "{控制:aidResistanceDuration}秒",
+        "stars": "4/4/4秒"
+      }
+    ],
+    "mechanics": [
+      "按生命百分比选取存活可选中友军，不含自身；相同比例按单位ID，目标身旁无空格时不消耗法力。",
+      "立即治疗受法术加成影响；双抗不吃加成，持续4秒；同施法者刷新，不同施法者叠加，施法者阵亡不清除已给予双抗。",
+      "停留4秒原地普攻，不追击、不施法、不回蓝；额外魔法伤害走正常伤害、吸血与统计流程，仅停留期间生效。",
+      "受控制或受援者阵亡时提前返回；已给予的治疗与双抗不撤销。起点被占用时按六边形距离、行、列选择最近空格，不与存活单位重叠。"
+    ]
+  },
+  "blood_sovereignty": {
+    "id": "blood_sovereignty",
+    "name": "蚀血王权",
+    "effect": "bloodReign",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "starDamage": [
+      250,
+      375,
+      7500
+    ],
+    "bloodReign": {
+      "attackWindupSeconds": 0.5,
+      "healthGains": [
+        300,
+        450,
+        9000
+      ],
+      "length": 2,
+      "width": 1,
+      "rebirthThreshold": 0.1,
+      "rebirthSeconds": 1.5,
+      "rebirthHealMaxHpFraction": 1
+    },
+    "description": "被动：每场战斗一次，生命低于{治疗:rebirthThreshold}时进入{控制:rebirthDuration}秒不可选中，期间无法移动、普攻或施法，并逐渐回复{治疗:rebirthHealing}最大生命值。\n\n主动：获得{治疗:reignHealth}最大生命值及等量当前生命值，下一次普攻蓄力{控制:reignWindup}秒后，对前方{控制:reignLength}格直线敌人额外造成{物理+:reignDamage}物理伤害。",
+    "statRows": [
+      {
+        "label": "生命提升",
+        "value": "{治疗:reignHealth}",
+        "stars": "300/450/9000"
+      },
+      {
+        "label": "强化伤害",
+        "value": "{物理+:reignDamage}",
+        "stars": "250/375/7500"
+      },
+      {
+        "label": "触发生命",
+        "value": "{治疗:rebirthThreshold}",
+        "stars": "10%/10%/10%"
+      },
+      {
+        "label": "恢复比例",
+        "value": "{治疗:rebirthHealing}",
+        "stars": "100%/100%/100%"
+      },
+      {
+        "label": "恢复时间",
+        "value": "{控制:rebirthDuration}秒",
+        "stars": "1.5/1.5/1.5秒"
+      },
+      {
+        "label": "斩击距离",
+        "value": "{控制:reignLength}格",
+        "stars": "2/2/2格"
+      }
+    ],
+    "mechanics": [
+      "生命阈值严格低于10%，包含致死伤害；技能优先于低血量保命装备，每场一次，触发保留至少1生命。",
+      "不可选中沿用现有规则，阻止目标选择及针对性伤害，不额外赋予范围/独立伤害免疫；恢复期间不行动、不施法、不回蓝。",
+      "1.5秒按累计取整逐Tick恢复触发时最大生命值的100%，不受法强/物理加成影响；使用统一治疗及溢出护盾结算。",
+      "主动生命成长为固定值，本场可叠加并增加等量当前生命，不属于治疗；结束清除，不写入跨关成长或存档。",
+      "强化仅保留一次，不叠加；普攻就绪且目标进入射程后蓄力0.5秒，期间不移动、不攻击；被硬控打断、目标丢失或移出射程时重新蓄力，强化次数保留。普通攻击仅命中当前目标，额外物理伤害按前方长2格宽1格直线逐敌全额结算，仅受物理加成及正常伤害修正影响。",
+      "强化期间不会再次主动施法，普攻后消耗；目标死亡或换目标不提前消耗，恢复被动不消耗已准备的强化普攻。"
     ]
   }
 }

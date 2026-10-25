@@ -23,7 +23,7 @@ def verify(apk, project):
         registry = json.loads(archive.read(prefix + "cc.config.json"))
         paths = {entry[0]: uuid for uuid, entry in registry["paths"].items()}
         configs = []
-        for name in ["battle", "units", "skills", "run", "enemy-roles"]:
+        for name in ["battle", "units", "skills", "run", "enemy-roles", "equipment"]:
             uuid = paths["config/" + name]
             packed = json.loads(archive.read(prefix + "import/" + uuid[:2] + "/" + uuid + ".json"))
             expected = json.loads((project / "assets/resources/config" / (name + ".json")).read_text(encoding="utf-8"))
@@ -33,13 +33,20 @@ def verify(apk, project):
             "art/fx/" + name for name in ["stellar_barrier", "stellar_rush", "milu_star_trail", "milu_star_impact",
                                         "astral_tile", "astral_ring", "astral_meteor", "astral_impact",
                                         "milu_skill_sheet", "stellar_skill_sheet", "moon_arrow_sheet",
-                                        "nebula_tide_sheet", "gravity_collapse_sheet"]] + ["art/ui/loading_emblem"]
+                                        "nebula_tide_sheet", "gravity_collapse_sheet",
+                                        "crimson_upheaval", "bloodline_siphon", "voidscar_transit", "frostblood_roar",
+                                        "scarlet_aid", "blood_rebirth", "blood_cleave", "bloodfiend_revel",
+                                        "mechanical_overclock"]] + ["art/ui/loading_emblem"] + [
+            "art/units/bloodfiend/" + name for name in ["crimson_riftclaw", "bloodline_earl", "crimson_devourer",
+                                                       "scarlet_enchantress", "crimson_demon_knight"]]
         for image in images:
             assert image + "/spriteFrame" in paths, "Missing packaged sprite: " + image
             uuid = paths[image]
             assert any(name.startswith(prefix + "native/" + uuid[:2] + "/" + uuid + ".") for name in names), image
         runtime = archive.read("assets/assets/main/index.js").decode("utf-8")
-        for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay"]:
+        for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay",
+                      "bloodfiend_revel", "mechanical_overclock", "blood_cleave_charge", "attackWindupSeconds",
+                      "equipmentCredit", "flyChestSupplies"]:
             assert token in runtime, "Missing packaged behavior: " + token
         main = json.loads(archive.read("assets/assets/main/cc.config.json"))
         scenes = sorted(main["scenes"])

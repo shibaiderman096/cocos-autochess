@@ -7,6 +7,8 @@ export interface ChestFlightTarget {
   /** Re-evaluated each frame in the overlay's local coordinates, including current board zoom. */
   position: () => Vec3;
   recipient?: Node;
+  hideRecipient?: boolean;
+  size?: { width: number; height: number };
   land?: () => void;
 }
 interface Orb { target: ChestFlightTarget; sprite: Node; delay: number; arrived: boolean; }
@@ -21,18 +23,20 @@ export class ChestRewardFlight extends Component {
   private finish: (() => void) | null = null;
   private hidden = new Map<Node, {opacity: UIOpacity; value: number; remaining: number}>();
   private cancelled = false;
+  private ceiling = 328;
 
   play(origin: () => Vec3, targets: ChestFlightTarget[], finish: () => void): void {
     this.cancel(); this.cancelled = false; this.elapsed = 0; this.origin = origin; this.finish = finish;
+    this.ceiling = (this.node.getComponent(UITransform)?.contentSize?.height ?? 720) / 2 - 32;
     if (!this.node.getComponent(BlockInputEvents)) this.node.addComponent(BlockInputEvents);
     const trail = new Node('rewardParticleTrails'); trail.layer = this.node.layer; this.node.addChild(trail);
     this.ink = trail.addComponent(Graphics);
     this.orbs = targets.map((target, index) => {
       const node = new Node(`rewardOrb_${index}`); node.layer = this.node.layer; this.node.addChild(node);
-      node.addComponent(UITransform).setContentSize(48, 60);
+      node.addComponent(UITransform).setContentSize(target.size?.width ?? 48, target.size?.height ?? 60);
       const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
       node.active = false;
-      if (target.recipient && isValid(target.recipient, true)) {
+      if (target.recipient && target.hideRecipient !== false && isValid(target.recipient, true)) {
         let held = this.hidden.get(target.recipient);
         if (!held) {
           const opacity = target.recipient.getComponent(UIOpacity) ?? target.recipient.addComponent(UIOpacity);
@@ -54,7 +58,7 @@ export class ChestRewardFlight extends Component {
     const t = Math.max(0, Math.min(1, progress)), u = 1 - t;
     const spread = (index % 2 ? 1 : -1) * (42 + index * 7);
     return new Vec3(u*u*u*from.x + 3*u*u*t*(from.x+spread) + 3*u*t*t*(to.x-spread*.35) + t*t*t*to.x,
-      u*u*u*from.y + 3*u*u*t*(from.y+105) + 3*u*t*t*(to.y+82) + t*t*t*to.y, 0);
+      u*u*u*from.y + 3*u*u*t*Math.min(from.y+105,this.ceiling) + 3*u*t*t*Math.min(to.y+82,this.ceiling) + t*t*t*to.y, 0);
   }
   private dot(x: number, y: number, radius: number, alpha: number, gold = false): void {
     const g = this.ink!; g.fillColor = gold ? new Color(255, 217, 119, alpha) : new Color(104, 238, 232, alpha);
@@ -67,7 +71,7 @@ export class ChestRewardFlight extends Component {
       if (isValid(held.opacity, true)) held.opacity.opacity = held.value;
       this.hidden.delete(node!);
       orb.target.land?.();
-    }
+    } else if (!held) orb.target.land?.();
   }
 
   update(dt: number): void {

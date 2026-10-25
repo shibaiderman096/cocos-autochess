@@ -123,8 +123,8 @@ for(const star of [1,2,3]) {
  const base=[160,240,960][star-1];assert.deepEqual(sourceHits(f).map(e=>e.dmg),[base,Math.round(base*.6),Math.round(base*.6)]);
  assert.deepEqual(skillPulses(f,'lanterns').map(e=>e.tick),[0,6,12]);
  assert.equal(f.sim.events.filter(e=>e.t==='fear').length,3);
- const enemy=f.enemies[0],from=enemy.pos;enemy.moveCd=0;f.sim.updateUnit(enemy);assert.ok(hexDist(enemy.pos,enemy.fearOrigin)>hexDist(from,enemy.fearOrigin),'fear moves away');
- assert.equal(f.sim.events.filter(e=>e.t==='attack'&&e.id===enemy.id).length,0);
+ const enemy=f.enemies[0];enemy.atkCd=0;enemy.moveCd=0;f.sim.updateUnit(enemy);assert.ok(f.sim.events.some(e=>e.t==='attack'&&e.id===enemy.id),'fear allows basic attacks');
+
 }
 const multiple=create('nether_lantern_witch',1,{enemies:[{x:1,y:4},{x:2,y:4},{x:5,y:6},{x:6,y:6}]});activate(multiple);advance(multiple,12);
 assert.equal(new Set(skillPulses(multiple,'lanterns').map(e=>`${e.center.x},${e.center.y}`)).size,3,'lanterns prefer distinct enemy cells');
@@ -197,9 +197,10 @@ const fs=require('node:fs'),crypto=require('node:crypto');
 const {UNIT_ART,UNIT_PORTRAIT}=require('../assets/scripts/view/ArtPaths.ts');
 const manifest=require('../art-source/shadow-roster/manifest.json'),roles=require('../assets/resources/config/enemy-roles.json');
 for(const item of manifest.filter(item=>!retired.units.some(unit=>unit.id===item.id))) {
- assert.equal(crypto.createHash('sha256').update(fs.readFileSync(item.runtime)).digest('hex'),item.sha256,'supplied image remains unchanged');
+ const updated=[...require('../docs/art-provenance/faction-portrait-update.json').assets,...require('../docs/art-provenance/bloodfiend-generated.json').assets].find(a=>a.file===item.runtime.replace(/\\/g,'/'));
+ assert.equal(crypto.createHash('sha256').update(fs.readFileSync(item.runtime)).digest('hex'),updated?.sha256??item.sha256,'runtime image matches original or authorized faction-element revision');
  assert.ok(UNIT_ART[item.id]&&UNIT_PORTRAIT[item.id]&&roles.units[item.id]);
  const [x,y,w,h]=UNIT_PORTRAIT[item.id].split('#rawrect,')[1].split(',').map(Number);
- assert.ok(x>=0&&y>=0&&w>0&&h>0&&x+w<=item.width&&y+h<=item.height);
+ assert.ok(x>=0&&y>=0&&w>0&&h>0&&x+w<=(updated?.width??item.width)&&y+h<=(updated?.height??item.height));
 }
 console.log('PASS shadow roster: exact 10-unit v3 stats/all-star values, shields/scaling/expiry/break, piercing/cone geometry, domain movement/slow, flurry/refund/crit, empowered basics, execution boundary, separate fear/cluster pulses, star decay/collapse, void jumps/marks/protection, real casts and deterministic runs');

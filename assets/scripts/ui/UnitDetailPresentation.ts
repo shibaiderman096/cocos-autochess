@@ -10,6 +10,7 @@ interface DetailContext {
   mana?: number;
   shield?: number;
   passiveHealth?: number;
+  passiveSpellPower?: number;
   detailKey?: string;
 }
 
@@ -18,7 +19,7 @@ export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData
   const { side = 0, hp = unit.hp, mana = unit.startMana, shield = 0, passiveHealth = 0 } = context;
   const skillScale = context.skillScale ?? configs.battle.starScaling[star - 1].skill;
   const skill = unit.skillId ? configs.getSkill(unit.skillId) : null;
-  const rows = buildSkillStatRows(configs, unit, star, skillScale, true, passiveHealth);
+  const rows = buildSkillStatRows(configs, unit, star, skillScale, true, passiveHealth, context.passiveSpellPower ?? 0);
   const damage = rows[0]?.current ?? '0';
   const healing = rows.find(row => row.label === '治疗')?.current ?? '0';
   const shielding = rows.find(row => row.label === '护盾')?.current ?? '0';

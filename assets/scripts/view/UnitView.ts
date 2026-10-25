@@ -51,6 +51,7 @@ export class UnitView extends Component {
   displayedStar = 1;
   private upgradeEffect: Node | null = null;
   private upgradeElapsed = 0;
+  private cleaveWinding = false;
 
   /** A separate overlay never changes the drag, attack, or replay transforms. */
   playStarUpgrade(): void {
@@ -180,7 +181,7 @@ export class UnitView extends Component {
       if (!this.isValid) return;
       if (err) { this.loadError = err.message; console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
-      if (path.includes('/units/shadow/') || path.includes('/units/sunlight/') || path.includes('/units/mechanical/') || path.includes('/units/astral/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
+      if (path.includes('/units/shadow/') || path.includes('/units/sunlight/') || path.includes('/units/mechanical/') || path.includes('/units/astral/') || path.includes('/units/bloodfiend/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
       this.loaded = true;
       this.refreshBarsColor();
     });
@@ -384,6 +385,7 @@ export class UnitView extends Component {
   playDeath() {
     if (!this.node.active) return;
     this.animateStellar(false,null,0,50);
+    this.animateBloodCleave(null);
     if (this.shadowView) this.shadowView.active = false;
     if (this.domainView) this.domainView.active = false;
     if (this.sunlightAura) this.sunlightAura.active = false;
@@ -407,6 +409,7 @@ export class UnitView extends Component {
 
   playAttack(dirToTarget: Vec3) {
     if (!this.loaded) return;
+    this.cleaveWinding=false;this.attackMotion.angle=0;
     const motion = this.attackMotion;
     Tween.stopAllByTarget(motion); motion.setPosition(0, 0, 0);
     const lunge = new Vec3(dirToTarget.x * 6, dirToTarget.y * 6, 0);
@@ -414,6 +417,21 @@ export class UnitView extends Component {
       .to(0.08, { position: lunge })
       .to(0.08, { position: new Vec3() })
       .start();
+  }
+
+  /** Preparation pose follows the fixed replay tick, including pause and interruption. */
+  animateBloodCleave(progress: number | null, direction?: Vec3): void {
+    if(!this.loaded||!this.attackMotion)return;
+    if(progress===null){
+      if(this.cleaveWinding){this.attackMotion.setPosition(0,0,0);this.attackMotion.angle=0;this.cleaveWinding=false;}
+      return;
+    }
+    if(!this.cleaveWinding)Tween.stopAllByTarget(this.attackMotion);
+    this.cleaveWinding=true;
+    const length=direction?Math.hypot(direction.x,direction.y):0;
+    const dx=length?direction!.x/length:1,dy=length?direction!.y/length:0;
+    const pull=this.cellSize*.16*Math.sin(progress*Math.PI/2);
+    this.attackMotion.setPosition(-dx*pull,-dy*pull,0);this.attackMotion.angle=(dx>=0?-1:1)*12*progress;
   }
 
   playCast(seconds: number) {

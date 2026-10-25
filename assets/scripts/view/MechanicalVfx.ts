@@ -12,6 +12,7 @@ interface Layer {
   row: number; motion: Motion; start: number; seconds: number; from: Vec3; to?: Vec3;
   size: number; height?: number; angle?: number; opacity?: number; follow?: number;
   source?: number; tag?: Tag; key?: string; ground?: boolean; skillId?: string;
+  activation?: boolean;
 }
 interface Slot {
   node: Node; art: Sprite[]; blend: UIOpacity[]; opacity: UIOpacity; layer?: Layer;
@@ -26,6 +27,7 @@ export class MechanicalVfx {
   private slots: Slot[] = [];
   private keyed = new Map<string, Slot>();
   private frames: SpriteFrame[] = [];
+  private activationFrames: SpriteFrame[] = [];
   private ground: Node | null = null;
   private disposed = false;
   private ended = false;
@@ -41,6 +43,14 @@ export class MechanicalVfx {
         this.frames.push(frame);
       }
     });
+    resources.load(FX_SPRITE.mechanicalOverclock.replace('/spriteFrame','/texture'),Texture2D,(error,texture)=>{
+      if(error||this.disposed||!this.root.isValid)return;
+      for(let i=0;i<8;i++){
+        const frame=new SpriteFrame(),w=texture.width/4,h=texture.height/2;
+        frame.texture=texture;frame.rect=new Rect(i%4*w,Math.floor(i/4)*h,w,h);frame.originalSize=new Size(w,h);
+        this.activationFrames.push(frame);
+      }
+    });
   }
   private groundRoot(): Node {
     if(this.ground?.isValid)return this.ground;
@@ -50,7 +60,10 @@ export class MechanicalVfx {
   }
   private add(layer: Layer): void {
     if(this.disposed||this.ended||!this.root.isValid)return;
-    if(layer.key){const previous=this.keyed.get(layer.key);if(previous){previous.layer=layer;return;}}
+    if(layer.key){const previous=this.keyed.get(layer.key);if(previous){
+      if(!layer.activation){previous.layer=layer;return;}
+      this.release(previous);
+    }}
     let slot=this.slots.find(s=>!s.layer);
     if(!slot){
       if(this.slots.length>=MAX_LAYERS)return;
@@ -123,8 +136,12 @@ export class MechanicalVfx {
         size:1.05,opacity:160,follow:e.id,source:e.id,tag:'burn',key:`burn:${e.id}`,ground:true});
     }else if(e.t==='mechanical_overclock'){
       const pos=this.owner(e.id)?.position;
-      if(pos)this.add({row:7,motion:'overclock',from:pos.clone(),start:e.tick,seconds:(e.untilTick-e.tick)*this.tickMs/1000,
-        size:1.65,opacity:150,follow:e.id,source:e.id,tag:'overclock',key:`overclock:${e.id}`,ground:true});
+      if(pos){
+        this.add({row:7,motion:'overclock',from:pos.clone(),start:e.tick,seconds:(e.untilTick-e.tick)*this.tickMs/1000,
+          size:1.65,opacity:150,follow:e.id,source:e.id,tag:'overclock',key:`overclock:${e.id}`,ground:true});
+        this.add({row:0,motion:'burst',activation:true,from:pos.clone(),start:e.tick,seconds:.85,
+          size:e.emergency?2.05:1.8,height:e.emergency?2.05:1.8,opacity:255,follow:e.id,source:e.id,key:`activation:${e.id}`});
+      }
     }else if(e.t==='heal'){
       const skill=this.state(e.source)?.skillId,pos=this.owner(e.id)?.position;
       if(pos&&(skill==='hydraulic_bulwark'||skill==='turbo_hunt'))this.burst(2,pos,e.tick,1.25,.4);
@@ -158,13 +175,15 @@ export class MechanicalVfx {
       const l=slot.layer;if(!l)continue;
       const age=(tick-l.start)*this.tickMs/1000,p=age/l.seconds;
       if(p>=1||!this.valid(l)){this.release(slot);continue;}
-      if(age<0||this.frames.length!==32){slot.node.active=false;continue;}
+      const frames=l.activation?this.activationFrames:this.frames;
+      if(age<0||frames.length!==(l.activation?8:32)){slot.node.active=false;continue;}
       const base=l.follow===undefined?l.from:this.owner(l.follow)!.position;
       let x=base.x,y=base.y,scale=1,angle=l.angle??0,alpha=l.opacity??235;
       const loop=['wall','overclock','burn','air'].includes(l.motion),ease=1-Math.pow(1-Math.min(1,p),3);
       // Crossfade neighboring hand-drawn cels, then apply continuous movement and light breathing.
-      const cel=loop?1.5+Math.sin(age*7)*.5:Math.min(3,p*3),index=Math.floor(cel),mix=cel-index;
-      slot.art[0].spriteFrame=this.frames[l.row*4+index];slot.art[1].spriteFrame=this.frames[l.row*4+Math.min(3,index+1)];
+      const last=l.activation?7:3,offset=l.activation?0:l.row*4;
+      const cel=loop?1.5+Math.sin(age*7)*.5:Math.min(last,p*(l.activation?8:3)),index=Math.floor(cel),mix=cel-index;
+      slot.art[0].spriteFrame=frames[offset+index];slot.art[1].spriteFrame=frames[offset+Math.min(last,index+1)];
       slot.blend[0].opacity=Math.round(255*(1-mix));slot.blend[1].opacity=Math.round(255*mix);
       if(l.motion==='missile'||l.motion==='trail'){
         const travel=Math.min(1,p);x=l.from.x+(l.to!.x-l.from.x)*travel;y=l.from.y+(l.to!.y-l.from.y)*travel;
@@ -203,6 +222,6 @@ export class MechanicalVfx {
   destroy(): void {
     this.disposed=true;this.clear();for(const s of this.slots)if(s.node.isValid)s.node.destroy();this.slots=[];
     if(this.ground?.isValid)this.ground.destroy();this.ground=null;
-    for(const frame of this.frames)frame.destroy();this.frames=[];
+    for(const frame of [...this.frames,...this.activationFrames])frame.destroy();this.frames=[];this.activationFrames=[];
   }
 }

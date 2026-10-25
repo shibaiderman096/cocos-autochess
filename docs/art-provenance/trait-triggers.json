@@ -1,0 +1,3439 @@
+{
+  "route": "Built-in image_gen",
+  "art_source": "host_image",
+  "model": "Tool-managed, not exposed",
+  "estimateUsd": null,
+  "prompts": "trait-trigger-prompts.json",
+  "assets": [
+    {
+      "file": "assets/resources/art/fx/bloodfiend_revel.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.6390056610107422,
+      "sha256": "f7c77d171913cf4208a8550daa662a7225b03f77be001baa373c45e2bb109986",
+      "source": "art-source\\trait-triggers\\bloodfiend_revel.png",
+      "sourceSha256": "8a245038d7e25c17d05d73e0c3350b27e40db468627e4fdf232b11686cda8790",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "sharedPivot": [
+        128,
+        128
+      ],
+      "padding": 16
+    },
+    {
+      "file": "assets/resources/art/fx/mechanical_overclock.png",
+      "width": 1024,
+      "height": 512,
+      "transparentFraction": 0.6645278930664062,
+      "sha256": "8fea206ef087253f6ec72ff94f024b30bc2ae6db714a96d49de63b4c593d4eaf",
+      "source": "art-source\\trait-triggers\\mechanical_overclock.png",
+      "sourceSha256": "62de5fc07bcc18a0e33f144de77a342b390198563b0155cd479997c34736ba75",
+      "grid": [
+        4,
+        2
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "sharedPivot": [
+        128,
+        128
+      ],
+      "padding": 16
+    }
+  ],
+  "qa": [
+    {
+      "file": "art-source\\trait-triggers\\blood-frames\\sheet-qc.json",
+      "report": {
+        "schema": "generate2dsprite.sheet_qc.v1",
+        "check": "frames",
+        "status": "fail",
+        "method": "solid alpha > 127; head ratio by multi-scale template match of the head band against the median frame; best-shift silhouette IoU; phases from ground clearance and stride width; NEAR/FAR lead from the lightness of the two feet (FAR one shade darker); torso x from the trunk columns of the torso band; seams from forge_core.transition_mae (premultiplied RGBA)",
+        "notProven": [
+          "Pose quality, anatomy, appeal and readability at game scale: look at frames-review.png and the game-size frames.",
+          "That the head band holds only the head: arms raised into it change the match.",
+          "NEAR/FAR leads in auto mode rely on the 'FAR limbs one shade darker' convention; declare the colours to be sure.",
+          "Phase labels come from feet clearance and stride width, not from the pose."
+        ],
+        "checks": [
+          {
+            "id": "identity_head_ratio",
+            "status": "fail",
+            "value": {
+              "0": 1.087,
+              "1": 1.0,
+              "2": 1.0,
+              "3": 1.0,
+              "4": 1.0,
+              "5": 1.0,
+              "6": 1.0,
+              "7": 1.0
+            },
+            "threshold": [
+              0.95,
+              1.05
+            ],
+            "frames": [
+              0
+            ],
+            "note": "head scale against the median frame (frame 0 template)"
+          },
+          {
+            "id": "identity_residual",
+            "status": "pass",
+            "value": {
+              "0": null,
+              "1": 1.0,
+              "2": 0.89,
+              "3": 0.99,
+              "4": 1.01,
+              "5": 0.9,
+              "6": 1.01,
+              "7": 1.03
+            },
+            "threshold": 1.5,
+            "frames": [],
+            "note": "head match residual over the median: face or costume drift"
+          },
+          {
+            "id": "near_duplicates",
+            "status": "pass",
+            "value": [],
+            "threshold": 0.95,
+            "note": "pairs with best-shift silhouette IoU at or above the threshold and similar colours"
+          },
+          {
+            "id": "phase_coverage",
+            "status": "skipped",
+            "value": null,
+            "threshold": null,
+            "note": "needs --cycle run or walk and an even frame count of at least 4"
+          },
+          {
+            "id": "leg_alternation",
+            "status": "skipped",
+            "value": null,
+            "threshold": null,
+            "note": "needs --cycle run or walk and an even frame count of at least 4"
+          },
+          {
+            "id": "torso_drift",
+            "status": "warn",
+            "value": 148.41,
+            "threshold": 2.0,
+            "method": "trunk",
+            "median_x": 180.3,
+            "note": "range of the torso x in game px; scale_frames --root-lock torso-x removes it"
+          },
+          {
+            "id": "row_baseline",
+            "status": "pass",
+            "value": 0.0,
+            "threshold": 0.5,
+            "baselines": {
+              "0": 221,
+              "1": 221
+            },
+            "note": "ground line of each sheet row; scale_frames --row-baseline aligns them"
+          },
+          {
+            "id": "seam",
+            "status": "pass",
+            "value": 1.31,
+            "threshold": 1.5,
+            "transitions": [],
+            "note": "largest frame-to-frame change over the median step; review these joins first"
+          }
+        ],
+        "inputs": [
+          {
+            "path": "../../../assets/resources/art/fx/bloodfiend_revel.png",
+            "sha256": "f7c77d171913cf4208a8550daa662a7225b03f77be001baa373c45e2bb109986",
+            "bytes": 437492
+          }
+        ],
+        "outputs": [
+          {
+            "path": "frames-review.png",
+            "sha256": "31182f085e12f2e7ef2106019d2c7caa07a3db938115ba4f3db0f08a27811ac0",
+            "bytes": 171555
+          }
+        ],
+        "tool": {
+          "name": "sheet_qc.py",
+          "version": "0.4.0"
+        },
+        "grid": {
+          "rows": 2,
+          "cols": 4
+        },
+        "input": {
+          "sheet": {
+            "sha256": "f7c77d171913cf4208a8550daa662a7225b03f77be001baa373c45e2bb109986",
+            "size": [
+              1024,
+              512
+            ],
+            "source_mode": "RGBA",
+            "bit_depth": 8,
+            "conversion": "none",
+            "keyed": null
+          },
+          "slicing": {
+            "method": "ownership (forge_core.ownership_slice, haze drop): solid components to the cell holding most of their pixels, soft pixels to the owner they reach through soft pixels; nominal cell origin plus one shared padding",
+            "haze": "drop",
+            "threshold": 127,
+            "min_area": 64,
+            "attach_radius": 6,
+            "cells_used": 8,
+            "unused_cells_px": 0,
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "canvas": [
+              256,
+              256
+            ],
+            "frame_origins_in_sheet": [
+              [
+                0,
+                0
+              ],
+              [
+                256,
+                0
+              ],
+              [
+                512,
+                0
+              ],
+              [
+                768,
+                0
+              ],
+              [
+                0,
+                256
+              ],
+              [
+                256,
+                256
+              ],
+              [
+                512,
+                256
+              ],
+              [
+                768,
+                256
+              ]
+            ],
+            "dropped_px": 58508,
+            "dropped_max_alpha": 255
+          }
+        },
+        "params": {
+          "cycle": "none",
+          "facing": "right",
+          "game_pixel": 1.0,
+          "frames_per_row": 4,
+          "loop": false,
+          "alpha_threshold": 127,
+          "reference_frame": 0,
+          "head_frac": 0.35,
+          "torso_band": [
+            0.4,
+            0.6
+          ],
+          "torso_colors": [],
+          "near_colors": [],
+          "far_colors": [],
+          "colour_tolerance": 30.0,
+          "leg_band": 0.3
+        },
+        "cells": [
+          {
+            "frame": 0,
+            "row": 0,
+            "bbox": [
+              61,
+              114,
+              177,
+              185
+            ],
+            "height_px": 71,
+            "width_px": 116,
+            "solid_px": 906,
+            "ground": 185,
+            "head": {
+              "head_ratio": 1.087,
+              "scale": 1.0,
+              "residual": 0.0,
+              "residual_over_median": null,
+              "template": true,
+              "head_box": [
+                75,
+                114,
+                105,
+                139
+              ]
+            },
+            "colour_l1_to_median": 0.6928,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 36.0,
+              "stride_ratio": 0.248
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.1779,
+              "separation_game_px": 16.96,
+              "lead": "unclear",
+              "reason": "feet less than 21.5 game px apart"
+            },
+            "torso_x": 175.5,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              0
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 1,
+            "row": 0,
+            "bbox": [
+              28,
+              40,
+              219,
+              215
+            ],
+            "height_px": 175,
+            "width_px": 191,
+            "solid_px": 6562,
+            "ground": 215,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 65.23,
+              "residual_over_median": 1.0,
+              "template": false,
+              "head_box": [
+                42,
+                40,
+                208,
+                101
+              ]
+            },
+            "colour_l1_to_median": 0.2079,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 6.0,
+              "stride_ratio": 0.822
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.0019,
+              "separation_game_px": 61.54,
+              "lead": "unclear",
+              "reason": "the feet differ by less than one shade"
+            },
+            "torso_x": 199.0,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              1
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 2,
+            "row": 0,
+            "bbox": [
+              32,
+              53,
+              221,
+              221
+            ],
+            "height_px": 168,
+            "width_px": 189,
+            "solid_px": 10735,
+            "ground": 221,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 58.07,
+              "residual_over_median": 0.89,
+              "template": false,
+              "head_box": [
+                45,
+                53,
+                214,
+                112
+              ]
+            },
+            "colour_l1_to_median": 0.1768,
+            "phase": {
+              "label": "contact",
+              "clearance_game_px": 0.0,
+              "stride_ratio": 0.879
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0293,
+              "separation_game_px": 53.98,
+              "lead": "far"
+            },
+            "torso_x": 65.7,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              2
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 3,
+            "row": 0,
+            "bbox": [
+              30,
+              41,
+              223,
+              221
+            ],
+            "height_px": 180,
+            "width_px": 193,
+            "solid_px": 16611,
+            "ground": 221,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 64.33,
+              "residual_over_median": 0.99,
+              "template": false,
+              "head_box": [
+                34,
+                41,
+                204,
+                104
+              ]
+            },
+            "colour_l1_to_median": 0.147,
+            "phase": {
+              "label": "contact",
+              "clearance_game_px": 0.0,
+              "stride_ratio": 0.955
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.0185,
+              "separation_game_px": 50.14,
+              "lead": "near"
+            },
+            "torso_x": 74.5,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              3
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 4,
+            "row": 1,
+            "bbox": [
+              34,
+              30,
+              229,
+              221
+            ],
+            "height_px": 191,
+            "width_px": 195,
+            "solid_px": 15955,
+            "ground": 221,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 65.97,
+              "residual_over_median": 1.01,
+              "template": false,
+              "head_box": [
+                35,
+                30,
+                219,
+                97
+              ]
+            },
+            "colour_l1_to_median": 0.1606,
+            "phase": {
+              "label": "contact",
+              "clearance_game_px": 0.0,
+              "stride_ratio": 1.0
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.0203,
+              "separation_game_px": 51.12,
+              "lead": "near"
+            },
+            "torso_x": 185.0,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              0
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 5,
+            "row": 1,
+            "bbox": [
+              28,
+              35,
+              225,
+              214
+            ],
+            "height_px": 179,
+            "width_px": 197,
+            "solid_px": 9285,
+            "ground": 214,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 58.49,
+              "residual_over_median": 0.9,
+              "template": false,
+              "head_box": [
+                44,
+                35,
+                224,
+                98
+              ]
+            },
+            "colour_l1_to_median": 0.1073,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 7.0,
+              "stride_ratio": 0.688
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.0606,
+              "separation_game_px": 39.35,
+              "lead": "near"
+            },
+            "torso_x": 191.4,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              1
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 6,
+            "row": 1,
+            "bbox": [
+              38,
+              47,
+              222,
+              206
+            ],
+            "height_px": 159,
+            "width_px": 184,
+            "solid_px": 4670,
+            "ground": 206,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 65.85,
+              "residual_over_median": 1.01,
+              "template": false,
+              "head_box": [
+                44,
+                47,
+                222,
+                103
+              ]
+            },
+            "colour_l1_to_median": 0.47,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 15.0,
+              "stride_ratio": 0.439
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0191,
+              "separation_game_px": 32.46,
+              "lead": "far"
+            },
+            "torso_x": 50.6,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              2
+            ],
+            "source": "bloodfiend_revel.png"
+          },
+          {
+            "frame": 7,
+            "row": 1,
+            "bbox": [
+              54,
+              48,
+              203,
+              183
+            ],
+            "height_px": 135,
+            "width_px": 149,
+            "solid_px": 939,
+            "ground": 183,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.92,
+              "residual": 67.36,
+              "residual_over_median": 1.03,
+              "template": false,
+              "head_box": [
+                71,
+                48,
+                148,
+                95
+              ]
+            },
+            "colour_l1_to_median": 0.6236,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 38.0,
+              "stride_ratio": 0.815
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0659,
+              "separation_game_px": 86.07,
+              "lead": "far"
+            },
+            "torso_x": 197.0,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              3
+            ],
+            "source": "bloodfiend_revel.png"
+          }
+        ],
+        "identity": {
+          "median_scale": 0.92,
+          "median_residual": 65.23,
+          "reduction": 1,
+          "template": "frame 0",
+          "scales": [
+            0.9,
+            0.92,
+            0.94,
+            0.96,
+            0.98,
+            1.0,
+            1.02,
+            1.04,
+            1.06,
+            1.08,
+            1.1
+          ]
+        },
+        "near_duplicates": {
+          "pairs": [
+            {
+              "pair": [
+                3,
+                4
+              ],
+              "iou_best_shift": 0.6033,
+              "best_shift_src_px": [
+                -3,
+                -1
+              ],
+              "colour_l1": 0.1285
+            },
+            {
+              "pair": [
+                2,
+                3
+              ],
+              "iou_best_shift": 0.4007,
+              "best_shift_src_px": [
+                1,
+                3
+              ],
+              "colour_l1": 0.1886
+            },
+            {
+              "pair": [
+                2,
+                4
+              ],
+              "iou_best_shift": 0.3878,
+              "best_shift_src_px": [
+                -1,
+                3
+              ],
+              "colour_l1": 0.141
+            },
+            {
+              "pair": [
+                3,
+                5
+              ],
+              "iou_best_shift": 0.3733,
+              "best_shift_src_px": [
+                -2,
+                3
+              ],
+              "colour_l1": 0.1767
+            },
+            {
+              "pair": [
+                4,
+                5
+              ],
+              "iou_best_shift": 0.364,
+              "best_shift_src_px": [
+                1,
+                -3
+              ],
+              "colour_l1": 0.1459
+            },
+            {
+              "pair": [
+                1,
+                5
+              ],
+              "iou_best_shift": 0.3182,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 0.2745
+            },
+            {
+              "pair": [
+                2,
+                5
+              ],
+              "iou_best_shift": 0.3127,
+              "best_shift_src_px": [
+                -1,
+                3
+              ],
+              "colour_l1": 0.1897
+            },
+            {
+              "pair": [
+                1,
+                3
+              ],
+              "iou_best_shift": 0.296,
+              "best_shift_src_px": [
+                2,
+                3
+              ],
+              "colour_l1": 0.3209
+            },
+            {
+              "pair": [
+                1,
+                4
+              ],
+              "iou_best_shift": 0.2871,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 0.3346
+            },
+            {
+              "pair": [
+                1,
+                2
+              ],
+              "iou_best_shift": 0.2843,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 0.2768
+            },
+            {
+              "pair": [
+                1,
+                6
+              ],
+              "iou_best_shift": 0.2536,
+              "best_shift_src_px": [
+                2,
+                -3
+              ],
+              "colour_l1": 0.3004
+            },
+            {
+              "pair": [
+                2,
+                6
+              ],
+              "iou_best_shift": 0.2386,
+              "best_shift_src_px": [
+                1,
+                3
+              ],
+              "colour_l1": 0.5157
+            },
+            {
+              "pair": [
+                5,
+                6
+              ],
+              "iou_best_shift": 0.2323,
+              "best_shift_src_px": [
+                -3,
+                0
+              ],
+              "colour_l1": 0.528
+            },
+            {
+              "pair": [
+                3,
+                6
+              ],
+              "iou_best_shift": 0.2161,
+              "best_shift_src_px": [
+                2,
+                2
+              ],
+              "colour_l1": 0.6014
+            },
+            {
+              "pair": [
+                4,
+                6
+              ],
+              "iou_best_shift": 0.2147,
+              "best_shift_src_px": [
+                3,
+                3
+              ],
+              "colour_l1": 0.6001
+            },
+            {
+              "pair": [
+                0,
+                7
+              ],
+              "iou_best_shift": 0.1162,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.6711
+            },
+            {
+              "pair": [
+                5,
+                7
+              ],
+              "iou_best_shift": 0.0836,
+              "best_shift_src_px": [
+                0,
+                3
+              ],
+              "colour_l1": 0.6924
+            },
+            {
+              "pair": [
+                0,
+                5
+              ],
+              "iou_best_shift": 0.0796,
+              "best_shift_src_px": [
+                0,
+                -3
+              ],
+              "colour_l1": 0.7287
+            },
+            {
+              "pair": [
+                1,
+                7
+              ],
+              "iou_best_shift": 0.072,
+              "best_shift_src_px": [
+                1,
+                -3
+              ],
+              "colour_l1": 0.6644
+            },
+            {
+              "pair": [
+                0,
+                4
+              ],
+              "iou_best_shift": 0.0568,
+              "best_shift_src_px": [
+                2,
+                3
+              ],
+              "colour_l1": 0.7664
+            },
+            {
+              "pair": [
+                2,
+                7
+              ],
+              "iou_best_shift": 0.0549,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 0.7804
+            },
+            {
+              "pair": [
+                0,
+                3
+              ],
+              "iou_best_shift": 0.0545,
+              "best_shift_src_px": [
+                -1,
+                -3
+              ],
+              "colour_l1": 0.7337
+            },
+            {
+              "pair": [
+                4,
+                7
+              ],
+              "iou_best_shift": 0.0515,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 0.746
+            },
+            {
+              "pair": [
+                0,
+                1
+              ],
+              "iou_best_shift": 0.0498,
+              "best_shift_src_px": [
+                -3,
+                -1
+              ],
+              "colour_l1": 0.8346
+            },
+            {
+              "pair": [
+                3,
+                7
+              ],
+              "iou_best_shift": 0.0492,
+              "best_shift_src_px": [
+                3,
+                3
+              ],
+              "colour_l1": 0.6999
+            },
+            {
+              "pair": [
+                6,
+                7
+              ],
+              "iou_best_shift": 0.0412,
+              "best_shift_src_px": [
+                -3,
+                -2
+              ],
+              "colour_l1": 0.5997
+            },
+            {
+              "pair": [
+                0,
+                2
+              ],
+              "iou_best_shift": 0.0367,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 0.8204
+            },
+            {
+              "pair": [
+                0,
+                6
+              ],
+              "iou_best_shift": 0.0278,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 0.9548
+            }
+          ],
+          "max_shift_src_px": 3
+        },
+        "half_cycle": null,
+        "alternation": {
+          "verdict": "mixed: some half-cycle pairs repeat the lead",
+          "pairs": [
+            [
+              2,
+              6,
+              true
+            ],
+            [
+              3,
+              7,
+              false
+            ]
+          ],
+          "near_leading": 3,
+          "far_leading": 3,
+          "unclear": 2
+        },
+        "torso": {
+          "drift_game_px": 148.41
+        },
+        "row_baselines": {
+          "0": 221,
+          "1": 221
+        },
+        "seam_ranking": [
+          {
+            "from": 2,
+            "to": 3,
+            "mae": 25.06,
+            "over_median": 1.31
+          },
+          {
+            "from": 4,
+            "to": 5,
+            "mae": 24.85,
+            "over_median": 1.3
+          },
+          {
+            "from": 3,
+            "to": 4,
+            "mae": 19.83,
+            "over_median": 1.04
+          },
+          {
+            "from": 1,
+            "to": 2,
+            "mae": 19.07,
+            "over_median": 1.0
+          },
+          {
+            "from": 5,
+            "to": 6,
+            "mae": 17.11,
+            "over_median": 0.9
+          },
+          {
+            "from": 0,
+            "to": 1,
+            "mae": 12.29,
+            "over_median": 0.64
+          },
+          {
+            "from": 6,
+            "to": 7,
+            "mae": 9.57,
+            "over_median": 0.5
+          }
+        ],
+        "seam": null
+      }
+    },
+    {
+      "file": "art-source\\trait-triggers\\blood-spill\\sheet-qc.json",
+      "report": {
+        "schema": "generate2dsprite.sheet_qc.v1",
+        "check": "spill",
+        "status": "warn",
+        "method": "8-connected components at alpha > 127 (solid) and > 16 (visible edge) on the raw sheet; a component belongs to the cell holding most of its pixels; cells are forge_core.rounded_grid_boxes; specks are forge_core.alpha_hygiene('both') counts",
+        "notProven": [
+          "Whether an overhang is intended art such as a tail or weapon trail.",
+          "Whether a cell's pose, anatomy or identity is correct; run sheet_qc.py frames and look at the frames.",
+          "That a different crop or slicing method would be safe: only the nominal grid was measured."
+        ],
+        "checks": [
+          {
+            "id": "cross_cell_components",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "cells": [],
+            "note": "solid parts crossing a cell line are cut or misassigned when the sheet is sliced"
+          },
+          {
+            "id": "cross_cell_visible",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "the same test on the visible edge (alpha > 16)"
+          },
+          {
+            "id": "sheet_edge",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "art touching the sheet border was cut by the image edge"
+          },
+          {
+            "id": "empty_cells",
+            "status": "pass",
+            "value": [],
+            "threshold": [],
+            "note": "the first 8 cells must each hold a subject"
+          },
+          {
+            "id": "boundary_band",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "solid pixels within 9 px of a cell line; a different crop or rounding can cut them"
+          },
+          {
+            "id": "safe_frame",
+            "status": "warn",
+            "value": 8,
+            "threshold": 0,
+            "cells": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "note": "owned art closer than 15% of the cell to its edge; ask for more margin next time"
+          },
+          {
+            "id": "faint_specks",
+            "status": "warn",
+            "value": {
+              "floor_px": 308560,
+              "detached_components": 104
+            },
+            "threshold": 0,
+            "note": "alpha haze and detached specks; process removes them with --alpha-hygiene both"
+          }
+        ],
+        "inputs": [
+          {
+            "path": "../bloodfiend_revel.png",
+            "sha256": "8a245038d7e25c17d05d73e0c3350b27e40db468627e4fdf232b11686cda8790",
+            "bytes": 1617367
+          }
+        ],
+        "outputs": [
+          {
+            "path": "spill-overlay.png",
+            "sha256": "765242bfde9b1ef78c91456015bc97ac2d617fac102300a5bf0f4972e20aadd4",
+            "bytes": 1027586
+          }
+        ],
+        "tool": {
+          "name": "sheet_qc.py",
+          "version": "0.4.0"
+        },
+        "image": {
+          "sha256": "8a245038d7e25c17d05d73e0c3350b27e40db468627e4fdf232b11686cda8790",
+          "size": [
+            1774,
+            887
+          ],
+          "source_mode": "RGBA",
+          "bit_depth": 8,
+          "conversion": "none",
+          "keyed": null
+        },
+        "grid": {
+          "rows": 2,
+          "cols": 4,
+          "cell_boxes": [
+            [
+              0,
+              0,
+              444,
+              444
+            ],
+            [
+              444,
+              0,
+              887,
+              444
+            ],
+            [
+              887,
+              0,
+              1331,
+              444
+            ],
+            [
+              1331,
+              0,
+              1774,
+              444
+            ],
+            [
+              0,
+              444,
+              444,
+              887
+            ],
+            [
+              444,
+              444,
+              887,
+              887
+            ],
+            [
+              887,
+              444,
+              1331,
+              887
+            ],
+            [
+              1331,
+              444,
+              1774,
+              887
+            ]
+          ],
+          "rounding": "half-up (forge_core.rounded_grid_boxes)"
+        },
+        "params": {
+          "alpha_threshold": 127,
+          "edge_threshold": 16,
+          "min_area": 64,
+          "band_px": 9,
+          "safe_margin": 0.15,
+          "expect": 8,
+          "connectivity": 8
+        },
+        "cells": [
+          {
+            "cell": [
+              0,
+              0
+            ],
+            "index": 0,
+            "box": [
+              0,
+              0,
+              444,
+              444
+            ],
+            "owned_components": 14,
+            "owned_area": 4898,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              89,
+              137,
+              380,
+              345
+            ],
+            "margins_px": {
+              "left": 89,
+              "top": 137,
+              "right": 64,
+              "bottom": 99
+            },
+            "margins_frac": {
+              "left": 0.2005,
+              "top": 0.3086,
+              "right": 0.1441,
+              "bottom": 0.223
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              0,
+              1
+            ],
+            "index": 1,
+            "box": [
+              444,
+              0,
+              887,
+              444
+            ],
+            "owned_components": 16,
+            "owned_area": 26372,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              468,
+              47,
+              845,
+              401
+            ],
+            "margins_px": {
+              "left": 24,
+              "top": 47,
+              "right": 42,
+              "bottom": 43
+            },
+            "margins_frac": {
+              "left": 0.0542,
+              "top": 0.1059,
+              "right": 0.0948,
+              "bottom": 0.0968
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              0,
+              2
+            ],
+            "index": 2,
+            "box": [
+              887,
+              0,
+              1331,
+              444
+            ],
+            "owned_components": 15,
+            "owned_area": 42817,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              918,
+              73,
+              1292,
+              407
+            ],
+            "margins_px": {
+              "left": 31,
+              "top": 73,
+              "right": 39,
+              "bottom": 37
+            },
+            "margins_frac": {
+              "left": 0.0698,
+              "top": 0.1644,
+              "right": 0.0878,
+              "bottom": 0.0833
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              0,
+              3
+            ],
+            "index": 3,
+            "box": [
+              1331,
+              0,
+              1774,
+              444
+            ],
+            "owned_components": 12,
+            "owned_area": 66028,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              1357,
+              48,
+              1741,
+              406
+            ],
+            "margins_px": {
+              "left": 26,
+              "top": 48,
+              "right": 33,
+              "bottom": 38
+            },
+            "margins_frac": {
+              "left": 0.0587,
+              "top": 0.1081,
+              "right": 0.0745,
+              "bottom": 0.0856
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              0
+            ],
+            "index": 4,
+            "box": [
+              0,
+              444,
+              444,
+              887
+            ],
+            "owned_components": 11,
+            "owned_area": 63215,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              35,
+              472,
+              422,
+              849
+            ],
+            "margins_px": {
+              "left": 35,
+              "top": 28,
+              "right": 22,
+              "bottom": 38
+            },
+            "margins_frac": {
+              "left": 0.0788,
+              "top": 0.0632,
+              "right": 0.0495,
+              "bottom": 0.0858
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              1
+            ],
+            "index": 5,
+            "box": [
+              444,
+              444,
+              887,
+              887
+            ],
+            "owned_components": 22,
+            "owned_area": 37277,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              468,
+              482,
+              859,
+              837
+            ],
+            "margins_px": {
+              "left": 24,
+              "top": 38,
+              "right": 28,
+              "bottom": 50
+            },
+            "margins_frac": {
+              "left": 0.0542,
+              "top": 0.0858,
+              "right": 0.0632,
+              "bottom": 0.1129
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              2
+            ],
+            "index": 6,
+            "box": [
+              887,
+              444,
+              1331,
+              887
+            ],
+            "owned_components": 15,
+            "owned_area": 18918,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              905,
+              505,
+              1295,
+              820
+            ],
+            "margins_px": {
+              "left": 18,
+              "top": 61,
+              "right": 36,
+              "bottom": 67
+            },
+            "margins_frac": {
+              "left": 0.0405,
+              "top": 0.1377,
+              "right": 0.0811,
+              "bottom": 0.1512
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              3
+            ],
+            "index": 7,
+            "box": [
+              1331,
+              444,
+              1774,
+              887
+            ],
+            "owned_components": 12,
+            "owned_area": 4259,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              1405,
+              507,
+              1701,
+              798
+            ],
+            "margins_px": {
+              "left": 74,
+              "top": 63,
+              "right": 73,
+              "bottom": 89
+            },
+            "margins_frac": {
+              "left": 0.167,
+              "top": 0.1422,
+              "right": 0.1648,
+              "bottom": 0.2009
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          }
+        ],
+        "crossing_components": [],
+        "visible_crossing_components": [],
+        "boundary_band": [
+          {
+            "axis": "x",
+            "at": 444,
+            "solid_px": 0
+          },
+          {
+            "axis": "x",
+            "at": 887,
+            "solid_px": 0
+          },
+          {
+            "axis": "x",
+            "at": 1331,
+            "solid_px": 0
+          },
+          {
+            "axis": "y",
+            "at": 444,
+            "solid_px": 0
+          }
+        ],
+        "specks": {
+          "floor_px": 308560,
+          "detached_px": 154,
+          "detached_components": 104,
+          "max_removed_alpha": 7,
+          "soft_alpha_histogram": {
+            "1-4": 308560,
+            "5-15": 90613,
+            "16-63": 63286,
+            "64-127": 29690
+          }
+        }
+      }
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-frames\\sheet-qc.json",
+      "report": {
+        "schema": "generate2dsprite.sheet_qc.v1",
+        "check": "frames",
+        "status": "fail",
+        "method": "solid alpha > 127; head ratio by multi-scale template match of the head band against the median frame; best-shift silhouette IoU; phases from ground clearance and stride width; NEAR/FAR lead from the lightness of the two feet (FAR one shade darker); torso x from the trunk columns of the torso band; seams from forge_core.transition_mae (premultiplied RGBA)",
+        "notProven": [
+          "Pose quality, anatomy, appeal and readability at game scale: look at frames-review.png and the game-size frames.",
+          "That the head band holds only the head: arms raised into it change the match.",
+          "NEAR/FAR leads in auto mode rely on the 'FAR limbs one shade darker' convention; declare the colours to be sure.",
+          "Phase labels come from feet clearance and stride width, not from the pose."
+        ],
+        "checks": [
+          {
+            "id": "identity_head_ratio",
+            "status": "fail",
+            "value": {
+              "0": 1.02,
+              "1": 0.918,
+              "2": 1.0,
+              "3": 1.061,
+              "4": 0.98,
+              "5": 1.0,
+              "6": 1.0,
+              "7": 0.939
+            },
+            "threshold": [
+              0.95,
+              1.05
+            ],
+            "frames": [
+              1,
+              3,
+              7
+            ],
+            "note": "head scale against the median frame (frame 0 template)"
+          },
+          {
+            "id": "identity_residual",
+            "status": "pass",
+            "value": {
+              "0": null,
+              "1": 1.0,
+              "2": 0.87,
+              "3": 0.87,
+              "4": 1.5,
+              "5": 1.5,
+              "6": 1.49,
+              "7": 0.64
+            },
+            "threshold": 1.5,
+            "frames": [],
+            "note": "head match residual over the median: face or costume drift"
+          },
+          {
+            "id": "near_duplicates",
+            "status": "pass",
+            "value": [],
+            "threshold": 0.95,
+            "note": "pairs with best-shift silhouette IoU at or above the threshold and similar colours"
+          },
+          {
+            "id": "phase_coverage",
+            "status": "skipped",
+            "value": null,
+            "threshold": null,
+            "note": "needs --cycle run or walk and an even frame count of at least 4"
+          },
+          {
+            "id": "leg_alternation",
+            "status": "skipped",
+            "value": null,
+            "threshold": null,
+            "note": "needs --cycle run or walk and an even frame count of at least 4"
+          },
+          {
+            "id": "torso_drift",
+            "status": "warn",
+            "value": 131.85,
+            "threshold": 2.0,
+            "method": "trunk",
+            "median_x": 69.3,
+            "note": "range of the torso x in game px; scale_frames --root-lock torso-x removes it"
+          },
+          {
+            "id": "row_baseline",
+            "status": "warn",
+            "value": 7.0,
+            "threshold": 0.5,
+            "baselines": {
+              "0": 223,
+              "1": 216
+            },
+            "note": "ground line of each sheet row; scale_frames --row-baseline aligns them"
+          },
+          {
+            "id": "seam",
+            "status": "warn",
+            "value": 1.7,
+            "threshold": 1.5,
+            "transitions": [
+              [
+                4,
+                5
+              ],
+              [
+                3,
+                4
+              ]
+            ],
+            "note": "largest frame-to-frame change over the median step; review these joins first"
+          }
+        ],
+        "inputs": [
+          {
+            "path": "../../../assets/resources/art/fx/mechanical_overclock.png",
+            "sha256": "8fea206ef087253f6ec72ff94f024b30bc2ae6db714a96d49de63b4c593d4eaf",
+            "bytes": 414434
+          }
+        ],
+        "outputs": [
+          {
+            "path": "frames-review.png",
+            "sha256": "f9432bf9f3c4ab6c5a4f0bd85475046523919bb1d7d171cff6ddbfd18e228b47",
+            "bytes": 159273
+          }
+        ],
+        "tool": {
+          "name": "sheet_qc.py",
+          "version": "0.4.0"
+        },
+        "grid": {
+          "rows": 2,
+          "cols": 4
+        },
+        "input": {
+          "sheet": {
+            "sha256": "8fea206ef087253f6ec72ff94f024b30bc2ae6db714a96d49de63b4c593d4eaf",
+            "size": [
+              1024,
+              512
+            ],
+            "source_mode": "RGBA",
+            "bit_depth": 8,
+            "conversion": "none",
+            "keyed": null
+          },
+          "slicing": {
+            "method": "ownership (forge_core.ownership_slice, haze drop): solid components to the cell holding most of their pixels, soft pixels to the owner they reach through soft pixels; nominal cell origin plus one shared padding",
+            "haze": "drop",
+            "threshold": 127,
+            "min_area": 64,
+            "attach_radius": 6,
+            "cells_used": 8,
+            "unused_cells_px": 0,
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "canvas": [
+              256,
+              256
+            ],
+            "frame_origins_in_sheet": [
+              [
+                0,
+                0
+              ],
+              [
+                256,
+                0
+              ],
+              [
+                512,
+                0
+              ],
+              [
+                768,
+                0
+              ],
+              [
+                0,
+                256
+              ],
+              [
+                256,
+                256
+              ],
+              [
+                512,
+                256
+              ],
+              [
+                768,
+                256
+              ]
+            ],
+            "dropped_px": 55778,
+            "dropped_max_alpha": 250
+          }
+        },
+        "params": {
+          "cycle": "none",
+          "facing": "right",
+          "game_pixel": 1.0,
+          "frames_per_row": 4,
+          "loop": false,
+          "alpha_threshold": 127,
+          "reference_frame": 0,
+          "head_frac": 0.35,
+          "torso_band": [
+            0.4,
+            0.6
+          ],
+          "torso_colors": [],
+          "near_colors": [],
+          "far_colors": [],
+          "colour_tolerance": 30.0,
+          "leg_band": 0.3
+        },
+        "cells": [
+          {
+            "frame": 0,
+            "row": 0,
+            "bbox": [
+              110,
+              121,
+              149,
+              171
+            ],
+            "height_px": 50,
+            "width_px": 39,
+            "solid_px": 769,
+            "ground": 171,
+            "head": {
+              "head_ratio": 1.02,
+              "scale": 1.0,
+              "residual": 0.0,
+              "residual_over_median": null,
+              "template": true,
+              "head_box": [
+                117,
+                121,
+                143,
+                139
+              ]
+            },
+            "colour_l1_to_median": 1.114,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 52.0,
+              "stride_ratio": 0.034
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0223,
+              "separation_game_px": 1.85,
+              "lead": "unclear",
+              "reason": "feet less than 20.8 game px apart"
+            },
+            "torso_x": 130.4,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              0
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 1,
+            "row": 0,
+            "bbox": [
+              49,
+              92,
+              207,
+              199
+            ],
+            "height_px": 107,
+            "width_px": 158,
+            "solid_px": 5578,
+            "ground": 199,
+            "head": {
+              "head_ratio": 0.918,
+              "scale": 0.9,
+              "residual": 55.02,
+              "residual_over_median": 1.0,
+              "template": false,
+              "head_box": [
+                52,
+                92,
+                192,
+                129
+              ]
+            },
+            "colour_l1_to_median": 0.6207,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 24.0,
+              "stride_ratio": 0.855
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.4503,
+              "separation_game_px": 80.65,
+              "lead": "near"
+            },
+            "torso_x": 68.1,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              1
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 2,
+            "row": 0,
+            "bbox": [
+              38,
+              71,
+              216,
+              210
+            ],
+            "height_px": 139,
+            "width_px": 178,
+            "solid_px": 9415,
+            "ground": 210,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.98,
+              "residual": 48.0,
+              "residual_over_median": 0.87,
+              "template": false,
+              "head_box": [
+                41,
+                71,
+                206,
+                120
+              ]
+            },
+            "colour_l1_to_median": 0.2572,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 13.0,
+              "stride_ratio": 0.952
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0373,
+              "separation_game_px": 72.72,
+              "lead": "far"
+            },
+            "torso_x": 196.9,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              2
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 3,
+            "row": 0,
+            "bbox": [
+              26,
+              31,
+              224,
+              223
+            ],
+            "height_px": 192,
+            "width_px": 198,
+            "solid_px": 14354,
+            "ground": 223,
+            "head": {
+              "head_ratio": 1.061,
+              "scale": 1.04,
+              "residual": 47.78,
+              "residual_over_median": 0.87,
+              "template": false,
+              "head_box": [
+                49,
+                31,
+                212,
+                98
+              ]
+            },
+            "colour_l1_to_median": 0.282,
+            "phase": {
+              "label": "contact",
+              "clearance_game_px": 0.0,
+              "stride_ratio": 0.986
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.0395,
+              "separation_game_px": 70.75,
+              "lead": "far"
+            },
+            "torso_x": 67.5,
+            "torso_method": "trunk",
+            "cell": [
+              0,
+              3
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 4,
+            "row": 1,
+            "bbox": [
+              26,
+              30,
+              234,
+              216
+            ],
+            "height_px": 186,
+            "width_px": 208,
+            "solid_px": 20699,
+            "ground": 216,
+            "head": {
+              "head_ratio": 0.98,
+              "scale": 0.96,
+              "residual": 82.44,
+              "residual_over_median": 1.5,
+              "template": false,
+              "head_box": [
+                40,
+                30,
+                216,
+                95
+              ]
+            },
+            "colour_l1_to_median": 0.3783,
+            "phase": {
+              "label": "contact",
+              "clearance_game_px": 0.0,
+              "stride_ratio": 1.0
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.028,
+              "separation_game_px": 59.81,
+              "lead": "near"
+            },
+            "torso_x": 68.4,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              0
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 5,
+            "row": 1,
+            "bbox": [
+              33,
+              44,
+              221,
+              214
+            ],
+            "height_px": 170,
+            "width_px": 188,
+            "solid_px": 11435,
+            "ground": 214,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.98,
+              "residual": 82.76,
+              "residual_over_median": 1.5,
+              "template": false,
+              "head_box": [
+                36,
+                44,
+                214,
+                103
+              ]
+            },
+            "colour_l1_to_median": 0.3753,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 2.0,
+              "stride_ratio": 0.834
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.4905,
+              "separation_game_px": 63.57,
+              "lead": "far"
+            },
+            "torso_x": 65.1,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              1
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 6,
+            "row": 1,
+            "bbox": [
+              35,
+              57,
+              228,
+              198
+            ],
+            "height_px": 141,
+            "width_px": 193,
+            "solid_px": 5517,
+            "ground": 198,
+            "head": {
+              "head_ratio": 1.0,
+              "scale": 0.98,
+              "residual": 81.79,
+              "residual_over_median": 1.49,
+              "template": false,
+              "head_box": [
+                42,
+                57,
+                207,
+                106
+              ]
+            },
+            "colour_l1_to_median": 0.6114,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 18.0,
+              "stride_ratio": 0.979
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": -0.2241,
+              "separation_game_px": 83.09,
+              "lead": "far"
+            },
+            "torso_x": 70.3,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              2
+            ],
+            "source": "mechanical_overclock.png"
+          },
+          {
+            "frame": 7,
+            "row": 1,
+            "bbox": [
+              72,
+              91,
+              192,
+              175
+            ],
+            "height_px": 84,
+            "width_px": 120,
+            "solid_px": 971,
+            "ground": 175,
+            "head": {
+              "head_ratio": 0.939,
+              "scale": 0.92,
+              "residual": 34.96,
+              "residual_over_median": 0.64,
+              "template": false,
+              "head_box": [
+                102,
+                91,
+                192,
+                120
+              ]
+            },
+            "colour_l1_to_median": 0.8715,
+            "phase": {
+              "label": "flight",
+              "clearance_game_px": 41.0,
+              "stride_ratio": 0.179
+            },
+            "lead": {
+              "mode": "auto-luminance",
+              "front_minus_back_L": 0.0414,
+              "separation_game_px": 9.06,
+              "lead": "unclear",
+              "reason": "feet less than 20.8 game px apart"
+            },
+            "torso_x": 183.1,
+            "torso_method": "trunk",
+            "cell": [
+              1,
+              3
+            ],
+            "source": "mechanical_overclock.png"
+          }
+        ],
+        "identity": {
+          "median_scale": 0.98,
+          "median_residual": 55.02,
+          "reduction": 1,
+          "template": "frame 0",
+          "scales": [
+            0.9,
+            0.92,
+            0.94,
+            0.96,
+            0.98,
+            1.0,
+            1.02,
+            1.04,
+            1.06,
+            1.08,
+            1.1
+          ]
+        },
+        "near_duplicates": {
+          "pairs": [
+            {
+              "pair": [
+                2,
+                3
+              ],
+              "iou_best_shift": 0.5528,
+              "best_shift_src_px": [
+                -3,
+                0
+              ],
+              "colour_l1": 0.4042
+            },
+            {
+              "pair": [
+                3,
+                4
+              ],
+              "iou_best_shift": 0.5275,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.4483
+            },
+            {
+              "pair": [
+                4,
+                5
+              ],
+              "iou_best_shift": 0.4319,
+              "best_shift_src_px": [
+                -1,
+                3
+              ],
+              "colour_l1": 0.5987
+            },
+            {
+              "pair": [
+                2,
+                4
+              ],
+              "iou_best_shift": 0.4047,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.4508
+            },
+            {
+              "pair": [
+                1,
+                2
+              ],
+              "iou_best_shift": 0.3825,
+              "best_shift_src_px": [
+                -2,
+                3
+              ],
+              "colour_l1": 0.6909
+            },
+            {
+              "pair": [
+                2,
+                5
+              ],
+              "iou_best_shift": 0.3535,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.4416
+            },
+            {
+              "pair": [
+                3,
+                5
+              ],
+              "iou_best_shift": 0.327,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.5464
+            },
+            {
+              "pair": [
+                1,
+                3
+              ],
+              "iou_best_shift": 0.3047,
+              "best_shift_src_px": [
+                3,
+                3
+              ],
+              "colour_l1": 0.7298
+            },
+            {
+              "pair": [
+                1,
+                5
+              ],
+              "iou_best_shift": 0.273,
+              "best_shift_src_px": [
+                -2,
+                3
+              ],
+              "colour_l1": 0.4647
+            },
+            {
+              "pair": [
+                5,
+                6
+              ],
+              "iou_best_shift": 0.2728,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.5562
+            },
+            {
+              "pair": [
+                1,
+                6
+              ],
+              "iou_best_shift": 0.2727,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.6583
+            },
+            {
+              "pair": [
+                1,
+                4
+              ],
+              "iou_best_shift": 0.2393,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.7553
+            },
+            {
+              "pair": [
+                4,
+                6
+              ],
+              "iou_best_shift": 0.2335,
+              "best_shift_src_px": [
+                -3,
+                -2
+              ],
+              "colour_l1": 0.7348
+            },
+            {
+              "pair": [
+                2,
+                6
+              ],
+              "iou_best_shift": 0.2315,
+              "best_shift_src_px": [
+                -3,
+                0
+              ],
+              "colour_l1": 0.7835
+            },
+            {
+              "pair": [
+                3,
+                6
+              ],
+              "iou_best_shift": 0.2231,
+              "best_shift_src_px": [
+                -3,
+                3
+              ],
+              "colour_l1": 0.645
+            },
+            {
+              "pair": [
+                1,
+                7
+              ],
+              "iou_best_shift": 0.0675,
+              "best_shift_src_px": [
+                3,
+                1
+              ],
+              "colour_l1": 1.3905
+            },
+            {
+              "pair": [
+                6,
+                7
+              ],
+              "iou_best_shift": 0.0439,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 1.2654
+            },
+            {
+              "pair": [
+                4,
+                7
+              ],
+              "iou_best_shift": 0.0416,
+              "best_shift_src_px": [
+                -2,
+                -3
+              ],
+              "colour_l1": 1.0946
+            },
+            {
+              "pair": [
+                3,
+                7
+              ],
+              "iou_best_shift": 0.0393,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 0.9483
+            },
+            {
+              "pair": [
+                5,
+                7
+              ],
+              "iou_best_shift": 0.0356,
+              "best_shift_src_px": [
+                3,
+                3
+              ],
+              "colour_l1": 1.1341
+            },
+            {
+              "pair": [
+                2,
+                7
+              ],
+              "iou_best_shift": 0.0336,
+              "best_shift_src_px": [
+                -1,
+                3
+              ],
+              "colour_l1": 0.8509
+            },
+            {
+              "pair": [
+                0,
+                4
+              ],
+              "iou_best_shift": 0.0229,
+              "best_shift_src_px": [
+                0,
+                -3
+              ],
+              "colour_l1": 1.1566
+            },
+            {
+              "pair": [
+                0,
+                5
+              ],
+              "iou_best_shift": 0.0131,
+              "best_shift_src_px": [
+                3,
+                -3
+              ],
+              "colour_l1": 1.3874
+            },
+            {
+              "pair": [
+                0,
+                3
+              ],
+              "iou_best_shift": 0.0003,
+              "best_shift_src_px": [
+                2,
+                -3
+              ],
+              "colour_l1": 1.1243
+            },
+            {
+              "pair": [
+                0,
+                1
+              ],
+              "iou_best_shift": 0.0,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 1.5933
+            },
+            {
+              "pair": [
+                0,
+                2
+              ],
+              "iou_best_shift": 0.0,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 1.1987
+            },
+            {
+              "pair": [
+                0,
+                6
+              ],
+              "iou_best_shift": 0.0,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 1.2948
+            },
+            {
+              "pair": [
+                0,
+                7
+              ],
+              "iou_best_shift": 0.0,
+              "best_shift_src_px": [
+                -3,
+                -3
+              ],
+              "colour_l1": 0.7962
+            }
+          ],
+          "max_shift_src_px": 3
+        },
+        "half_cycle": null,
+        "alternation": {
+          "verdict": "mixed: some half-cycle pairs repeat the lead",
+          "pairs": [
+            [
+              1,
+              5,
+              false
+            ],
+            [
+              2,
+              6,
+              true
+            ]
+          ],
+          "near_leading": 2,
+          "far_leading": 4,
+          "unclear": 2
+        },
+        "torso": {
+          "drift_game_px": 131.85
+        },
+        "row_baselines": {
+          "0": 223,
+          "1": 216
+        },
+        "seam_ranking": [
+          {
+            "from": 4,
+            "to": 5,
+            "mae": 40.57,
+            "over_median": 1.7
+          },
+          {
+            "from": 3,
+            "to": 4,
+            "mae": 38.83,
+            "over_median": 1.63
+          },
+          {
+            "from": 5,
+            "to": 6,
+            "mae": 25.91,
+            "over_median": 1.09
+          },
+          {
+            "from": 2,
+            "to": 3,
+            "mae": 23.82,
+            "over_median": 1.0
+          },
+          {
+            "from": 1,
+            "to": 2,
+            "mae": 20.82,
+            "over_median": 0.87
+          },
+          {
+            "from": 0,
+            "to": 1,
+            "mae": 15.56,
+            "over_median": 0.65
+          },
+          {
+            "from": 6,
+            "to": 7,
+            "mae": 15.3,
+            "over_median": 0.64
+          }
+        ],
+        "seam": null
+      }
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-spill\\sheet-qc.json",
+      "report": {
+        "schema": "generate2dsprite.sheet_qc.v1",
+        "check": "spill",
+        "status": "warn",
+        "method": "8-connected components at alpha > 127 (solid) and > 16 (visible edge) on the raw sheet; a component belongs to the cell holding most of its pixels; cells are forge_core.rounded_grid_boxes; specks are forge_core.alpha_hygiene('both') counts",
+        "notProven": [
+          "Whether an overhang is intended art such as a tail or weapon trail.",
+          "Whether a cell's pose, anatomy or identity is correct; run sheet_qc.py frames and look at the frames.",
+          "That a different crop or slicing method would be safe: only the nominal grid was measured."
+        ],
+        "checks": [
+          {
+            "id": "cross_cell_components",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "cells": [],
+            "note": "solid parts crossing a cell line are cut or misassigned when the sheet is sliced"
+          },
+          {
+            "id": "cross_cell_visible",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "the same test on the visible edge (alpha > 16)"
+          },
+          {
+            "id": "sheet_edge",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "art touching the sheet border was cut by the image edge"
+          },
+          {
+            "id": "empty_cells",
+            "status": "pass",
+            "value": [],
+            "threshold": [],
+            "note": "the first 8 cells must each hold a subject"
+          },
+          {
+            "id": "boundary_band",
+            "status": "pass",
+            "value": 0,
+            "threshold": 0,
+            "note": "solid pixels within 9 px of a cell line; a different crop or rounding can cut them"
+          },
+          {
+            "id": "safe_frame",
+            "status": "warn",
+            "value": 7,
+            "threshold": 0,
+            "cells": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                0,
+                3
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "note": "owned art closer than 15% of the cell to its edge; ask for more margin next time"
+          },
+          {
+            "id": "faint_specks",
+            "status": "warn",
+            "value": {
+              "floor_px": 250418,
+              "detached_components": 43
+            },
+            "threshold": 0,
+            "note": "alpha haze and detached specks; process removes them with --alpha-hygiene both"
+          }
+        ],
+        "inputs": [
+          {
+            "path": "../mechanical_overclock.png",
+            "sha256": "62de5fc07bcc18a0e33f144de77a342b390198563b0155cd479997c34736ba75",
+            "bytes": 1522713
+          }
+        ],
+        "outputs": [
+          {
+            "path": "spill-overlay.png",
+            "sha256": "2c8bfd0360665913387fb696bfbc41bd635996eb7325a5ab5cc739068f84d9f0",
+            "bytes": 984206
+          }
+        ],
+        "tool": {
+          "name": "sheet_qc.py",
+          "version": "0.4.0"
+        },
+        "image": {
+          "sha256": "62de5fc07bcc18a0e33f144de77a342b390198563b0155cd479997c34736ba75",
+          "size": [
+            1774,
+            887
+          ],
+          "source_mode": "RGBA",
+          "bit_depth": 8,
+          "conversion": "none",
+          "keyed": null
+        },
+        "grid": {
+          "rows": 2,
+          "cols": 4,
+          "cell_boxes": [
+            [
+              0,
+              0,
+              444,
+              444
+            ],
+            [
+              444,
+              0,
+              887,
+              444
+            ],
+            [
+              887,
+              0,
+              1331,
+              444
+            ],
+            [
+              1331,
+              0,
+              1774,
+              444
+            ],
+            [
+              0,
+              444,
+              444,
+              887
+            ],
+            [
+              444,
+              444,
+              887,
+              887
+            ],
+            [
+              887,
+              444,
+              1331,
+              887
+            ],
+            [
+              1331,
+              444,
+              1774,
+              887
+            ]
+          ],
+          "rounding": "half-up (forge_core.rounded_grid_boxes)"
+        },
+        "params": {
+          "alpha_threshold": 127,
+          "edge_threshold": 16,
+          "min_area": 64,
+          "band_px": 9,
+          "safe_margin": 0.15,
+          "expect": 8,
+          "connectivity": 8
+        },
+        "cells": [
+          {
+            "cell": [
+              0,
+              0
+            ],
+            "index": 0,
+            "box": [
+              0,
+              0,
+              444,
+              444
+            ],
+            "owned_components": 2,
+            "owned_area": 3122,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              184,
+              206,
+              287,
+              307
+            ],
+            "margins_px": {
+              "left": 184,
+              "top": 206,
+              "right": 157,
+              "bottom": 137
+            },
+            "margins_frac": {
+              "left": 0.4144,
+              "top": 0.464,
+              "right": 0.3536,
+              "bottom": 0.3086
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": true
+          },
+          {
+            "cell": [
+              0,
+              1
+            ],
+            "index": 1,
+            "box": [
+              444,
+              0,
+              887,
+              444
+            ],
+            "owned_components": 4,
+            "owned_area": 22062,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              510,
+              151,
+              822,
+              362
+            ],
+            "margins_px": {
+              "left": 66,
+              "top": 151,
+              "right": 65,
+              "bottom": 82
+            },
+            "margins_frac": {
+              "left": 0.149,
+              "top": 0.3401,
+              "right": 0.1467,
+              "bottom": 0.1847
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              0,
+              2
+            ],
+            "index": 2,
+            "box": [
+              887,
+              0,
+              1331,
+              444
+            ],
+            "owned_components": 3,
+            "owned_area": 36972,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              931,
+              108,
+              1284,
+              385
+            ],
+            "margins_px": {
+              "left": 44,
+              "top": 108,
+              "right": 47,
+              "bottom": 59
+            },
+            "margins_frac": {
+              "left": 0.0991,
+              "top": 0.2432,
+              "right": 0.1059,
+              "bottom": 0.1329
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              0,
+              3
+            ],
+            "index": 3,
+            "box": [
+              1331,
+              0,
+              1774,
+              444
+            ],
+            "owned_components": 3,
+            "owned_area": 56518,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              1350,
+              29,
+              1743,
+              411
+            ],
+            "margins_px": {
+              "left": 19,
+              "top": 29,
+              "right": 31,
+              "bottom": 33
+            },
+            "margins_frac": {
+              "left": 0.0429,
+              "top": 0.0653,
+              "right": 0.07,
+              "bottom": 0.0743
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              0
+            ],
+            "index": 4,
+            "box": [
+              0,
+              444,
+              444,
+              887
+            ],
+            "owned_components": 7,
+            "owned_area": 81212,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              19,
+              469,
+              431,
+              840
+            ],
+            "margins_px": {
+              "left": 19,
+              "top": 25,
+              "right": 13,
+              "bottom": 47
+            },
+            "margins_frac": {
+              "left": 0.0428,
+              "top": 0.0564,
+              "right": 0.0293,
+              "bottom": 0.1061
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              1
+            ],
+            "index": 5,
+            "box": [
+              444,
+              444,
+              887,
+              887
+            ],
+            "owned_components": 9,
+            "owned_area": 44799,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              478,
+              500,
+              848,
+              835
+            ],
+            "margins_px": {
+              "left": 34,
+              "top": 56,
+              "right": 39,
+              "bottom": 52
+            },
+            "margins_frac": {
+              "left": 0.0767,
+              "top": 0.1264,
+              "right": 0.088,
+              "bottom": 0.1174
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              2
+            ],
+            "index": 6,
+            "box": [
+              887,
+              444,
+              1331,
+              887
+            ],
+            "owned_components": 15,
+            "owned_area": 22035,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              925,
+              537,
+              1305,
+              811
+            ],
+            "margins_px": {
+              "left": 38,
+              "top": 93,
+              "right": 26,
+              "bottom": 76
+            },
+            "margins_frac": {
+              "left": 0.0856,
+              "top": 0.2099,
+              "right": 0.0586,
+              "bottom": 0.1716
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          },
+          {
+            "cell": [
+              1,
+              3
+            ],
+            "index": 7,
+            "box": [
+              1331,
+              444,
+              1774,
+              887
+            ],
+            "owned_components": 6,
+            "owned_area": 4145,
+            "components_over_line": 0,
+            "pixels_over_line": 0,
+            "overhang_px": 0,
+            "visible_pixels_over_line": 0,
+            "visible_overhang_px": 0,
+            "intruders": [],
+            "expected": true,
+            "owned_bbox": [
+              1440,
+              592,
+              1708,
+              759
+            ],
+            "margins_px": {
+              "left": 109,
+              "top": 148,
+              "right": 66,
+              "bottom": 128
+            },
+            "margins_frac": {
+              "left": 0.246,
+              "top": 0.3341,
+              "right": 0.149,
+              "bottom": 0.2889
+            },
+            "cut_by_cell_edge": false,
+            "inside_safe_frame": false
+          }
+        ],
+        "crossing_components": [],
+        "visible_crossing_components": [],
+        "boundary_band": [
+          {
+            "axis": "x",
+            "at": 444,
+            "solid_px": 0
+          },
+          {
+            "axis": "x",
+            "at": 887,
+            "solid_px": 0
+          },
+          {
+            "axis": "x",
+            "at": 1331,
+            "solid_px": 0
+          },
+          {
+            "axis": "y",
+            "at": 444,
+            "solid_px": 0
+          }
+        ],
+        "specks": {
+          "floor_px": 250418,
+          "detached_px": 53,
+          "detached_components": 43,
+          "max_removed_alpha": 5,
+          "soft_alpha_histogram": {
+            "1-4": 250418,
+            "5-15": 65715,
+            "16-63": 66887,
+            "64-127": 41955
+          }
+        }
+      }
+    }
+  ],
+  "qaFindings": [
+    {
+      "file": "art-source\\trait-triggers\\blood-frames\\sheet-qc.json",
+      "id": "identity_head_ratio",
+      "status": "fail",
+      "value": {
+        "0": 1.087,
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0,
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 1.0
+      },
+      "threshold": [
+        0.95,
+        1.05
+      ],
+      "frames": [
+        0
+      ],
+      "note": "head scale against the median frame (frame 0 template)"
+    },
+    {
+      "file": "art-source\\trait-triggers\\blood-frames\\sheet-qc.json",
+      "id": "torso_drift",
+      "status": "warn",
+      "value": 148.41,
+      "threshold": 2.0,
+      "method": "trunk",
+      "median_x": 180.3,
+      "note": "range of the torso x in game px; scale_frames --root-lock torso-x removes it"
+    },
+    {
+      "file": "art-source\\trait-triggers\\blood-spill\\sheet-qc.json",
+      "id": "safe_frame",
+      "status": "warn",
+      "value": 8,
+      "threshold": 0,
+      "cells": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "note": "owned art closer than 15% of the cell to its edge; ask for more margin next time"
+    },
+    {
+      "file": "art-source\\trait-triggers\\blood-spill\\sheet-qc.json",
+      "id": "faint_specks",
+      "status": "warn",
+      "value": {
+        "floor_px": 308560,
+        "detached_components": 104
+      },
+      "threshold": 0,
+      "note": "alpha haze and detached specks; process removes them with --alpha-hygiene both"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-frames\\sheet-qc.json",
+      "id": "identity_head_ratio",
+      "status": "fail",
+      "value": {
+        "0": 1.02,
+        "1": 0.918,
+        "2": 1.0,
+        "3": 1.061,
+        "4": 0.98,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 0.939
+      },
+      "threshold": [
+        0.95,
+        1.05
+      ],
+      "frames": [
+        1,
+        3,
+        7
+      ],
+      "note": "head scale against the median frame (frame 0 template)"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-frames\\sheet-qc.json",
+      "id": "torso_drift",
+      "status": "warn",
+      "value": 131.85,
+      "threshold": 2.0,
+      "method": "trunk",
+      "median_x": 69.3,
+      "note": "range of the torso x in game px; scale_frames --root-lock torso-x removes it"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-frames\\sheet-qc.json",
+      "id": "row_baseline",
+      "status": "warn",
+      "value": 7.0,
+      "threshold": 0.5,
+      "baselines": {
+        "0": 223,
+        "1": 216
+      },
+      "note": "ground line of each sheet row; scale_frames --row-baseline aligns them"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-frames\\sheet-qc.json",
+      "id": "seam",
+      "status": "warn",
+      "value": 1.7,
+      "threshold": 1.5,
+      "transitions": [
+        [
+          4,
+          5
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "note": "largest frame-to-frame change over the median step; review these joins first"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-spill\\sheet-qc.json",
+      "id": "safe_frame",
+      "status": "warn",
+      "value": 7,
+      "threshold": 0,
+      "cells": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "note": "owned art closer than 15% of the cell to its edge; ask for more margin next time"
+    },
+    {
+      "file": "art-source\\trait-triggers\\mechanical-spill\\sheet-qc.json",
+      "id": "faint_specks",
+      "status": "warn",
+      "value": {
+        "floor_px": 250418,
+        "detached_components": 43
+      },
+      "threshold": 0,
+      "note": "alpha haze and detached specks; process removes them with --alpha-hygiene both"
+    }
+  ],
+  "qaReview": "Safe-frame warnings concern raw-sheet margins; runtime cells add 16px padding. Faint specks are intentional painted droplets/electric motes and are retained. Head/torso/baseline metrics describe changing FX silhouettes, not characters; identity_head_ratio failures are inapplicable character-head checks on headless effects, not an all-pass art result. All frames retain one source-cell pivot. The mechanical peak/release seam is crossfaded in replay. Raw cross-cell components, visible spill, sheet-edge cuts, empty cells and boundary bands all measure zero. Actual 1280x720 Cocos preview confirmed both effects, simultaneous spider activation, pause and cleanup; it does not establish Android/device rendering."
+}

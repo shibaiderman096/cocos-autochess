@@ -29,7 +29,7 @@ import { equipmentIdentity,sameEquipmentIdentity,validateEquipmentPolicy } from 
 import type { EquipmentPolicyConfig,PendingEquipmentReward } from './EquipmentPolicyTypes';
 import { createEquipmentReward } from './EquipmentReward';
 import type { BotPlayerPort,BotCatalog } from './BotObservation';
-import { StageProgression, freshStageProgress } from './StageProgression';
+import { StageProgression, freshStageProgress, isChestlessBoss } from './StageProgression';
 import type { StageChoice, StagePending } from './StageProgression';
 import { traitEmblemChoices } from './TraitEmblem';
 import type { PendingTraitChoice } from './TraitEmblem';
@@ -158,6 +158,9 @@ export class RunSession {
           || (tier === 'special' && offer.price === 8 && prices.special === 10)) offer.price = prices[tier];
       }
       this.validateStageReward();
+      // Retire only a validated, unopened 10-10 chest from older saves; keep the rest of the run.
+      if (isChestlessBoss(this.flow.wave) && this.flow.lastSettlement?.winner === 0
+        && ['bossChoice', 'equipmentChoice'].includes(this.save.stageProgress?.pending?.kind ?? '')) delete this.save.stageProgress!.pending;
       if (this.flow.phase === 'prepare') this.stageProgression.enter(this.flow.wave);
     }
     this.snapshot();
@@ -470,6 +473,28 @@ export class RunSession {
     if (this.flow.phase !== 'prepare') return fail('fighting');
     return this.owned.unequip(uid, slot) ? ok() : fail('invalid_equipment');
   }
+  equipmentRecycleGold(reserveIndex: number): number {
+    if (!Number.isInteger(reserveIndex) || reserveIndex < 0) return 0;
+    const id = this.owned.equipmentReserve[reserveIndex];
+    if (!id) return 0;
+    const item = this.cfg.getEquipmentReserve([id])[0];
+    if (!item) return 0;
+    const tier = this.equipmentPolicy?.tiers[id] ?? (item.specialShopOnly ? 'special' : 'basic');
+    const price = this.cfg.equipmentPrice(id, this.runConfig.stageEncounters?.shop.equipmentPrices[tier] ?? 0);
+    return Number.isSafeInteger(price) && price > 0 ? Math.floor(price / 2) : 0;
+  }
+  recycleEquipment(reserveIndex: number, equipmentId: string): ActionResult {
+    if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
+    if (this.pendingOpeningEncounter) return fail('encounter_pending');
+    if (this.flow.phase !== 'prepare') return fail('fighting');
+    if (!Number.isInteger(reserveIndex) || reserveIndex < 0 || !equipmentId
+      || this.owned.equipmentReserve[reserveIndex] !== equipmentId) return fail('invalid_equipment');
+    const gold = this.equipmentRecycleGold(reserveIndex);
+    if (gold <= 0 || !Number.isSafeInteger(this.economy.gold + gold)) return fail('invalid_equipment');
+    this.owned.equipmentReserve.splice(reserveIndex, 1);
+    this.economy.gold += gold;
+    return { ok: true, gold };
+  }
   act(action: RunAction): ActionResult {
     const result = this.applyAction(action);
     if (result.ok && !this.save.pendingTraitChoice && this.flow.phase !== 'battle') this.stageProgression?.collect(this.flow.wave);
@@ -487,6 +512,7 @@ export class RunSession {
       case 'sell': return this.sellUnit(action.uid);
       case 'equip': return this.equipItem(action.uid, action.reserveIndex);
       case 'unequip': return this.unequipItem(action.uid, action.slot);
+      case 'recycleEquipment': return this.recycleEquipment(action.reserveIndex, action.equipmentId);
       case 'claimEquipmentReward':return this.claimEquipmentReward(action.index);
       case 'stageChoice': return this.claimStageReward(action);
       default: return fail('invalid_action');
@@ -525,7 +551,7 @@ export class RunSession {
     const battleIds = new Map<number, number>();
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       battleIds.set(u.uid, placements.length + 1);
-      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth });
+      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower });
     }
     return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, astralSeed: this.save.runSeed, w: this.cfg.battle.boardWidth,
       h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks }), battleIds };
@@ -546,6 +572,8 @@ export class RunSession {
     if (!round) return null;
     for (const [uid, battleId] of this.activeBattleIds) {
       const owned = this.owned.get(uid), combat = sim.units.find(unit => unit.id === battleId && unit.side === 0);
+      if (owned && combat && combat.permanentSpellPowerGained > 0)
+        owned.permanentSpellPower = (owned.permanentSpellPower ?? 0) + combat.permanentSpellPowerGained;
       if (owned && combat && combat.permanentHealthGained > 0) {
         owned.permanentMaxHp = (owned.permanentMaxHp ?? 0) + combat.permanentHealthGained;
         owned.soulLampHealth = (owned.soulLampHealth ?? 0) + combat.permanentHealthGained;
@@ -567,7 +595,7 @@ export class RunSession {
     this.rewardLevelUps(ups.length);
     this.save.lastReward = { breakdown, expGained, levelUps: ups.length };
     this.stageProgression?.settle(this.flow.wave, sim.winner);
-    if(!this.stageProgression&&this.equipmentPolicy&&this.save.equipmentRewardVersion!=='none'){
+    if(!this.stageProgression&&this.equipmentPolicy&&this.save.equipmentRewardVersion!=='none'&&!isChestlessBoss(this.flow.wave)){
       const w=this.flow.wave;
       // Legacy waves have no classification. Only explicit configured Elite/Boss victories qualify.
       this.save.lastEquipmentReward=createEquipmentReward(this.equipmentPolicy,this.random,w,sim.winner,this.save.equipmentProgress);

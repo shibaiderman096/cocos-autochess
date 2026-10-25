@@ -46,4 +46,11 @@ export class BoardGeometry {
     }
     return null;
   }
+
+  /** Same projection as cell centers, including endpoints between or beyond cells. */
+  projectLogical(p: BoardPoint): BoardPoint {
+    const cx=this.size*SQRT3*(this.columns-.5)/2,cy=this.size*1.5*(this.rows-1)/2;
+    const height=this.size*(1.5*(this.rows-1)+2);
+    return {x:(p.x*this.size-cx)*(1-.12*(p.y*this.size-cy)/height),y:(p.y*this.size-cy)*.6};
+  }
 }

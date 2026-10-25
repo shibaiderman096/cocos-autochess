@@ -8,7 +8,7 @@ const battle=require('../assets/resources/config/battle.json'),roster=require('.
 const clone=value=>JSON.parse(JSON.stringify(value));
 const traits=battle.traits.filter(trait=>trait.selector && trait.breakpoints.every(tier=>tier.stats));
 assert.deepEqual(traits.map(t=>t.id),['armored_tank','brawler','swift_marksman','sharpshooter','assassin']);
-const expected={armored_tank:['abyss_iron_guard','bao_zero','helion'],brawler:['gravity_executor','nightmare_lamplighter','star_armor_guard'],swift_marksman:['saiph','xiya'],sharpshooter:['aurelia','blackfeather_hunter','eclipse_crossbow'],assassin:['kaeru','milu','ripsaw_spider','voidscar_reaver']};
+const expected={armored_tank:['abyss_iron_guard','bao_zero','helion'],brawler:['crimson_devourer','crimson_riftclaw','gravity_executor','nightmare_lamplighter','star_armor_guard'],swift_marksman:['saiph','scarlet_enchantress','xiya'],sharpshooter:['aurelia','blackfeather_hunter','eclipse_crossbow'],assassin:['kaeru','milu','ripsaw_spider','voidscar_reaver']};
 for(const state of resolveTraits(traits,roster.map(u=>u.id),roster))assert.deepEqual(state.memberIds,expected[state.config.id]);
 const base={id:'dummy',name:'dummy',hp:1000,atk:100,armor:0,mr:0,atkSpeed:.8,range:1,moveTicks:1,maxMana:0,startMana:0,manaPerHit:0,critChance:0};
 function create(id,n,side=0,overrides={}) {

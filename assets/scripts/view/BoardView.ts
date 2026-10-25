@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Graphics, Vec3, Color, UITransform } from 'cc';
 import { Grid } from '../battle/Grid';
-import { hexDist } from '../battle/HexMath';
+import { hexDist, offsetToWorld } from '../battle/HexMath';
 import type { AstralField } from '../battle/types';
 import { BoardGeometry, BoardPoint } from './BoardGeometry';
 import { AstralBoardArt } from './AstralBoardArt';
@@ -57,6 +57,13 @@ export class BoardView extends Component {
   cellToWorld(x: number, y: number): Vec3 {
     const cell = this.geometry.cells.find(c => c.x === x && c.y === y);
     const p = projectBoardPoint(cell?.center ?? {x:0,y:0});
+    return new Vec3(p.x,p.y,0);
+  }
+
+  lineEndToWorld(from: BoardPoint, toward: BoardPoint, length: number): Vec3 {
+    const a=offsetToWorld(from.x,from.y,1,0,0),b=offsetToWorld(toward.x,toward.y,1,0,0);
+    const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy)||1,d=length*Math.sqrt(3);
+    const p=projectBoardPoint(this.geometry.projectLogical({x:a.x+dx/n*d,y:a.y+dy/n*d}));
     return new Vec3(p.x,p.y,0);
   }
 

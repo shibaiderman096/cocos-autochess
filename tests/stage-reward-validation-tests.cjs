@@ -15,6 +15,8 @@ const offers=Array.from({length:5},(_,i)=>({kind:'equipment',id:rules.basicEquip
 assert.doesNotThrow(()=>load({...base,kind:'specialShop',offers}));
 assert.doesNotThrow(()=>load({...base,kind:'equipmentChoice',candidates:rules.basicEquipmentIds.slice(0,4)}));
 assert.doesNotThrow(()=>load({...base,kind:'unitBundle',value:2,units:['helion','saiph'],deferredValue:0}));
+assert.doesNotThrow(()=>load(undefined,{equipmentCredit:2}));
+for(const equipmentCredit of [-1,NaN,Infinity,.5,3,1000000000])assert.throws(()=>load(undefined,{equipmentCredit}),/Invalid stage reward save/);
 for(const pending of [null,{}, {...base,kind:'unknown'}, {...base,kind:'bossChoice',value:-1},
  {...base,waveId:NaN,kind:'bossChoice',value:2}, {...base,kind:'equipmentChoice',candidates:['missing']},
  {...base,kind:'equipmentChoice',candidates:Array(4).fill('guinsoo')},

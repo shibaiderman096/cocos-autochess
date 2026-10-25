@@ -1,0 +1,41 @@
+{
+  "route": "Built-in image_gen",
+  "art_source": "host_image",
+  "model": "Tool-managed, not exposed",
+  "estimateUsd": null,
+  "prompts": "faction-portrait-update-prompts.json",
+  "assets": [
+    {
+      "id": "ripsaw_spider",
+      "referenceSha256": "1edb66914998ca5a066a9ac1e886089e36145ea8c78ce304c48186fe735afe0d",
+      "file": "assets/resources/art/units/mechanical/ripsaw_spider.png",
+      "width": 1536,
+      "height": 1024,
+      "transparentFraction": 0.634515126546224,
+      "sha256": "1edb66914998ca5a066a9ac1e886089e36145ea8c78ce304c48186fe735afe0d",
+      "previousSha256": "9ecfca6365f7fea0caead6ce040d1030a07c850862fec710ef89c61e75582b2c",
+      "revision": "User-selected crimson crystal armored mechanical spider; original image copied unchanged.",
+      "route": "User-provided image, copied unchanged",
+      "art_source": "existing",
+      "source": "C:\\Users\\man\\Downloads\\猩红晶甲机械蜘蛛.png"
+    },
+    {
+      "id": "oris",
+      "referenceSha256": "bf16e52b2cf9a38fdb907ee25968884b21976abbeeda3457c2e4680189997765",
+      "file": "assets/resources/art/units/sunlight/oris.png",
+      "width": 1024,
+      "height": 1536,
+      "transparentFraction": 0.16585413614908853,
+      "sha256": "e26961c28620036de925c5c3429ae8e75a01343a53a2790f3ae765e08603732e"
+    },
+    {
+      "id": "blackstar_warlock",
+      "referenceSha256": "5fffebe9d7026b7f127ddff3449dc63e05786a5f255f2fd880f2d376cc0174d3",
+      "file": "assets/resources/art/units/shadow/blackstar_warlock.png",
+      "width": 1086,
+      "height": 1448,
+      "transparentFraction": 0.2943877628888007,
+      "sha256": "b65127494b6244e776b7be714e369adf5979ae210ebe2f94c0f23a9622ee345f"
+    }
+  ]
+}
