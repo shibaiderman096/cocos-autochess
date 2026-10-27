@@ -110,7 +110,10 @@ const activation=mech.slots.find(s=>s.layer?.activation&&s.layer.follow===spider
 mixed.replay.play({...overclock,tick:mixed.sim.tick+1,emergency:true,untilTick:mixed.sim.tick+121});
 assert.equal(mech.slots.filter(s=>s.layer?.activation&&s.layer.follow===spider.id).length,1,'emergency refresh restarts one trigger layer');
 assert.equal(activation.art[0].node.getComponent(U).contentSize.width,50*2.05,'emergency redraw uses its larger size');
-blood.update(mixed.sim.tick+20);mech.update(mixed.sim.tick+20);
+blood.update(mixed.sim.tick+18);mech.update(mixed.sim.tick+18);
+assert.ok(blood.slots.some(s=>s.layer?.art==='bloodfiendRevel'&&s.node.active),'slower revel remains visible after its former lifetime');
+assert.ok(mech.slots.some(s=>s.layer?.activation&&s.node.active),'slower overclock activation remains visible after its former lifetime');
+blood.update(mixed.sim.tick+24);mech.update(mixed.sim.tick+24);
 assert.ok(!blood.slots.some(s=>s.layer?.art==='bloodfiendRevel'));
 assert.ok(!mech.slots.some(s=>s.layer?.activation));assert.equal(spider.bloodfiendStackCount,1,'short visual does not expire the four-second gameplay stack');
 mixed.replay.play({t:'bloodfiend_revel',id:spider.id,tick:mixed.sim.tick,untilTick:mixed.sim.tick+80,attackSpeedBonus:.2});

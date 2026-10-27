@@ -15,6 +15,11 @@ cfg.setEquipment(require('../assets/resources/config/equipment.json'));
 const flush = () => { while (pending.length) pending.shift()(); };
 const collection = new CollectionPanel(new Node('Canvas'), cfg);
 collection.show('units');
+const backdrop = [...collection.root.components.values()].find(component => Array.isArray(component.points));
+for (let i = 0; i < 2; i++) {
+  collection.hide(); backdrop.clear(); collection.show('units');
+  assert.equal(backdrop.points.length, 8, 'opening and reopening rebuild the native panel background');
+}
 let visited = 0;
 for (const [index, entry] of collection.entries().entries()) {
   for (const star of [1, 2, 3]) {

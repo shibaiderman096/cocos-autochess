@@ -139,7 +139,7 @@ export class MechanicalVfx {
       if(pos){
         this.add({row:7,motion:'overclock',from:pos.clone(),start:e.tick,seconds:(e.untilTick-e.tick)*this.tickMs/1000,
           size:1.65,opacity:150,follow:e.id,source:e.id,tag:'overclock',key:`overclock:${e.id}`,ground:true});
-        this.add({row:0,motion:'burst',activation:true,from:pos.clone(),start:e.tick,seconds:.85,
+        this.add({row:0,motion:'burst',activation:true,from:pos.clone(),start:e.tick,seconds:1.1,
           size:e.emergency?2.05:1.8,height:e.emergency?2.05:1.8,opacity:255,follow:e.id,source:e.id,key:`activation:${e.id}`});
       }
     }else if(e.t==='heal'){

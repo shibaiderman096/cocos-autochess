@@ -88,11 +88,21 @@ export class Unit {
   domainRadius = 0;
   fearUntilTick = 0;
   fearOrigin = { x: 0, y: 0 };
-  get armor(): number { return (this.cfg.armor + this.skillArmorBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
+  lanternGuard?: {maxArmor: number; maxSpeedPenalty: number; physicalPowerPerArmor: number};
+  windHuntUntilTick = 0;
+  corrosionTargets = new Set<number>();
+  windHuntCastTicks = 1;
+  expeditionCastTicks = 1;
+  windHuntSpeedBonus = 0;
+  get windHuntActive(): boolean { return this.alive && this.hp>0 && this.combatTick<this.windHuntUntilTick; }
+  get missingHealthFraction(): number { return Math.max(0,Math.min(1,1-this.hp/this.cfg.hp)); }
+  get lanternArmorBonus(): number { return (this.lanternGuard?.maxArmor??0)*(1+(this.cfg.spellPower??0)/100)*this.missingHealthFraction; }
+  get physicalPower(): number { return (this.cfg.physicalPower??0)+this.armor*(this.lanternGuard?.physicalPowerPerArmor??0); }
+  get armor(): number { return (this.cfg.armor + this.lanternArmorBonus + this.skillArmorBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
   gainMana(amount: number): void {
-    if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
+    if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.windHuntActive || this.ropeHunt || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
     this.manaFraction += amount;
     const whole = Math.floor(this.manaFraction + 1e-9);
     this.manaFraction = Math.max(0, this.manaFraction - whole);
@@ -113,6 +123,13 @@ export class Unit {
   priorityTarget: number | null = null;
   /** Absolute attacks/second added to the base: +5% means +0.05. */
   attackSpeedBonus = 0;
+  inspirations = new Map<number, import('./types').InspirationRuntime>();
+  get inspirationAttackSpeedBonus(): number {
+    if(!this.alive||this.hp<=0)return 0;
+    let total=0;
+    for(const e of this.inspirations.values())total+=e.initialBonus*Math.max(0,Math.min(1,(e.untilTick-this.combatTick)/(e.untilTick-e.startTick)));
+    return total;
+  }
   overtimeAttackSpeedBonus = 0;
   overtimeDamageAmp = 0;
   get damageAmp(): number { return (this.cfg.damageAmp ?? 0) + this.overtimeDamageAmp + this.conquerorDamageAmp - (this.shadowCorruption?.damageAmpLoss ?? 0); }
@@ -129,6 +146,8 @@ export class Unit {
   permanentSpellPowerGained = 0;
   /** Total earned across this expedition, including the entry placement. */
   permanentSpellPower = 0;
+  permanentPhysicalPowerGained = 0;
+  permanentPhysicalPower = 0;
   soulLampHealth = 0;
   maxHpGrowthMultiplier = 1;
   equipmentCastSpeedUntil = new Map<number, number>();
@@ -155,6 +174,7 @@ export class Unit {
   shield = 0;
   stellarShield: { remaining: number; untilTick: number } | null = null;
   stellarCharge: import('./types').StellarChargeRuntime | null = null;
+  ropeHunt: import('./types').RopeHuntRuntime | null = null;
   starLeap: import('./types').StarLeapRuntime | null = null;
   untargetableUntilTick = 0;
   lowHealthProtectionUsed = false;
@@ -172,12 +192,14 @@ export class Unit {
 
   get attackSpeed(): number {
     const penalty = this.crowdControlImmune ? 0 : Math.max(this.skillAttackSpeedPenalty, this.nebulaAttackSpeedPenalty);
-    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus - penalty
+    const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus + this.inspirationAttackSpeedBonus - penalty
       + (this.combatTick < this.spellbladeUntilTick ? this.spellblade?.attackSpeedBonus ?? 0 : 0)
       + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
       + this.bloodfiendStackCount * (this.bloodfiend?.attackSpeedBonus ?? 0)
-      + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0);
-    return Math.min(this.attackSpeedCap, penalty > 0 ? Math.max(.1, speed) : speed);
+      + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0)
+      + (this.windHuntActive ? this.windHuntSpeedBonus : 0);
+    const lanternPenalty=(this.lanternGuard?.maxSpeedPenalty??0)*this.missingHealthFraction;
+    return Math.min(this.attackSpeedCap, penalty+lanternPenalty > 0 ? Math.max(.1, speed-lanternPenalty) : speed);
   }
 
   constructor(

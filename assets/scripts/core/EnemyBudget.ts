@@ -3,6 +3,7 @@ import type { EnemyBudgetResult, EnemyDifficultyConfig, WaveKind } from './Enemy
 export interface WaveBudgetBounds {
   globalWaveId: number; budgetWaveIndex: number; stage: number; round: number; rounds: number; population: number;
   min: number; max: number; kind: Exclude<WaveKind, 'intro'>;
+  countsForProgress?:boolean;progressRound?:number;progressRounds?:number;
 }
 const clamp=(n:number,min:number,max:number)=>Math.max(min,Math.min(max,n));
 export function classifyWave(stage:number, round:number, rounds:number, c:EnemyDifficultyConfig): WaveKind {
@@ -42,7 +43,8 @@ export class EnemyBudget {
   }
   calculate(b:WaveBudgetBounds):EnemyBudgetResult {
     const raw=rawEnemyBudget(this.baseBudget*(this.config.balanceBudgetScale??1),b.budgetWaveIndex,this.config.growthRate);
-    const fraction=b.rounds===1?1:(b.round-1)/(b.rounds-1);
+    const round=b.progressRound??b.round,rounds=b.progressRounds??b.rounds;
+    const fraction=rounds===1?1:(round-1)/(rounds-1);
     // End factor g/(1-recovery) makes next raw stage anchor exactly (1-recovery) of the Boss.
     const factor=Math.pow(this.config.growthRate/(1-this.config.stageRecovery.target),fraction);
     const kindMultiplier=this.config.waveKindMultipliers[b.kind],pacingMultiplier=factor/kindMultiplier;

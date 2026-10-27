@@ -1,4 +1,4 @@
-import { BlockInputEvents, Color, Graphics, Label, Node, Tween, tween, UIOpacity, UITransform, Vec3 } from 'cc';
+import { BlockInputEvents, Color, Graphics, Label, Node, UIOpacity, UITransform, view } from 'cc';
 import type { WaveConfig } from '../core/RoundFlow';
 
 /** Visual-only curtain: the caller changes rounds once, at full coverage. */
@@ -8,16 +8,19 @@ export class WaveTransition {
   private opacity: UIOpacity;
   private round: Label;
   private encounter: Label;
+  private curtain: Graphics;
+  private phase: 'idle' | 'wait' | 'cover' | 'hold' | 'reveal' = 'idle';
+  private elapsed = 0;
+  private onCovered: (() => WaveConfig) | null = null;
+  private onComplete: (() => void) | null = null;
 
   constructor(parent: Node) {
     this.root = new Node('waveTransition');
     parent.addChild(this.root);
-    this.root.addComponent(UITransform).setContentSize(1280, 720);
+    this.root.addComponent(UITransform);
     this.root.addComponent(BlockInputEvents);
     this.opacity = this.root.addComponent(UIOpacity);
-    const curtain = this.root.addComponent(Graphics);
-    curtain.fillColor = new Color(7, 16, 24, 250);
-    curtain.rect(-640, -360, 1280, 720); curtain.fill();
+    this.curtain = this.root.addComponent(Graphics);
 
     this.content = new Node('destination'); this.root.addChild(this.content);
     const frame = this.content.addComponent(Graphics);
@@ -48,28 +51,42 @@ export class WaveTransition {
 
   play(onCovered: () => WaveConfig, onComplete: () => void): void {
     this.stop();
+    const width=Math.max(1280,view.getVisibleSize?.().width??1280);
+    this.root.getComponent(UITransform)!.setContentSize(width,720);
+    this.curtain.clear();this.curtain.fillColor=new Color(7,16,24,255);
+    this.curtain.rect(-width/2,-360,width,720);this.curtain.fill();
     this.round.string = ''; this.encounter.string = '';
     this.opacity.opacity = 0; this.content.setPosition(-40, 0, 0);
     this.content.setScale(0.96, 0.96, 1);
     this.root.setSiblingIndex(this.root.parent!.children.length - 1);
     this.root.active = true;
-    tween(this.opacity)
-      .delay(1.3)
-      .to(0.22, { opacity: 255 })
-      .call(() => {
-        const wave = onCovered();
-        this.round.string = wave.stage ? `${wave.stage} - ${wave.round}` : String(wave.id);
-        this.encounter.string = wave.name;
-        tween(this.content).to(0.3, { position: new Vec3(0, 0, 0), scale: new Vec3(1, 1, 1) }, { easing: 'sineOut' }).start();
-      })
-      .delay(0.42)
-      .to(0.28, { opacity: 0 })
-      .call(() => { this.root.active = false; onComplete(); })
-      .start();
+    this.onCovered=onCovered;this.onComplete=onComplete;this.phase='wait';this.elapsed=0;
   }
-
+  /** Bound visual time per frame so a slow mobile board rebuild cannot skip the destination card. */
+  update(dt: number): void {
+    if(this.phase==='idle')return;
+    this.elapsed+=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;
+    if(this.phase==='wait'){
+      if(this.elapsed>=1.3){this.phase='cover';this.elapsed=0;}
+    }else if(this.phase==='cover'){
+      const p=Math.min(1,this.elapsed/.24);this.opacity.opacity=Math.round(255*p);
+      if(p===1){
+        this.phase='hold';this.elapsed=0;
+        const covered=this.onCovered;this.onCovered=null;
+        const wave=covered?.();
+        if(wave){this.round.string=wave.stage?`${wave.stage} - ${wave.round}`:String(wave.id);this.encounter.string=wave.name;}
+      }
+    }else if(this.phase==='hold'){
+      const p=Math.min(1,this.elapsed/.3),ease=1-(1-p)**3;
+      this.content.setPosition(-40*(1-ease),0,0);this.content.setScale(.96+.04*ease,.96+.04*ease,1);
+      if(this.elapsed>=.8){this.phase='reveal';this.elapsed=0;}
+    }else{
+      const p=Math.min(1,this.elapsed/.3);this.opacity.opacity=Math.round(255*(1-p));
+      if(p===1){const done=this.onComplete;this.stop();done?.();}
+    }
+  }
   stop(): void {
-    Tween.stopAllByTarget(this.opacity); Tween.stopAllByTarget(this.content);
+    this.phase='idle';this.elapsed=0;this.onCovered=null;this.onComplete=null;
     this.root.active = false;
   }
 }

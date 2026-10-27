@@ -17,6 +17,7 @@ import type { TraitConfigData } from '../battle/types';
 
 export const MIN_STAGE_COUNT = 3;
 export const DEFAULT_STAGE_COUNT = 10;
+/** UI/debug stage picker limit; living expeditions can continue beyond this value. */
 export const MAX_STAGE_COUNT = 99;
 export interface RunConfig {
   enemyGoldBudget?: EnemyGoldRules;
@@ -44,7 +45,7 @@ export interface RunConfig {
 
 export function normalizeStageCount(value: unknown): number {
   const n = Number(value);
-  return Number.isFinite(n) ? Math.max(MIN_STAGE_COUNT, Math.min(MAX_STAGE_COUNT, Math.floor(n))) : DEFAULT_STAGE_COUNT;
+  return Number.isSafeInteger(Math.floor(n)) ? Math.max(MIN_STAGE_COUNT,Math.floor(n)) : DEFAULT_STAGE_COUNT;
 }
 
 export function runRoundCount(stageCount: number, config: RunConfig): number {
@@ -136,6 +137,14 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     || strong.unitIds.some(id => !config.monsters.some(m => m.id === id && m.monsterTier === 'strong'))))
     throw new Error('Invalid strong monster encounter configuration');
   const encounterRandom = new RunRandomContext(generation?.runSeed ?? 1);
+  const encounterPlans=new Map<number,ReturnType<typeof planStageEncounters>>();
+  const stagePlan=(stage:number)=>{
+    if(!config.stageEncounters||stage===1)return undefined;
+    let plan=encounterPlans.get(stage);
+    if(!plan){plan=planStageEncounters(stage,stageRoundCount(stage,config),encounterRandom,config.stageEncounters.startStage,generation?.earlyEncounterLayout!=='legacy');encounterPlans.set(stage,plan);}
+    return plan;
+  };
+  const progressionRounds=(stage:number,through:number)=>stagePlan(stage)?.slice(0,through).filter(kind=>kind!=='specialShop').length??through;
   const monsterFormation = config.stageEncounters?.monsterFormation;
   if (monsterFormation) monsterFormationGroups(config.enemyProgression.populationCap, monsterFormation);
   const escorts = strong?.escorts;
@@ -194,8 +203,8 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     const encounter = decorateEncounter(wave);
     const result = generation?.equipmentPolicy ? applyEnemyUpgrades(encounter, generation.equipmentPolicy, roster, encounterRandom, generation.equipmentRoles) : encounter;
     if (!endless || wave.stage! < endless.startStage) return result;
-    let rounds = wave.round!;
-    for (let stage = endless.startStage; stage < wave.stage!; stage++) rounds += stageRoundCount(stage, config);
+    let rounds = progressionRounds(wave.stage!,wave.round!);
+    for (let stage = endless.startStage; stage < wave.stage!; stage++) rounds += progressionRounds(stage,stageRoundCount(stage,config));
     const damageAmp = Number((rounds * endless.damageAmpPerRound).toFixed(4));
     const damageReduction = Number(Math.min(endless.damageReductionCap,
       (wave.stage! - endless.startStage + 1) * endless.damageReductionPerStage).toFixed(4));
@@ -211,7 +220,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     for(let stage=2;stage<=normalizeStageCount(stageCount);stage++){
       const rounds=stageRoundCount(stage,config);
       const encounters=config.stageEncounters?planStageEncounters(stage,rounds,encounterRandom,config.stageEncounters.startStage,generation.earlyEncounterLayout!=='legacy'):undefined;
-      for(let round=1;round<=rounds;round++,completed++){
+      for(let round=1;round<=rounds;round++){
         const encounter=encounters?.[round-1],kind=encounter==='elite'||encounter==='boss'?encounter:'normal';
         generation.onWave?.(waves.length+1,'start');
         const generated=generateGoldArmy(config.enemyGoldBudget,stage,completed,waves.length+1,kind,enemyPopulation(stage,round,completed,config),roster,generation.traits??[],encounterRandom);
@@ -220,6 +229,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
           waveKind:kind,enemyGenerationMode:'budget-v1',enemies:generated.enemies,goldBudget:generated.diagnostics});
         if(wave.encounterKind==='monster'||wave.encounterKind==='specialShop')delete wave.goldBudget;
         waves.push(wave);
+        if(encounter!=='specialShop')completed++;
       }
     }
     return waves;
@@ -231,22 +241,28 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   const canonicalRoster=roster.slice().sort((a,b)=>a.id===config.starterUnitId?-1:b.id===config.starterUnitId?1:a.id<b.id?-1:a.id>b.id?1:0);
   const baseline=buildLegacyRunWaves(MIN_STAGE_COUNT,config,templates,canonicalRoster).find(w=>w.stage===2&&w.round===1)!;
   const b0=generator.model.estimateTeamPower(baseline.enemies.map(e=>({unitId:e.unitId,cost:roster.find(u=>u.id===e.unitId)?.cost,star:e.star,equipment:e.equipment??[]}))).power;
-  const bounds:WaveBudgetBounds[]=[];let w=0;
+  const bounds:WaveBudgetBounds[]=[];let w=0,progress=0;
   // One complete stage of lookahead makes the last selected stage independent of campaign length.
-  for(let stage=2;stage<=MAX_STAGE_COUNT+1;stage++){
+  for(let stage=2;stage<=Math.max(MAX_STAGE_COUNT,normalizeStageCount(stageCount))+1;stage++){
     const rounds=stageRoundCount(stage,config);
     const encounters = config.stageEncounters ? planStageEncounters(stage, rounds, encounterRandom, config.stageEncounters.startStage, generation.earlyEncounterLayout !== 'legacy') : undefined;
     for(let round=1;round<=rounds;round++){
       const encounter = encounters?.[round - 1];
       const kind = encounters ? (encounter === 'elite' || encounter === 'boss' ? encounter : 'normal') : classifyWave(stage,round,rounds,generation.difficulty) as 'normal'|'elite'|'boss';
-      const population=enemyPopulation(stage,round,w,config);
+      const population=enemyPopulation(stage,round,progress,config);
       const interval=generator.bounds(stage,kind,population);w++;
-      bounds.push({globalWaveId:config.introWaves.length+w,budgetWaveIndex:w,stage,round,rounds,population,kind,...interval});
+      const countsForProgress=encounter!=='specialShop';if(countsForProgress)progress++;
+      bounds.push({globalWaveId:config.introWaves.length+w,budgetWaveIndex:Math.max(1,progress),stage,round,rounds,population,kind,...interval,
+        countsForProgress,progressRound:progressionRounds(stage,round),progressRounds:progressionRounds(stage,rounds)});
     }
   }
-  const budget=new EnemyBudget(b0,generation.difficulty,bounds);
+  const budget=new EnemyBudget(b0,generation.difficulty,bounds.filter(b=>b.countsForProgress));
   const waves:WaveConfig[]=legacy.filter(w=>w.stage===1).map(w=>decorate({...w,waveKind:'intro',enemyGenerationMode:'budget-v1'}));
   for(const b of bounds.filter(v=>v.stage<=normalizeStageCount(stageCount))){
+    if(!b.countsForProgress){
+      waves.push(decorate({id:b.globalWaveId,name:'秘境行商',stage:b.stage,round:b.round,roundsInStage:b.rounds,
+        waveKind:b.kind,enemyGenerationMode:'budget-v1',enemies:[]}));continue;
+    }
     generation.onWave?.(b.globalWaveId,'start');
     const generated=generator.generate(budget.calculate(b),b.population,config.enemyProgression.cells);
     generation.onWave?.(b.globalWaveId,'end');

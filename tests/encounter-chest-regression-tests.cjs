@@ -24,9 +24,11 @@ const {RunSession} = require('../assets/scripts/core/RunSession.ts');
 const {assertLegalSession} = require('../tools/bots/legality.ts');
 const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs} = require('../tools/run-simulation.ts');
 const inputs=loadRunInputs(), deps={...loadEnemyGenerationInputs(),...loadFormationInputs(),...loadEquipmentInputs()};
+// Legacy reward versions remain loadable; production mixed-v1 conservation lives in mixed-chest-shop-tests.cjs.
+const legacyRun=JSON.parse(JSON.stringify(inputs.run));delete legacyRun.stageEncounters.chestReward;legacyRun.stageEncounters.monsterReward={initialValue:2,valuePerStage:2,maxValue:10};
 function make(seed,save,mode='legacy') {
   const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);
-  return new RunSession(cfg,inputs.run,inputs.waves,{...deps,runSeed:seed,stageCount:6,enemyGenerationMode:mode,...(save?{save}:{})});
+  return new RunSession(cfg,legacyRun,inputs.waves,{...deps,runSeed:seed,stageCount:6,enemyGenerationMode:mode,...(save?{save}:{})});
 }
 assert.equal(make(1).flow.health,100,'new runs start at 100 health');
 for(const mode of ['legacy','budget-v1']) {

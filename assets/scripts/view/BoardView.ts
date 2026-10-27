@@ -60,6 +60,12 @@ export class BoardView extends Component {
     return new Vec3(p.x,p.y,0);
   }
 
+  /** Continuous logical coordinates share the exact floor projection used by cell centers. */
+  logicalPointToWorld(point: BoardPoint): Vec3 {
+    const p=projectBoardPoint(this.geometry.projectLogical(point));
+    return new Vec3(p.x,p.y,0);
+  }
+
   lineEndToWorld(from: BoardPoint, toward: BoardPoint, length: number): Vec3 {
     const a=offsetToWorld(from.x,from.y,1,0,0),b=offsetToWorld(toward.x,toward.y,1,0,0);
     const dx=b.x-a.x,dy=b.y-a.y,n=Math.hypot(dx,dy)||1,d=length*Math.sqrt(3);

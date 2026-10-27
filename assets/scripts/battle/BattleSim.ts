@@ -2,6 +2,8 @@ import { applyHealing } from './Healing';
 import { inFearLine } from './LineFear';
 import { BloodAid } from './BloodAid';
 import { BloodReign } from './BloodReign';
+import { SandCompass } from './SandCompass';
+import { RopeHunt } from './RopeHunt';
 import { Rng } from '../core/Rng';
 import { BattleEvent, BattleResult, Side, BattleClockState, ShadowTraitEffect, AstralField } from './types';
 import { Unit } from './Unit';
@@ -27,6 +29,7 @@ export interface Placement {
   star?: number;
   permanentMaxHp?: number;
   permanentSpellPower?: number;
+  permanentPhysicalPower?: number;
   soulLampHealth?: number;
   /** Wave stat multiplier, independent of star rank. */
   statMultiplier?: number;
@@ -49,6 +52,8 @@ export interface BattleOptions {
 export class BattleSim {
   units: Unit[] = [];
   events: BattleEvent[] = [];
+  /** Credited lethal hits, including trait damage; previews have their own detached counters. */
+  readonly alliedKillCounts: [number,number] = [0,0];
   tick = 0;
   finished = false;
   winner: Side | -1 = -1;
@@ -61,6 +66,8 @@ export class BattleSim {
   private sunlight: SunlightCombat;
   private bloodAid: BloodAid;
   private bloodReign: BloodReign;
+  private sandCompass: SandCompass;
+  private ropeHunt: RopeHunt;
   private nebulas: Array<{ source: Unit; skill: SkillConfigData; center: {x:number;y:number}; end: number; next: number }> = [];
   private gravityFields: Array<{ source: Unit; skill: SkillConfigData; end: number; next: number }> = [];
   private hasGravityState = false;
@@ -74,6 +81,10 @@ export class BattleSim {
     private opts: BattleOptions = {},
   ) {
     this.rng = new Rng(opts.seed ?? 1);
+    this.ropeHunt = new RopeHunt({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
+      targetable:u=>this.targetable(u),damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'physical',false,false,true,skillId)},configs.battle.tickMs);
+    this.sandCompass = new SandCompass({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
+      targetable:u=>this.targetable(u),damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'physical',false,false,true,skillId)},configs.battle.tickMs);
     this.bloodAid = new BloodAid({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
       targetable:u=>this.targetable(u),damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'magic',false,false,true,skillId)},configs);
     this.bloodReign = new BloodReign({units:this.units,events:this.events,now:()=>this.tick,
@@ -103,14 +114,19 @@ export class BattleSim {
       base.hp += p.permanentMaxHp ?? 0;
       if (!Number.isFinite(p.permanentSpellPower ?? 0) || (p.permanentSpellPower ?? 0) < 0) throw new Error('Invalid permanent spell power');
       base.spellPower = (base.spellPower ?? 0) + (p.permanentSpellPower ?? 0);
+      if (!Number.isFinite(p.permanentPhysicalPower ?? 0) || (p.permanentPhysicalPower ?? 0) < 0) throw new Error('Invalid permanent physical power');
+      base.physicalPower = (base.physicalPower ?? 0) + (p.permanentPhysicalPower ?? 0);
       const scaled = configs.equipmentStats(base, p.equipment);
       Object.assign(scaled, combatAttributes({ ...scaled, damageAmp: scaled.damageAmp! + (p.damageAmp ?? 0), damageReduction: scaled.damageReduction! + (p.damageReduction ?? 0) }));
       const unit = new Unit(i + 1, p.side, scaled, p.x, p.y);
       unit.permanentSpellPower = p.permanentSpellPower ?? 0;
+      unit.permanentPhysicalPower = p.permanentPhysicalPower ?? 0;
       unit.soulLampHealth = p.soulLampHealth ?? 0;
       unit.equipment = configs.getEquipment(p.equipment);
       unit.maxHpGrowthMultiplier = 1 / (base.hp + unit.equipment.reduce((sum, item) => sum + (item.hp ?? 0), 0));
       unit.star = star;
+      const guard=scaled.skillId?configs.getSkill(scaled.skillId).lanternGuard:undefined;
+      if(guard)unit.lanternGuard={maxArmor:guard.maxArmorBonuses[star-1],maxSpeedPenalty:guard.maxAttackSpeedPenalty,physicalPowerPerArmor:guard.physicalPowerPerArmor[star-1]};
       unit.attackSpeedCap = configs.battle.attackSpeedCap ?? 5;
       unit.manaPerSecond = (unit.cfg.manaPerSecond ?? 0) + (unit.cfg.role === 'caster' ? configs.battle.roleMana?.casterPerSecond ?? 0 : 0);
       unit.skillScale = configs.battle.starScaling[star - 1].skill * multiplier;
@@ -239,6 +255,7 @@ export class BattleSim {
     this.tick++;
     for (const unit of this.units) {
       unit.combatTick = this.tick;
+      for(const [source,effect] of unit.inspirations)if(effect.untilTick<=this.tick)unit.inspirations.delete(source);
       while (unit.bloodfiendStackExpiries.length && unit.bloodfiendStackExpiries[0]<=this.tick) unit.bloodfiendStackExpiries.shift();
       if (!unit.bloodfiendStackExpiries.length) unit.bloodfiendUntilTick=0;
     }
@@ -257,6 +274,8 @@ export class BattleSim {
     this.updateAstralMeteors();
     this.sunlight.update();
     this.shadowSkills.update();
+    this.sandCompass.update();
+    this.ropeHunt.update();
     this.updateNebulas();
     this.updateGravityFields();
     this.updateBurns();
@@ -579,11 +598,16 @@ export class BattleSim {
   }
 
   private updateUnit(u: Unit) {
+    if (this.ropeHunt.busy(u)) return;
     if (this.bloodReign.busy(u)) return;
     if (u.atkCd > 0) u.atkCd--;
     if (u.moveCd > 0) u.moveCd--;
     if (u.spiderLeap || u.furnaceDash || u.stellarCharge || u.starLeap) return;
-    if (this.tick < u.stunnedUntilTick) { u.bloodCleaveWindup = null; return; }
+    if (this.tick < u.stunnedUntilTick) {
+      u.bloodCleaveWindup = null;
+      if(u.pendingCast&&['windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??''))u.pendingCast=null;
+      return;
+    }
     const canCast = this.tick >= u.fearUntilTick && !this.bloodAid.busy(u) && !u.bloodCleaveReady;
     if (!canCast && u.pendingCast) u.pendingCast = null;
     if (this.shadowSkills.busy(u) || this.sunlight.busy(u)) return;
@@ -602,6 +626,34 @@ export class BattleSim {
       if (--u.pendingCast.remainingTicks <= 0) {
         const skill = this.configs.getSkill(u.pendingCast.skillId);
         const targetId = u.pendingCast.targetId;
+        if (skill.ropeHunt) {
+          u.pendingCast = null;
+          this.ropeHunt.start(u,skill);
+          u.atkCd=this.attackCooldown(u); return;
+        }
+        if (skill.sandCompass) {
+          const toward = u.pendingCast.direction!;
+          u.pendingCast = null;
+          this.sandCompass.release(u,skill,toward);
+          u.atkCd = this.attackCooldown(u); return;
+        }
+        if(skill.corrosion){
+          u.pendingCast=null;
+          const victim=this.units.find(e=>e.id===targetId&&e.side!==u.side&&e.hp>0&&this.targetable(e));
+          if(victim){
+            const intervalTicks=Math.max(1,Math.round(skill.corrosion.intervalSeconds*1000/this.configs.battle.tickMs));
+            const pulses=Math.max(1,Math.round(skill.corrosion.durationSeconds/skill.corrosion.intervalSeconds));
+            victim.burns.push({sourceId:u.id,skillId:skill.id,intervalTicks,nextTick:this.tick+intervalTicks,remainingPulses:pulses,rawDamage:skill.corrosion.damagePerPulse[u.star-1],dmgType:'magic'});
+            u.corrosionTargets.add(victim.id);
+            this.events.push({t:'corrosion_dose',tick:this.tick,id:u.id,target:victim.id,durationTicks:intervalTicks*pulses});
+          }
+          u.atkCd=this.attackCooldown(u);return;
+        }
+        if(skill.windHunt){
+          u.pendingCast=null;u.windHuntUntilTick=this.tick+Math.max(1,Math.round(skill.windHunt.durationSeconds*1000/this.configs.battle.tickMs));
+          u.windHuntSpeedBonus=skill.windHunt.attackSpeedBonuses[u.star-1];
+          this.events.push({t:'wind_hunt',tick:this.tick,id:u.id,untilTick:u.windHuntUntilTick});return;
+        }
         if (skill.effect === 'lineFear') {
           const toward=u.pendingCast.direction!,spec=skill.lineFear!;u.pendingCast=null;
           this.events.push({t:'line_roar',tick:this.tick,id:u.id,skillId:skill.id,from:u.pos,toward,length:spec.length,width:spec.width});
@@ -768,6 +820,38 @@ export class BattleSim {
     }
 
     const teleportSkill = u.cfg.skillId ? this.configs.getSkill(u.cfg.skillId) : null;
+    if (canCast && teleportSkill?.ropeHunt && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0) {
+      const target=this.nearestEnemy(u);
+      if(target){
+        const duration=teleportSkill.castSeconds!;
+        u.expeditionCastTicks=Math.max(1,Math.round(duration*1000/this.configs.battle.tickMs));
+        u.mana=0;u.pendingCast={skillId:teleportSkill.id,targetId:target.id,remainingTicks:u.expeditionCastTicks};
+        this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration}); return;
+      }
+    }
+    if(canCast&&teleportSkill?.corrosion&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0){
+      const target=this.units.filter(e=>e.side!==u.side&&e.hp>0&&this.targetable(e)&&u.canSelectEnemy(e))
+        .sort((a,b)=>Number(u.corrosionTargets.has(a.id))-Number(u.corrosionTargets.has(b.id))||dist(u.pos,a.pos)-dist(u.pos,b.pos)||a.id-b.id)[0];
+      if(target){
+        u.mana=0;u.pendingCast={skillId:teleportSkill.id,targetId:target.id,remainingTicks:Math.max(1,Math.round(teleportSkill.castSeconds!*1000/this.configs.battle.tickMs))};
+        this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration:teleportSkill.castSeconds!});return;
+      }
+    }
+    if(canCast&&teleportSkill?.effect==='windHunt'&&!u.windHuntActive&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0){
+      u.windHuntCastTicks=Math.max(1,Math.round(teleportSkill.castSeconds!*1000/this.configs.battle.tickMs));
+      u.mana=0;u.pendingCast={skillId:teleportSkill.id,remainingTicks:u.windHuntCastTicks};
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,target:u.id,skillId:teleportSkill.id,duration:teleportSkill.castSeconds!});return;
+    }
+    if(canCast&&teleportSkill?.effect==='inspiration'&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0){
+      const e=teleportSkill.inspiration!,durationTicks=Math.max(1,Math.round(e.durationSeconds*1000/this.configs.battle.tickMs));
+      const bonus=e.attackSpeedBonuses[u.star-1]*(1+(u.cfg.spellPower??0)/100);
+      const targets=this.units.filter(ally=>ally.side===u.side&&ally.alive&&ally.hp>0&&dist(u.pos,ally.pos)<=teleportSkill.radius);
+      u.mana=0;
+      for(const ally of targets)ally.inspirations.set(u.id,{startTick:this.tick,untilTick:this.tick+durationTicks,initialBonus:bonus});
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,target:u.id,skillId:teleportSkill.id,duration:0});
+      this.events.push({t:'inspiration',tick:this.tick,id:u.id,targets:targets.map(ally=>ally.id),durationTicks,bonus});
+      u.atkCd=this.attackCooldown(u);return;
+    }
     if(canCast && teleportSkill?.effect==='bloodAid' && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0){
       const ally=this.bloodAid.target(u);
       if(ally){this.cast(u,teleportSkill,ally);return;}
@@ -897,6 +981,13 @@ export class BattleSim {
 
     const d = dist(u.pos, target.pos);
 
+    if (canCast && teleportSkill?.effect === 'sandCompass' && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0 && d<=u.cfg.range) {
+      const duration = teleportSkill.castSeconds!;
+      u.expeditionCastTicks=Math.max(1,Math.round(duration*1000/this.configs.battle.tickMs));
+      u.mana=0; u.pendingCast={skillId:teleportSkill.id,targetId:target.id,direction:target.pos,remainingTicks:u.expeditionCastTicks};
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration}); return;
+    }
+
     if (canCast && teleportSkill?.effect === 'starLeap' && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0 && d<=u.cfg.range) {
       const from=u.pos;
       const to=hexNeighbors(from.x,from.y).filter(p=>p.x>=0&&p.x<this.w&&p.y>=0&&p.y<this.h&&!this.occupied(p.x,p.y))
@@ -933,7 +1024,7 @@ export class BattleSim {
     }
 
     // 1. 蓝满施法（需在射程内）
-    if (canCast && u.cfg.skillId && !['railShot','spiderLeap','furnaceDash','stellarBulwark','starLeap'].includes(teleportSkill?.effect ?? '') && teleportSkill?.effect !== 'bloodAid' && teleportSkill?.effect !== 'lowestHealthHeal' && teleportSkill?.effect !== 'hydraulicBulwark' && teleportSkill?.effect !== 'sunlight' && teleportSkill?.effect !== 'shadow' && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
+    if (canCast && u.cfg.skillId && !['railShot','spiderLeap','furnaceDash','stellarBulwark','starLeap','windHunt','inspiration','lanternGuard','stackingCorrosion','sandCompass','ropeHunt'].includes(teleportSkill?.effect ?? '') && teleportSkill?.effect !== 'bloodAid' && teleportSkill?.effect !== 'lowestHealthHeal' && teleportSkill?.effect !== 'hydraulicBulwark' && teleportSkill?.effect !== 'sunlight' && teleportSkill?.effect !== 'shadow' && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
       const skill = this.configs.getSkill(u.cfg.skillId);
       const castTarget = skill.targeting === 'lowestHp'
         ? this.units.filter(e => this.targetable(e) && u.canSelectEnemy(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
@@ -1156,7 +1247,7 @@ export class BattleSim {
     const critMultiplier = critical ? (Number.isFinite(configuredCrit) && configuredCrit >= 1 ? configuredCrit : 1.5) : 1;
     const queue = (amount: number, damageType: 'physical' | 'magic' | 'true', bonusApplied: boolean) => {
       const resistance = damageType === 'physical' ? dst.cfg.armor : damageType === 'magic' ? dst.cfg.mr : 0;
-      const multiplier = bonusApplied ? 1 : 1 + (damageType === 'physical' ? src.cfg.physicalPower! : damageType === 'magic' ? src.cfg.spellPower! : 0) / 100;
+      const multiplier = bonusApplied ? 1 : 1 + (damageType === 'physical' ? src.physicalPower : damageType === 'magic' ? src.cfg.spellPower! : 0) / 100;
       const reduction = Math.min(1, dst.cfg.damageReduction! + (damageType === 'magic'
         ? dst.equipment.reduce((sum, item) => sum + (item.magicDamageReduction ?? 0), 0) : 0));
       this.pendingDamage.push({ src, dst, raw: amount * multiplier * critMultiplier,
@@ -1190,7 +1281,7 @@ export class BattleSim {
       }, 0);
       const effectiveReduction = Math.min(1, reduction + dst.equipmentStackDamageReduction + (this.tick < dst.guardUntilTick ? dst.guardReduction : 0)
         + (this.tick < dst.susanooUntilTick ? dst.susanooReduction : 0) + dst.traitDamageReductionAt(this.tick));
-      const effectiveResistance = (resistance + (type === 'physical' ? dst.bloodAidResistanceBonus + dst.gravityResistanceBonus + dst.skillArmorBonus + dst.hydraulicResistanceBonus + dst.equipmentHealthArmor + dst.equipmentStackResistance : type === 'magic' ? dst.bloodAidResistanceBonus + dst.gravityResistanceBonus + dst.skillMrBonus + dst.hydraulicResistanceBonus + dst.equipmentStackResistance : 0))
+      const effectiveResistance = (resistance + (type === 'physical' ? dst.lanternArmorBonus + dst.bloodAidResistanceBonus + dst.gravityResistanceBonus + dst.skillArmorBonus + dst.hydraulicResistanceBonus + dst.equipmentHealthArmor + dst.equipmentStackResistance : type === 'magic' ? dst.bloodAidResistanceBonus + dst.gravityResistanceBonus + dst.skillMrBonus + dst.hydraulicResistanceBonus + dst.equipmentStackResistance : 0))
         * (type === 'true' ? 1 : 1 - (dst.shadowCorruption?.resistanceReduction ?? 0));
       const missingDamage = (missingHealthFraction ?? 0) * Math.max(0, dst.cfg.hp - dst.hp)
         * (critical ? this.configs.battle.criticalMultiplier ?? 1.5 : 1);
@@ -1215,6 +1306,13 @@ export class BattleSim {
         if (drain) healing.set(src, (healing.get(src) ?? 0) + Math.round(drain.healAmounts[src.star - 1] * (1 + (src.cfg.spellPower ?? 0) / 100)));
       }
       if (!fixed && !astral && previousHp > 0 && dst.hp === 0 && src.side !== dst.side) {
+        const hunt=src.cfg.skillId?this.configs.getSkill(src.cfg.skillId).windHunt:undefined;
+        if(hunt&&this.tick<src.windHuntUntilTick&&shadowBoardSide===undefined&&sunlightJudgmentSide===undefined){
+          const growth=hunt.physicalPowerPerKill[src.star-1];
+          src.permanentPhysicalPowerGained+=growth;src.permanentPhysicalPower+=growth;
+          src.cfg.physicalPower=(src.cfg.physicalPower??0)+growth;
+          this.events.push({t:'permanent_physical_power',tick:this.tick,id:src.id,amount:growth,total:src.permanentPhysicalPower});
+        }
         const drain = src.cfg.skillId ? this.configs.getSkill(src.cfg.skillId).bloodDrain : undefined;
         const amount = drain?.spellPowerPerKill[src.star - 1] ?? 0;
         if (amount > 0) {
@@ -1248,11 +1346,13 @@ export class BattleSim {
       this.triggerEmergencyOverclock(dst);
       this.triggerConquerorProtection(dst);
       this.startEquipmentSustain(dst);
-      const untrackedAbsorption=this.sunlight.onShieldAbsorbed(dst,this.shadowSkills.onShieldAbsorbed(dst,absorbed));
+      let untrackedAbsorption=this.sunlight.onShieldAbsorbed(dst,this.shadowSkills.onShieldAbsorbed(dst,absorbed));
       if(dst.stellarShield){
-        dst.stellarShield.remaining-=Math.min(untrackedAbsorption,dst.stellarShield.remaining);
+        const used=Math.min(untrackedAbsorption,dst.stellarShield.remaining);
+        dst.stellarShield.remaining-=used;untrackedAbsorption-=used;
         if(dst.stellarShield.remaining===0)dst.stellarShield=null;
       }
+      this.sandCompass.absorb(dst,untrackedAbsorption);
       if (!astral && absorbed > 0 && dst.shield === 0) this.sunlight.onEnemyShieldBroken(src, skillId);
       this.sunlight.onHitResolved(src, dst, skillId, previousHp > 0 && dst.hp === 0);
       if (skillId && dst.hp > 0 && this.configs.getSkill(skillId).effect === 'atlasMissiles') this.applyAtlasBurn(src,dst,this.configs.getSkill(skillId));
@@ -1267,6 +1367,7 @@ export class BattleSim {
       if (src.hp <= 0) continue; // Lifesteal cannot revive a unit killed in this tick.
       applyHealing(src, src, value, this.tick, this.events);
     }
+    for (const side of alliedKills) this.alliedKillCounts[side]++;
     // Settle after all queued damage: a bloodfiend killed this tick cannot be revived.
     for (const side of alliedKills) for (const unit of this.units) {
       const effect = unit.bloodfiend;
@@ -1281,6 +1382,8 @@ export class BattleSim {
         u.alive = false;
         this.bloodReign.onDeath(u);
         this.bloodAid.onDeath(u);
+        this.sandCompass.onDeath(u);
+        this.ropeHunt.stop(u);
         u.shield = 0;
         u.equipmentRegen = null;
         u.equipmentSustain.clear();
@@ -1289,7 +1392,9 @@ export class BattleSim {
         u.spellbladeUntilTick = 0;
         u.bloodfiendUntilTick = 0;
         u.bloodfiendStackExpiries.length = 0;
-        if (u.pendingCast && ['chargedKnockup','lineFear'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??'')) u.pendingCast = null;
+        u.inspirations.clear();
+        u.windHuntUntilTick=0;u.windHuntSpeedBonus=0;
+        if (u.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??'')) u.pendingCast = null;
         u.spellbladeAttacks = 0;
         u.spellchanterPendingMana = 0;
         u.swiftmartialistStacks = 0;
@@ -1485,6 +1590,8 @@ export class BattleSim {
     this.winner = w;
     this.bloodAid.clear();
     this.bloodReign.clear();
+    this.sandCompass.clear();
+    this.ropeHunt.clear();
     this.nebulas.length=0;
     this.gravityFields.length=0;
     this.hasGravityState=false;
@@ -1492,7 +1599,10 @@ export class BattleSim {
       unit.overclockUntilTick = 0;
       unit.bloodfiendUntilTick = 0;
       unit.bloodfiendStackExpiries.length = 0;
-      if (unit.pendingCast && ['chargedKnockup','lineFear'].includes(this.configs.getSkill(unit.pendingCast.skillId).effect??'')) unit.pendingCast = null;
+      unit.inspirations.clear();
+      unit.corrosionTargets.clear();
+      unit.windHuntUntilTick=0;unit.windHuntSpeedBonus=0;
+      if (unit.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(unit.pendingCast.skillId).effect??'')) unit.pendingCast = null;
       unit.hydraulicBulwark = null;
       unit.spiderLeap = null;
       unit.nebulaAttackSpeedPenalty=0;

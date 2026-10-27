@@ -1,4 +1,78 @@
 {
+  "rope_shadow_hunt": {
+    "id":"rope_shadow_hunt","name":"索影巡猎","effect":"ropeHunt","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
+    "starDamage":[90,135,3000],"ropeHunt":{"durationSeconds":3,"intervalSeconds":0.3,"shotCount":10},
+    "description":"抛索蓄势{控制:ropeCast}秒后，先向较远的斜向棋盘边缘发射飞钩，钩住后收绳拉动自身沿弧线移动，再返回起点，持续{控制:ropeDuration}秒。\n期间每{控制:ropeInterval}秒向生命百分比最低的敌人射击，共{控制:ropeCount}发，每发造成{物理+:dmg}物理伤害。",
+    "mechanics":["全程可以被选中和受到伤害；受控时提前结束射击并返回。","回旋期间不普攻、不回蓝，目标从全场存活且可选敌军中选择，每次重新判断生命百分比，同优先级选择最近者。","逻辑位置沿轨迹取最近合法空格，表现连续移动；原点被占用时返回距原点最近空格，死亡停止回旋。"],
+    "statRows":[
+      {"label":"单发伤害","value":"{物理+:dmg}","stars":"90/135/3000"},
+      {"label":"射击次数","value":"{控制:ropeCount}","stars":"10/10/10"},
+      {"label":"回旋持续","value":"{控制:ropeDuration}秒","stars":"3/3/3秒"},
+      {"label":"射击间隔","value":"{控制:ropeInterval}秒","stars":"0.3/0.3/0.3秒"},
+      {"label":"施法前摇","value":"{控制:ropeCast}秒","stars":"0.4/0.4/0.4秒"}
+    ]
+  },
+  "sand_compass": {
+    "id":"sand_compass","name":"星盘御沙","effect":"sandCompass","dmgType":"physical","power":0,"radius":3,"targeting":"nearest","castSeconds":0.5,
+    "starDamage":[280,420,1500],"shieldAmounts":[220,330,1000],"shieldScaling":"magic","sandCompass":{"shieldSeconds":5},
+    "description":"举杖蓄势{控制:compassCast}秒，为自身及半径{控制:compassRadius}格友军提供{魔法+:shield}护盾，持续{控制:compassShieldDuration}秒。\n随后向前方半径{控制:compassRadius}格的半圆区域涌出沙浪，造成{物理+:dmg}物理伤害。",
+    "mechanics":["每次施放的护盾独立叠加与计时；优先吸收本系统中最早到期的护盾，不覆盖其他来源护盾。","施法前摇期间停止移动和普攻，可被控制打断；前摇开始时锁定朝向，原目标死亡不取消范围施放。","护盾以结算瞬间的施法者为中心，按六边格距离选取存活友军，包含自身。","先授予护盾，再对半径内前方180度范围敌人结算物理伤害，含两侧边界；不可选中的敌人不受伤害。"],
+    "statRows":[
+      {"label":"友军护盾","value":"{魔法+:shield}","stars":"220/330/1000"},
+      {"label":"沙浪伤害","value":"{物理+:dmg}","stars":"280/420/1500"},
+      {"label":"护盾持续","value":"{控制:compassShieldDuration}秒","stars":"5/5/5秒"},
+      {"label":"作用半径","value":"{控制:compassRadius}格","stars":"3/3/3格"},
+      {"label":"施法前摇","value":"{控制:compassCast}秒","stars":"0.5/0.5/0.5秒"}
+    ]
+  },
+  "wayward_corrosion": {
+    "id":"wayward_corrosion","name":"诡秘蚀剂","effect":"stackingCorrosion","dmgType":"magic","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
+    "corrosion":{"damagePerPulse":[40,60,90],"intervalSeconds":1,"durationSeconds":6},
+    "description":"投瓶蓄势{控制:corrosionCast}秒，优先选择自己本场尚未选中过的敌人，施加一层蚀剂，每{控制:corrosionInterval}秒造成{魔法:corrosionDamage}魔法伤害，持续{控制:corrosionDuration}秒。\n重复命中可叠加，每层分别计时。",
+    "mechanics":["从全场可选敌人中优先选择本场未被自己成功施加过蚀剂的目标，同优先级选择最近者。","前摇可被控制打断；落点目标阵亡或不可选中时本次失效。","每层蚀剂独立计时和造成伤害，不同来源也可叠加；施法者阵亡后已施加的蚀剂继续生效。"],
+    "statRows":[
+      {"label":"每层每次伤害","value":"{魔法:corrosionDamage}","stars":"40/60/90"},
+      {"label":"每层持续","value":"{控制:corrosionDuration}秒","stars":"6/6/6秒"},
+      {"label":"伤害间隔","value":"{控制:corrosionInterval}秒","stars":"1/1/1秒"},
+      {"label":"施法前摇","value":"{控制:corrosionCast}秒","stars":"0.4/0.4/0.4秒"}
+    ]
+  },
+  "windward_hunt": {
+    "id":"windward_hunt","name":"逐风猎势","effect":"windHunt","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
+    "windHunt":{"durationSeconds":6,"attackSpeedBonuses":[0.6,0.9,1.35],"physicalPowerPerKill":[1,2,3]},
+    "description":"举枪蓄势{控制:windCast}秒后进入持续{控制:windDuration}秒的强化状态，获得{攻速:windSpeed}攻击速度，期间无法回复法力。\n强化期间每次亲自击杀，永久获得{物理:windGrowth}%物理加成。",
+    "mechanics":["举枪前摇期间暂停移动和普攻，可被控制打断；前摇完成后才开始计算强化时间。","强化期间仍可正常移动和普攻，所有来源的回蓝均被阻止；强化结束后恢复。","只记录强化期间的亲自击杀，永久物理加成跨小关保留，升星时合并各副本的累计成长。"],
+    "statRows":[
+      {"label":"强化攻速","value":"{攻速:windSpeed}","stars":"60%/90%/135%"},
+      {"label":"强化持续","value":"{控制:windDuration}秒","stars":"6/6/6秒"},
+      {"label":"击杀物理成长","value":"{物理:windGrowth}%","stars":"1%/2%/3%"},
+      {"label":"施法前摇","value":"{控制:windCast}秒","stars":"0.4/0.4/0.4秒"},
+      {"label":"累计物理成长","value":"{物理:windPermanent}","stars":"本局累计"}
+    ]
+  },
+  "lone_lantern_guard": {
+    "id": "lone_lantern_guard", "name": "孤灯坚守", "effect": "lanternGuard", "dmgType": "physical",
+    "power": 0, "radius": 0, "targeting": "nearest",
+    "lanternGuard": {"maxAttackSpeedPenalty": 0.3, "maxArmorBonuses": [80,120,180], "physicalPowerPerArmor": [0.5,0.75,1]},
+    "description": "被动：生命值越低，攻速最多降低{攻速:guardSlow}，并获得最多{魔法+:guardArmor}护甲。\n每1点最终护甲提供{物理:guardConversion}%物理加成。",
+    "mechanics": ["按已损失生命比例线性计算攻速降低与护甲提升，回血后即时更新。", "护甲提升受法强加成，护甲转换使用所有增减效果结算后的最终护甲，不循环计算。"],
+    "statRows": [
+      {"label": "最多降低攻速", "value": "{攻速:guardSlow}", "stars": "30%/30%/30%"},
+      {"label": "最多获得护甲", "value": "{魔法+:guardArmor}", "stars": "80/120/180"},
+      {"label": "每点护甲转化", "value": "{物理:guardConversion}%", "stars": "0.5%/0.75%/1%"}
+    ]
+  },
+  "startrail_inspiration": {
+    "id": "startrail_inspiration", "name": "星罗鼓舞", "effect": "inspiration", "dmgType": "magic",
+    "power": 0, "radius": 1, "targeting": "nearest",
+    "inspiration": {"attackSpeedBonuses": [0.35, 0.5, 0.75], "durationSeconds": 4},
+    "description": "鼓舞自身及周围1格友军，获得{攻速+:inspireSpeed}攻击速度，在{控制:inspireDuration}秒内逐渐衰减至0。",
+    "mechanics": ["范围按施法瞬间的六边格距离判断，包含自身。", "攻速受施法者法强加成，线性衰减；同一来源刷新，不同来源叠加。", "离开范围或施法者阵亡不移除已授予的增益。"],
+    "statRows": [
+      {"label": "初始攻速", "value": "+{攻速+:inspireSpeed}", "stars": "35%/50%/75%"},
+      {"label": "持续时间", "value": "{控制:inspireDuration}秒", "stars": "4/4/4秒"}
+    ]
+  },
   "crimson_upheaval": {
     "id": "crimson_upheaval",
     "name": "猩红掀袭",

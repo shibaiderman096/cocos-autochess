@@ -1,5 +1,7 @@
 import type { BackpackItem, EquipmentConfigData } from '../battle/types';
 import type { UISkinKey } from '../view/ArtPaths';
+import { equipmentQuality, QUALITY_COLORS } from '../core/EquipmentQuality';
+export { equipmentQualityName } from '../core/EquipmentQuality';
 
 export type EquipmentDisplayItem = Pick<BackpackItem, 'name' | 'icon' | 'description'> & Partial<EquipmentConfigData>;
 type StatKey = 'attackSpeedBonus' | 'spellPower' | 'physicalPower' | 'hp' | 'maxHpBonus' | 'armor' | 'mr' | 'critChance' | 'lifesteal' | 'manaPerSecond' | 'maxManaBonus';
@@ -7,9 +9,7 @@ export interface EquipmentStatDisplay { name: string; icon: UISkinKey; value: st
 
 /** Unlock tiers group all ordinary drops together; component IDs distinguish their display quality. */
 export function equipmentNameColor(item: EquipmentDisplayItem): [number, number, number] {
-  if (item.id?.startsWith('basic_')) return [255, 255, 255];
-  if (!item.id || item.specialShopOnly || item.traitChoice || item.grantedTraitId) return [220, 187, 115];
-  return [100, 220, 130];
+  return QUALITY_COLORS[equipmentQuality(item)-1];
 }
 
 export function equipmentDescriptionText(item: EquipmentDisplayItem): string {
@@ -40,4 +40,22 @@ export function equipmentStatRows(item: EquipmentDisplayItem): EquipmentStatDisp
 
 export function equipmentEffectText(item: EquipmentDisplayItem): string {
   return item.effectDescription ?? item.description ?? '携带后获得装备属性与效果。';
+}
+
+/** Attribute icons retain their names; highlighted values make long passive effects readable. */
+export function equipmentDescriptionRichText(item: EquipmentDisplayItem, iconSize = 18): string {
+  const icons: Record<string, UISkinKey> = {
+    '最大生命值': 'stat_hp', '最大生命': 'stat_hp', '生命值': 'stat_hp', '生命': 'stat_hp',
+    '最大法力值': 'stat_mana', '法力值': 'stat_mana', '法力回复': 'stat_mana',
+    '攻击速度': 'attr_aspd', '攻速': 'attr_aspd', '法术加成': 'attr_spell_bonus',
+    '物理加成': 'attr_phys_bonus', '全能吸血': 'attr_lifesteal',
+    '物理抗性': 'attr_armor', '法术抗性': 'attr_mr', '暴击伤害': 'attr_crit', '暴击率': 'attr_crit', '护甲': 'attr_armor', '魔抗': 'attr_mr',
+    '伤害减免': 'attr_dmg_reduce', '减伤': 'attr_dmg_reduce', '伤害增幅': 'attr_dmg_amp',
+  };
+  const text = equipmentDescriptionText(item).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const terms = Object.keys(icons).sort((a, b) => b.length - a.length).join('|');
+  // Tokenize plain text once so numbers inside inline image attributes never get formatted.
+  return text.replace(new RegExp(`${terms}|[+−-]?\\d+(?:\\.\\d+)?[%％]?`, 'g'), token => icons[token]
+    ? `<img src='${icons[token]}' width=${iconSize} height=${iconSize} align=center offset=3/>${token}`
+    : `<color=#F4D58A><b>${token}</b></color>`);
 }

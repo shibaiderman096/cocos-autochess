@@ -1,9 +1,12 @@
 import { BattleSim } from '../battle/BattleSim';
+import { resolveTraits } from '../battle/Traits';
+import { freshExplorerProgress, validateExplorerProgress, settleExplorerProgress, isExplorerBattle } from './ExplorerProgress';
 import type { Placement } from '../battle/BattleSim';
 import { MAX_EQUIPMENT } from '../battle/types';
+import type { ExplorerTraitEffect } from '../battle/types';
 import { ConfigManager } from './ConfigManager';
 import { CardPool } from './CardPool';
-import { EconomySystem } from './EconomySystem';
+import { EconomySystem, EARLY_STAGE_GOLD } from './EconomySystem';
 import { LevelSystem, EXP_PER_BATTLE, EXP_PURCHASE, MAX_LEVEL,LEVEL_UP_EXP } from './LevelSystem';
 import { OwnedUnits } from './OwnedUnits';
 import { ShopSystem,REFRESH_COST } from './ShopSystem';
@@ -50,6 +53,7 @@ export class RunSession {
   flow: RoundFlow;
   waves: WaveConfig[];
   private activeBattle: BattleSim | null = null;
+  private activeExplorer?: ExplorerTraitEffect;
   private activeBattleIds = new Map<number, number>();
   private generation: EnemyGenerationOptions;
   private equipmentPolicy?:EquipmentPolicyConfig;
@@ -64,6 +68,8 @@ export class RunSession {
       encounterRules.victoryGold, encounterRules.battleExp, encounterRules.victoryHeal].every(n => Number.isSafeInteger(n) && n > 0))) throw new Error('Invalid opening encounter rules');
     const loaded = options.save !== undefined;
     this.save = loaded ? migrateSaveV2(options.save) : freshSaveV2(options.stageCount ?? DEFAULT_STAGE_COUNT, options.runSeed ?? DEFAULT_RUN_SEED, options.enemyGenerationMode ?? 'budget-v1');
+    this.save.explorerProgress ??= freshExplorerProgress();
+    validateExplorerProgress(this.save.explorerProgress);
     if (loaded && options.runSeed !== undefined && options.runSeed !== this.save.runSeed) throw new Error('Cannot replace the seed of a saved run');
     if (this.save.rulesVersion !== RUN_RULES_VERSION) throw new Error(`Unsupported run rules version: ${this.save.rulesVersion}`);
     if (this.save.earlyEncounterLayout !== undefined && this.save.earlyEncounterLayout !== 'random-rounds-v1') throw new Error('Unsupported early encounter layout');
@@ -84,7 +90,7 @@ export class RunSession {
       const identity=combatConfigurationIdentity({difficulty,run:runConfig,units:roster,battle:cfg.battle,skills,equipment:cfg.allEquipment().slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
       if(this.save.difficultyConfigIdentity!==undefined&&!sameCombatConfigurationIdentity(this.save.difficultyConfigIdentity,identity))throw new Error('Saved enemy difficulty configuration mismatch');
       if(loaded&&this.save.difficultyConfigIdentity===undefined&&(this.save.round?.waveIndex??0)>0)throw new Error('Saved enemy difficulty identity missing');
-      this.save.difficultyConfigIdentity??=identity;
+      this.save.difficultyConfigIdentity=identity;
     }
     this.generation={mode,runSeed:this.save.runSeed,earlyEncounterLayout:this.save.earlyEncounterLayout ?? 'legacy',difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
       traits: JSON.parse(JSON.stringify(cfg.battle.traits??[])),
@@ -95,7 +101,8 @@ export class RunSession {
     this.cfg.setEnemyUnits(buildMonsterUnits(runConfig, cfg.allUnits()));
     this.waves = buildRunWaves(this.save.stageCount, runConfig, templates, cfg.allUnits(), this.generation);
     this.migrateRoundIndex();
-    this.flow = new RoundFlow(this.waves, cfg.battle, this.save.round ?? undefined);
+    this.flow = new RoundFlow(this.waves, this.roundRules, this.save.round ?? undefined);
+    this.extendEndlessWaves();
     if (options.openingEncounter && runConfig.openingEncounter && !this.save.openingEncounter
       && this.flow.wave.stage === 1 && this.flow.wave.round === 1 && this.flow.phase === 'prepare') {
       this.save.openingEncounter = { freeRefreshes: 0, lastIncomeStage: 1, offered: drawOpeningEncounters(this.random.stream('encounter', 1, 4100)) };
@@ -110,6 +117,10 @@ export class RunSession {
     this.validateEquipmentProgress();
     this.save.floor = this.flow.wave.stage!;
     this.economy = new EconomySystem(undefined, this.save);
+    // Older saves do not receive retroactive income for stages they have already passed.
+    this.save.earlyGoldStages ??= [2, 3].filter(stage => stage < this.flow.wave.stage!
+      || (stage === this.flow.wave.stage && (this.flow.wave.round! > 1 || this.flow.phase !== 'prepare')));
+    this.grantStageSubsidy();
     this.level = new LevelSystem(this.save);
     const restoreShop = loaded && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
     const needsStarter = !loaded || (!this.save.shopReserved && this.save.owned.length === 0);
@@ -121,8 +132,13 @@ export class RunSession {
       || new Set(this.save.unlockedUnits).size !== this.save.unlockedUnits.length
       || this.save.unlockedUnits.some(id => !cfg.allUnits().some(u => u.id === id && u.specialShopUnlock)))) throw new Error('Invalid unlocked unit save');
     this.pool = new CardPool(cfg.allUnits(), this.save.pool, this.save.unlockedUnits);
-    this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid, () => this.flow.phase !== 'battle');
+    this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid, () => this.flow.phase !== 'battle',units=>{
+      const deployed=units.filter(u=>u.location==='board');
+      return deployed.length<=this.level.level+deployed.reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
+    });
     this.owned.equipmentReserve = [...(this.save.equipmentReserve ?? [])];
+    this.level.populationBonus=()=>this.owned.onBoard().reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
+    if(this.owned.all().some(u=>this.cfg.getEquipment(u.equipment).some(item=>item.consumable)))throw new Error('Consumables cannot occupy equipment slots');
     this.validateTraitChoice();
     if (needsStarter) {
       const candidates = cfg.allUnits().filter(u => u.cost === 1 && this.pool.count(u.id) > 0).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
@@ -200,24 +216,36 @@ export class RunSession {
     }
   }
   get pendingEquipmentReward():PendingEquipmentReward|undefined {return this.save.equipmentProgress.pending&&JSON.parse(JSON.stringify(this.save.equipmentProgress.pending));}
+  private get roundRules(){return {...this.cfg.battle,continueAtBoundary:!!this.runConfig.endlessProgression};}
   /** A cleared campaign boundary waits for a deliberate portal click, including after loading. */
   get portalAvailable(): boolean {
     const wave = this.flow.wave;
-    return !!this.runConfig.endlessProgression && this.flow.phase === 'ended' && this.flow.health > 0
-      && this.flow.lastSettlement?.winner === 0 && wave.stage! >= DEFAULT_STAGE_COUNT
-      && wave.stage! < MAX_STAGE_COUNT && wave.encounterKind === 'boss'
-      && wave.round === wave.roundsInStage && this.flow.waveIndex === this.waves.length - 1;
+    return !!this.runConfig.endlessProgression && this.flow.phase === 'settlement' && this.flow.health > 0
+      && !!this.flow.lastSettlement && wave.stage === DEFAULT_STAGE_COUNT && wave.encounterKind === 'boss'
+      && wave.round === wave.roundsInStage;
   }
   enterPortal(): boolean {
-    if (!this.portalAvailable || this.pendingStageReward || this.pendingEquipmentReward) return false;
+    if (!this.portalAvailable || this.save.pendingTraitChoice || this.pendingStageReward || this.pendingEquipmentReward) return false;
     const snapshot = this.flow.snapshot(), nextStage = this.flow.wave.stage! + 1;
-    const waves = buildRunWaves(nextStage, this.runConfig, this.templates, this.cfg.allUnits(), this.generation);
-    this.waves = waves; this.save.stageCount = nextStage;
-    this.flow = new RoundFlow(waves, this.cfg.battle, { ...snapshot, phase: 'settlement', result: null,
+    const horizon=Math.max(nextStage,this.save.stageCount),waves = buildRunWaves(horizon, this.runConfig, this.templates, this.cfg.allUnits(), this.generation);
+    this.waves = waves; this.save.stageCount = horizon;
+    this.flow = new RoundFlow(waves, this.roundRules, { ...snapshot, phase: 'settlement', result: null,
       lastSettlement: snapshot.lastSettlement && { ...snapshot.lastSettlement, runResult: null } });
-    return this.nextWave();
+    return this.advanceWave();
   }
-  canAdvanceWave():boolean {return !this.save.pendingTraitChoice&&!this.save.equipmentProgress.pending&&!this.pendingStageReward&&this.flow.phase==='settlement';}
+  /** Beyond the one-time stage-10 portal, cleared boundaries continue like ordinary rounds. */
+  private extendEndlessWaves(): boolean {
+    const wave = this.flow.wave;
+    if (!this.runConfig.endlessProgression || this.flow.phase !== 'settlement' || this.flow.health <= 0
+      || !this.flow.lastSettlement || wave.stage === DEFAULT_STAGE_COUNT || this.flow.waveIndex !== this.waves.length - 1) return false;
+    const snapshot = this.flow.snapshot(), nextStage = wave.stage! + 1;
+    this.waves = buildRunWaves(nextStage, this.runConfig, this.templates, this.cfg.allUnits(), this.generation);
+    this.save.stageCount = nextStage;
+    this.flow = new RoundFlow(this.waves, this.roundRules, { ...snapshot, phase:'settlement', result:null,
+      lastSettlement:snapshot.lastSettlement && { ...snapshot.lastSettlement, runResult:null } });
+    return true;
+  }
+  canAdvanceWave():boolean {return !this.portalAvailable&&!this.save.pendingTraitChoice&&!this.save.equipmentProgress.pending&&!this.pendingStageReward&&this.flow.phase==='settlement';}
   get pendingStageReward(): StagePending | undefined { const p = this.save.stageProgress?.pending; return p && JSON.parse(JSON.stringify(p)); }
   private get stageEquipmentTiers(): Record<string, import('./EquipmentPolicyTypes').EquipmentTier> {
     return this.equipmentPolicy?.tiers ?? Object.fromEntries(this.cfg.allEquipment().map(item => [item.id, item.specialShopOnly ? 'special' : this.runConfig.stageEncounters?.basicEquipmentIds.includes(item.id) ? 'basic' : 'advanced']));
@@ -235,11 +263,16 @@ export class RunSession {
       }
     } else {
       if (!['settlement', 'ended'].includes(this.flow.phase) || this.flow.lastSettlement?.winner !== 0) bad();
-      if (p.kind === 'bossChoice') { if (w.encounterKind !== 'boss' || p.value !== this.stageProgression!.value(w.stage!)) bad(); }
+      // Already issued chests retain their previous 2/4/6/8/10 budget on upgrade.
+      const previousValue=Math.min(10,2*w.stage!);
+      const validValue=(value:number,current:number,previous=previousValue)=>value===current||value===previous;
+      if(p.kind==='mixedChest'){
+        if(p.source!==w.encounterKind||isChestlessBoss(w)||!validValue(p.value,this.stageProgression!.chestValue(w),w.encounterKind==='elite'?previousValue/2:previousValue))bad();
+      }else if (p.kind === 'bossChoice') { if (w.encounterKind !== 'boss' || !validValue(p.value,this.stageProgression!.value(w.stage!))) bad(); }
       else if (p.kind === 'equipmentChoice') {
         if (w.encounterKind !== 'boss' || !Array.isArray(p.candidates) || ![4, 5].includes(p.candidates.length) || new Set(p.candidates).size !== p.candidates.length || p.candidates.some(id => !rules.basicEquipmentIds.includes(id))) bad();
       } else if (p.kind === 'unitBundle') {
-        if (!['monster', 'boss'].includes(w.encounterKind!) || p.value !== this.stageProgression!.value(w.stage!) || !Array.isArray(p.units)
+        if (!['monster', 'boss'].includes(w.encounterKind!) || !validValue(p.value,this.stageProgression!.value(w.stage!)) || !Array.isArray(p.units)
           || !Number.isSafeInteger(p.deferredValue) || p.deferredValue < 0 || p.units.reduce((n, id) => n + COST_PRICE[validCost(this.cfg.getUnit(id).cost)], p.deferredValue) !== p.value) bad();
         const reserved = this.save.stageProgress!.unitReserve.slice();
         for (const id of p.units) { const i = reserved.indexOf(id); if (i < 0) bad(); reserved.splice(i, 1); }
@@ -249,16 +282,39 @@ export class RunSession {
   claimStageReward(action: StageChoice): ActionResult {
     if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (!this.stageProgression) return fail('stage_rewards_disabled');
-    const result = this.stageProgression.act(action, this.flow.wave);
+    const result = this.stageProgression.act(action, this.flow.wave,this.cfg.battle.initialHealth-this.flow.health);
     if (!result.ok) return result;
     if (result.stageReward?.kind === 'health') result.stageReward.amount = this.flow.restoreHealth(result.stageReward.amount);
+    if(result.stageReward?.kind==='mixed')result.stageReward.health=this.flow.restoreHealth(result.stageReward.health);
     if (result.completeShop) {
       if (!this.flow.completeEncounter()) throw new Error('Cannot complete shop encounter');
+      this.extendEndlessWaves();
       const state = this.economy.snapshot();
       this.save.lastReward = { expGained: 0, levelUps: 0, breakdown: { floorIncome: 0, winBonus: 0, interest: 0, streakBonus: 0, extraIncome: 0,
         total: 0, goldBefore: state.gold, goldAfter: state.gold, winStreak: state.winStreak, loseStreak: state.loseStreak } };
     }
     this.snapshot(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
+  }
+  get explorerPoints(): number { return this.save.explorerProgress!.points; }
+  get explorerChestValue(): number {
+    const effect=this.cfg.battle.traits?.find(t=>t.id==='explorer')?.breakpoints[0]?.explorer;
+    return Math.ceil(this.explorerPoints*(effect?.rewardValuePerPoint??0));
+  }
+  get explorerChestVisible(): boolean {
+    const active=resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits())
+      .some(t=>!!t.active?.explorer);
+    return this.explorerPoints>0||active;
+  }
+  get explorerChestOpenable(): boolean {
+    return this.explorerChestVisible&&this.explorerPoints>0&&this.flow.phase!=='battle'&&!this.flow.result
+      &&!this.pendingOpeningEncounter&&!this.save.pendingTraitChoice;
+  }
+  openExplorerChest(): ActionResult {
+    if(!this.explorerChestOpenable||!this.stageProgression)return fail('explorer_chest_unavailable');
+    const reward=this.stageProgression.grantExplorerReward(this.explorerChestValue,this.flow.wave.id,this.cfg.battle.initialHealth-this.flow.health);
+    reward.health=this.flow.restoreHealth(reward.health);
+    this.save.explorerProgress!.points=0;this.save.explorerProgress!.lastOpenedWaveId=this.flow.wave.id;
+    this.snapshot();return {ok:true,stageReward:reward};
   }
   claimEquipmentReward(index:number):ActionResult {
     const progress=this.save.equipmentProgress,pending=progress.pending;
@@ -347,9 +403,16 @@ export class RunSession {
       waveId: this.flow.wave.id, playerHp: this.flow.health, gold: this.economy.gold, level: this.level.level,
       xp: this.level.exp, phase: this.flow.phase, result: this.flow.result };
   }
+  get incomePreview() {
+    const preview = this.economy.preview(this.flow.wave.stage!,this.save.openingEncounter?.selected==='bounty'?this.runConfig.openingEncounter!.victoryGold:0,this.flow.wave.encounterKind!=='monster');
+    if (this.flow.wave.round === 1 && this.save.earlyGoldStages!.includes(this.flow.wave.stage!))
+      preview.entrySubsidy = EARLY_STAGE_GOLD[this.flow.wave.stage!];
+    return preview;
+  }
   get battle(): BattleSim | null { return this.activeBattle; }
   /** Opening encounters replace the ordinary shop for the whole first round. */
   get openingShopLocked(): boolean { return !!this.save.openingEncounter && this.flow.wave.stage === 1 && this.flow.wave.round === 1; }
+  get unitSellingLocked(): boolean { return this.flow.wave.stage === 1 && this.flow.wave.round === 1; }
   get pendingOpeningEncounter(): boolean { return !!this.save.openingEncounter && !this.save.openingEncounter.selected; }
   get freeRefreshes(): number { return this.save.openingEncounter?.freeRefreshes ?? 0; }
   get openingEncounterOptions() {
@@ -367,7 +430,14 @@ export class RunSession {
     if (this.save.openingEncounter?.selected === 'inspiration')
       this.save.openingEncounter.freeRefreshes += count * this.runConfig.openingEncounter!.refreshesPerLevel;
   }
+  private grantStageSubsidy(): void {
+    const stage = this.flow.wave.stage!, amount = EARLY_STAGE_GOLD[stage];
+    if (!amount || this.flow.phase !== 'prepare' || this.flow.wave.round !== 1 || this.save.earlyGoldStages!.includes(stage)) return;
+    this.economy.add(amount);
+    this.save.earlyGoldStages!.push(stage);
+  }
   private enterEncounterStage(): void {
+    this.grantStageSubsidy();
     const state = this.save.openingEncounter, rules = this.runConfig.openingEncounter;
     if (state?.selected !== 'stipend' || !rules || this.flow.wave.stage! <= state.lastIncomeStage) return;
     if (this.flow.wave.stage! >= rules.incomeStartStage) this.economy.add(rules.incomePerStage);
@@ -430,6 +500,16 @@ export class RunSession {
     if (!this.economy.spend(EXP_PURCHASE.gold)) return fail('not_enough_gold');
     this.rewardLevelUps(this.level.addExp(EXP_PURCHASE.exp).length); return ok();
   }
+  private equipmentPopulationBonus(ids: string[] = []): number {
+    return this.cfg.getEquipment(ids).reduce((sum,item)=>sum+(item.unitCapBonus??0),0);
+  }
+  /** Includes a crown entering/leaving deployment, including board/bench swaps. */
+  unitCapAfterMove(uid:number,to:{location:'board'|'bench';x:number;y:number}):number {
+    const u=this.owned.get(uid);if(!u||u.location===to.location)return this.level.unitCap;
+    const other=to.location==='board'?this.owned.atBoard(to.x,to.y):this.owned.atBench(to.y);
+    const difference=this.equipmentPopulationBonus(u.equipment)-this.equipmentPopulationBonus(other?.equipment);
+    return this.level.unitCap+(to.location==='board'?difference:-difference);
+  }
   moveUnit(uid: number, to: { location: 'board' | 'bench'; x: number; y: number }): ActionResult {
     const u = this.owned.get(uid);
     if (!u) return fail('not_owned');
@@ -441,13 +521,23 @@ export class RunSession {
       if (to.x !== -1 || to.y < 0 || to.y >= this.save.benchSlots) return fail('invalid_position');
     } else {
       if (to.x < 0 || to.x >= this.cfg.battle.boardWidth || to.y < 0 || to.y >= this.cfg.battle.ownRows) return fail('invalid_position');
-      if (u.location === 'bench' && !this.owned.atBoard(to.x, to.y) && this.owned.onBoard().length >= this.level.unitCap) return fail('population_cap');
     }
-    return this.owned.move(uid, to) ? ok() : fail('invalid_position');
+    const other=to.location==='board'?this.owned.atBoard(to.x,to.y):this.owned.atBench(to.y);
+    const population=this.owned.onBoard().length+(u.location===to.location||other?0:to.location==='board'?1:-1);
+    if(population>this.unitCapAfterMove(uid,to))return fail('population_cap');
+    try {
+      return this.owned.transaction(()=>{
+        if(!this.owned.move(uid,to))return fail('invalid_position');
+        if(this.owned.onBoard().length>this.level.unitCap)throw new Error('population_cap');
+        return ok();
+      });
+    }catch{return fail('population_cap');}
   }
   sellUnit(uid: number): ActionResult {
+    if (this.unitSellingLocked) return fail('opening_sell_locked');
     const unit = this.owned.get(uid);
     if (!this.canTrade || (this.flow.phase === 'battle' && unit?.location === 'board')) return fail('fighting');
+    if(unit?.location==='board'&&this.owned.onBoard().length-1>this.level.unitCap-this.equipmentPopulationBonus(unit.equipment))return fail('population_cap');
     const sold = this.shop.sell(uid);
     return sold ? { ok: true, gold: sold.gold } : fail('not_owned');
   }
@@ -457,7 +547,26 @@ export class RunSession {
     if (!Number.isInteger(reserveIndex) || reserveIndex < 0) return fail('invalid_equipment');
     const id = this.owned.equipmentReserve[reserveIndex];
     if (!id || !this.cfg.getEquipmentReserve([id]).length) return fail('invalid_equipment');
-    const needsChoice = this.cfg.getEquipment([id])[0].traitChoice;
+    const target=this.owned.get(uid);if(!target)return fail('not_owned');
+    const item=this.cfg.getEquipment([id])[0];
+    if(item.consumable){
+      if(this.cfg.getUnit(target.unitId).cost>item.consumable.maxCost)return fail('copy_cost_limit');
+      if(this.pool.count(target.unitId)<1)return fail('pool_empty');
+      const deliver=(owned:OwnedUnits)=>{
+        owned.equipmentReserve.splice(reserveIndex,1);
+        if(owned.inBench().length<this.save.benchSlots){
+          if(!owned.addToBench(target.unitId,this.save.benchSlots))throw new Error('bench_full');
+        }else{owned.forceAdd(target.unitId);owned.tryMerge(target.unitId);if(owned.inBench().some(u=>u.y<0))throw new Error('bench_full');}
+      };
+      const projected=new OwnedUnits(this.owned.snapshot(),this.owned.nextUnitUid,()=>true,this.owned.canMergeResult);projected.equipmentReserve=[...this.owned.equipmentReserve];
+      try{deliver(projected);}catch{return fail('bench_full');}
+      const projectedCap=this.level.level+projected.onBoard().reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
+      if(projected.onBoard().length>projectedCap)return fail('population_cap');
+      this.owned.transaction(()=>deliver(this.owned));
+      if(!this.pool.take(target.unitId))throw new Error('Copy target stock changed');
+      return {ok:true,copiedUnitId:target.unitId};
+    }
+    const needsChoice = item.traitChoice;
     const candidates = needsChoice ? traitEmblemChoices(this.cfg, this.owned.all(), uid,
       this.random.stream('reward', this.flow.wave.id, 5100 + (this.save.traitChoiceRoll ?? 0))) : [];
     if (needsChoice && candidates.length !== 4) return fail('insufficient_traits');
@@ -471,6 +580,8 @@ export class RunSession {
   unequipItem(uid: number, slot: number): ActionResult {
     if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (this.flow.phase !== 'prepare') return fail('fighting');
+    const unit=this.owned.get(uid),id=unit?.equipment?.[slot];
+    if(id&&unit?.location==='board'&&this.owned.onBoard().length>this.level.unitCap-this.equipmentPopulationBonus([id]))return fail('population_cap');
     return this.owned.unequip(uid, slot) ? ok() : fail('invalid_equipment');
   }
   equipmentRecycleGold(reserveIndex: number): number {
@@ -502,6 +613,7 @@ export class RunSession {
   }
   private applyAction(action: RunAction): ActionResult {
     switch (action.type) {
+      case 'openExplorerChest': return this.openExplorerChest();
       case 'chooseEquipmentTrait': return this.chooseEquipmentTrait(action.index);
       case 'chooseOpeningEncounter': return this.chooseOpeningEncounter(action.id);
       case 'buy': return this.buyShopSlot(action.index);
@@ -520,6 +632,7 @@ export class RunSession {
   }
   playerPort(): RunPlayerPort {
     return { act: action => this.act(action), observe: () => ({ state: this.state, unitCap: this.level.unitCap,
+      explorerPoints:this.explorerPoints,explorerChestValue:this.explorerChestValue,
       ...(this.pendingTraitChoice ? { pendingTraitChoice: this.pendingTraitChoice } : {}),
       ...(this.pendingOpeningEncounter ? { pendingOpeningEncounter: true } : {}), freeRefreshes: this.freeRefreshes,
       boardWidth: this.cfg.battle.boardWidth, ownRows: this.cfg.battle.ownRows, benchSlots: this.save.benchSlots,
@@ -551,7 +664,7 @@ export class RunSession {
     const battleIds = new Map<number, number>();
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       battleIds.set(u.uid, placements.length + 1);
-      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower });
+      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower, permanentPhysicalPower:u.permanentPhysicalPower });
     }
     return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, astralSeed: this.save.runSeed, w: this.cfg.battle.boardWidth,
       h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks }), battleIds };
@@ -562,6 +675,10 @@ export class RunSession {
     this.lockedFormation={waveId:this.flow.wave.id,result:this.solveFormation(true)};
     const { sim, battleIds } = this.createPreview();
     if (!this.flow.startBattle()) return null;
+    this.activeExplorer=isExplorerBattle(this.flow.wave,this.cfg.allUnits())
+      ? resolveTraits(this.cfg.battle.traits??[],sim.units.filter(u=>u.side===0).map(u=>u.cfg),this.cfg.allUnits())
+        .find(t=>!!t.active?.explorer)?.active?.explorer : undefined;
+    if(this.activeExplorer)this.activeExplorer={...this.activeExplorer};
     this.activeBattleIds = battleIds; this.activeBattle = sim; sim.start(); return sim;
   }
   settleBattle(extraIncome = 0): SessionSettlement | null {
@@ -570,10 +687,14 @@ export class RunSession {
     if (!Number.isSafeInteger(extraIncome) || extraIncome < 0) throw new Error('Invalid extra income');
     const round = this.flow.settle(sim.winner, sim.units.filter(u => u.side === 1 && u.alive).length);
     if (!round) return null;
+    settleExplorerProgress(this.save.explorerProgress!,this.activeExplorer,sim.alliedKillCounts[0],sim.winner,this.flow.wave.id);
+    if (this.extendEndlessWaves()) round.runResult = null;
     for (const [uid, battleId] of this.activeBattleIds) {
       const owned = this.owned.get(uid), combat = sim.units.find(unit => unit.id === battleId && unit.side === 0);
       if (owned && combat && combat.permanentSpellPowerGained > 0)
         owned.permanentSpellPower = (owned.permanentSpellPower ?? 0) + combat.permanentSpellPowerGained;
+      if (owned && combat && combat.permanentPhysicalPowerGained > 0)
+        owned.permanentPhysicalPower = (owned.permanentPhysicalPower ?? 0) + combat.permanentPhysicalPowerGained;
       if (owned && combat && combat.permanentHealthGained > 0) {
         owned.permanentMaxHp = (owned.permanentMaxHp ?? 0) + combat.permanentHealthGained;
         owned.soulLampHealth = (owned.soulLampHealth ?? 0) + combat.permanentHealthGained;
@@ -590,7 +711,7 @@ export class RunSession {
     const encounterGold = selected === 'bounty' && sim.winner === 0 ? rules!.victoryGold : 0;
     const expGained = EXP_PER_BATTLE + (selected === 'study' ? rules!.battleExp : 0);
     if (selected === 'renewal' && sim.winner === 0) this.flow.restoreHealth(rules!.victoryHeal);
-    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome: extraIncome + encounterGold });
+    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome: extraIncome + encounterGold, countsForStreak:this.flow.wave.encounterKind!=='monster' });
     const ups = this.level.addExp(expGained);
     this.rewardLevelUps(ups.length);
     this.save.lastReward = { breakdown, expGained, levelUps: ups.length };
@@ -605,6 +726,9 @@ export class RunSession {
   }
   nextWave(): boolean {
     if(!this.canAdvanceWave())return false;
+    return this.advanceWave();
+  }
+  private advanceWave():boolean{
     if (!this.flow.nextWave()) return false;
     this.activeBattle = null;
     this.previewFormation=undefined;this.lockedFormation=undefined;
@@ -623,7 +747,7 @@ export class RunSession {
     const waves = buildRunWaves(stageCount, this.runConfig, this.templates, this.cfg.allUnits(), this.generation);
     const waveIndex = waves.findIndex(w => w.stage === stage && w.round === round);
     this.waves = waves; this.save.stageCount = stageCount;
-    this.flow = new RoundFlow(waves, this.cfg.battle, { phase: 'prepare', waveIndex,
+    this.flow = new RoundFlow(waves, this.roundRules, { phase: 'prepare', waveIndex,
       health: this.flow.health || this.cfg.battle.initialHealth, result: null, lastSettlement: null });
     this.activeBattle = null;this.previewFormation=undefined;this.lockedFormation=undefined;
     this.save.floor = stage; this.save.lastReward = undefined; this.save.shopRollIndex = 0;

@@ -52,6 +52,8 @@ export class UnitView extends Component {
   private upgradeEffect: Node | null = null;
   private upgradeElapsed = 0;
   private cleaveWinding = false;
+  private windPreparing = false;
+  private expeditionPreparing = false;
 
   /** A separate overlay never changes the drag, attack, or replay transforms. */
   playStarUpgrade(): void {
@@ -434,6 +436,28 @@ export class UnitView extends Component {
     this.attackMotion.setPosition(-dx*pull,-dy*pull,0);this.attackMotion.angle=(dx>=0?-1:1)*12*progress;
   }
 
+  animateWindHunt(progress: number|null):void {
+    if(!this.loaded||!this.attackMotion)return;
+    if(progress===null){
+      if(this.windPreparing){this.attackMotion.angle=0;this.attackMotion.setPosition(0,0,0);this.windPreparing=false;}
+      return;
+    }
+    if(!this.windPreparing)Tween.stopAllByTarget(this.attackMotion);
+    this.windPreparing=true;
+    this.attackMotion.angle=-18*Math.max(0,Math.min(1,progress));
+    this.attackMotion.setPosition(-4*progress,6*progress,0);
+  }
+  animateExpeditionCast(progress: number|null):void {
+    if(!this.loaded||!this.attackMotion)return;
+    if(progress===null){
+      if(this.expeditionPreparing){this.attackMotion.angle=0;this.attackMotion.setPosition(0,0,0);this.expeditionPreparing=false;}
+      return;
+    }
+    if(!this.expeditionPreparing)Tween.stopAllByTarget(this.attackMotion);
+    this.expeditionPreparing=true;
+    const p=Math.max(0,Math.min(1,progress));
+    this.attackMotion.angle=-10*p;this.attackMotion.setPosition(0,8*Math.sin(p*Math.PI/2),0);
+  }
   playCast(seconds: number) {
     if (!this.bodySprite || !this.loaded) return;
     const orig = this.bodySprite.color.clone();

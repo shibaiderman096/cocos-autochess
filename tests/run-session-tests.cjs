@@ -11,7 +11,9 @@ const { freshSaveV2: createSaveV2, migrateSaveV2 } = require('../assets/scripts/
 const freshSaveV2=(stages,seed)=>createSaveV2(stages,seed,'legacy');
 const { POOL_STOCK } = require('../assets/scripts/core/ShopConfig.ts');
 const { runSimulation: simulate, loadRunInputs } = require('../tools/run-simulation.ts');
-const runSimulation=(inputs,options)=>simulate(inputs,{enemyGenerationMode:'legacy',...options});
+// This archived suite exercises finite P1 campaigns. Endless health-only runs have
+// their own merchant-income-endless suite; keep the finite fixture explicit.
+const runSimulation=(inputs,options)=>simulate({...inputs,run:{...inputs.run,endlessProgression:undefined}},{enemyGenerationMode:'legacy',...options});
 const { MinimalBaselineBot } = require('../tools/bots/minimal-baseline.ts');
 const inputs = loadRunInputs();
 let passed = 0;
@@ -19,7 +21,7 @@ function test(name, fn) { fn(); passed++; console.log('PASS ' + name); }
 function make(seed = 1, extra = {}) {
   const cfg = new ConfigManager(); cfg.setUnits(inputs.units); cfg.setSkills(inputs.skills);
   cfg.setBattle(inputs.battle); cfg.setEquipment(inputs.equipment);
-  return new RunSession(cfg, inputs.run, inputs.waves, { runSeed: seed, enemyGenerationMode:'legacy', ...extra });
+  return new RunSession(cfg, {...inputs.run,endlessProgression:undefined}, inputs.waves, { runSeed: seed, enemyGenerationMode:'legacy', ...extra });
 }
 const clone = value => JSON.parse(JSON.stringify(value));
 const bytes = report => JSON.stringify(report, null, 2) + '\n';
@@ -128,7 +130,7 @@ test('legal swaps, full bench merge, sale/equipment return and combat shopping s
   saved.owned=[{uid:1,unitId:'ghostflame_blade',star:1,location:'board',x:3,y:3,equipment:['guinsoo']},
     {uid:2,unitId:'ghostflame_blade',star:1,location:'bench',x:-1,y:0},{uid:3,unitId:'saiph',star:1,location:'bench',x:-1,y:1}];
   saved.shop=[{unitId:'ghostflame_blade'},...Array.from({length:4},()=>({unitId:null}))];
-  const s=make(2,{save:saved});assert.equal(s.buyShopSlot(0).ok,true);assert.equal(s.owned.get(1).star,2);
+  const s=make(2,{save:saved});assert.ok(s.debugJump(1,2));assert.equal(s.buyShopSlot(0).ok,true);assert.equal(s.owned.get(1).star,2);
   assert.equal(s.owned.onBoard().length,1);assert.deepEqual(s.owned.get(1).equipment,['guinsoo']);legalAccounting(s);
   assert.equal(s.moveUnit(3,{location:'board',x:2,y:3}).error,'population_cap');
   assert.equal(s.moveUnit(3,{location:'board',x:3,y:3}).ok,true);assert.equal(s.owned.get(1).location,'bench');

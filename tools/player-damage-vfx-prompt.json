@@ -1,0 +1,8 @@
+{
+  "route": "built-in imagegen.imagegen",
+  "file": "assets/resources/art/fx/player_damage/player_damage_energy.png",
+  "columns": 4,
+  "rows": 2,
+  "frames": 8,
+  "prompt": "Use case: stylized-concept. Production 2D fantasy autochess PLAYER HEALTH LOSS VFX ANIMATION ATLAS. EXACT regular layout 4 equal columns by 2 equal rows, eight animation cels in reading order, all square equal cells with identical CENTER registration, prefer 1536x768, no gutters or drawn grid. Genuine transparent RGBA background, all effects inside central 76% of every cell and generous empty padding. Refined hand-painted fantasy game spell art, clean readable at 70 pixels. Crimson red, warm ruby core, restrained ember orange, dark wine outlines and subtle white-hot highlight. Effect is energy, no blood splashes, no gore, no characters, no environment. Frames 1 small inward curling red sparks surrounding a tiny ruby bead, 2 three red wisps converge towards center, 3 energy curls tighten around glowing bead, 4 bright coherent round ruby energy orb with spiral filaments, 5 orb condensed for flight with short tapered ember tail pointing LEFT, 6 orb strikes and opens a clean circular red shock ring at center, 7 expanding thin fractured red ring with six ember fragments, 8 only a handful fading red sparks. Show one continuous coherent effect evolution, consistent scale and registration. NOT eight different icons. No heart symbol, no skull, no text or digits or labels, no watermark, no rectangular haze, no black matte, no white background, no painted checkerboard. The middle remains transparent outside actual painted particles. Suitable for enemies gathering energy into one orb and firing it at a HUD health panel."
+}

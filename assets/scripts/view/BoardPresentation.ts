@@ -1,7 +1,7 @@
 import type { BoardPoint } from './BoardGeometry';
 
 /** Camera-only presentation. The authored odd-r floor and simulation never change. */
-export const BOARD_CAMERA = Object.freeze({ pitchDegrees: 45, distance: 10, verticalFovDegrees: 50, textureHeight: 768, defaultZoom: .84, minZoom: .64, maxZoom: .90 });
+export const BOARD_CAMERA = Object.freeze({ pitchDegrees: 45, distance: 10, verticalFovDegrees: 50, textureHeight: 768, defaultZoom: .84, minZoom: .64, maxZoom: 1.344 });
 export const BOARD_PITCH_SIN = Math.sin(BOARD_CAMERA.pitchDegrees * Math.PI / 180);
 export const BOARD_PITCH_COS = Math.cos(BOARD_CAMERA.pitchDegrees * Math.PI / 180);
 const focalPixels = BOARD_CAMERA.textureHeight / (2 * Math.tan(BOARD_CAMERA.verticalFovDegrees * Math.PI / 360));

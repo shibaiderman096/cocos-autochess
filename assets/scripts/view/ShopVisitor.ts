@@ -1,4 +1,4 @@
-import { Node, UITransform, Vec3, Prefab, resources, instantiate, director, Layers, isValid, Animation, AnimationClip, animation } from 'cc';
+import { Node, UITransform, Vec3, Prefab, resources, instantiate, director, Layers, isValid, Animation, AnimationClip, animation, Label, Color, Graphics } from 'cc';
 import { unprojectBoardPoint, projectGroundPoint } from './BoardPresentation';
 
 const MODELS = {
@@ -19,16 +19,22 @@ export class ShopVisitor {
   private lidAnimation: Animation | null = null;
   private openClip: AnimationClip | null = null;
   private finishOpen: (() => void) | null = null;
+  private caption: Label | null = null;
+  private modelScale = 1;
+  get isOpening(): boolean { return this.opening; }
 
-  constructor(parent: Node, position: Vec3, enter: () => void, kind: 'shop' | 'chest' = 'shop') {
+  constructor(parent: Node, position: Vec3, enter: () => void, kind: 'shop' | 'chest' = 'shop', options?: {name?:string;canEnter?:()=>boolean;modelScale?:number;yawDegrees?:number}) {
     this.root = new Node(kind === 'shop' ? 'shopVisitor' : 'bossChest'); parent.addChild(this.root);
+    if(options?.name)this.root.name=options.name;
+    this.modelScale=options?.modelScale??1;
     this.root.layer = parent.layer;
     const touchArea = this.root.addComponent(UITransform);
-    touchArea.setContentSize(132, 164); touchArea.setAnchorPoint(0.5, 0.22);
+    touchArea.setContentSize(132*this.modelScale, 164*this.modelScale); touchArea.setAnchorPoint(0.5, 0.22);
     this.root.setPosition(position);
     this.root.on(Node.EventType.TOUCH_END, (event: any) => {
       event.propagationStopped = true;
       if (this.disposed || !this.visible || this.opening || this.opened) return;
+      if(options?.canEnter&&!options.canEnter())return;
       if (kind === 'shop') { enter(); return; }
       this.openChest(enter);
     });
@@ -42,6 +48,8 @@ export class ShopVisitor {
       this.model = instantiate(prefab); this.model.name = kind === 'shop' ? 'ShopEncounter3D' : 'RewardChest3D';
       environment.addChild(this.model);
       this.model.setPosition(point.x / 100, .025, -point.y / 60);
+      this.model.setScale(this.model.scale.x*this.modelScale,this.model.scale.y*this.modelScale,this.model.scale.z*this.modelScale);
+      if(options?.yawDegrees!==undefined)this.model.setRotationFromEuler(0,options.yawDegrees,0);
       const layers = (node: Node): void => { node.layer = Layers.Enum.DEFAULT; node.children.forEach(layers); };
       layers(this.model); this.model.active = this.visible;
       if (kind === 'chest') this.bindLid();
@@ -96,7 +104,7 @@ export class ShopVisitor {
     console.info('CHEST_OPEN_STARTED ' + JSON.stringify({duration: this.openClip.duration, hinge: this.lid!.name}));
   }
 
-  private resetLid(): void {
+  resetLid(): void {
     if (this.lidAnimation && isValid(this.lidAnimation, true)) {
       if (this.finishOpen) this.lidAnimation.off(Animation.EventType.FINISHED, this.finishOpen);
       this.lidAnimation.stop();
@@ -105,10 +113,24 @@ export class ShopVisitor {
     if (this.lid && this.lidBase && isValid(this.lid, true)) this.lid.setRotationFromEuler(this.lidBase);
   }
 
+  setCaption(text: string): void {
+    if(!this.caption){
+      const node=new Node('explorerChestLayers');this.root.addChild(node);node.layer=this.root.layer;
+      const width=184,height=48;
+      node.setPosition(0,116*this.modelScale,0);node.addComponent(UITransform).setContentSize(width,height);
+      const background=node.addComponent(Graphics);background.fillColor=new Color(8,17,24,235);background.strokeColor=new Color(169,141,78);
+      background.lineWidth=1;background.roundRect(-width/2,-height/2,width,height,8);background.fill();background.stroke();
+      const copy=new Node('text');node.addChild(copy);copy.layer=node.layer;copy.addComponent(UITransform).setContentSize(width-8,height-2);
+      this.caption=copy.addComponent(Label);this.caption.fontSize=18;this.caption.lineHeight=23;
+      this.caption.color=new Color(255,224,146);this.caption.isBold=true;
+    }
+    this.caption.string=text;
+  }
+
   /** Board-local mouth position, projected at the actual chest rim height. */
   rewardOrigin(): Vec3 {
     const ground = unprojectBoardPoint(this.root.position);
-    const p = projectGroundPoint({x: ground.x / 100, y: .645, z: -ground.y / 60});
+    const p = projectGroundPoint({x: ground.x / 100, y: .025+.62*this.modelScale, z: -ground.y / 60});
     return new Vec3(p.x, p.y, 0);
   }
 

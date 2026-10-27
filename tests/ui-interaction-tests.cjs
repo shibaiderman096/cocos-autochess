@@ -16,6 +16,7 @@ class Node {
     const c=new T(); c.node=this; if(!this.components.has(T)) this.components.set(T,c); return c;
   }
   getComponent(T) { return this.components.get(T); }
+  getComponentsInChildren(T) { return [this.getComponent(T),...this.children.flatMap(n=>n.getComponentsInChildren(T))].filter(Boolean); }
   setPosition(x,y,z) { this.position={x,y,z}; }
   setScale(x,y,z) { this.scale={x,y,z}; }
   setRotationFromEuler(x,y,z) { this.rotation={x,y,z}; }
@@ -84,7 +85,7 @@ const screenSetup={};
 const cc={Node,UITransform,Sprite,Label,RichText,LabelOutline:class{},Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
   input,Input,sys:{isNative:false,os:'web',OS:{ANDROID:'android'}},isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
-  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
+  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
   resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:name.includes('trait_badges')?2172:1536,height:name.includes('trait_badges')?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
@@ -143,9 +144,15 @@ ui.setCombatCountdown(.5);assert.equal(ui.preparationFill.lastRect[2],140);
 ui.setCombatCountdown(.2);assert.equal(ui.preparationFill.lastRect[2],224);
 ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'准备','finishing preparation alone does not start combat');
 ui.setCombatActive(true);ui.setCombatCountdown(0);assert.equal(ui.phaseLabel.string,'战斗');assert.equal(ui.preparationBar.active,false);
-ui.update(2.9);assert.equal(ui.waveTrack.active,true);ui.update(.1);assert.equal(ui.waveTrack.active,false);
-inputListeners.find(l=>l.target===ui&&l.type===Input.EventType.TOUCH_START).callback.call(ui);assert.equal(ui.waveTrack.active,true);
-ui.update(3);assert.equal(ui.waveTrack.active,false);ui.refreshRun(20,20,1,14,'测试关');assert.equal(ui.waveTrack.active,true);
+assert.equal(ui.waveTrack.active,false,'round details wait for a nearby touch');
+const trackTrigger=ui.node.getChildByName('waveTrackTrigger');trackTrigger.events.get(Node.EventType.TOUCH_START).call(ui);
+ui.update(.24);assert.equal(ui.waveTrack.position.y,0);ui.update(2.66);assert.equal(ui.waveTrack.active,true);ui.update(.1);assert.equal(ui.waveTrack.active,true);
+ui.update(.12);assert.ok(ui.waveTrack.position.y>0&&ui.waveTrack.position.y<62,'round details rise into their clipped header');
+ui.update(.12);assert.equal(ui.waveTrack.active,false);
+trackTrigger.events.get(Node.EventType.TOUCH_START).call(ui);assert.equal(ui.waveTrack.active,true,'only nearby header touches wake round details');
+ui.update(.12);assert.ok(ui.waveTrack.position.y>0&&ui.waveTrack.position.y<62,'activity slides details down');
+ui.update(.12);assert.equal(ui.waveTrack.position.y,0);
+ui.update(3.24);assert.equal(ui.waveTrack.active,false);ui.refreshRun(20,20,1,14,'测试关');assert.equal(ui.waveTrack.active,false,'refreshing the round does not expand its details');
 const {BoardView}=load(path.join(__dirname,'../assets/scripts/view/BoardView.ts'));
 const board=new BoardView();board.node=new Node('Board');board.node.getComponent=T=>board.node.components.get(T);board.getComponent=T=>board.node.getComponent(T);
 board.initialize(7,8,48);board.highlightTarget({x:2,y:2});
@@ -226,7 +233,7 @@ ui.refreshBackpack([{...totem,kind:'equipment'}],true);flush();
 assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,totem.icon);
 ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_START)();
 assert.equal(ui.equipmentTooltip.active,true);assert.equal(ui.equipmentTooltipTitle.string,'余烬命核');
-assert.equal(ui.equipmentTooltipText.string,totem.effectDescription);assert.match(ui.equipmentTooltipText.string,/5秒/);
+assert.equal(ui.equipmentTooltipText.string.replace(/<[^>]+>/g,''),totem.effectDescription);assert.match(ui.equipmentTooltipText.string,/<b>5<\/b><\/color>秒/);
 assert.deepEqual(ui.equipmentTooltipRows.filter(row=>row.node.active).map(row=>[row.name.string,row.value.string]),[['生命值','+200'],['护甲','+10'],['魔抗','+10']]);
 assert.ok(!ui.equipmentTooltipText.string.includes('+200生命'),'base stats are separate from the effect paragraph');
 flush();assert.equal(ui.equipmentTooltipIcon.spriteFrame.name,totem.icon);
@@ -254,7 +261,7 @@ for(const [id,title] of [['jeweled_gauntlet','领取珠光'],['infinity_edge','�
   ui.refreshBackpack([{...item,kind:'equipment'}],true);flush();
   assert.equal(ui.backpackSlots[0].icon.spriteFrame.name,item.icon);
   ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_START)();
-  assert.equal(ui.equipmentTooltipTitle.string,item.name);assert.equal(ui.equipmentTooltipText.string,item.effectDescription);
+  assert.equal(ui.equipmentTooltipTitle.string,item.name);assert.equal(ui.equipmentTooltipText.string.replace(/<[^>]+>/g,''),item.effectDescription);
   assert.ok(ui.equipmentTooltipRows.some(row=>row.node.active&&row.name.string==='暴击率'&&row.value.string==='+35%'));
   ui.backpackSlots[0].node.events.get(Node.EventType.TOUCH_CANCEL)();
   ui.showEquipment([item],true,0);flush();assert.equal(ui.equipmentSlots[0].icon.spriteFrame.name,item.icon);
@@ -369,7 +376,7 @@ ui.setCombatActive(true);flush();assert.equal(ui.phaseLabel.string,'战斗');ass
 assert.equal(ui.isInSellArea(SHOP_DROP_AREA.x,SHOP_DROP_AREA.y),true,'combat keeps the reserve sale target enabled');
 ui.setCombatActive(false);
 assert.ok(ui.node.getChildByName('command').position.y<-230);
-assert.equal(SHOP_DROP_AREA.height,150);
+assert.equal(SHOP_DROP_AREA.height,182);
 for(const card of ui.shopSlots) {
   const size=card.node.getComponent(UITransform).contentSize;
   assert.ok(ui.isInSellArea(card.node.position.x-size.width*card.node.scale.x/2,card.node.position.y));
@@ -526,7 +533,7 @@ console.log('PASS main menu: fixed ten stages, bottom-right start, asynchronous 
 const rewardItems=require('../assets/resources/config/equipment.json').slice(0,3),choices=[];
 ui.onClaimEquipmentReward=index=>choices.push(index);
 ui.showEquipmentReward(rewardItems.slice(0,2));
-let rewardRoot=ui.node.getChildByName('equipmentReward'),cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');
+let rewardRoot=ui.rewardDockRoot.getChildByName('equipmentReward'),cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');
 assert.equal(cards.length,2);assert.ok(rewardRoot.children.some(n=>n.getComponent(Label)?.string==='装备奖励 · 2选一'));
 for(let index=0;index<2;index++){const card=cards[index];assert.ok(card.children.some(n=>n.getComponent(Label)?.string===rewardItems[index].name));
  assert.ok(card.children.some(n=>n.getComponent(Label)?.string===rewardItems[index].description));}
@@ -534,9 +541,9 @@ cards[1].children.find(n=>n.name==='button').events.get('end')();assert.deepEqua
 const modalEvent={};rewardRoot.events.get('start')(modalEvent);assert.equal(modalEvent.propagationStopped,true);
 const oldIcon=cards[0].getChildByName('rewardIcon').getComponent(Sprite);ui.hideEquipmentReward();
 ui.showEquipmentReward(rewardItems);flush();assert.equal(oldIcon.spriteFrame,undefined,'late icon callbacks cannot write into a destroyed reward');
-rewardRoot=ui.node.getChildByName('equipmentReward');cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');assert.equal(cards.length,3);
+rewardRoot=ui.rewardDockRoot.getChildByName('equipmentReward');cards=rewardRoot.children.filter(n=>n.name==='rewardCandidate');assert.equal(cards.length,3);
 for(let index=0;index<3;index++)assert.equal(cards[index].getChildByName('rewardIcon').getComponent(Sprite).spriteFrame.name,rewardItems[index].icon);
-ui.hideEquipmentReward();assert.equal(ui.node.getChildByName('equipmentReward'),undefined);
+ui.hideEquipmentReward();assert.equal(ui.rewardDockRoot.getChildByName('equipmentReward'),undefined);
 console.log('PASS P3 actual BattleUI: two/three distinct cards, real names/descriptions/icons, dock input, choice callback and stale async protection');
 ui.onDestroy();assert.equal(inputListeners.filter(l=>l.target===ui).length,0,'scene cleanup removes all idle wake listeners');
 for(const backdrop of [{isValid:false},{isValid:true,destroyQueued:true}]){
@@ -574,6 +581,9 @@ let stageActionCount=stageActions.length;oldBossClick();assert.equal(stageAction
 stageCards[2].getChildByName('stageChoice_2').events.get('end')();assert.deepEqual(stageActions.at(-1),{type:'stageChoice',rewardId:'four',choice:'claim',index:2});
 stagePanel.show({id:'shop',waveId:18,kind:'specialShop',offers:[{kind:'unit',id:'blackfeather_hunter',price:2,bought:false},...basicIds.map(id=>({kind:'equipment',id,price:3,bought:false}))]},8);flush();
 stageBody=stagePanel.root.getChildByName('stageRewardBody');stageCards=stageBody.children.filter(n=>n.name==='stageOffer');assert.equal(stageCards.length,5);
+const merchantRefresh=stageBody.getChildByName('stageShopRefresh');
+assert.equal(merchantRefresh.getChildByName('text').getComponent(Label).string,'刷新 2 金币');
+merchantRefresh.events.get('end')();assert.equal(stageActions.at(-1).choice,'refresh');
 stageCards[0].getChildByName('stageChoice_0').events.get('end')();assert.equal(stageActions.at(-1).choice,'buy');
 const merchantEquipment=stageCards[1],merchantInspect=merchantEquipment.events.get('end');
 assert.equal(merchantEquipment.getChildByName('equipmentStats'),undefined,'shop cards hide equipment attributes');
@@ -630,3 +640,47 @@ assert.ok(ui.traitPanel.detail?.active);
 ui.refreshTraits(resolveTraits([trait],[]),traitRoster);flush();
 assert.equal(ui.traitPanel.detail,null,'removing the last owner also closes hover details');
 console.log('PASS trait UI: deployed owners only, inactive at 1/2, five badge regions, glyph, tiers, owners, switching and last-owner detail cleanup');
+
+cc.sys.isMobile=true;cc.view.getVisibleSize=()=>({width:1600,height:720});
+const mobileUI=new BattleUI();mobileUI.node=new Node('mobileUI');new Node('Canvas').addChild(mobileUI.node);mobileUI.init();flush();
+assert.equal(screenSetup.policy,2,'mobile uses the full landscape screen');
+const toggle=mobileUI.node.getChildByName('mobileShopToggle');
+assert.equal(mobileUI.shopDock.active,false,'ordinary mobile shop starts collapsed');
+toggle.events.get('end')();assert.equal(mobileUI.shopDock.active,true);
+assert.equal(toggle.active,false,'opening the shop hides its entry icon');
+const outside={getUILocation:()=>({x:400,y:400}),propagationStopped:false};
+mobileUI.shopDismiss.events.get('start')(outside);mobileUI.shopDismiss.events.get('end')(outside);
+assert.equal(mobileUI.shopDock.active,false);assert.equal(toggle.active,true);assert.equal(outside.propagationStopped,true);
+mobileUI.setShopContentOccupied(true);assert.equal(mobileUI.rewardDockRoot.active,true);assert.equal(toggle.active,false,'new rewards open automatically');
+mobileUI.shopDismiss.events.get('start')(outside);mobileUI.shopDismiss.events.get('end')(outside);
+mobileUI.setShopContentOccupied(true);assert.equal(mobileUI.rewardDockRoot.active,false,'refreshing hidden rewards does not force them open');
+toggle.events.get('end')();assert.equal(mobileUI.rewardDockRoot.active,true,'hidden rewards can be reopened');
+mobileUI.setShopContentOccupied(false);
+mobileUI.showSellPreview('战士',1,false);assert.equal(mobileUI.shopDock.active,false,'mobile drag keeps the shop closed');
+assert.equal(toggle.active,true);assert.equal(mobileUI.sellNode.active,false);assert.equal(mobileUI.shopSaleHint.node.active,true);
+assert.equal(mobileUI.isInSellArea(toggle.position.x,toggle.position.y),true);
+assert.equal(mobileUI.isInSellArea(toggle.position.x+81,toggle.position.y),false,'sale target follows the round icon');
+assert.equal(mobileUI.isInSellArea(mobileUI.layout.shop.x,mobileUI.layout.shop.y),false,'the old mobile dock is not a sale target');
+mobileUI.clearSellPreview();assert.equal(mobileUI.shopDock.active,false,'drag end restores collapsed state');
+for(const card of mobileUI.shopSlots){assert.ok(card.name.fontSize>=23);assert.ok(card.node.getComponent(UITransform).contentSize.height>=86);}
+assert.equal(new Set(mobileUI.shopSlots.map(card=>card.node.position.y)).size,1,'mobile keeps all five cards in one row');
+for(let i=1;i<mobileUI.shopSlots.length;i++)assert.ok(mobileUI.shopSlots[i].node.position.x-mobileUI.shopSlots[i-1].node.position.x>mobileUI.layout.cardWidth,'single-row cards do not overlap');
+const captionTop=mobileUI.backpackCaption.node.position.y+mobileUI.backpackCaption.node.getComponent(UITransform).contentSize.height/2;
+assert.ok(captionTop<mobileUI.backpackSlots[6].node.position.y-36,'backpack instructions clear the last equipment row');
+assert.equal(toggle.position.x,mobileUI.backpackRoot.position.x,'shop icon is centered below the left panel');
+assert.equal(toggle.getComponent(UITransform).contentSize.width,144);
+assert.equal(screenRect(mobileUI.backpackRoot).top,screenRect(mobileUI.node.getChildByName('roundBar')).top,'left panel aligns with the stage header');
+const healthBounds=screenRect(mobileUI.node.getChildByName('healthPanel'));
+for(const text of [mobileUI.healthLabel,mobileUI.waveLabel]){const bounds=screenRect(text.node);assert.ok(bounds.top<=healthBounds.top&&bounds.bottom>=healthBounds.bottom&&bounds.left>=healthBounds.left&&bounds.right<=healthBounds.right,'health frame contains both text rows');}
+mobileUI.refreshCombatStats([{id:1,name:'战士',side:0,star:1,damage:50,taken:30,healing:10,shielding:0,
+ damageByType:{physical:50,magic:0,true:0},takenByType:{physical:30,magic:0,true:0}}]);
+assert.ok(screenRect(mobileUI.combatStatBars[0].name.node).top<screenRect(mobileUI.combatMetricButtons[0]).bottom,'statistics rows leave the metric buttons clear');
+const preferences=new Map();cc.sys.localStorage={getItem:k=>preferences.get(k)??null,setItem:(k,v)=>preferences.set(k,v)};
+const mode=mobileUI.mainMenuContent.getChildByName('settingUIMode');
+mode.events.get('end')();assert.equal(mobileUI.getBattleSettings().uiMode,'desktop');assert.equal(mobileUI.shopDock.active,true);assert.equal(toggle.active,false);
+assert.equal(mobileUI.isInSellArea(mobileUI.layout.shop.x,mobileUI.layout.shop.y),true);
+mode.events.get('end')();assert.equal(mobileUI.getBattleSettings().uiMode,'mobile');assert.equal(mobileUI.shopDock.active,false);assert.equal(toggle.active,true);
+assert.equal(JSON.parse(preferences.get('autochess.battleSettings')).uiMode,'mobile','interface choice persists');
+mobileUI.onDestroy();cc.sys.isMobile=false;delete cc.view.getVisibleSize;
+delete cc.sys.localStorage;
+console.log('PASS mobile shop: icon, blank dismissal, reopen rewards, circular sale target, mode switching and persistence');

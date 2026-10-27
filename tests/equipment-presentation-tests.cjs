@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const {load,Node,Label,Sprite,UITransform,pending}=require('./helpers/ui-harness.cjs');
+const {load,Node,Label,RichText,Sprite,UITransform,pending}=require('./helpers/ui-harness.cjs');
 const {BattleUI}=load(path.join(__dirname,'../assets/scripts/ui/BattleUI.ts'));
 const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
 const {Unit}=load(path.join(__dirname,'../assets/scripts/battle/Unit.ts'));
@@ -26,15 +26,26 @@ const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.no
 const flush=()=>{while(pending.length)pending.shift()();};
 const rgb=c=>[c.r,c.g,c.b];
 for(const item of items){
- const expected=item.id.startsWith('basic_')?[255,255,255]:item.specialShopOnly?[220,187,115]:[100,220,130];
+ const expected=[[163,177,169],[89,203,176],[86,167,226],[181,127,230],[204,174,109]][item.quality-1];
  ui.showEquipmentDetail(item);flush();assert.deepEqual(rgb(ui.equipmentDetail.getChildByName('equipmentDetailName').getComponent(Label).color),expected,'detail names share equipment quality colors');
  if(item.introduction){
   const content=ui.equipmentDetail.getChildByName('equipmentDetailViewport').getChildByName('equipmentDetailContent');
-  assert.equal(content.getChildByName('equipmentDetailEffect').getComponent(Label).string,item.introduction,'basic items show their introduction without inventing a passive');
+  assert.equal(content.getChildByName('equipmentDetailEffect').getComponent(RichText).string.replace(/<img[^>]*\/>/g,'').replace(/<[^>]+>/g,''),item.introduction,'basic items show their introduction without inventing a passive');
  }
  ui.showEquipment([item],false,0);ui.equipmentSlots[0].node.events.get('enter')();flush();
  assert.deepEqual(rgb(ui.equipmentTooltipTitle.color),expected,'backpack/equipped tooltip names use the same colors');
 }
+const overdrive=items.find(i=>i.id==='spell_overdrive_armor');
+assert.equal(overdrive.castAttackSpeed.bonus,.5);
+assert.ok(items.filter(i=>!i.id.startsWith('basic_')&&!i.specialShopOnly&&!i.consumable).every(i=>i.quality===2),'all completed equipment is green');
+assert.deepEqual(items.filter(i=>i.specialShopOnly).map(i=>i.quality),[5,1,3,4,5],'special items retain their authored quality');
+ui.showEquipmentTooltip(items.find(i=>i.id==='totem_of_undying'),0);
+ui.showEquipmentTooltip(overdrive,0);flush();
+assert.match(ui.equipmentTooltipText.string,/<img src='attr_aspd'/);
+assert.match(ui.equipmentTooltipText.string,/<b>\+?50%<\/b>/);
+assert.doesNotMatch(ui.equipmentTooltipText.string,/150%|命核/,'late asset callbacks cannot restore the previous hover');
+const rich=ui.equipmentTooltipText;
+assert.equal(ui.equipmentTooltip.getComponent(UITransform).contentSize.height,130+36+rich.node.getComponent(UITransform).contentSize.height,'tooltip follows final icon wrapping height');
 ui.hideEquipmentDetail();ui.hideEquipmentTooltip();
 const changedCopy=items.map(item=>({...item,introduction:'新的展示简介'}));
 assert.deepEqual(combatEquipmentIdentity(changedCopy),combatEquipmentIdentity(items),'introductions never change combat/save identity');

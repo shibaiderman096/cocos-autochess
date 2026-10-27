@@ -41,11 +41,16 @@ export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
   initialGold: 0,
 };
 
+/** Authored one-time entry income, separate from battle settlement and its interest. */
+export const EARLY_STAGE_GOLD: Readonly<Record<number, number>> = { 2: 5, 3: 5 };
+
 export interface BattleOutcome {
   /** 0 = 己方胜，1 = 敌方胜，-1 = 平局 */
   winner: number;
   /** Encounter and other one-time income; excluded from this round's interest. */
   extraIncome?: number;
+  /** Neutral encounters keep both streaks intact; other income still settles normally. */
+  countsForStreak?: boolean;
 }
 
 export interface SettlementBreakdown {
@@ -62,6 +67,12 @@ export interface SettlementBreakdown {
   winStreak: number;
   /** 结算后的连败数 */
   loseStreak: number;
+}
+export interface IncomePreview {
+  /** Already credited at this wave's entry; never included in projected settlement. */
+  entrySubsidy?: number;
+  gold:number; winStreak:number; loseStreak:number; streakBonus:number; progress:number; progressMax:number;
+  win:SettlementBreakdown; loss:SettlementBreakdown;
 }
 
 export class EconomySystem {
@@ -100,10 +111,10 @@ export class EconomySystem {
     const projected = extraIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
     if (!Number.isFinite(projected) || projected > Number.MAX_SAFE_INTEGER - this.gold) throw new Error('Settlement exceeds safe range');
     // 1. 先更新连胜/连败（在计算奖励之前）
-    if (outcome.winner === 0) {
+    if (outcome.countsForStreak !== false && outcome.winner === 0) {
       this.winStreak++;
       this.loseStreak = 0;
-    } else if (outcome.winner === 1) {
+    } else if (outcome.countsForStreak !== false && outcome.winner === 1) {
       this.loseStreak++;
       this.winStreak = 0;
     }
@@ -151,5 +162,12 @@ export class EconomySystem {
   /** 存档快照 */
   snapshot(): { gold: number; winStreak: number; loseStreak: number } {
     return { gold: this.gold, winStreak: this.winStreak, loseStreak: this.loseStreak };
+  }
+  /** Use the settlement path on detached wallets so displayed projections cannot pay rewards. */
+  preview(floor:number,winExtra=0,countsForStreak=true):IncomePreview {
+    const current=Math.max(this.winStreak,this.loseStreak),state=this.snapshot();
+    return {...state,streakBonus:Math.min(Math.floor(current/2),this.config.streakCap),progress:Math.min(current,this.config.streakCap*2),progressMax:Math.max(1,this.config.streakCap*2),
+      win:new EconomySystem(this.config,state).settleBattle(floor,{winner:0,extraIncome:winExtra,countsForStreak}),
+      loss:new EconomySystem(this.config,state).settleBattle(floor,{winner:1,countsForStreak})};
   }
 }

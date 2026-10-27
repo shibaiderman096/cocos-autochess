@@ -14,9 +14,14 @@ assert.equal(DEFAULT_STAGE_COUNT, 10);
 const generation = { mode: 'budget-v1', runSeed: 217, difficulty: deps.enemyDifficulty, power: deps.enemyPower };
 for (const options of [undefined, generation]) {
   const waves = buildRunWaves(12, inputs.run, inputs.waves, inputs.units, options);
-  for (const [stage, round, amp, reduction] of [[10,10,0,0],[11,1,.01,.01],[11,10,.1,.01],[12,1,.11,.02],[12,10,.2,.02]]) {
+  for (const [stage, round, amp, reduction] of [[10,10,0,0],[11,1,.01,.01],[11,10,.09,.01],[12,1,.10,.02],[12,10,.18,.02]]) {
     const wave = waves.find(w => w.stage === stage && w.round === round);
     for (const enemy of wave.enemies) { assert.equal(enemy.damageAmp ?? 0, amp); assert.equal(enemy.damageReduction ?? 0, reduction); }
+  }
+  let completed=0;
+  for(const wave of waves.filter(w=>w.stage>=11)){
+    if(wave.encounterKind==='specialShop'){assert.equal(wave.enemies.length,0);continue;}
+    completed++;assert.ok(wave.enemies.every(e=>e.damageAmp===Number((completed*.01).toFixed(4))),'shops leave cumulative damage growth unchanged');
   }
   assert.ok(waves.filter(w => w.stage === 11 && w.encounterKind === 'monster').every(w => w.enemies.every(e => e.damageAmp > 0 && e.damageReduction === .01)));
 }
@@ -54,13 +59,22 @@ assert.deepEqual(session.owned.snapshot(), before.owned); assert.deepEqual(sessi
 assert.deepEqual(session.waves.filter(w => w.stage <= 10), make().waves, 'extending a campaign never rerolls earlier encounters');
 assert.ok(session.createPreview().sim.units.filter(u => u.side === 1).every(u => u.cfg.damageAmp >= .01 && u.cfg.damageReduction >= .01));
 const resumed = make({ save: session.snapshot() }); assert.equal(resumed.flow.wave.stage, 11); assert.equal(resumed.portalAvailable, false);
-settleBoss(session, 11); claim(session); assert.equal(session.enterPortal(), true); assert.equal(session.flow.wave.stage, 12);
-const loss = make(); settleBoss(loss, 10, 1); assert.equal(loss.portalAvailable, false); assert.equal(loss.enterPortal(), false);
+settleBoss(session, 11);assert.equal(session.portalAvailable,false);assert.equal(session.enterPortal(),false);
+assert.equal(session.flow.phase,'settlement');assert.equal(session.save.stageCount,12);
+assert.equal(session.canAdvanceWave(),false,'later boss rewards still gate progression');
+const oldBoundary=session.snapshot();oldBoundary.stageCount=11;oldBoundary.round.phase='ended';oldBoundary.round.result='victory';oldBoundary.round.lastSettlement.runResult='victory';
+const migratedBoundary=make({save:oldBoundary});assert.equal(migratedBoundary.portalAvailable,false);assert.equal(migratedBoundary.flow.phase,'settlement');
+assert.equal(migratedBoundary.save.stageCount,12);assert.deepEqual(migratedBoundary.pendingStageReward,session.pendingStageReward);
+claim(session);assert.equal(session.nextWave(),true);assert.equal(session.flow.wave.stage,12);assert.equal(session.flow.wave.round,1);
+assert.equal(session.portalAvailable,false);assert.equal(session.enterPortal(),false);
+assert.equal(make({save:session.snapshot()}).flow.wave.stage,12,'ordinary continuation survives reload');
+const laterLoss=make({stageCount:11});settleBoss(laterLoss,11,1);assert.equal(laterLoss.portalAvailable,false);assert.equal(laterLoss.save.stageCount,12,'surviving a lost boundary still continues');assert.equal(laterLoss.flow.phase,'settlement');assert.equal(laterLoss.flow.result,null);
+const loss = make(); settleBoss(loss, 10, 1); assert.equal(loss.portalAvailable, true); assert.equal(loss.flow.result,null); assert.equal(loss.enterPortal(), true);
 const oldRun = clone(inputs.run); delete oldRun.endlessProgression;
 const old = make({}, oldRun); const migrated = make({ save: old.snapshot() }); assert.equal(migrated.flow.wave.stage, 1);
 const wrongRun = clone(inputs.run); wrongRun.monsterAttackSpeed += .1;
 assert.throws(() => make({ save: old.snapshot() }, wrongRun), /configuration mismatch/);
-console.log('PASS portal: victory/reward gates, saved pending/claimed rewards, state preservation, repeated clicks, 11→12, loss and compatible-save migration');
+console.log('PASS portal: stage-10 only, reward gates, state preservation, automatic 11→12, old-boundary migration, reload and loss');
 const h=require('./helpers/ui-harness.cjs'),{ExpeditionPortal}=h.load(require('node:path').resolve('assets/scripts/view/ExpeditionPortal.ts'));
 const portal=new ExpeditionPortal();portal.node=new h.Node('portal');portal.init({x:0,y:0},()=>{});
 const initialScale=portal.visual.scale.x;for(let n=0;n<10;n++)portal.update(.1);

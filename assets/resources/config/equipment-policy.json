@@ -26,7 +26,11 @@
     "basic_mystic_cloak": "basic",
     "basic_life_heart": "basic",
     "basic_mana_flask": "basic",
-    "basic_blood_fang": "basic"
+    "basic_blood_fang": "basic",
+    "replicator_glimmer": "special",
+    "replicator_starlight": "special",
+    "replicator_firmament": "special",
+    "expedition_command_crown": "special"
   },
   "enemy": {
     "calibratedItems": [
@@ -367,6 +371,22 @@
           "assassin"
         ],
         "goldCost": 3
+      },
+      "replicator_glimmer": {
+        "enabled": false,
+        "roles": []
+      },
+      "replicator_starlight": {
+        "enabled": false,
+        "roles": []
+      },
+      "replicator_firmament": {
+        "enabled": false,
+        "roles": []
+      },
+      "expedition_command_crown": {
+        "enabled": false,
+        "roles": []
       }
     },
     "equipmentEconomy": {
@@ -404,7 +424,11 @@
     "insufficientPool": "fewer-choices",
     "guarantee": "last-eligible-victory",
     "excludedIds": [
-      "trait_emblem"
+      "trait_emblem",
+      "replicator_glimmer",
+      "replicator_starlight",
+      "replicator_firmament",
+      "expedition_command_crown"
     ]
   }
 }

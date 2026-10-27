@@ -1,17 +1,21 @@
-import { equipmentStatIcons } from './EquipmentStatIcons';
-import { Node, Sprite, UITransform, Color, Label, Graphics } from 'cc';
+import { equipmentStatIcons, equipmentQualityBadge, createEquipmentDescription, setEquipmentDescription } from './EquipmentStatIcons';
+import { Node, Sprite, UITransform, Color, Label, Graphics, Mask, ScrollView } from 'cc';
 import { panel, label, button } from './BattleUI';
 import { ConfigManager, UnitConfigData } from '../core/ConfigManager';
 import type { StagePending, StageChoice } from '../core/StageProgression';
+import { stageShopRefreshPrice } from '../core/StageProgression';
+import type { StageEncounterRules } from '../core/StageProgression';
 import { UNIT_ART, UNIT_PORTRAIT, UI_SPRITE, ENCOUNTER_SPRITE as ENCOUNTER_ART } from '../view/ArtPaths';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
-import { equipmentDescriptionText, equipmentNameColor, EquipmentDisplayItem } from './EquipmentPresentation';
+import { equipmentNameColor, EquipmentDisplayItem } from './EquipmentPresentation';
 import { resolveTraits } from '../battle/Traits';
 import type { OwnedUnit } from '../core/OwnedUnits';
 import type { PendingTraitChoice } from '../core/TraitEmblem';
 import { TRAIT_BADGES } from './TraitPanel';
 import { ShopDockPopup } from './ShopDockPopup';
 import { setUISkin } from './UISkin';
+import { QUALITY_COLORS } from '../core/EquipmentQuality';
+import { SHOP_REWARD_AREA } from './BattleUILayout';
 
 const GOLD = new Color(220, 187, 115), TEXT = new Color(231, 236, 223), MUTED = new Color(153, 178, 176);
 
@@ -20,11 +24,13 @@ export class StageRewardPanel {
   private root: Node | null = null;
   private dockPopup = new ShopDockPopup();
   constructor(private parent: Node, private cfg: ConfigManager, private choose: (action: StageChoice) => void, private close?: () => void,
-    private inspectEquipment?: (item: EquipmentDisplayItem | undefined) => void) {}
+    private inspectEquipment?: (item: EquipmentDisplayItem | undefined) => void,
+    private refreshRules?: StageEncounterRules['shop']['refresh'],private inspectIncome?:()=>void,private qualityRates:readonly number[]=[35,30,20,10,5]) {}
   hide(reset = true): void { this.dockPopup.clear(reset); if (reset) this.inspectEquipment?.(undefined); if (this.root) { this.root.active = false; this.root.destroy(); this.root = null; } }
   showTraitChoice(pending: PendingTraitChoice, units: OwnedUnit[], choose: (index: number) => void): void {
     this.hide(false);
-    const root = panel(this.parent, 'equipmentTraitChoice', -20, -281, 788, 150, new Color(13, 27, 35), GOLD, null);
+    const a=SHOP_REWARD_AREA;
+    const root = panel(this.parent, 'equipmentTraitChoice', a.x, a.y, a.width, a.height, new Color(13, 27, 35), GOLD, null);
     this.root = root;
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) root.on(type, (e: any) => { e.propagationStopped = true; });
     label(root, '万象共鸣 · 选择羁绊', -218, 55, 17, GOLD, 330);
@@ -49,10 +55,12 @@ export class StageRewardPanel {
     this.hide(!pending); if (!pending) return;
     const merchant = pending.kind === 'specialShop';
     const compact = pending.kind !== 'unitBundle';
-    const overlay = panel(this.parent, 'stageReward', compact ? -20 : 0, compact ? -281 : 0, compact ? 788 : 1280, compact ? 150 : 720, merchant ? new Color(0, 0, 0, 0) : new Color(13, 27, 35), merchant ? new Color(0, 0, 0, 0) : GOLD, null);
+    const a=SHOP_REWARD_AREA;
+    const host=!compact&&this.parent.name==='shopRewardDock'?this.parent.parent!:this.parent;
+    const overlay = panel(host, 'stageReward', compact ? a.x : 0, compact ? a.y : 0, compact ? a.width : 1280, compact ? a.height : 720, merchant ? new Color(0, 0, 0, 0) : new Color(13, 27, 35), merchant ? new Color(0, 0, 0, 0) : GOLD, null);
     this.root = overlay;
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) overlay.on(type, (e: any) => { e.propagationStopped = true; });
-    const body = panel(overlay, 'stageRewardBody', 0, 0, compact ? 788 : 1150, compact ? 150 : 600, new Color(13, 27, 35), GOLD, null);
+    const body = panel(overlay, 'stageRewardBody', 0, 0, compact ? a.width : 1150, compact ? a.height : 600, new Color(13, 27, 35), GOLD, null);
     if (merchant) setUISkin(body, 'panel_dock', body.getComponent(Graphics)!);
     if (!compact && this.close) button(body, '×', 530, 263, 34, 30, () => this.close!());
 
@@ -67,34 +75,55 @@ export class StageRewardPanel {
       if (this.root !== overlay) return;
       const previous = overlay.getChildByName('stageEquipmentDetail');
       if (previous) { previous.active = false; previous.destroy(); }
-      const detail = panel(overlay, 'stageEquipmentDetail', 0, 353, 788, 550, new Color(5, 14, 23, 245), GOLD, null);
+      const detail = panel(overlay, 'stageEquipmentDetail', 0, 322, 788, 550, new Color(5, 14, 23, 245), GOLD, null);
+      if (this.parent.name === 'shopRewardDock' && this.parent.scale.x !== 1) {
+        const scale = this.parent.scale.x;
+        detail.setScale(1 / scale, 1 / scale, 1);
+        detail.setPosition(0, (30 - this.parent.position.y - a.y * scale) / scale, 0);
+      }
       for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) detail.on(type, (e: any) => { e.propagationStopped = true; });
       const card = panel(detail, 'equipmentDetailCard', 0, 0, 760, 550, new Color(13, 27, 35), GOLD);
       art(card, item.icon, -278, 187, 96);
       label(card, item.name, 40, 193, 29, new Color(...equipmentNameColor(item)), 540);
+      equipmentQualityBadge(card,item,40,163,90,14);
       const stats = equipmentStatIcons(card, item, 680, 3, 28, 20, 42);
       stats.root.setPosition(0, 99, 0);
-      const effect = label(card, equipmentDescriptionText(item), 0, -87, 18, TEXT, 680);
-      effect.node.getComponent(UITransform)!.setContentSize(680, 180); effect.enableWrapText = true;
-      effect.verticalAlign = Label.VerticalAlign.TOP; effect.horizontalAlign = Label.HorizontalAlign.LEFT;
+      const top = 75 - stats.height, height = top + 192;
+      const viewport = new Node('equipmentEffectViewport'); card.addChild(viewport);
+      viewport.addComponent(UITransform).setContentSize(680, height); viewport.setPosition(0, top - height / 2, 0);
+      viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
+      const content = new Node('equipmentEffectContent'); viewport.addChild(content);
+      const transform = content.addComponent(UITransform); transform.setAnchorPoint(.5, 1); content.setPosition(0, height / 2, 0);
+      const effect = createEquipmentDescription(content, 680, 18, 28); effect.node.setPosition(-340, 0, 0);
+      setEquipmentDescription(effect, item, () => transform.setContentSize(680,
+        Math.max(height, effect.node.getComponent(UITransform)!.contentSize.height)));
+      const scroll = viewport.addComponent(ScrollView); scroll.content = content;
+      scroll.horizontal = false; scroll.vertical = true; scroll.elastic = false;
       button(card, '返回选择', 0, -224, 230, 40, () => { detail.active = false; detail.destroy(); }, true);
     };
-    const heading = pending.kind === 'specialShop' ? '秘境行商' : pending.kind === 'bossChoice' ? '首领宝藏' : pending.kind === 'unitBundle' ? '棋子补给' : '选择一件普通装备';
+    const heading = pending.kind === 'specialShop' ? '秘境行商' : pending.kind==='mixedChest'?pending.source==='elite'?'精英宝箱':pending.source==='monster'?'野怪宝箱':'首领宝箱':pending.kind === 'bossChoice' ? '首领宝藏' : pending.kind === 'unitBundle' ? '棋子补给' : '选择一件普通装备';
 
     if (!compact) art(body, ENCOUNTER_ART.monster, -450, 214, 125);
     if (merchant) {
-      art(body, ENCOUNTER_ART.specialShop, -364, 54, 26);
-      const title = label(body, heading, -277, 54, 18, GOLD, 140); title.isBold = true;
-      label(body, '每件限购1次 · 选购后前往下一关', 18, 54, 12, MUTED, 350);
-      const purse = panel(body, 'merchantPurse', 310, 54, 132, 26, new Color(16, 31, 40), MUTED, 'panel_side');
+      art(body, ENCOUNTER_ART.specialShop, -364, 66, 16);
+      const title = label(body, heading, -277, 66, 12, GOLD, 140); title.isBold = true;
+      const odds=new Node('merchantQualityRates');body.addChild(odds);odds.setPosition(-270,45,0);odds.addComponent(UITransform).setContentSize(240,18);
+      this.qualityRates.forEach((rate,index)=>{const text=label(odds,`${rate}%`,(index-2)*48,0,12,new Color(...QUALITY_COLORS[index]),48);text.node.name=`quality${index+1}`;text.node.getComponent(UITransform)!.setContentSize(48,18);});
+      const refreshPrice=stageShopRefreshPrice(pending.refreshes,this.refreshRules);
+      const refresh=button(body,`刷新 ${refreshPrice} 金币`,302,54,148,30,()=>{if(gold>=refreshPrice)act('refresh');},true);
+      refresh.name='stageShopRefresh';refresh.getChildByName('text')!.getComponent(Label)!.fontSize=13;
+      if(gold<refreshPrice)setUISkin(refresh,'btn_disabled');
+      const purse = panel(body, 'merchantPurse', 0, 54, 132, 26, new Color(16, 31, 40), MUTED, 'panel_side');
       art(purse, UI_SPRITE.iconGold, -43, 0, 18);
       const balance = label(purse, `${gold} 金币`, 12, 0, 14, GOLD, 88); balance.isBold = true;
+      purse.on(Node.EventType.TOUCH_END,(event:any)=>{if(event)event.propagationStopped=true;this.inspectIncome?.();});
     } else label(body, heading, compact ? -220 : 0, compact ? 55 : 235, compact ? 17 : 32, GOLD, compact ? 330 : 720);
     const subtitle = pending.kind === 'specialShop' ? `持有 ${gold} 金币 · 商品各限购一次，选购后点击下一关`
-      : pending.kind === 'bossChoice' ? `棋子/装备价值${pending.value}金币 · 生命+5`
+      : pending.kind==='mixedChest'?`总价值 ${pending.value} 金币 · 棋子/装备/生命混合发放`
+      : pending.kind === 'bossChoice' ? `总价值 ${pending.value} 金币 · 随机混合奖励`
       : pending.kind === 'unitBundle' ? `总价值 ${pending.value} 金币 · 按一星购买价计算` : '随机装备五选一，放入背包';
     if (!merchant) label(body, subtitle, compact ? 160 : 0, compact ? 55 : 193, compact ? 12 : 17, MUTED, compact ? 430 : 800);
-    if (pending.kind === 'bossChoice') {
+    if (pending.kind === 'bossChoice'||pending.kind==='mixedChest') {
       button(body, '打开宝箱', 0, -14, 270, 72, () => act('claim'), true);
     } else if (pending.kind === 'unitBundle') {
       const groups = Array.from(new Set(pending.units)).map(id => ({ id, count: pending.units.filter(value => value === id).length }));
@@ -123,8 +152,9 @@ export class StageRewardPanel {
           name.enableWrapText = false; name.overflow = Label.Overflow.SHRINK;
           name.node.getComponent(UITransform)!.setContentSize(94, 24);
           const category = unit ? `${unit.cost}费 · ${unit.specialShopUnlock ? '解锁牌库 +1' : '1星棋子'}`
-            : `${equipment!.specialShopOnly || equipment!.traitChoice ? '行商珍藏' : offer.id.startsWith('basic_') ? '基础装备' : '成装'} · 点击查看`;
-          label(card, category, 0, -3, 11, MUTED, 138);
+            : `${equipment!.consumable?'一次性道具':equipment!.specialShopOnly || equipment!.traitChoice ? '行商珍藏' : offer.id.startsWith('basic_') ? '基础装备' : '成装'} · 点击查看`;
+          if(equipment){equipmentQualityBadge(card,equipment,-44,-3,48,10);label(card,equipment.consumable?'一次性道具':'装备',27,-3,11,MUTED,76);}
+          else label(card, category, 0, -3, 11, MUTED, 138);
           if (equipment) card.on(Node.EventType.TOUCH_END, (event: any) => {
             for (let target = event?.target; target && target !== card; target = target.parent)
               if (target.name === `stageChoice_${i}`) return;

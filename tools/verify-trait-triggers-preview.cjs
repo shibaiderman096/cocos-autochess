@@ -48,6 +48,9 @@ const output=path.resolve('.test-build/trait-triggers-preview');fs.mkdirSync(out
   const frozen=await page.evaluate(()=>fxState());await page.waitForTimeout(250);assert.deepEqual(await page.evaluate(()=>fxState()),frozen);
   const labels=await page.evaluate(()=>[...cc.find('Canvas').getComponentsInChildren('cc.Label')].filter(l=>l.node.activeInHierarchy).map(l=>l.string));
   assert.ok(!labels.some(s=>['鲜血狂欢','超频','应急超频'].includes(s)));
+  await page.evaluate(()=>advance(180.5));report.slowed=await page.evaluate(()=>fxState());
+  assert.ok(report.slowed.blood.some(s=>s.art==='bloodfiendRevel'),'revel remains visible after its former lifetime');
+  assert.ok(report.slowed.mechanical.some(s=>s.activation),'overclock activation remains visible after its former lifetime');
   await page.evaluate(()=>advance(190.5));report.expired=await page.evaluate(()=>fxState());
   assert.equal(report.expired.stacks,2);assert.equal(report.expired.blood.length,0);assert.ok(!report.expired.mechanical.some(s=>s.activation));
   await page.evaluate(()=>{stage.sim.end(0);stage.replayer.consumeEvents();stage.replayer.syncViews(0);});

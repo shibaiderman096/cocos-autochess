@@ -3,18 +3,21 @@ import type { BattleSettings } from './SettingsPanel';
 export type { BattleSettings } from './SettingsPanel';
 import { button, label, panel, paintPanel } from './UIPrimitives';
 export { button, label, panel, paintPanel } from './UIPrimitives';
-import { equipmentStatIcons } from './EquipmentStatIcons';
+import { equipmentStatIcons, equipmentQualityBadge, createEquipmentDescription, setEquipmentDescription } from './EquipmentStatIcons';
+import { QUALITY_COLORS } from '../core/EquipmentQuality';
 import { GameAudio } from '../view/GameAudio';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
 import { TraitPanel } from './TraitPanel';
 import { WaveTransition } from './WaveTransition';
 import { ShopDockPopup } from './ShopDockPopup';
+import { ShopIncomePanel } from './ShopIncomePanel';
+import type { IncomePreview } from '../core/EconomySystem';
 import type { TraitState } from '../battle/Traits';
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, input, Input, SpriteAtlas, isValid, sys, Mask, ScrollView } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Label, RichText, Color, Graphics, resources, UIOpacity, view, ResolutionPolicy, SpriteAtlas, isValid, sys, Mask, ScrollView } from 'cc';
 import { UNIT_SPRITE, UNIT_ART, UNIT_PORTRAIT, UI_SPRITE, UISkinKey, M2_UI_SPRITE, ENCOUNTER_SPRITE } from '../view/ArtPaths';
 import { setUISkin, setStarBadge } from './UISkin';
-import { SHOP_DROP_AREA, SHOP_CARDS, containsShopDrop } from './BattleUILayout';
-import { EquipmentDisplayItem, equipmentStatRows, equipmentEffectText, equipmentDescriptionText, equipmentNameColor } from './EquipmentPresentation';
+import { SHOP_CARDS, SHOP_REWARD_AREA, battleUILayout } from './BattleUILayout';
+import { EquipmentDisplayItem, equipmentEffectText, equipmentDescriptionText, equipmentNameColor } from './EquipmentPresentation';
 import { healthBarSegments } from '../view/HealthBar';
 import { projectGroundPoint } from '../view/BoardPresentation';
 import { createHealthBarClip } from '../view/HealthBarClip';
@@ -35,7 +38,8 @@ const TEXT = new Color(233, 231, 210);
 const MUTED = new Color(133, 161, 164);
 const TEAL = new Color(89, 203, 176);
 const RUN_PROGRESS_WIDTH = 330;
-const TIERS = [MUTED, new Color(163, 177, 169), TEAL, new Color(86, 167, 226), new Color(181, 127, 230), GOLD];
+const SHOP_ICON_SIZE = 144;
+const TIERS = [MUTED,...QUALITY_COLORS.map(rgb=>new Color(...rgb))];
 const UNIT_ROLES: Record<string, string> = { frontline:'前排', ranged:'远程', caster:'法术', assassin:'物理刺客', fighter:'物理战士', tank:'物理坦克', magicTank:'魔法坦克', physicalCaster:'物理术士', physicalArcher:'物理射手', magicArcher:'魔法射手', support:'治疗辅助' };
 interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
 export interface UnitDetailData extends Partial<CombatAttributes> {
@@ -68,7 +72,7 @@ export function colorDamageText(text: string): string {
 
 /** Match the orthographic UI camera's uniform scale, including native letterbox offsets. */
 export function fillScreen(): void {
-  view.setDesignResolutionSize(1280, 720, ResolutionPolicy.SHOW_ALL);
+  view.setDesignResolutionSize(1280, 720, sys.isMobile ? ResolutionPolicy.FIXED_HEIGHT : ResolutionPolicy.SHOW_ALL);
   view.resizeWithBrowserSize(true);
 }
 
@@ -81,6 +85,118 @@ function picture(parent: Node, key: UISkinKey, x: number, y: number, w: number, 
 /** M2 texture HUD over the vector arena; portraits reuse the existing unit art. */
 @ccclass('BattleUI')
 export class BattleUI extends Component {
+  private mobileLayout = false;
+  private mobileShopUI = false;
+  private shopExpanded = true;
+  private shopDock: Node;
+  private shopToggle: Node;
+  private shopDismiss: Node;
+  private shopSaleHint: Label;
+  private shopRewardDock: Node;
+  private layout = battleUILayout(1280, false);
+  get rewardDockRoot(): Node { return this.shopRewardDock; }
+
+  private syncShopVisibility(): void {
+    if (!this.shopDock) return;
+    const visible = !this.mobileShopUI || (this.shopExpanded && !this.dragging && (this.shopAvailable || this.shopContentOccupied));
+    this.shopDock.active = visible;
+    this.shopRewardDock.active = visible;
+    this.shopRoot.active = visible && this.shopAvailable && !this.openingShopLocked && !this.dragging;
+    const normal = visible && this.shopAvailable && !this.shopContentOccupied && !this.openingShopLocked && !this.dragging;
+    this.shopHeader.active = normal; this.economyControls.active = normal;
+    if (this.shopToggle) {
+      this.shopToggle.active = this.mobileShopUI && !visible && (this.shopAvailable || this.shopContentOccupied)
+        && (!this.openingShopLocked || this.shopContentOccupied || this.dragging);
+    }
+    if (this.shopDismiss) this.shopDismiss.active = this.mobileShopUI && visible;
+  }
+  private toggleShop(): void {
+    if (this.dragging || (this.openingShopLocked && !this.shopContentOccupied)) return;
+    GameAudio.play('click');
+    this.shopExpanded = !this.shopExpanded; this.syncShopVisibility();
+  }
+  private buildMobileShop(): void {
+    const half = view.getVisibleSize?.().width / 2 || 640;
+    this.shopDismiss = new Node('shopDismiss');
+    this.shopDismiss.addComponent(UITransform).setContentSize(half * 2,720);
+    this.node.addChild(this.shopDismiss); this.shopDismiss.setSiblingIndex(0);
+    let start: {x:number;y:number} | null = null;
+    let moved = false;
+    this.shopDismiss.on(Node.EventType.TOUCH_START, event => {
+      const p = event.getUILocation(); start = {x:p.x,y:p.y}; moved = false;
+      event.propagationStopped = true;
+    });
+    this.shopDismiss.on(Node.EventType.TOUCH_MOVE, event => {
+      const p = event.getUILocation(); if (start && Math.hypot(p.x-start.x,p.y-start.y)>10) moved=true;
+      event.propagationStopped = true;
+    });
+    this.shopDismiss.on(Node.EventType.TOUCH_END, event => {
+      event.propagationStopped = true;
+      if (start && !moved && !this.dragging) { this.shopExpanded=false; this.syncShopVisibility(); }
+      start=null;
+    });
+    this.shopDismiss.on(Node.EventType.TOUCH_CANCEL, () => { start=null; });
+    this.shopToggle = new Node('mobileShopToggle');
+    this.shopToggle.addComponent(UITransform).setContentSize(SHOP_ICON_SIZE,SHOP_ICON_SIZE);
+    this.node.addChild(this.shopToggle); this.shopToggle.setPosition(this.backpackRoot.position.x,-276,0);
+    setUISkin(this.shopToggle,'stage_node_shop');
+    this.shopToggle.on(Node.EventType.TOUCH_START, event => { if(event)event.propagationStopped=true; });
+    this.shopToggle.on(Node.EventType.TOUCH_END, event => { if(event)event.propagationStopped=true; this.toggleShop(); });
+    this.shopSaleHint=label(this.node,'',this.shopToggle.position.x+26,-185,20,GOLD,280);
+    this.shopSaleHint.node.active=false;
+  }
+  private setShopUIMode(mode: BattleSettings['uiMode']): void {
+    const mobile = mode === 'mobile';
+    if (mobile === this.mobileShopUI) return;
+    this.mobileShopUI=mobile; this.shopExpanded=!mobile;
+    if (mobile && this.shopContentOccupied) this.shopExpanded=true;
+    this.clearSellPreview();
+    this.backpackCaption.string=this.backpackCaption.string.replace(/拖至(?:商店出售|左下商店)/,mobile?'拖至左下商店':'拖至商店出售');
+  }
+  private applyResponsiveHUD(): void {
+    if(!this.mobileLayout)return;
+    const {left,right,shop}=this.layout;
+    this.traitPanel.setHeight(463);
+    const backpack=this.backpackRoot;
+    backpack.getComponent(UITransform)!.setContentSize(192,463);
+    paintPanel(backpack.getComponent(Graphics)!,192,463,INK,GOLD);setUISkin(backpack,'panel_side',backpack.getComponent(Graphics)!);
+    for(const n of [this.traitPanel.root,backpack])n.setPosition(left,105.5,0);
+    this.sideTabs.forEach((n,i)=>{n.setPosition(left+(i?46:-46),310,0);const text=n.getChildByName('text')!.getComponent(Label)!;text.fontSize=21;});
+    const stats=this.combatStatsPanel;
+    stats.setPosition(right,80,0);stats.getComponent(UITransform)!.setContentSize(232,412);
+    paintPanel(stats.getComponent(Graphics)!,232,412,INK,GOLD);
+    setUISkin(stats,'panel_side',stats.getComponent(Graphics)!);
+    stats.children.find(n=>n.getComponent(Label)?.string==='本场统计')?.setPosition(0,190,0);
+    this.combatMetricButtons.forEach(n=>n.setPosition(n.position.x,162,0));
+    this.combatSideButtons.forEach(n=>n.setPosition(n.position.x,-190,0));
+    this.unitPanel.setPosition(right-280,30,0);this.unitPanel.setScale(1.12,1.12,1);
+    for(const n of [this.unitPanel,this.node.getChildByName('backpack')!,this.traitPanel.root]){
+      for(const text of n.getComponentsInChildren(Label)){text.fontSize=Math.max(17,text.fontSize);text.lineHeight=Math.max(22,text.lineHeight);}
+    }
+    for(const text of [this.healthLabel,this.floorLabel,this.phaseLabel]){text.fontSize=Math.max(text.fontSize,23);text.lineHeight=28;}
+    this.waveLabel.fontSize=17;this.waveLabel.lineHeight=23;
+    const health=this.node.getChildByName('healthPanel')!;
+    health.setPosition(right,322,0);health.getComponent(UITransform)!.setContentSize(252,64);
+    paintPanel(health.getComponent(Graphics)!,252,64,INK,GOLD);setUISkin(health,'panel_side',health.getComponent(Graphics)!);
+    this.healthLabel.node.setPosition(right,335,0);this.waveLabel.node.setPosition(right,309,0);
+    this.healthLabel.node.getComponent(UITransform)!.setContentSize(190,30);
+    this.waveLabel.node.getComponent(UITransform)!.setContentSize(236,24);
+    this.waveLabel.enableWrapText=false;this.waveLabel.overflow=Label.Overflow.SHRINK;
+    this.node.getChildByName('icon_life')!.setPosition(right-76,335,0);
+    this.combatMetricButtons[2].getChildByName('text')!.getComponent(Label)!.string='治疗';
+    this.combatMetricButtons.forEach(n=>n.getChildByName('text')!.getComponent(Label)!.fontSize=18);
+    this.combatStatsTotal.fontSize=17;this.combatStatsBreakdown.fontSize=14;
+    this.combatStatsLegend.forEach(l=>l.fontSize=14);
+    this.unitStats.forEach(l=>{l.fontSize=17;l.enableWrapText=false;l.overflow=Label.Overflow.SHRINK;});
+    this.unitTitle.fontSize=20;this.unitSkillName.fontSize=20;
+    this.backpackSlots.forEach((slot,i)=>slot.node.setPosition(-40+(i%2)*80,145-Math.floor(i/2)*90,0));
+    this.backpackCaption.fontSize=14;this.backpackCaption.lineHeight=18;
+    this.backpackCaption.node.setPosition(0,-205,0);
+    this.backpackCaption.node.getComponent(UITransform)!.setContentSize(124,38);
+    backpack.getChildByName('backpackPrevious')!.setPosition(-67,-213,0);
+    backpack.getChildByName('backpackNext')!.setPosition(67,-213,0);
+    this.shopHeader.getChildByName('lock')!.setPosition(shop.x+shop.width/2-28,-152,0);
+  }
   private rewardStorage: Label;
   get rewardStorageAnchor(): Node | null { return this.rewardStorage?.node ?? null; }
   setRewardStorage(count: number, credit: number, equipmentCredit = 0): void {
@@ -90,6 +206,7 @@ export class BattleUI extends Component {
       equipmentCredit ? `装备额度：${equipmentCredit}金币` : ''].filter(Boolean).join('\n');
   }
   get healthRewardAnchor(): Node { return this.healthLabel.node; }
+  get goldRewardAnchor(): Node { return this.mobileShopUI?this.shopToggle:this.goldLabel.node; }
   get backpackRewardAnchor(): Node { return this.sideTabs[1]; }
   prepareBackpackReward(index: number): void {
     this.setSideTab('backpack');
@@ -112,14 +229,18 @@ export class BattleUI extends Component {
     this.clearSellPreview();
   }
   setShopContentOccupied(active: boolean): void {
+    if (active && !this.shopContentOccupied) this.shopExpanded=true;
     this.shopContentOccupied = active;
     this.shopSlots.forEach(card => card.node.active = !active && !this.openingShopLocked);
     this.shopHeader.active = !active && this.shopAvailable && !this.openingShopLocked;
     this.economyControls.active = !active && this.shopAvailable && !this.openingShopLocked;
+    if (!active && this.openingShopLocked && this.mobileShopUI) this.shopExpanded=false;
+    this.syncShopVisibility();
   }
   showOpeningEncounter(title: string, choices: Array<{ id: import('../core/OpeningEncounter').OpeningEncounterId; name: string; description: string }>, choose: (id: import('../core/OpeningEncounter').OpeningEncounterId) => void): void {
     this.hideOpeningEncounter(false);
-    const root = this.openingEncounterPanel = panel(this.node, 'openingEncounter', -20, -281, 788, 150);
+    const a = SHOP_REWARD_AREA;
+    const root = this.openingEncounterPanel = panel(this.shopRewardDock, 'openingEncounter', a.x, a.y, a.width, a.height);
     label(root, `${title} · 选择一个奇遇效果，本局持续生效`, 0, 55, 17, GOLD, 760);
     choices.forEach((choice, index) => {
       const card = button(root, '', (index - 1) * 260, -14, 248, 104, () => {
@@ -141,14 +262,15 @@ export class BattleUI extends Component {
     const refresh = this.economyControls.getChildByName('refresh')!;
     const text = refresh.getChildByName('text')!.getComponent(Label)!;
     text.string = count > 0 ? `免费 ×${count}` : '';
-    text.fontSize = 15; text.node.setPosition(20, 0, 0);
+    text.fontSize = this.mobileLayout ? 20 : 15; text.node.setPosition(20, 0, 0);
     for (const child of refresh.children) if (child.name === 'goldCost') child.active = count <= 0;
     const labels = refresh.children.filter(child => child.name === 'text' && child !== text.node);
     labels.forEach(child => child.active = count <= 0);
   }
   showEquipmentReward(items:EquipmentConfigData[]):void {
     this.hideEquipmentReward(false);
-    const overlay=panel(this.node,'equipmentReward',-20,-281,788,150,INK,GOLD,null);
+    const a = SHOP_REWARD_AREA;
+    const overlay=panel(this.shopRewardDock,'equipmentReward',a.x,a.y,a.width,a.height,INK,GOLD,null);
     this.equipmentRewardPanel=overlay;
     // Modal touch surface also blocks the existing settlement/restart controls underneath.
     overlay.on(Node.EventType.TOUCH_START,(event:any)=>{event.propagationStopped=true;});
@@ -183,7 +305,7 @@ export class BattleUI extends Component {
   private healingNumbers = true;
   private settingsPanel: SettingsPanel;
   getBattleSettings(): BattleSettings {
-    return { speed: this.speed, damageNumbers: this.damageNumbers, healingNumbers: this.healingNumbers };
+    return { speed: this.speed, damageNumbers: this.damageNumbers, healingNumbers: this.healingNumbers, uiMode:this.mobileShopUI?'mobile':'desktop' };
   }
   private loadBattleSettings(): void {
     const settings = loadBattlePreferences();
@@ -204,6 +326,7 @@ export class BattleUI extends Component {
       read: () => this.getBattleSettings(),
       change: settings => {
         this.damageNumbers = settings.damageNumbers; this.healingNumbers = settings.healingNumbers;
+        this.setShopUIMode(settings.uiMode);
         this.setSpeed(settings.speed);
       },
       home: () => {
@@ -225,7 +348,7 @@ export class BattleUI extends Component {
   private equipmentTooltip: Node;
   private equipmentDetail: Node | null = null;
   private equipmentTooltipTitle: Label;
-  private equipmentTooltipText: Label;
+  private equipmentTooltipText: RichText;
   private equipmentTooltipIcon: Sprite;
   private equipmentTooltipIconPath = '';
   private equipmentTooltipHeader: Node;
@@ -267,7 +390,10 @@ export class BattleUI extends Component {
   private lockIcon: Sprite;
   private locked = false;
   private waveTrack: Node;
-  private waveIdle = 0;
+  private waveIdle = 3;
+  private waveTrackProgress = 0;
+  private waveTrackViewport: Node;
+  private waveTrackOpacity: UIOpacity;
   private preparationBar: Node;
   private preparationFill: Graphics;
   private battleTimer: Node;
@@ -328,6 +454,9 @@ export class BattleUI extends Component {
   private runEndActions: Node;
   private resultLabel: Label;
   private goldLabel: Label;
+  private incomePanel:ShopIncomePanel;
+  refreshIncome(data:IncomePreview):void{this.incomePanel?.refresh(data);}
+  showIncomeDetails():void{this.incomePanel?.show();}
   private floorLabel: Label;
   private levelBadgeLabel: Label;
   private expFill: Sprite;
@@ -356,6 +485,10 @@ export class BattleUI extends Component {
 
   init(): void {
     fillScreen();
+    this.mobileLayout = !!sys.isMobile;
+    this.mobileShopUI = loadBattlePreferences().uiMode === 'mobile';
+    this.shopExpanded = !this.mobileShopUI;
+    this.layout = battleUILayout(view.getVisibleSize?.().width ?? 1280, this.mobileLayout);
     this.node.addComponent(UITransform).setContentSize(1280, 720);
     this.drawArena();
     const header = panel(this.node, 'roundBar', 0, 310, RUN_PROGRESS_WIDTH, 54, new Color(17, 35, 42), GOLD);
@@ -365,22 +498,39 @@ export class BattleUI extends Component {
     this.battleTimer.addComponent(UITransform).setContentSize(310, 34);
     this.battleTimerFill = this.battleTimer.addComponent(Graphics);
     this.battleTimer.setSiblingIndex(1); this.battleTimer.active = false;
-    panel(this.node, 'healthPanel', 490, 307, 220, 60, INK, GOLD, 'panel_side');
-    this.healthLabel = label(this.node, '100 / 100', 490, 320, 19, TEAL, 190);
-    this.waveLabel = label(this.node, '', 490, 294, 12, MUTED, 220);
-    this.waveTrack = panel(this.node, 'waveTrack', 0, 260, RUN_PROGRESS_WIDTH, 44, INK, GOLD, 'stage_track_panel');
-    picture(this.node, 'icon_life', 414, 320, 24);
+    panel(this.node, 'healthPanel', 490, 332, 252, 52, INK, GOLD, 'panel_side');
+    this.healthLabel = label(this.node, '100 / 100', 490, 340, 20, TEAL, 190);
+    this.healthLabel.node.getComponent(UITransform)!.setContentSize(190,24);
+    this.waveLabel = label(this.node, '', 490, 320, 12, MUTED, 236);
+    this.waveLabel.node.getComponent(UITransform)!.setContentSize(236,18);
+    this.waveTrackViewport = new Node('waveTrackViewport');this.node.addChild(this.waveTrackViewport);
+    this.waveTrackViewport.addComponent(UITransform).setContentSize(RUN_PROGRESS_WIDTH,44);
+    this.waveTrackViewport.setPosition(0,260,0);this.waveTrackViewport.addComponent(Mask).type=Mask.Type.GRAPHICS_RECT;
+    this.waveTrack = panel(this.waveTrackViewport, 'waveTrack', 0, 0, RUN_PROGRESS_WIDTH, 44, INK, GOLD, 'stage_track_panel');
+    this.waveTrackOpacity = this.waveTrack.addComponent(UIOpacity);
+    this.waveTrackOpacity.opacity=0;this.waveTrack.active=false;this.waveTrackViewport.active=false;
+    const trackTrigger=new Node('waveTrackTrigger');this.node.addChild(trackTrigger);
+    trackTrigger.addComponent(UITransform).setContentSize(RUN_PROGRESS_WIDTH+48,136);trackTrigger.setPosition(0,292,0);
+    trackTrigger.on(Node.EventType.TOUCH_START,this.noteActivity,this);
+    trackTrigger.on(Node.EventType.TOUCH_MOVE,this.noteActivity,this);
+    picture(this.node, 'icon_life', 414, 340, 24);
     this.capLabel = label(this.node, '0 / 1', 0, 55, 110, new Color(24, 91, 157), 440);
     this.capLabel.isBold = true; this.capLabel.horizontalAlign = Label.HorizontalAlign.CENTER;
     this.capLabel.node.setRotationFromEuler(0, 0, 0);
     this.capLabel.node.addComponent(UIOpacity).opacity = 150;
     this.capLabel.node.name = 'population'; this.capLabel.node.active = false;
 
-    const area = SHOP_DROP_AREA;
-    const dock = panel(this.node, 'shopDock', area.x, area.y, area.width, area.height,
+    const area = this.layout.shop;
+    const dock = this.shopDock = panel(this.node, 'shopDock', area.x, area.y, area.width, area.height,
       new Color(12, 25, 33), new Color(135, 113, 69), 'panel_dock');
     this.buildEconomy(dock);
     this.buildShop();
+    this.shopRewardDock = new Node('shopRewardDock'); this.node.addChild(this.shopRewardDock);
+    if (this.mobileLayout) {
+      const scale = Math.min(1.25, (area.width - 12) / SHOP_REWARD_AREA.width);
+      this.shopRewardDock.setScale(scale, scale, 1);
+      this.shopRewardDock.setPosition(area.x - SHOP_REWARD_AREA.x * scale, area.y - SHOP_REWARD_AREA.y * scale, 0);
+    }
     this.sellNode = panel(this.node, 'shopSale', area.x, area.y, area.width, area.height,
       new Color(35, 25, 30), new Color(142, 76, 72), null);
     this.sellBanner = panel(this.sellNode, 'sellBanner', 0, 0, 452, 88,
@@ -403,23 +553,26 @@ export class BattleUI extends Component {
     this.buildDebugMenu();
     this.loadBattleSettings();
     this.waveTransition = new WaveTransition(this.node);
-    for (const type of [Input.EventType.TOUCH_START, Input.EventType.TOUCH_MOVE, Input.EventType.MOUSE_DOWN, Input.EventType.KEY_DOWN] as const) input.on(type, this.noteActivity, this);
+    this.applyResponsiveHUD();
+    this.buildMobileShop();
+    this.syncShopVisibility();
   }
 
   private buildEconomy(dock: Node): void {
     this.economyRoot = new Node('economy'); dock.addChild(this.economyRoot);
-    this.economyRoot.setPosition(-402, 0, 0);
+    this.economyRoot.setPosition(-this.layout.shop.width / 2 + 82, 0, 0);
     const goldIcon = new Node('goldIcon'); goldIcon.addComponent(UITransform).setContentSize(22, 22);
     const goldSprite = goldIcon.addComponent(Sprite); goldSprite.sizeMode = Sprite.SizeMode.CUSTOM;
     this.shopHeader = new Node('shopHeader'); this.node.addChild(this.shopHeader);
-    this.shopHeader.addChild(goldIcon); goldIcon.setPosition(-55, -225, 0);
+    this.shopHeader.addChild(goldIcon); goldIcon.setPosition(-55, this.mobileLayout ? -152 : -198, 0);
     resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
       if (!err && goldSprite.isValid) goldSprite.spriteFrame = frame;
     });
-    this.goldLabel = label(this.shopHeader, '0', -13, -225, 22, GOLD, 65);
-    const rates = new Node('shopRates'); this.shopHeader.addChild(rates); rates.setPosition(-276, -225, 0);
+    this.goldLabel = label(this.shopHeader, '0', -13, this.mobileLayout ? -152 : -198, this.mobileLayout ? 28 : 24, GOLD, 85);
+    const rates = new Node('shopRates'); this.shopHeader.addChild(rates); rates.setPosition(this.mobileLayout ? -330 : -300, this.mobileLayout ? -152 : -198, 0);
+    this.incomePanel=new ShopIncomePanel(this.shopHeader,this.node,this.mobileLayout?-152:-198);
     for (let i = 0; i < 5; i++) {
-      const rate = label(rates, '0%', (i - 2) * 44, 0, 12, TIERS[i + 1], 42);
+      const rate = label(rates, '0%', (i - 2) * (this.mobileLayout ? 58 : 44), 0, this.mobileLayout ? 18 : 14, TIERS[i + 1], this.mobileLayout ? 58 : 42);
       rate.node.name = `cost${i + 1}`; this.rateLabels.push(rate);
     }
     this.economyControls = new Node('economyControls'); this.economyRoot.addChild(this.economyControls);
@@ -430,14 +583,14 @@ export class BattleUI extends Component {
       resources.load(UI_SPRITE.iconGold, SpriteFrame, (err, frame) => {
         if (!err && sprite.isValid) sprite.spriteFrame = frame;
       });
-      label(parent, `${amount}`, 54, y, 14, GOLD, 26);
+      label(parent, `${amount}`, 54, y, this.mobileLayout ? 20 : 14, GOLD, 30);
     };
-    this.buyExpBtn = button(this.economyControls, '', 0, 34, 148, 62,
+    this.buyExpBtn = button(this.economyControls, '', 0, this.mobileLayout ? 42 : 40, 148, 74,
       () => { if (this.canBuyExp && this.shopAvailable && !this.dragging) this.onBuyExp(); });
     this.buyExpBtn.name = 'buyExperience'; this.buyExpBtn.addComponent(UIOpacity);
     picture(this.buyExpBtn, 'badge_level', -52, 13, 24);
     this.levelBadgeLabel = label(this.buyExpBtn, '1', -52, 13, 14, GOLD, 24);
-    this.expLabel = label(this.buyExpBtn, '0 / 2', 12, 13, 11, MUTED, 96);
+    this.expLabel = label(this.buyExpBtn, '0 / 2', 12, 16, this.mobileLayout ? 18 : 14, MUTED, 96);
     const exp = new Node('experience'); this.buyExpBtn.addChild(exp); exp.setPosition(0, -3, 0);
     picture(exp, 'exp_bar_bg', 0, 0, 130, 8);
     this.expFill = picture(exp, 'exp_bar_fill', 0, 0, 126, 4, sprite => {
@@ -446,14 +599,15 @@ export class BattleUI extends Component {
     });
     picture(this.buyExpBtn, 'icon_exp', -46, -18, 18);
     this.buyExpLabel = this.buyExpBtn.getChildByName('text')!.getComponent(Label)!;
-    this.buyExpLabel.fontSize = 12; this.buyExpLabel.lineHeight = 16; this.buyExpLabel.node.setPosition(-17, -18, 0);
+    this.buyExpLabel.fontSize = this.mobileLayout ? 18 : 15; this.buyExpLabel.lineHeight = 22; this.buyExpLabel.node.setPosition(-17, -22, 0);
     this.buyExpLabel.node.getComponent(UITransform)!.setContentSize(42, 24);
     cost(this.buyExpBtn, EXP_PURCHASE.gold, -18);
-    const refresh = button(this.economyControls, '', 0, -34, 148, 62, () => { if (!this.shopContentOccupied && !this.dragging) this.onRefresh(); });
+    const refresh = button(this.economyControls, '', 0, this.mobileLayout ? -42 : -40, 148, 74, () => { if (!this.shopContentOccupied && !this.dragging) this.onRefresh(); });
     refresh.name = 'refresh'; picture(refresh, 'icon_refresh', -32, 0, 28);
     cost(refresh, 2, 0);
     const lock = new Node('lock'); lock.addComponent(UITransform).setContentSize(24, 24);
-    this.shopHeader.addChild(lock); lock.setPosition(354, -225, 0);
+    this.shopHeader.addChild(lock); lock.setPosition(354, this.mobileLayout ? -152 : -198, 0);
+    if(this.mobileLayout) lock.getComponent(UITransform)!.setContentSize(44,44);
     this.lockIcon = setUISkin(lock, 'btn_lock_off'); lock.on(Node.EventType.TOUCH_END, () => { if (!this.shopContentOccupied && !this.dragging) this.onLock(); });
     this.setLocked(false);
   }
@@ -461,23 +615,27 @@ export class BattleUI extends Component {
   private buildShop(): void {
     this.shopRoot = new Node('inventory'); this.node.addChild(this.shopRoot);
     for (let i = 0; i < 5; i++) {
-      const n = panel(this.shopRoot, `shop_${i}`, SHOP_CARDS.firstX + i * SHOP_CARDS.spacing,
-        SHOP_CARDS.y, 164, 104, new Color(25, 43, 50), TIERS[1], 'card_cost1');
-      n.setScale(SHOP_CARDS.scale, SHOP_CARDS.scale, 1); n.addComponent(UIOpacity);
-      const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(62, 62);
+      const p=this.layout.cardPosition(i), w=this.layout.cardWidth, h=this.layout.cardHeight;
+      const n = panel(this.shopRoot, `shop_${i}`, p.x, p.y, w, h, new Color(25, 43, 50), TIERS[1], 'card_cost1');
+      n.setScale(this.mobileLayout ? 1 : SHOP_CARDS.scale, this.mobileLayout ? 1 : SHOP_CARDS.scale, 1); n.addComponent(UIOpacity);
+      const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(this.mobileLayout ? 74 : 62, this.mobileLayout ? 74 : 62);
       const sprite = portrait.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;
       sprite.trim = false;
-      portrait.setPosition(0, 15, 0); n.addChild(portrait);
+      portrait.setPosition(0, this.mobileLayout ? 35 : 24, 0); n.addChild(portrait);
       const base = new Node('factionRing'); portrait.addChild(base);
-      drawFactionRing(base.addComponent(Graphics), 62, 0);
-      const stars = new Node('starBadge'); stars.addComponent(UITransform).setContentSize(48, 16);
-      n.addChild(stars); stars.setPosition(-51, -8, 0); setStarBadge(stars, 1);
+      drawFactionRing(base.addComponent(Graphics), this.mobileLayout ? 74 : 62, 0);
       const upgrade = panel(n, 'upgradeBadge', 55, 35, 52, 24, new Color(48, 34, 9, 245), new Color(255, 213, 80), null);
       const upgradeText = label(upgrade, '', 0, 0, 17, new Color(255, 231, 117), 50);
       upgradeText.node.name = 'text'; upgradeText.isBold = true; upgrade.active = false;
-      const card: ShopCard = { node: n, portrait: sprite, name: label(n, '', -19, -28, 17, TEXT, 110),
-        price: label(n, '', 57, -28, 16, GOLD, 40), role: label(n, '', -49, 21, 10, MUTED, 65),
-        border: n.getComponent(Graphics)!, lockOverlay: picture(n, 'card_lock_overlay', 0, 0, 164, 104).node, unitId: null };
+      // The five 328x208 card skins share a price box centered at (278,160).
+      const priceX = w * (278 / 328 - .5), priceY = h * (.5 - 160 / 208);
+      const card: ShopCard = { node: n, portrait: sprite, name: label(n, '', this.mobileLayout ? 0 : -16, this.mobileLayout ? -16 : -25, this.mobileLayout ? 23 : 19, TEXT, this.mobileLayout ? w-14 : 122),
+        price: label(n, '', priceX, priceY, this.mobileLayout ? 20 : 18, GOLD, w * 84 / 328 - 8), role: label(n, '', 0, this.mobileLayout ? -73 : -48, this.mobileLayout ? 16 : 13, MUTED, this.mobileLayout ? w-14 : 150),
+        border: n.getComponent(Graphics)!, lockOverlay: picture(n, 'card_lock_overlay', 0, 0, w, h).node, unitId: null };
+      card.price.enableWrapText=false;card.price.overflow=Label.Overflow.SHRINK;
+      card.name.enableWrapText=false;card.name.overflow=Label.Overflow.SHRINK;
+      card.role.enableWrapText=false;card.role.overflow=Label.Overflow.SHRINK;
+      if(this.mobileLayout)upgrade.setPosition(w/2-29,56,0);
       card.lockOverlay.active = this.locked;
       this.shopSlots.push(card);
       n.on(Node.EventType.TOUCH_END, () => { if (this.shopAvailable && !this.shopContentOccupied && !this.openingShopLocked && !this.dragging && card.unitId) this.onBuy(i); });
@@ -485,20 +643,20 @@ export class BattleUI extends Component {
   }
 
   private buildCommand(): void {
-    const command = panel(this.node, 'command', 482, SHOP_DROP_AREA.y, 212, 150,
+    const command = panel(this.node, 'command', this.layout.commandX, this.layout.shop.y, this.mobileLayout ? 240 : 212, this.layout.shop.height,
       new Color(16, 33, 40), new Color(85, 113, 109), 'panel_side');
-    this.fightBtn = button(command, '开始战斗', 0, 32, 188, 42, () => this.onFight(), true);
+    this.fightBtn = button(command, '开始战斗', 0, this.mobileLayout ? 70 : 48, this.mobileLayout ? 216 : 188, this.mobileLayout ? 60 : 48, () => this.onFight(), true);
     picture(this.fightBtn, 'icon_swords', -76, 0, 22);
     this.fightBtn.getChildByName('text')!.setPosition(10, 0, 0);
-    this.nextWaveBtn = button(command, '下一关', 0, 32, 188, 42, () => this.onNextWave(), true);
+    this.nextWaveBtn = button(command, '下一关', 0, this.mobileLayout ? 70 : 48, this.mobileLayout ? 216 : 188, this.mobileLayout ? 60 : 48, () => this.onNextWave(), true);
     this.nextWaveBtn.active = false;
-    const speed = button(command, '', 0, -13, 188, 30,
+    const speed = button(command, '', 0, this.mobileLayout ? 3 : -8, this.mobileLayout ? 216 : 188, this.mobileLayout ? 48 : 38,
       () => { this.setSpeed(this.speed % 3 + 1); this.onSpeed(this.speed); });
     picture(speed, 'icon_speed', -76, 0, 20);
-    this.speedLabel = label(speed, '×1', 0, 0, 15, MUTED, 150);
-    this.homeButton = button(command, '设置', 0, -50, 188, 28, () => this.openMainMenu());
+    this.speedLabel = label(speed, '×1', 0, 0, this.mobileLayout ? 23 : 18, MUTED, 150);
+    this.homeButton = button(command, '设置', 0, -56, this.mobileLayout ? 216 : 188, this.mobileLayout ? 48 : 36, () => this.openMainMenu());
     this.homeButton.name = 'mainMenuButton';
-    this.homeButton.getChildByName('text')!.getComponent(Label)!.fontSize = 13;
+    this.homeButton.getChildByName('text')!.getComponent(Label)!.fontSize = this.mobileLayout ? 23 : 17;
   }
 
   private buildSettlement(): void {
@@ -521,7 +679,7 @@ export class BattleUI extends Component {
 
   private buildUnitDetails(): void {
     // Keep the full detail panel above the command dock, including equipment.
-    this.unitPanel = panel(this.node, 'unitDetail', 450, 35, 280, 478, INK, GOLD, 'tooltip_panel');
+    this.unitPanel = panel(this.node, 'unitDetail', 450, 66, 280, 478, INK, GOLD, 'tooltip_panel');
     const portrait = new Node('portrait'); portrait.addComponent(UITransform).setContentSize(70, 70);
     this.unitPanel.addChild(portrait); portrait.setPosition(-92, 165, 0);
     this.unitPortrait = portrait.addComponent(Sprite); this.unitPortrait.sizeMode = Sprite.SizeMode.CUSTOM;
@@ -703,6 +861,7 @@ export class BattleUI extends Component {
     this.equipmentEditable = editable;
     this.equipmentSlots.forEach((slot, i) => {
       const item = items[i]; slot.icon.node.active = !!item;
+      if(item)equipmentQualityBadge(slot.node,item,0,-32,54,10);else{const badge=slot.node.getChildByName('equipmentQualityBadge');if(badge)badge.active=false;}
       slot.stacks.node.parent!.active = !!item && (item.attackSpeedPerAttack > 0 || (item.physicalPowerPerAttack ?? 0) > 0 || !!item.damageTakenStacks);
       slot.stacks.string = String(Math.max(0, Math.floor(item?.damageTakenStacks ? Math.min(damageStacks, item.damageTakenStacks.maxStacks) : stacks)));
       if (slot.node.name !== (item?.id ?? 'empty')) {
@@ -742,7 +901,7 @@ export class BattleUI extends Component {
         node.setPosition(local.x, local.y, 0); node.setSiblingIndex(root.children.length - 1);
         this.onBackpackDrag(slot.index, event);
       });
-      const home = () => node.setPosition(-40 + (i % 2) * 80, 112 - Math.floor(i / 2) * 80, 0);
+      const home = () => node.setPosition(-40 + (i % 2) * 80, this.mobileLayout ? 145 - Math.floor(i / 2) * 90 : 112 - Math.floor(i / 2) * 80, 0);
       node.on(Node.EventType.TOUCH_END, (event) => {
         const wasMoved = moved; moved = false;
         this.hideEquipmentTooltip(); home(); if (wasMoved && this.dragging) this.clearSellPreview();
@@ -752,8 +911,8 @@ export class BattleUI extends Component {
       });
       node.on(Node.EventType.TOUCH_CANCEL, () => { this.hideEquipmentTooltip(); home(); if (moved && this.dragging) this.clearSellPreview(); moved = false; });
     }
-    button(root, '‹', -67, -179, 28, 24, () => { this.backpackPage = Math.max(0, this.backpackPage - 1); this.refreshBackpack(this.backpackData, this.backpackEditable); });
-    button(root, '›', 67, -179, 28, 24, () => { this.backpackPage++; this.refreshBackpack(this.backpackData, this.backpackEditable); });
+    button(root, '‹', -67, -179, 28, 24, () => { this.backpackPage = Math.max(0, this.backpackPage - 1); this.refreshBackpack(this.backpackData, this.backpackEditable); }).name='backpackPrevious';
+    button(root, '›', 67, -179, 28, 24, () => { this.backpackPage++; this.refreshBackpack(this.backpackData, this.backpackEditable); }).name='backpackNext';
     this.equipmentTooltip = panel(this.node, 'equipmentTooltip', -216, 45, 360, 300,
       new Color(14, 20, 29, 250), new Color(119, 112, 76), null);
     this.equipmentTooltipHeader = new Node('equipmentHeader'); this.equipmentTooltip.addChild(this.equipmentTooltipHeader);
@@ -769,14 +928,7 @@ export class BattleUI extends Component {
     this.equipmentTooltipTitle.horizontalAlign = Label.HorizontalAlign.LEFT;
     this.equipmentTooltipTitle.node.getComponent(UITransform)!.setAnchorPoint(0, 1);
     this.equipmentTooltipTitle.node.getComponent(UITransform)!.setContentSize(234, 52);
-    this.equipmentTooltipText = label(this.equipmentTooltip, '', -162, 0, 15, TEXT, 324);
-    this.equipmentTooltipText.overflow = Label.Overflow.RESIZE_HEIGHT;
-    this.equipmentTooltipText.enableWrapText = true;
-    this.equipmentTooltipText.node.getComponent(UITransform)!.setAnchorPoint(0, 1);
-    this.equipmentTooltipText.node.getComponent(UITransform)!.setContentSize(324, 23);
-    this.equipmentTooltipText.lineHeight = 23;
-    this.equipmentTooltipText.horizontalAlign = Label.HorizontalAlign.LEFT;
-    this.equipmentTooltipText.verticalAlign = Label.VerticalAlign.TOP;
+    this.equipmentTooltipText = createEquipmentDescription(this.equipmentTooltip, 324);
     this.equipmentTooltip.active = false;
     this.traitPanel = new TraitPanel(this.node);
     this.sideTabs = [button(this.node, '羁绊', -556, 218, 84, 30, () => this.setSideTab('traits')),
@@ -786,31 +938,31 @@ export class BattleUI extends Component {
   }
   private showEquipmentTooltip(item: EquipmentDisplayItem | undefined, x: number): void {
     if (!item || !this.equipmentTooltip) { this.hideEquipmentTooltip(); return; }
-    const stats = equipmentStatRows(item);
     this.equipmentTooltipTitle.string = item.name;
     this.equipmentTooltipTitle.color = new Color(...equipmentNameColor(item));
-    this.equipmentTooltipText.string = equipmentDescriptionText(item);
-    // Force the wrapped paragraph height before sizing the card; long effects stay visible.
+    equipmentQualityBadge(this.equipmentTooltipHeader,item,43,-83,78,12);
     this.equipmentTooltip.active = true;
-    this.equipmentTooltipText.updateRenderData(true);
-    const height = 130 + Math.ceil(stats.length / 3) * 36 + this.equipmentTooltipText.node.getComponent(UITransform)!.contentSize.height;
-    const top = height / 2;
-    this.equipmentTooltip.getComponent(UITransform)!.setContentSize(360, height);
-    paintPanel(this.equipmentTooltip.getComponent(Graphics)!, 360, height, new Color(14, 20, 29, 250), new Color(119, 112, 76));
-    this.equipmentTooltipHeader.setPosition(0, top, 0);
     const previous = this.equipmentTooltip.getChildByName('equipmentStats');
     if (previous) { previous.active = false; previous.destroy(); }
     const icons = equipmentStatIcons(this.equipmentTooltip, item, 324);
     this.equipmentTooltipRows = icons.rows;
-    icons.root.setPosition(0, top - 110, 0);
-    this.equipmentTooltipText.node.setPosition(-162, top - 110 - icons.height, 0);
+    const layout = () => {
+      const height = 130 + icons.height + this.equipmentTooltipText.node.getComponent(UITransform)!.contentSize.height;
+      const top = height / 2;
+      this.equipmentTooltip.getComponent(UITransform)!.setContentSize(360, height);
+      paintPanel(this.equipmentTooltip.getComponent(Graphics)!, 360, height, new Color(14, 20, 29, 250), new Color(119, 112, 76));
+      this.equipmentTooltipHeader.setPosition(0, top, 0);
+      icons.root.setPosition(0, top - 110, 0);
+      this.equipmentTooltipText.node.setPosition(-162, top - 110 - icons.height, 0);
+      this.equipmentTooltip.setPosition(x, Math.max(-344 + top, Math.min(45, 344 - top)), 0);
+    };
+    setEquipmentDescription(this.equipmentTooltipText, item, layout);
     if (this.equipmentTooltipIconPath !== item.icon) {
       this.equipmentTooltipIconPath = item.icon; this.equipmentTooltipIcon.spriteFrame = null;
       loadArtSprite(item.icon, (err, frame) => {
         if (!err && this.equipmentTooltipIcon.isValid && this.equipmentTooltipIconPath === item.icon) this.equipmentTooltipIcon.spriteFrame = frame;
       });
     }
-    this.equipmentTooltip.setPosition(x, Math.max(-344 + top, Math.min(45, 344 - top)), 0);
     this.equipmentTooltip.setSiblingIndex(this.node.children.length - 1);
     this.equipmentTooltip.active = true;
   }
@@ -827,7 +979,7 @@ export class BattleUI extends Component {
     this.equipmentDetail = root;
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END])
       root.on(type, (event: any) => { event.propagationStopped = true; });
-    label(root, '装备详情', -24, 213, 16, GOLD, 190).isBold = true;
+    label(root, item.consumable?'道具详情':'装备详情', -24, 213, 16, GOLD, 190).isBold = true;
     const close = button(root, '×', 119, 216, 28, 28, () => this.hideEquipmentDetail());
     close.name = 'closeEquipmentDetail';
     const iconNode = new Node('equipmentDetailIcon'); root.addChild(iconNode);
@@ -840,6 +992,7 @@ export class BattleUI extends Component {
     title.isBold = true; title.enableWrapText = true; title.lineHeight = 24;
     title.node.name = 'equipmentDetailName';
     title.node.getComponent(UITransform)!.setContentSize(154, 62);
+    equipmentQualityBadge(root,item,29,121,106,12);
     const viewport = new Node('equipmentDetailViewport'); root.addChild(viewport);
     const height = actions ? 254 : 316;
     viewport.addComponent(UITransform).setContentSize(248, height); viewport.setPosition(0, 98 - height / 2, 0);
@@ -849,22 +1002,19 @@ export class BattleUI extends Component {
     content.setPosition(0, height / 2, 0);
     const stats = equipmentStatIcons(content, item, 240, 2, 24, 16, 36);
     stats.root.setPosition(0, -18, 0);
-    const heading = label(content, equipmentEffectText(item) ? '装备效果' : '装备简介', 0, -stats.height - 28, 14, TEAL, 240);
+    const heading = label(content, equipmentEffectText(item) ? item.consumable?'道具效果':'装备效果' : '装备简介', 0, -stats.height - 28, 14, TEAL, 240);
     heading.node.active = !!equipmentDescriptionText(item);
     heading.isBold = true;
-    const effect = label(content, equipmentDescriptionText(item), -120, -stats.height - 48, 15, TEXT, 240);
-    effect.node.name = 'equipmentDetailEffect'; effect.lineHeight = 23;
-    effect.enableWrapText = true; effect.overflow = Label.Overflow.RESIZE_HEIGHT;
-    effect.horizontalAlign = Label.HorizontalAlign.LEFT; effect.verticalAlign = Label.VerticalAlign.TOP;
-    effect.node.getComponent(UITransform)!.setAnchorPoint(0, 1);
-    effect.updateRenderData(true);
-    transform.setContentSize(248, Math.max(height, stats.height + 64 + effect.node.getComponent(UITransform)!.contentSize.height));
+    const effect = createEquipmentDescription(content, 240);
+    effect.node.name = 'equipmentDetailEffect'; effect.node.setPosition(-120, -stats.height - 48, 0);
+    setEquipmentDescription(effect, item, () => transform.setContentSize(248,
+      Math.max(height, stats.height + 64 + effect.node.getComponent(UITransform)!.contentSize.height)));
     const scroll = viewport.addComponent(ScrollView); scroll.content = content;
     scroll.horizontal = false; scroll.vertical = true; scroll.inertia = true;
     scroll.elastic = false; scroll.cancelInnerEvents = true;
     if (actions) {
       const guarded = (action: () => void) => () => { if (this.equipmentDetail === root && root.active) action(); };
-      button(root, '装备', -65, -192, 116, 44, guarded(actions.equip), true).name = 'equipReserveItem';
+      button(root, item.consumable?'使用':'装备', -65, -192, 116, 44, guarded(actions.equip), true).name = 'equipReserveItem';
       button(root, `回收 +${actions.gold}金`, 65, -192, 116, 44, guarded(actions.recycle)).name = 'recycleReserveItem';
     }
     if (this.combatStatsPanel) this.combatStatsPanel.active = false;
@@ -887,7 +1037,7 @@ export class BattleUI extends Component {
   }
 
   private buildDebugMenu(): void {
-    const toggle = button(this.mainMenuContent, '调试工具', 0, -164, 480, 44, () => {
+    const toggle = button(this.mainMenuContent, '调试工具', 0, -177, 480, 40, () => {
       this.mainMenuPanel.active = false; this.debugPanel.active = true;
       this.debugPanel.setSiblingIndex(this.node.children.length - 1); this.renderDebugMenu();
     });
@@ -982,10 +1132,11 @@ export class BattleUI extends Component {
     this.backpackData = items; this.backpackEditable = editable;
     const pageSize = this.backpackSlots.length;
     const pages = Math.max(1, Math.ceil(items.length / pageSize)); this.backpackPage = Math.min(this.backpackPage, pages - 1);
-    this.backpackCaption.string = `${items.length}件 · ${this.backpackPage + 1}/${pages}页\n${editable ? '拖至商店出售' : '点击查看 · 操作锁定'}`;
+    this.backpackCaption.string = `${items.length}件 · ${this.backpackPage + 1}/${pages}页\n${editable ? this.mobileShopUI?'拖至左下商店':'拖至商店出售' : '点击查看 · 操作锁定'}`;
     this.backpackSlots.forEach((slot, i) => {
       const index = this.backpackPage * pageSize + i, item = items[index]; slot.index = item ? index : -1;
       slot.text.string = ''; slot.icon.node.active = !!item;
+      if(item?.kind==='equipment')equipmentQualityBadge(slot.node,item,0,-30,54,10);else{const badge=slot.node.getChildByName('equipmentQualityBadge');if(badge)badge.active=false;}
       const iconPath = item?.icon ?? '';
       if (slot.iconPath !== iconPath) {
         // Resource paths contain '/', which Creator rejects in node names.
@@ -1029,8 +1180,8 @@ export class BattleUI extends Component {
       && (!row.sourceKind || metric === 'damage'))
       .sort((a, b) => value(b) - value(a) || a.id - b.id);
     const max = Math.max(1, ...rows.map(value));
-    const spacing = Math.min(28, 260 / Math.max(1, rows.length));
-    const fontSize = spacing < 24 ? 10 : 11;
+    const spacing = Math.min(28, (this.mobileLayout ? 224 : 260) / Math.max(1, rows.length));
+    const fontSize = this.mobileLayout ? 16 : spacing < 24 ? 10 : 11;
     rows.forEach((row, index) => {
       if (!this.combatStatBars[index]) {
         const node = new Node('combatStatRow'); node.addComponent(UITransform).setContentSize(208, 28);
@@ -1040,7 +1191,7 @@ export class BattleUI extends Component {
           name: label(node, '', -39, 4, 11, TEXT, 130), value: label(node, '', 77, 4, 11, GOLD, 54) };
       }
       const view = this.combatStatBars[index]; view.node.active = true;
-      view.node.setPosition(0, 140 - index * spacing, 0);
+      view.node.setPosition(0, (this.mobileLayout ? 124 : 140) - index * spacing, 0);
       view.name.fontSize = fontSize; view.value.fontSize = fontSize;
       view.name.string = `${row.name} ${row.star}★`; view.value.string = `${Math.round(value(row))}`;
       view.bar.clear(); view.bar.fillColor = new Color(5, 16, 23); view.bar.rect(-104, -11, 208, 7); view.bar.fill();
@@ -1123,12 +1274,16 @@ export class BattleUI extends Component {
   }
 
   onDestroy(): void {
+    this.incomePanel?.hide();
     this.openingPopup.clear(); this.equipmentPopup.clear();
     this.waveTransition?.stop();
-    for (const type of [Input.EventType.TOUCH_START, Input.EventType.TOUCH_MOVE, Input.EventType.MOUSE_DOWN, Input.EventType.KEY_DOWN] as const) input.off(type, this.noteActivity, this);
     if (isValid(this.backdrop, true)) this.backdrop.destroy();
   }
-  noteActivity(): void { this.waveIdle = 0; if (this.waveTrack) this.waveTrack.active = true; }
+  noteActivity(): void {
+    this.waveIdle = 0;
+    if (this.waveTrack) this.waveTrack.active = true;
+    if (this.waveTrackViewport) this.waveTrackViewport.active = true;
+  }
   setBoardCenter(x: number, y: number): void {
     this.capLabel.node.setPosition(x, y + 28, 0);
   }
@@ -1231,12 +1386,11 @@ export class BattleUI extends Component {
       card.role.string = id ? (unitRoleLabel(data.role, data.damageType) || UNIT_ROLES[data.role ?? ''] || '') : '';
       const tint = new Color(255, 255, 255); if (data?.tint) tint.fromHEX(data.tint); card.portrait.color = tint;
       card.portrait.node.active = !!id;
-      card.node.getChildByName('starBadge')!.active = !!id;
       const upgrade = card.node.getChildByName('upgradeBadge')!;
       const rank = data?.upgradeStar;
       upgrade.active = !!id && (rank === 2 || rank === 3);
       upgrade.getChildByName('text')!.getComponent(Label)!.string = upgrade.active ? '★'.repeat(rank!) : '';
-      paintPanel(card.border, 164, 104, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
+      paintPanel(card.border, this.layout.cardWidth, this.layout.cardHeight, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
       const key: UISkinKey = id ? `card_cost${Math.max(1, Math.min(5, data.cost))}` as UISkinKey : 'card_empty';
       setUISkin(card.node, key, card.border);
       card.portrait.spriteFrame = null;
@@ -1288,7 +1442,6 @@ export class BattleUI extends Component {
     this.phaseLabel.string = '传送门已开启';
   }
   refreshRun(health: number, max: number, wave: number, total: number, name: string, info?: WaveConfig, stageCount?: number, encounterPlan?: string[]): void {
-    this.noteActivity();
     this.healthLabel.string = `${health} / ${max}`;
     this.healthLabel.color = health <= max / 3 ? new Color(229, 139, 122) : TEAL;
     this.floorLabel.string = info?.stage ? `${info.stage}-${info.round}` : `${wave} / ${total}`;
@@ -1323,35 +1476,46 @@ export class BattleUI extends Component {
     setUISkin(this.lockIcon.node, locked ? 'btn_lock_on' : 'btn_lock_off');
     this.shopSlots.forEach(card => { card.lockOverlay.active = locked; });
   }
-  isInSellArea(x: number, y: number): boolean { return this.shopAvailable && containsShopDrop(x, y); }
-  showSellPreview(name: string, gold: number, hover: boolean, population = this.deployed): void {
+  isInSellArea(x: number, y: number): boolean {
+    if (this.mobileShopUI) return this.shopAvailable && Math.hypot(x-this.shopToggle.position.x,y-this.shopToggle.position.y)<=SHOP_ICON_SIZE/2+8;
+    const a=this.layout.shop;return this.shopAvailable&&Math.abs(x-a.x)<=a.width/2&&Math.abs(y-a.y)<=a.height/2;
+  }
+  showSellPreview(name: string, gold: number, hover: boolean, population = this.deployed, allowed = true): void {
     if (!this.shopAvailable) return;
     this.hideEquipmentDetail();
     this.dragging = true; this.shopRoot.active = false; this.economyRoot.active = false;
+    if (this.mobileShopUI) this.shopExpanded=false;
+    this.syncShopVisibility();
     this.shopHeader.active = false;
     for (const name of ['openingEncounter', 'stageReward', 'equipmentReward']) {
-      const content = this.node.getChildByName(name); if (content) content.active = false;
+      const content = this.shopRewardDock.getChildByName(name); if (content) content.active = false;
     }
-    this.sellNode.active = true; this.capLabel.node.active = true; this.unitPanel.active = false;
+    this.sellNode.active = !this.mobileShopUI; this.capLabel.node.active = true; this.unitPanel.active = false;
     this.updateCap(population);
-    this.sellLabel.string = `${hover ? '松手出售' : '出售'} · ${name}  +${gold}金`;
-    this.sellLabel.color = hover ? GOLD : TEXT;
-    const area = SHOP_DROP_AREA;
+    this.sellLabel.string = allowed ? `${hover ? '松手出售' : '出售'} · ${name}  +${gold}金` : '1-1 不能出售棋子';
+    this.sellLabel.color = allowed && hover ? GOLD : TEXT;
+    this.shopSaleHint.string=this.sellLabel.string; this.shopSaleHint.node.active=this.mobileShopUI;
+    this.shopToggle.setScale(hover&&this.mobileShopUI?1.08:1,hover&&this.mobileShopUI?1.08:1,1);
+    const area = this.layout.shop;
     paintPanel(this.sellNode.getComponent(Graphics)!, area.width, area.height,
       hover ? new Color(62, 34, 34) : new Color(35, 25, 30), hover ? GOLD : new Color(142, 76, 72));
     setUISkin(this.sellBanner, hover ? 'sell_zone_hot' : 'sell_zone', this.sellBanner.getComponent(Graphics)!);
   }
   clearSellPreview(): void {
     this.dragging = false; this.sellNode.active = false; this.capLabel.node.active = false;
+    if(this.shopSaleHint)this.shopSaleHint.node.active=false;
+    this.shopToggle?.setScale(1,1,1);
     const ordinaryShopVisible = this.shopAvailable && !this.openingShopLocked && !this.shopContentOccupied;
     this.economyRoot.active = true; this.economyControls.active = ordinaryShopVisible;
     this.shopHeader.active = ordinaryShopVisible;
     for (const name of ['openingEncounter', 'stageReward', 'equipmentReward']) {
-      const content = this.node.getChildByName(name); if (content) content.active = true;
+      const content = this.shopRewardDock.getChildByName(name); if (content) content.active = true;
     }
     this.shopRoot.active = this.shopAvailable && !this.openingShopLocked; this.updateCap();
+    this.syncShopVisibility();
   }
   showUnitDetail(data: UnitDetailData): void {
+    if(this.mobileShopUI){this.shopExpanded=false;this.syncShopVisibility();}
     this.hideEquipmentDetail();
     const key = data.detailKey ?? `${data.name}:${data.artId}:${data.side}`;
     if (this.detailKey !== key) { this.detailKey = key; this.closeDetailPopup(); }
@@ -1414,13 +1578,19 @@ export class BattleUI extends Component {
   get unitDetailVisible(): boolean { return this.unitPanel.active; }
   showWarn(msg: string): void { this.warnLabel.string = msg; this.warnTimer = 2; }
   update(dt: number): void {
+    this.waveTransition?.update(dt);
     this.combatStatsPanel.active = !this.unitPanel.active && !this.equipmentDetail?.active;
     if (this.resultTimer > 0) {
       this.resultTimer = Math.max(0, this.resultTimer - Math.max(0, dt));
       if (this.resultTimer === 0) this.resultPanel.active = false;
     }
-    this.waveIdle += Math.max(0, dt);
-    if (this.waveIdle >= 3) this.waveTrack.active = false;
+    const elapsed=Math.max(0,dt),previousIdle=this.waveIdle;
+    this.waveIdle += elapsed;
+    const showing=this.waveIdle<3,animationTime=showing?elapsed:previousIdle<3?this.waveIdle-3:elapsed;
+    this.waveTrackProgress=Math.max(0,Math.min(1,this.waveTrackProgress+(showing?1:-1)*animationTime/.24));
+    const p=this.waveTrackProgress,smooth=p*p*(3-2*p);
+    this.waveTrack.setPosition(0,62*(1-smooth),0);this.waveTrackOpacity.opacity=Math.round(255*smooth);
+    this.waveTrack.active=p>0;this.waveTrackViewport.active=p>0;
     if (this.warnTimer > 0) { this.warnTimer -= dt; if (this.warnTimer <= 0) this.warnLabel.string = ''; }
   }
 }

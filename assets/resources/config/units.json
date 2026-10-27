@@ -1,5 +1,51 @@
 [
   {
+    "id":"hushrope_ranger","name":"缄影游侠","description":"以绳索穿梭于险境的探险游侠，在弧线回旋间向敌人的破绽连续射击。",
+    "cost":5,"role":"caster","damageType":"physical","artId":"hushrope_ranger",
+    "hp":900,"atk":75,"armor":35,"mr":35,"atkSpeed":0.75,"range":4,"moveTicks":6,
+    "startMana":20,"maxMana":80,"manaPerHit":10,"skillId":"rope_shadow_hunt",
+    "physicalPower":0,"spellPower":0,"critChance":0.25,"lifesteal":0,"damageAmp":0,"damageReduction":0,
+    "basicAttackFx":"arrow","basicAttackTint":[221,196,140]
+  },
+  {
+    "id":"sandsea_navigator","name":"沙海领航者","description":"手持星盘法杖的探险家领袖，以御沙结界护佑同行者，再挥出向前奔涌的沙浪。",
+    "cost":4,"role":"caster","damageType":"physical","artId":"sandsea_navigator",
+    "hp":1000,"atk":65,"armor":40,"mr":40,"atkSpeed":0.7,"range":1,"moveTicks":6,
+    "startMana":40,"maxMana":100,"manaPerHit":10,"skillId":"sand_compass",
+    "physicalPower":0,"spellPower":0,"critChance":0.25,"lifesteal":0,"damageAmp":0,"damageReduction":0
+  },
+  {
+    "id":"wayward_alchemist","name":"诡途炼金师","description":"背负魔法行囊的探险炼金师，让诡秘蚀剂逐一侵染敌人。",
+    "cost":3,"role":"caster","damageType":"magic","artId":"wayward_alchemist",
+    "hp":700,"atk":45,"armor":25,"mr":25,"atkSpeed":0.75,"range":3,"moveTicks":6,
+    "startMana":0,"maxMana":50,"manaPerHit":10,"skillId":"wayward_corrosion",
+    "physicalPower":0,"spellPower":0,"critChance":0.25,"lifesteal":0,"damageAmp":0,"damageReduction":0,
+    "basicAttackFx":"fireball","basicAttackTint":[181,112,227]
+  },
+  {
+    "id":"windlance_huntress", "name":"逐风枪姬", "description":"循着旗帜探索远方的长枪少女，在逐风猎势中以每一次击杀磨砺锋芒。",
+    "cost":3,"role":"marksman","damageType":"physical","classTraitId":"swift_marksman","artId":"windlance_huntress",
+    "hp":750,"atk":65,"armor":30,"mr":30,"atkSpeed":0.85,"range":4,"moveTicks":6,
+    "startMana":0,"maxMana":60,"manaPerHit":10,"skillId":"windward_hunt",
+    "physicalPower":0,"spellPower":0,"critChance":0.25,"lifesteal":0,"damageAmp":0,"damageReduction":0,
+    "basicAttackFx":"arrow","basicAttackTint":[162,216,237]
+  },
+  {
+    "id": "starlamp_guide", "name": "星灯引路者", "description": "提着星灯穿越险境的探险家，负伤时以坚韧的守护为同伴开路。",
+    "cost": 2, "role": "tank", "damageType": "physical", "artId": "starlamp_guide",
+    "hp": 950, "atk": 40, "armor": 45, "mr": 35, "atkSpeed": 0.6, "range": 1, "moveTicks": 6,
+    "startMana": 0, "maxMana": 0, "manaPerHit": 10, "skillId": "lone_lantern_guard",
+    "physicalPower": 0, "spellPower": 0, "critChance": 0.25, "lifesteal": 0, "damageAmp": 0, "damageReduction": 0
+  },
+  {
+    "id": "startrail_fox", "name": "星罗探险狐", "description": "带着罗盘与地图踏上旅途的小小探险家，用星罗鼓舞为身边的伙伴指引前路。",
+    "cost": 1, "role": "caster", "damageType": "magic", "artId": "startrail_fox",
+    "hp": 650, "atk": 50, "armor": 20, "mr": 20, "atkSpeed": 0.7, "range": 1, "moveTicks": 6,
+    "startMana": 0, "maxMana": 60, "manaPerHit": 10, "skillId": "startrail_inspiration",
+    "physicalPower": 0, "spellPower": 0, "critChance": 0.25, "lifesteal": 0, "damageAmp": 0, "damageReduction": 0,
+    "basicAttackFx": "fireball", "basicAttackTint": [240, 204, 111]
+  },
+  {
     "id": "gravity_executor",
     "name": "引力执行官",
     "description": "身披厚重紫黑星甲，背后悬浮一个稳定的小型引力核心。",

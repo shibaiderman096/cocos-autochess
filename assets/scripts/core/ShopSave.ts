@@ -74,6 +74,9 @@ export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], bo
 }
 
 export interface SaveDataV2 extends SaveData {
+  /** Stage-entry subsidies already handled; retained across reloads and debug revisits. */
+  earlyGoldStages?: number[];
+  explorerProgress?: import('./ExplorerProgress').ExplorerProgress;
   unlockedUnits?: string[];
   traitChoiceRoll?: number;
   pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
@@ -150,7 +153,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       while (used.has(nextUid)) nextUid++;
       const uid = Number.isSafeInteger(u.uid) && u.uid > 0 && u.uid < Number.MAX_SAFE_INTEGER && !used.has(u.uid) ? u.uid : nextUid;
       used.add(uid);
-      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentSpellPower === undefined ? {} : { permanentSpellPower: safeInt(u.permanentSpellPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
+      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentPhysicalPower === undefined ? {} : { permanentPhysicalPower: safeInt(u.permanentPhysicalPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentSpellPower === undefined ? {} : { permanentSpellPower: safeInt(u.permanentSpellPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
     }
   }
 
@@ -179,6 +182,9 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
   return {
     ...v1,
     version: SAVE_VERSION,
+    ...(d.earlyGoldStages === undefined ? {} : { earlyGoldStages: Array.isArray(d.earlyGoldStages)
+      ? [...new Set(d.earlyGoldStages.filter(stage => stage === 2 || stage === 3))] : [] }),
+    ...(d.explorerProgress === undefined ? {} : { explorerProgress: JSON.parse(JSON.stringify(d.explorerProgress)) }),
     ...(d.unlockedUnits === undefined ? {} : { unlockedUnits: JSON.parse(JSON.stringify(d.unlockedUnits)) }),
     traitChoiceRoll: safeInt(d.traitChoiceRoll, 0, 0, Number.MAX_SAFE_INTEGER),
     ...(d.pendingTraitChoice === undefined ? {} : { pendingTraitChoice: JSON.parse(JSON.stringify(d.pendingTraitChoice)) }),

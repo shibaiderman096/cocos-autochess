@@ -2,7 +2,7 @@ import type { EquipmentConfigData } from '../battle/types';
 import type { EnemyPowerData } from './EnemyPowerTypes';
 import type { EquipmentPolicyConfig, EquipmentQuota, EquipmentTier } from './EquipmentPolicyTypes';
 import type { WaveKind } from './EnemyGenerationTypes';
-import { stableEnemyJson, combatEquipmentIdentity, adoptEquipmentCatalogueAdditions } from './EnemyGenerationTypes';
+import { stableEnemyJson, combatEquipmentIdentity, adoptEquipmentCatalogueAdditions, adoptEquipmentBalanceChanges } from './EnemyGenerationTypes';
 import type { EnemyRoleConfig } from './EnemyFormationTypes';
 import { FORMATION_ROLES } from './EnemyFormationTypes';
 
@@ -72,6 +72,7 @@ export function sameEquipmentIdentity(saved:string,current:string):boolean {
       previous.policy.enemy.itemTags = next.policy.enemy.itemTags;
     }
     previous.items = adoptEquipmentCatalogueAdditions(previous.items, next.items);
+    previous.items = adoptEquipmentBalanceChanges(previous.items, next.items);
     const tiers=next.policy?.tiers,oldTiers=previous.policy?.tiers;
     if (tiers && oldTiers && Object.keys(oldTiers).every(id => id in tiers)) {
       const added = Object.keys(tiers).filter(id => !(id in oldTiers));

@@ -8,6 +8,12 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  wayward_alchemist: 'art/units/explorer/wayward_alchemist/spriteFrame',
+  sandsea_navigator: 'art/units/explorer/sandsea_navigator/spriteFrame',
+  hushrope_ranger: 'art/units/explorer/hushrope_ranger/spriteFrame',
+  windlance_huntress: 'art/units/explorer/windlance_huntress/spriteFrame',
+  starlamp_guide: 'art/units/explorer/starlamp_guide/spriteFrame',
+  startrail_fox: 'art/units/explorer/startrail_fox/spriteFrame',
   crimson_riftclaw: 'art/units/bloodfiend/crimson_riftclaw/spriteFrame',
   bloodline_earl: 'art/units/bloodfiend/bloodline_earl/spriteFrame',
   crimson_devourer: 'art/units/bloodfiend/crimson_devourer/spriteFrame',
@@ -58,6 +64,12 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
+  wayward_alchemist:'460,160,350,350',
+  sandsea_navigator:'410,0,340,340',
+  hushrope_ranger:'430,30,360,360',
+  windlance_huntress:'345,180,340,340',
+  starlamp_guide:'440,225,420,420',
+  startrail_fox:'635,280,420,420',
   crimson_riftclaw:'760,350,300,300',
   bloodline_earl:'450,10,310,310',
   crimson_devourer:'1110,120,420,420',
@@ -91,6 +103,13 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  playerDamage: 'art/fx/player_damage/player_damage_energy/spriteFrame',
+  explorerInspiration: 'art/fx/explorer/startrail_inspiration/spriteFrame',
+  explorerLantern: 'art/fx/explorer/lone_lantern_guard/spriteFrame',
+  explorerWind: 'art/fx/explorer/windward_hunt/spriteFrame',
+  explorerCorrosion: 'art/fx/explorer/wayward_corrosion/spriteFrame',
+  explorerSand: 'art/fx/explorer/sand_compass/spriteFrame',
+  explorerRope: 'art/fx/explorer/rope_shadow_hunt/spriteFrame',
   crimsonUpheaval: 'art/fx/crimson_upheaval/spriteFrame',
   bloodlineSiphon: 'art/fx/bloodline_siphon/spriteFrame',
   voidscarTransit: 'art/fx/voidscar_transit/spriteFrame',
@@ -143,6 +162,8 @@ export function unitSpriteKey(cfgId: string, side: 0 | 1): string {
 
 /** Current M2 interface textures. */
 export const M2_UI_SPRITE = {
+  streak_win: 'art/ui_m2/streak_win/spriteFrame',
+  streak_loss: 'art/ui_m2/streak_loss/spriteFrame',
   attr_phys_atk: 'art/ui_m2/attr_phys_atk/spriteFrame',
   attr_armor: 'art/ui_m2/attr_armor/spriteFrame',
   attr_mr: 'art/ui_m2/attr_mr/spriteFrame',

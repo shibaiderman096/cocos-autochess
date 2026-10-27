@@ -36,6 +36,8 @@ export class LevelSystem {
   level: number;
   /** 当前等级内已积累、尚未消费的经验 */
   exp: number;
+  /** Session-owned equipment is the source of truth; this is not a saved bonus counter. */
+  populationBonus: () => number = () => 0;
 
   constructor(initialState?: { level: number; exp: number }) {
     this.level = Number.isFinite(initialState?.level) ? Math.floor(initialState.level) : 1;
@@ -50,9 +52,9 @@ export class LevelSystem {
     return LEVEL_UP_EXP[this.level - 1];
   }
 
-  /** 上阵棋子数上限 = 当前等级 */
+  /** 上阵上限包含当前装备提供的人口，不改变等级或商店概率。 */
   get unitCap(): number {
-    return this.level;
+    return this.level + this.populationBonus();
   }
 
   /**

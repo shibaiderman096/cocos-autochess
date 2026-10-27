@@ -1,7 +1,7 @@
 import { FloatingRuinsEnvironmentAnimator } from './FloatingRuinsEnvironmentAnimator';
 import { _decorator, Component, Node, Camera, RenderTexture, SpriteFrame, Sprite,
   UITransform, Color, Vec3, Layers, Prefab, resources, instantiate, director, DirectionalLight,
-  Graphics, gfx, Canvas, isValid, input, Input, EventMouse } from 'cc';
+  Graphics, gfx, Canvas, isValid, EventMouse, EventTouch, game, Game } from 'cc';
 import { BoardView } from './BoardView';
 import { BoardProjectionAdapter } from './BoardProjectionAdapter';
 import { BOARD_CAMERA, projectBoardPoint, projectGroundPoint, benchGroundPoint, clampBoardZoom, wheelBoardZoom } from './BoardPresentation';
@@ -10,6 +10,8 @@ import { setSkyBackground } from './SkyBackgroundAnimation';
 const { ccclass, executionOrder } = _decorator;
 const BENCH = 'models/ruins-bench/ruins-bench/ruins-bench';
 const MODEL = 'backgrounds/RuinsBackground';
+export const BOARD_PINCH_START = 'board-pinch-start';
+interface BoardTouch { x: number; y: number; eligible: boolean }
 
 /** Production board presentation. Uses normal game saves and the existing battle/input layers. */
 @ccclass('FloatingRuinsBoard')
@@ -30,8 +32,13 @@ export class FloatingRuinsBoard extends Component {
   private frame: SpriteFrame;
   private bench: Node;
   private wheelListening = false;
+  private touches = new Map<number, BoardTouch>();
+  private pinchPair: [number, number] | null = null;
+  private pinchDistance = 0;
+  private pinchBlocking = false;
   private ready = false;
   get loadingComplete(): boolean { return this.ready && !!this.bench; }
+  get touchGestureActive(): boolean { return this.pinchBlocking; }
 
   start(): void { this.schedule(this.tryInitialize, .1); }
 
@@ -107,21 +114,78 @@ export class FloatingRuinsBoard extends Component {
 
   onEnable(): void {
     if(this.wheelListening) return;
-    input.on(Input.EventType.MOUSE_WHEEL,this.onWheel,this); this.wheelListening=true;
+    // Mouse-aware UI nodes swallow wheel events before global input in Cocos 3.8.
+    this.node.on(Node.EventType.MOUSE_WHEEL,this.onWheel,this,true);
+    this.node.on(Node.EventType.TOUCH_START,this.onTouchStart,this,true);
+    this.node.on(Node.EventType.TOUCH_MOVE,this.onTouchMove,this,true);
+    this.node.on(Node.EventType.TOUCH_END,this.onTouchEnd,this,true);
+    this.node.on(Node.EventType.TOUCH_CANCEL,this.onTouchEnd,this,true);
+    game.on(Game.EVENT_HIDE,this.clearTouches,this);
+    this.wheelListening=true;
   }
   onDisable(): void {
     if(!this.wheelListening) return;
-    input.off(Input.EventType.MOUSE_WHEEL,this.onWheel,this); this.wheelListening=false;
+    this.node.off(Node.EventType.MOUSE_WHEEL,this.onWheel,this,true);
+    this.node.off(Node.EventType.TOUCH_START,this.onTouchStart,this,true);
+    this.node.off(Node.EventType.TOUCH_MOVE,this.onTouchMove,this,true);
+    this.node.off(Node.EventType.TOUCH_END,this.onTouchEnd,this,true);
+    this.node.off(Node.EventType.TOUCH_CANCEL,this.onTouchEnd,this,true);
+    game.off(Game.EVENT_HIDE,this.clearTouches,this);
+    this.clearTouches(); this.wheelListening=false;
   }
 
-  private onWheel(event: EventMouse): void {
-    if (!this.ready || this.board.interactionActive) return;
-    const p=event.getUILocation();
+  private isArenaPoint(p: {x:number;y:number}): boolean {
     const local=this.node.getComponent(UITransform)!.convertToNodeSpaceAR(new Vec3(p.x,p.y,0));
     // Restrict to the exposed arena; side panels, shop, header and HUD retain their own input.
-    if(local.x < -315 || local.x > 315 || local.y < -218 || local.y > 232) return;
+    return local.x>=-315 && local.x<=315 && local.y>=-218 && local.y<=232;
+  }
+  private zoomBlockedByUI(): boolean {
     const ui=this.node.getChildByName('battleUI');
-    if(ui && this.descendants(ui).some(n=>n.activeInHierarchy && /^(debugPanel|detailPopup|equipmentReward|stageReward)/.test(n.name))) return;
+    return !!ui && this.descendants(ui).some(n=>n.activeInHierarchy && /^(mainMenu|debugPanel|debugMenu|detailPopup|equipmentReward|stageReward|shopDismiss)$/.test(n.name));
+  }
+  private onTouchStart(event: EventTouch): void {
+    const id=event.getID(); if(id===null)return;
+    const p=event.getUILocation();
+    this.touches.set(id,{x:p.x,y:p.y,eligible:this.ready && this.isArenaPoint(p) && !this.zoomBlockedByUI()});
+    if(this.pinchBlocking){event.propagationStopped=true;return;}
+    if(this.touches.size!==2)return;
+    const pair=Array.from(this.touches.entries());
+    if(pair.some(([,p])=>!p.eligible))return;
+    const distance=Math.hypot(pair[0][1].x-pair[1][1].x,pair[0][1].y-pair[1][1].y);
+    if(distance<16)return;
+    this.pinchPair=[pair[0][0],pair[1][0]];this.pinchDistance=distance;this.pinchBlocking=true;
+    this.node.emit(BOARD_PINCH_START);
+    event.propagationStopped=true;
+  }
+  private onTouchMove(event: EventTouch): void {
+    const id=event.getID(),point=id===null?undefined:this.touches.get(id);
+    if(point){const p=event.getUILocation();point.x=p.x;point.y=p.y;}
+    if(!this.pinchBlocking)return;
+    event.propagationStopped=true;
+    if(!this.pinchPair || this.zoomBlockedByUI())return;
+    const a=this.touches.get(this.pinchPair[0]),b=this.touches.get(this.pinchPair[1]);
+    if(!a||!b)return;
+    const distance=Math.hypot(a.x-b.x,a.y-b.y);
+    if(distance<8)return;
+    this.setZoom(this.zoom*distance/this.pinchDistance);this.pinchDistance=distance;
+  }
+  private onTouchEnd(event: EventTouch): void {
+    const id=event.getID();if(id!==null)this.touches.delete(id);
+    if(!this.pinchBlocking)return;
+    event.propagationStopped=true;
+    if(id!==null&&this.pinchPair?.includes(id))this.pinchPair=null;
+    // Swallow the remaining finger until it lifts; it must not become a drag or detail click.
+    if(!this.touches.size)this.clearTouches();
+  }
+  private clearTouches(): void {
+    const active=this.pinchBlocking;
+    if(this.touches.size)this.node.emit(BOARD_PINCH_START);
+    this.touches.clear();this.pinchPair=null;this.pinchDistance=0;this.pinchBlocking=false;
+    if(active&&this.ready){this.unschedule(this.validateAlignment);this.scheduleOnce(this.validateAlignment,0);}
+  }
+  private onWheel(event: EventMouse): void {
+    if (!this.ready || this.board.interactionActive || this.pinchBlocking
+      || !this.isArenaPoint(event.getUILocation()) || this.zoomBlockedByUI()) return;
     this.setZoom(wheelBoardZoom(this.zoom,event.getScrollY()));
   }
 
@@ -130,7 +194,7 @@ export class FloatingRuinsBoard extends Component {
     this.zoom=clampBoardZoom(value);
     // One uniform parent transform scales the RT, portraits, highlights, effects and hit conversion together.
     if(this.board) this.board.node.setScale(this.zoom,this.zoom,1);
-    if(this.ready) this.scheduleOnce(()=>this.validateAlignment(),0);
+    if(this.ready&&!this.pinchBlocking){this.unschedule(this.validateAlignment);this.scheduleOnce(this.validateAlignment,0);}
   }
 
   private loadBench(): void {

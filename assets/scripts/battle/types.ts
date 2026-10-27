@@ -43,6 +43,8 @@ export interface SpiderLeapRuntime { landTick: number; targetId: number; }
 export interface FurnaceDashConfig { speedMultiplier: number; trailDamage: number[]; knockupSeconds: number; targetRange: number; }
 export interface FurnaceDashRuntime { from: Pos; to: Pos; startTick: number; endTick: number; targetId: number; hitIds: Set<number>; }
 export interface StellarBulwarkConfig { distance: number; speedMultiplier: number; shieldSeconds: number; knockupSeconds: number; }
+export interface RopeHuntConfig { durationSeconds: number; intervalSeconds: number; shotCount: number }
+export interface RopeHuntRuntime { from: Pos; edge: Pos; startTick: number; hookTicks: number; endTick: number; nextShot: number; intervalTicks: number; shotsRemaining: number; skillId: string; raw: number }
 export interface StellarChargeRuntime { from: Pos; to: Pos; startTick: number; endTick: number; hitIds: Set<number>; }
 export interface StarLeapConfig { distance: number; durationSeconds: number; }
 export interface StarLeapRuntime { from: Pos; to: Pos; startTick: number; endTick: number; targetId: number; }
@@ -101,7 +103,18 @@ export interface TraitBreakpoint {
   mechanicalPioneer?: MechanicalPioneerTraitEffect;
   astral?: AstralTraitEffect;
   bloodfiend?: BloodfiendTraitEffect;
+  explorer?: ExplorerTraitEffect;
 }
+export interface ExplorerTraitEffect {
+  pointsPerBattle: number;
+  pointsPerKill: number;
+  lossMultiplier: number;
+  rewardValuePerPoint: number;
+}
+export interface InspirationConfig { attackSpeedBonuses: number[]; durationSeconds: number }
+export interface WindHuntConfig { durationSeconds: number; attackSpeedBonuses: number[]; physicalPowerPerKill: number[] }
+export interface LanternGuardConfig { maxAttackSpeedPenalty: number; maxArmorBonuses: number[]; physicalPowerPerArmor: number[] }
+export interface InspirationRuntime { startTick: number; untilTick: number; initialBonus: number }
 export interface BloodfiendTraitEffect {
   /** Absolute attacks/second per allied kill; each stack expires independently. */
   attackSpeedBonus: number;
@@ -226,8 +239,16 @@ export interface EquipmentConfigData {
   introduction?: string;
   /** Optional item-specific shop price; tier pricing remains the default. */
   shopPrice?: number;
+  /** White, green, blue, purple and orange quality, independent of gold price. */
+  quality?: 1 | 2 | 3 | 4 | 5;
   /** Available only from the travelling merchant, never from ordinary drops. */
   specialShopOnly?: boolean;
+  /** Explicit exception allowing special equipment/consumables in mixed-value chests. */
+  chestDrop?: boolean;
+  /** Consumed on an owned target; produces one unmodified 1-star card, never occupies a slot. */
+  consumable?: { kind: 'copyUnit'; maxCost: 1 | 3 | 5 };
+  /** Extra deployment capacity while carried by a deployed unit; copies stack. */
+  unitCapBonus?: number;
   /** Unbound emblem opens a frozen four-trait choice on first equip. */
   traitChoice?: boolean;
   grantedTraitId?: string;
@@ -314,6 +335,12 @@ export interface CombatAttributes {
 }
 
 export type BattleEvent =
+  | { t: 'rope_swing'; tick: number; id: number; from: Pos; edge: Pos; hookTicks: number; durationTicks: number }
+  | { t: 'rope_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'rope_return'; tick: number; id: number; to: Pos }
+  | { t: 'sand_compass'; tick: number; id: number; from: Pos; toward: Pos; cells: Pos[]; radius: number }
+  | { t: 'compass_guard'; tick: number; id: number; source: number; serial: number; untilTick: number }
+  | { t: 'compass_guard_end'; tick: number; serial: number }
   | { t: 'astral_meteor'; tick: number; side: Side; center: Pos; radius: number }
   | { t: 'sun_pulse'; tick: number; id: number; effect: SunlightPulse; center: Pos; from?: Pos; radius: number; duration: number;
       kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean }
@@ -330,6 +357,9 @@ export type BattleEvent =
   | { t: 'bloodfiend_revel'; tick: number; id: number; untilTick: number; attackSpeedBonus: number }
   | { t: 'blood_cleave_charge'; tick: number; id: number; target: number; untilTick: number }
   | { t: 'permanent_spell_power'; tick: number; id: number; amount: number; total: number }
+  | { t: 'permanent_physical_power'; tick: number; id: number; amount: number; total: number }
+  | { t: 'wind_hunt'; tick: number; id: number; untilTick: number }
+  | { t: 'corrosion_dose'; tick: number; id: number; target: number; durationTicks: number }
   | { t: 'heal';   tick: number; id: number; source: number; amount: number; hp: number }
   | { t: 'trait_mana'; tick: number; id: number; amount: number; mana: number }
   | { t: 'swiftmartialist_stack'; tick: number; id: number; stacks: number; maxStacks: number; attackSpeedBonus: number }
@@ -353,6 +383,7 @@ export type BattleEvent =
   | { t: 'dash'; tick: number; id: number; from: Pos; to: Pos; durationTicks: number }
   | { t: 'dash_stop'; tick: number; id: number; at: Pos }
   | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'inspiration'; tick: number; id: number; targets: number[]; durationTicks: number; bonus: number }
   | { t: 'death';  tick: number; id: number }
   | { t: 'end';    tick: number; winner: Side | -1 };
 

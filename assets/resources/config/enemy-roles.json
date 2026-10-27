@@ -1,6 +1,12 @@
 {
   "version": "enemy-roles-v1",
   "units": {
+    "hushrope_ranger":{"role":"ranged_dps","tags":["burst","dash"],"source":"explicit","confidence":"high","reason":"5费物理术士，以板边绳索回旋配合连续物理射击，全程可被选中。"},
+    "sandsea_navigator":{"role":"support","tags":["shield","aoe"],"source":"explicit","confidence":"high","reason":"4费近战物理术士，范围法强护盾与前方半圆物理爆发。"},
+    "wayward_alchemist":{"role":"mage","tags":[],"source":"explicit","confidence":"high","reason":"3费魔法术士，优先未选敌人，持续魔法伤害可独立叠层。"},
+    "windlance_huntress":{"role":"ranged_dps","tags":[],"source":"explicit","confidence":"high","reason":"3费物理迅捷射手，强化期提升攻速且停止回蓝，亲自击杀积累永久物理加成。"},
+    "starlamp_guide": {"role": "tank", "tags": ["durable"], "source": "explicit", "confidence": "high", "reason": "2费近战物理坦克，低生命减攻速增护甲，最终护甲转物理加成。"},
+    "startrail_fox": {"role": "support", "tags": [], "source": "explicit", "confidence": "high", "reason": "1费近战魔法术士，为自身及周围友军提供逐渐衰减的攻速。"},
     "gravity_executor": {
       "role": "tank",
       "tags": [

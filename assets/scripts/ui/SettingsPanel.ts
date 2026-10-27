@@ -3,15 +3,16 @@ import type { EventTouch } from 'cc';
 import { button, label, panel } from './UIPrimitives';
 import { GameAudio } from '../view/GameAudio';
 
-export interface BattleSettings { speed: number; damageNumbers: boolean; healingNumbers: boolean }
+export interface BattleSettings { speed: number; damageNumbers: boolean; healingNumbers: boolean; uiMode: 'mobile' | 'desktop' }
 const KEY = 'autochess.battleSettings';
 const GOLD = new Color(204, 174, 109), MUTED = new Color(163, 189, 192), TEAL = new Color(89, 203, 176);
 
 export function loadBattlePreferences(): BattleSettings {
   try {
     const s = JSON.parse(sys.localStorage.getItem(KEY) ?? '{}');
-    return { speed: [1, 2, 3].includes(s?.speed) ? s.speed : 1, damageNumbers: s?.damageNumbers !== false, healingNumbers: s?.healingNumbers !== false };
-  } catch { return { speed: 1, damageNumbers: true, healingNumbers: true }; }
+    return { speed: [1, 2, 3].includes(s?.speed) ? s.speed : 1, damageNumbers: s?.damageNumbers !== false, healingNumbers: s?.healingNumbers !== false,
+      uiMode: s?.uiMode === 'mobile' || s?.uiMode === 'desktop' ? s.uiMode : sys.isMobile ? 'mobile' : 'desktop' };
+  } catch { return { speed: 1, damageNumbers: true, healingNumbers: true, uiMode: sys.isMobile ? 'mobile' : 'desktop' }; }
 }
 export function saveBattlePreferences(settings: BattleSettings): void {
   try { sys.localStorage.setItem(KEY, JSON.stringify(settings)); } catch { /* Preferences still apply in this scene. */ }
@@ -80,26 +81,28 @@ export class SettingsPanel {
     this.content = panel(this.root, 'mainMenuContent', 0, 0, 560, 624, new Color(13, 27, 35), GOLD, 'panel_side');
     label(this.content, '设 置', -170, 270, 27, GOLD, 160);
     button(this.content, '关闭', 216, 270, 80, 44, () => this.hide()).name = 'mainMenuClose';
-    const keys = ['speed', 'damageNumbers', 'healingNumbers'] as const;
+    const keys = ['speed', 'damageNumbers', 'healingNumbers', 'uiMode'] as const;
     keys.forEach((key, i) => {
-      const row = button(this.content, '', 0, 194 - i * 56, 480, 44, () => {
+      const row = button(this.content, '', 0, 206 - i * 50, 480, 44, () => {
         const s = this.read();
-        if (key === 'speed') s.speed = s.speed % 3 + 1; else s[key] = !s[key];
+        if (key === 'speed') s.speed = s.speed % 3 + 1;
+        else if (key === 'uiMode') s.uiMode = s.uiMode === 'mobile' ? 'desktop' : 'mobile';
+        else s[key] = !s[key];
         saveBattlePreferences(s); this.options.change?.(s); this.refresh();
       });
-      row.name = ['settingSpeed', 'settingDamageNumbers', 'settingHealingNumbers'][i];
+      row.name = ['settingSpeed', 'settingDamageNumbers', 'settingHealingNumbers', 'settingUIMode'][i];
       this.rows.push(row.getChildByName('text')!.getComponent(Label)!);
     });
-    this.sliders = [new VolumeSlider(this.content, 'settingSoundVolume', '音效音量', 6, () => GameAudio.volume, value => GameAudio.setVolume(value), true),
-      new VolumeSlider(this.content, 'settingMusicVolume', '背景音乐', -86, () => GameAudio.musicVolume, value => GameAudio.setMusicVolume(value))];
-    if (options.home) button(this.content, '返回主界面', 0, -220, 480, 44, () => options.home!()).name = 'returnHome';
-    label(this.content, options.home ? '设置自动保存 · 战斗中继续计时' : '设置自动保存，下次进入仍然生效', 0, options.home ? -278 : -180, 14, MUTED, 500);
+    this.sliders = [new VolumeSlider(this.content, 'settingSoundVolume', '音效音量', -16, () => GameAudio.volume, value => GameAudio.setVolume(value), true),
+      new VolumeSlider(this.content, 'settingMusicVolume', '背景音乐', -96, () => GameAudio.musicVolume, value => GameAudio.setMusicVolume(value))];
+    if (options.home) button(this.content, '返回主界面', 0, -225, 480, 44, () => options.home!()).name = 'returnHome';
+    label(this.content, options.home ? '设置自动保存 · 战斗中继续计时' : '设置自动保存，下次进入仍然生效', 0, options.home ? -278 : -205, 14, MUTED, 500);
     this.refresh(); this.root.active = false;
   }
   private read(): BattleSettings { return { ...(this.options.read?.() ?? loadBattlePreferences()) }; }
   refresh(): void {
     const s = this.read();
-    const text = [`战斗倍速  ×${s.speed}`, `伤害数字  ${s.damageNumbers ? '显示' : '隐藏'}`, `治疗数字  ${s.healingNumbers ? '显示' : '隐藏'}`];
+    const text = [`战斗倍速  ×${s.speed}`, `伤害数字  ${s.damageNumbers ? '显示' : '隐藏'}`, `治疗数字  ${s.healingNumbers ? '显示' : '隐藏'}`, `商店界面  ${s.uiMode === 'mobile' ? '移动端' : '桌面'}`];
     this.rows.forEach((row, i) => row.string = text[i]); this.sliders?.forEach(slider => slider.refresh());
   }
   show(): void { this.refresh(); this.root.active = true; this.root.setSiblingIndex(this.root.parent!.children.length - 1); }

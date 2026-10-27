@@ -17,6 +17,7 @@ export interface OwnedUnit {
   star: number;
   permanentMaxHp?: number;
   permanentSpellPower?: number;
+  permanentPhysicalPower?: number;
   /** Health earned specifically by the soul-lamp passive, before stat multipliers. */
   soulLampHealth?: number;
   equipment?: string[];
@@ -31,7 +32,8 @@ export class OwnedUnits {
   private nextUid = 1;
   equipmentReserve: string[] = [];
 
-  constructor(initial?: OwnedUnit[], nextUid?: number, private canMerge: () => boolean = () => true) {
+  constructor(initial?: OwnedUnit[], nextUid?: number, private canMerge: () => boolean = () => true,
+    readonly canMergeResult: (units:OwnedUnit[])=>boolean = () => true) {
     if (initial) {
       for (const u of initial) this.list.push({ ...u, equipment: [...(u.equipment ?? [])].slice(0, MAX_EQUIPMENT) });
       this.nextUid = this.list.reduce((m, u) => Math.max(m, u.uid), 0) + 1;
@@ -159,7 +161,7 @@ export class OwnedUnits {
 
   /** Preview the extra upgrade earned by one purchased 1-star copy, without consuming real materials. */
   purchaseUpgradeStar(unitId: string): 2 | 3 | null {
-    const projected = new OwnedUnits(this.snapshot(), this.nextUid);
+    const projected = new OwnedUnits(this.snapshot(), this.nextUid,()=>true,this.canMergeResult);
     // Existing combat-deferred groups are not an upgrade earned by this purchase.
     projected.tryMerge(unitId);
     projected.forceAdd(unitId);
@@ -181,6 +183,11 @@ export class OwnedUnits {
         .sort((a, b) => Number(b.location === 'board') - Number(a.location === 'board') || a.uid - b.uid);
       let same = candidates();
       while (same.length >= MERGE_COUNT) {
+        const group=same.slice(0,MERGE_COUNT),gear=group.flatMap(unit=>unit.equipment??[]);
+        const projected=this.snapshot().filter(unit=>!group.slice(1).some(material=>material.uid===unit.uid));
+        const survivor=projected.find(unit=>unit.uid===group[0].uid)!;survivor.star=star+1;survivor.equipment=gear.slice(0,MAX_EQUIPMENT);
+        // Returning excess capacity equipment must not strand an over-cap army on the board.
+        if(!this.canMergeResult(projected))break;
         // 保留第一个，删除其余
         const keep = same[0];
         const permanentMaxHp = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.permanentMaxHp ?? 0), 0);
@@ -188,6 +195,8 @@ export class OwnedUnits {
         keep.soulLampHealth = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.soulLampHealth ?? 0), 0);
         const permanentSpellPower = same.slice(0, MERGE_COUNT).reduce((sum, unit) => sum + (unit.permanentSpellPower ?? 0), 0);
         if (permanentSpellPower) keep.permanentSpellPower = permanentSpellPower;
+        const permanentPhysicalPower=group.reduce((sum,unit)=>sum+(unit.permanentPhysicalPower??0),0);
+        if(permanentPhysicalPower)keep.permanentPhysicalPower=permanentPhysicalPower;
         const equipment = same.slice(0, MERGE_COUNT).flatMap(unit => unit.equipment ?? []);
         keep.equipment = equipment.slice(0, MAX_EQUIPMENT);
         this.equipmentReserve.push(...equipment.slice(MAX_EQUIPMENT));

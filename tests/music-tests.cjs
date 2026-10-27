@@ -111,7 +111,7 @@ assert.ok(musicRow); const before = UIAudio.volume;
 const musicBefore = UIAudio.musicVolume;
 musicRow.getChildByName('volumeIncrease').events.get(harness.Node.EventType.TOUCH_END)();
 assert.equal(UIAudio.musicVolume, Math.min(1, Math.round((musicBefore + .05) * 100) / 100)); assert.equal(UIAudio.volume, before);
-const rows = ['settingSpeed', 'settingDamageNumbers', 'settingHealingNumbers', 'settingSoundVolume', 'settingMusicVolume', 'debugToggle', 'returnHome'].map(n => ui.mainMenuContent.getChildByName(n));
+const rows = ['settingSpeed', 'settingDamageNumbers', 'settingHealingNumbers', 'settingUIMode', 'settingSoundVolume', 'settingMusicVolume', 'debugToggle', 'returnHome'].map(n => ui.mainMenuContent.getChildByName(n));
 for (let i = 1; i < rows.length; i++) {
   const upper = rows[i - 1], lower = rows[i];
   assert.ok(upper.position.y - upper.getComponent(harness.UITransform).contentSize.height / 2 > lower.position.y + lower.getComponent(harness.UITransform).contentSize.height / 2, 'setting touch areas do not overlap');

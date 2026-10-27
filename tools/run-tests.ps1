@@ -45,6 +45,15 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item -Recurse -Force assets\resources .test-build\assets\
 $taskFailures = @()
 $taskTests = @(
+  'tests/neutral-streak-tests.cjs'
+  'tests/early-economy-sales-tests.cjs'
+  'tests/explorer-units-tests.cjs'
+  'tests/explorer-leaders-tests.cjs'
+  'tests/explorer-trait-tests.cjs'
+  'tests/explorer-trait-ui-tests.cjs'
+  'tests/merchant-income-endless-tests.cjs'
+  'tests/special-items-tests.cjs'
+  'tests/mixed-chest-shop-tests.cjs'
   'tests/recycle-settings-tests.cjs'
   'tests/enemy-gold-budget-tests.cjs'
   'tests/basic-equipment-tests.cjs'

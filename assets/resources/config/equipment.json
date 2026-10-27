@@ -5,9 +5,10 @@
     "spellPower": 10,
     "attackSpeedBonus": 0.1,
     "attackSpeedPerAttack": 0.05,
-    "description": "+10%法术加成，+0.1次/秒攻速。\n每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
-    "effectDescription": "每次普攻额外增加0.05次/秒攻速，持续至本场战斗结束，攻速上限5次/秒。\n多件效果叠加；每场战斗重新叠层。",
-    "icon": "art/equipment/guinsoo/spriteFrame"
+    "description": "+10%法术加成，+10%攻击速度。\n每次普攻额外增加5%攻击速度，持续至本场战斗结束，攻速上限500%。\n多件效果叠加；每场战斗重新叠层。",
+    "effectDescription": "每次普攻额外增加5%攻击速度，持续至本场战斗结束，攻速上限500%。\n多件效果叠加；每场战斗重新叠层。",
+    "icon": "art/equipment/guinsoo/spriteFrame",
+    "quality": 2
   },
   {
     "id": "totem_of_undying",
@@ -27,7 +28,8 @@
       "healMaxHpFraction": 0.1,
       "healSeconds": 5
     },
-    "icon": "art/equipment/totem_of_undying/spriteFrame"
+    "icon": "art/equipment/totem_of_undying/spriteFrame",
+    "quality": 2
   },
   {
     "id": "jeweled_gauntlet",
@@ -39,7 +41,8 @@
     "attackSpeedPerAttack": 0,
     "description": "+20%法术加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
     "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
-    "icon": "art/equipment/jeweled_gauntlet/spriteFrame"
+    "icon": "art/equipment/jeweled_gauntlet/spriteFrame",
+    "quality": 2
   },
   {
     "id": "infinity_edge",
@@ -52,7 +55,8 @@
     "attackSpeedPerAttack": 0,
     "description": "+20%物理加成，+35%暴击率。\n技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
     "effectDescription": "技能伤害可暴击，含物理、魔法、真实及持续伤害；使用当前暴击率，默认暴击伤害150%。\n多件叠加属性，技能暴击效果不重复；暴击率上限100%。",
-    "icon": "art/equipment/infinity_edge/spriteFrame"
+    "icon": "art/equipment/infinity_edge/spriteFrame",
+    "quality": 2
   },
   {
     "id": "arcane_sovereignty",
@@ -67,7 +71,8 @@
     },
     "description": "+50%法术加成。\n携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
     "effectDescription": "携带者每拥有完整20%法术加成，额外获得1%伤害增幅，每件最多10%。\n按装备后的总法术加成计算，多件属性和数值被动分别叠加。",
-    "icon": "art/equipment/arcane_sovereignty/spriteFrame"
+    "icon": "art/equipment/arcane_sovereignty/spriteFrame",
+    "quality": 2
   },
   {
     "id": "crimson_bloodclaw",
@@ -85,7 +90,8 @@
     },
     "description": "+20%全能吸血，+10护甲，+10魔抗，+10%物理加成，+10%法术加成。\n每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
     "effectDescription": "每损失完整10%最大生命，额外获得1%全能吸血，随当前生命实时变化。\n物理、魔法与真实伤害均可吸血；多件叠加，总吸血率上限100%。",
-    "icon": "art/equipment/crimson_bloodclaw/spriteFrame"
+    "icon": "art/equipment/crimson_bloodclaw/spriteFrame",
+    "quality": 2
   },
   {
     "id": "abyssal_plate",
@@ -101,7 +107,8 @@
     },
     "description": "+60护甲，+100生命。\n携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
     "effectDescription": "携带者装备后的护甲严格高于100时，每件额外获得5%全伤害减免。\n多件属性与被动数值叠加。",
-    "icon": "art/equipment/abyssal_plate/spriteFrame"
+    "icon": "art/equipment/abyssal_plate/spriteFrame",
+    "quality": 2
   },
   {
     "id": "divine_judgment",
@@ -116,7 +123,8 @@
     },
     "description": "+50%物理加成。\n每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
     "effectDescription": "每次造成伤害时，若目标当前生命严格低于50%最大生命，每件额外获得10%伤害增幅。\n普攻、技能及持续伤害均生效；多件属性与数值被动叠加。",
-    "icon": "art/equipment/divine_judgment/spriteFrame"
+    "icon": "art/equipment/divine_judgment/spriteFrame",
+    "quality": 2
   },
   {
     "id": "arcane_veil",
@@ -129,7 +137,8 @@
     "magicDamageReduction": 0.15,
     "description": "+60魔抗，+100生命。\n受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
     "effectDescription": "受到魔法伤害时，每件额外获得15%伤害减免。\n不减免物理或真实伤害；多件属性与数值被动叠加。",
-    "icon": "art/equipment/arcane_veil/spriteFrame"
+    "icon": "art/equipment/arcane_veil/spriteFrame",
+    "quality": 2
   },
   {
     "id": "forest_sanctuary",
@@ -146,7 +155,8 @@
     },
     "description": "+500生命，额外获得20%最大生命。\n生命严格低于50%期间，每秒回复1.5%最大生命。\n恢复至50%及以上时停止；再次低于50%时重新计时，死亡停止。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
     "effectDescription": "生命严格低于50%期间，每秒回复1.5%最大生命。\n恢复至50%及以上时停止；再次低于50%时重新计时，死亡停止。\n多件固定生命、百分比生命及回血分别叠加；百分比生命在固定加成后计算。",
-    "icon": "art/equipment/forest_sanctuary/spriteFrame"
+    "icon": "art/equipment/forest_sanctuary/spriteFrame",
+    "quality": 2
   },
   {
     "id": "stonegrowth_bulwark",
@@ -163,7 +173,8 @@
     },
     "description": "+200最大生命，+10护甲，+10魔抗。\n磐石之躯：每拥有完整100点最大生命，额外获得1点护甲和魔抗。\n按装备、永久生命成长及羁绊加成后的最终最大生命计算；多件属性与被动分别叠加。",
     "effectDescription": "磐石之躯：每拥有完整100点最大生命，额外获得1点护甲和魔抗。\n按装备、永久生命成长及羁绊加成后的最终最大生命计算；多件属性与被动分别叠加。",
-    "icon": "art/equipment/stonegrowth_bulwark/spriteFrame"
+    "icon": "art/equipment/stonegrowth_bulwark/spriteFrame",
+    "quality": 2
   },
   {
     "id": "blazing_feather",
@@ -175,7 +186,8 @@
     "physicalPowerPerAttack": 2,
     "description": "+10%攻击速度，+10%物理加成。\n锋芒渐炽：每次普通攻击获得2%物理加成，持续至本场战斗结束。\n多件属性与被动分别叠加；下一场战斗重新叠层。",
     "effectDescription": "锋芒渐炽：每次普通攻击获得2%物理加成，持续至本场战斗结束。\n多件属性与被动分别叠加；下一场战斗重新叠层。",
-    "icon": "art/equipment/blazing_feather/spriteFrame"
+    "icon": "art/equipment/blazing_feather/spriteFrame",
+    "quality": 2
   },
   {
     "id": "arcane_overflow_codex",
@@ -190,7 +202,8 @@
     "castMaxManaDamage": 2.5,
     "description": "+5法力值/秒，+10%物理加成，+10%法术加成，-10最大法力值。\n奥术溢流：每次施放技能时，对当前攻击目标额外造成携带者250%最大法力值的魔法伤害。\n按减蓝后的最终最大法力值计算，受法术加成影响；治疗、护盾等技能也触发。\n多件属性与被动分别叠加；最大法力值最低为10，原本无蓝条的棋子仍为0。",
     "effectDescription": "奥术溢流：每次施放技能时，对当前攻击目标额外造成携带者250%最大法力值的魔法伤害。\n按减蓝后的最终最大法力值计算，受法术加成影响；治疗、护盾等技能也触发。\n多件属性与被动分别叠加；最大法力值最低为10，原本无蓝条的棋子仍为0。",
-    "icon": "art/equipment/arcane_overflow_codex/spriteFrame"
+    "icon": "art/equipment/arcane_overflow_codex/spriteFrame",
+    "quality": 2
   },
   {
     "id": "trait_emblem",
@@ -204,7 +217,8 @@
     "traitChoice": true,
     "description": "+100最大生命，+1法力值/秒。\n万象共鸣：首次穿戴时，在下方商店区四选一羁绊，优先出现已激活且上阵人数较多的羁绊。\n选定羁绊永久绑定此件装备，当前携带者获得；卸下失去，转移后新携带者获得。",
     "effectDescription": "万象共鸣：首次穿戴时，在下方商店区四选一羁绊，优先出现已激活且上阵人数较多的羁绊。\n选定羁绊绑定此件装备，当前携带者获得；卸下失去，转移后新携带者获得。",
-    "icon": "art/equipment/trait_emblem/spriteFrame"
+    "icon": "art/equipment/trait_emblem/spriteFrame",
+    "quality": 5
   },
   {
     "id": "spell_overdrive_armor",
@@ -214,12 +228,13 @@
     "attackSpeedBonus": 0,
     "attackSpeedPerAttack": 0,
     "castAttackSpeed": {
-      "bonus": 1.5,
+      "bonus": 0.5,
       "seconds": 3
     },
-    "description": "+20%法术加成，+1法力值/秒。\n咒能超频：施放技能后获得150%攻击速度，持续3秒。\n重复施法刷新持续时间。\n多件属性与攻速叠加；总攻速上限500%。",
-    "effectDescription": "咒能超频：施放技能后获得150%攻击速度，持续3秒。\n重复施法刷新持续时间。\n多件属性与攻速叠加；总攻速上限500%。",
-    "icon": "art/equipment/spell_overdrive_armor/spriteFrame"
+    "description": "+20%法术加成，+1法力值/秒。\n咒能超频：施放技能后，攻击速度 +50%，持续 3 秒。\n再次施放刷新时长。\n多件效果叠加，攻速上限 500%。",
+    "effectDescription": "咒能超频：施放技能后，攻击速度 +50%，持续 3 秒。\n再次施放刷新时长。\n多件效果叠加，攻速上限 500%。",
+    "icon": "art/equipment/spell_overdrive_armor/spriteFrame",
+    "quality": 2
   },
   {
     "id": "divine_protection",
@@ -237,7 +252,8 @@
     },
     "description": "+20法术抗性，+200最大生命值。\n神圣意志：携带者免疫所有控制效果。生命值达到50%及以上时获得50%攻击速度；低于50%时获得40物理抗性。\n效果随当前生命值切换；多件属性与加成叠加，总攻速上限500%。",
     "effectDescription": "神圣意志：携带者免疫所有控制效果。生命值达到50%及以上时获得50%攻击速度；低于50%时获得40物理抗性。\n效果随当前生命值切换；多件属性与加成叠加，总攻速上限500%。",
-    "icon": "art/equipment/divine_protection/spriteFrame"
+    "icon": "art/equipment/divine_protection/spriteFrame",
+    "quality": 2
   },
   {
     "id": "thousand_forged_armor",
@@ -253,7 +269,8 @@
     },
     "description": "+300最大生命值。\n百炼成钢：每次受到正数伤害后，获得1点物理抗性和1点法术抗性，最多叠加30层；护盾完全吸收的伤害也可叠层，零伤害不叠层。\n不灭之躯：达到30层后，额外获得10%伤害减免。\n每场战斗重新累计；多件属性与被动叠加。",
     "effectDescription": "百炼成钢：每次受到正数伤害后，获得1点物理抗性和1点法术抗性，最多叠加30层；护盾完全吸收的伤害也可叠层，零伤害不叠层。\n不灭之躯：达到30层后，额外获得10%伤害减免。\n每场战斗重新累计；多件属性与被动叠加。",
-    "icon": "art/equipment/thousand_forged_armor/spriteFrame"
+    "icon": "art/equipment/thousand_forged_armor/spriteFrame",
+    "quality": 2
   },
   {
     "id": "basic_swift_bow",
@@ -265,7 +282,8 @@
     "description": "+20%攻击速度。",
     "effectDescription": "",
     "icon": "art/equipment/basic_swift_bow/spriteFrame",
-    "introduction": "轻巧的短弓，让每次出手都更迅捷。"
+    "introduction": "轻巧的短弓，让每次出手都更迅捷。",
+    "quality": 1
   },
   {
     "id": "basic_crystal_blade",
@@ -278,7 +296,8 @@
     "description": "+20%物理加成。",
     "effectDescription": "",
     "icon": "art/equipment/basic_crystal_blade/spriteFrame",
-    "introduction": "赤晶嵌入剑锋，为攻击注入力量。"
+    "introduction": "赤晶嵌入剑锋，为攻击注入力量。",
+    "quality": 1
   },
   {
     "id": "basic_astral_staff",
@@ -290,7 +309,8 @@
     "description": "+20%法术加成。",
     "effectDescription": "",
     "icon": "art/equipment/basic_astral_staff/spriteFrame",
-    "introduction": "凝聚点点星光，让法术更有威力。"
+    "introduction": "凝聚点点星光，让法术更有威力。",
+    "quality": 1
   },
   {
     "id": "basic_iron_shield",
@@ -303,7 +323,8 @@
     "description": "+20物理抗性。",
     "effectDescription": "",
     "icon": "art/equipment/basic_iron_shield/spriteFrame",
-    "introduction": "坚实的铁盾，抵挡迎面而来的锋刃。"
+    "introduction": "坚实的铁盾，抵挡迎面而来的锋刃。",
+    "quality": 1
   },
   {
     "id": "basic_mystic_cloak",
@@ -316,7 +337,8 @@
     "description": "+20法术抗性。",
     "effectDescription": "",
     "icon": "art/equipment/basic_mystic_cloak/spriteFrame",
-    "introduction": "幽紫织纹流转，抵御法术的侵袭。"
+    "introduction": "幽紫织纹流转，抵御法术的侵袭。",
+    "quality": 1
   },
   {
     "id": "basic_life_heart",
@@ -329,7 +351,8 @@
     "description": "+300最大生命值。",
     "effectDescription": "",
     "icon": "art/equipment/basic_life_heart/spriteFrame",
-    "introduction": "翠绿晶心蕴藏生机，让持有者更坚韧。"
+    "introduction": "翠绿晶心蕴藏生机，让持有者更坚韧。",
+    "quality": 1
   },
   {
     "id": "basic_mana_flask",
@@ -342,7 +365,8 @@
     "description": "+3法力值/秒。",
     "effectDescription": "",
     "icon": "art/equipment/basic_mana_flask/spriteFrame",
-    "introduction": "澄澈魔力缓缓流转，为下一次施法蓄能。"
+    "introduction": "澄澈魔力缓缓流转，为下一次施法蓄能。",
+    "quality": 1
   },
   {
     "id": "basic_blood_fang",
@@ -355,6 +379,76 @@
     "description": "+10%全能吸血。",
     "effectDescription": "",
     "icon": "art/equipment/basic_blood_fang/spriteFrame",
-    "introduction": "猩红獠牙汲取生命，支撑更持久的战斗。"
+    "introduction": "猩红獠牙汲取生命，支撑更持久的战斗。",
+    "quality": 1
+  },
+  {
+    "id": "replicator_glimmer",
+    "name": "遗迹拓印·微光",
+    "shopPrice": 2,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "copyUnit",
+      "maxCost": 1
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "一次性角色复制道具。",
+    "effectDescription": "拖到己方棋子身上，消耗道具并获得1张同名一星棋子。仅限白卡（1费）。不继承装备或永久成长，不占装备槽。卡池无余量或备战席满且无法合成时不消耗。",
+    "icon": "art/equipment/replicator_glimmer/spriteFrame",
+    "quality": 1
+  },
+  {
+    "id": "replicator_starlight",
+    "name": "遗迹拓印·星辉",
+    "shopPrice": 4,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "copyUnit",
+      "maxCost": 3
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "一次性角色复制道具。",
+    "effectDescription": "拖到己方棋子身上，消耗道具并获得1张同名一星棋子。限蓝卡及以下（1～3费）。不继承装备或永久成长，不占装备槽。卡池无余量或备战席满且无法合成时不消耗。",
+    "icon": "art/equipment/replicator_starlight/spriteFrame",
+    "quality": 3
+  },
+  {
+    "id": "replicator_firmament",
+    "name": "遗迹拓印·天穹",
+    "shopPrice": 6,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "copyUnit",
+      "maxCost": 5
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "一次性角色复制道具。",
+    "effectDescription": "拖到己方棋子身上，消耗道具并获得1张同名一星棋子。可复制所有费用（1～5费）。不继承装备或永久成长，不占装备槽。卡池无余量或备战席满且无法合成时不消耗。",
+    "icon": "art/equipment/replicator_firmament/spriteFrame",
+    "quality": 4
+  },
+  {
+    "id": "expedition_command_crown",
+    "name": "远征统御冠",
+    "shopPrice": 16,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "unitCapBonus": 1,
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "携带者上阵时，最大人口+1。",
+    "effectDescription": "携带者上阵时，己方最大上阵人口+1，多个统御冠可叠加；不提升等级或商店概率。占用1个装备槽，携带者下场后加成消失。",
+    "icon": "art/equipment/expedition_command_crown/spriteFrame",
+    "quality": 5
   }
 ]

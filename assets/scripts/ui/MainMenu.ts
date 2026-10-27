@@ -101,11 +101,11 @@ export class MainMenu extends Component {
     this.countLabel = label(intro, '10 阶段远征', 0, -4, 30, GOLD, 420);
     this.summary = label(intro, '', 0, -70, 17, new Color(174, 198, 201), 420);
     this.summary.node.getComponent(UITransform)!.setContentSize(420, 70);
-    label(intro, '击败第 10 阶段首领，开启后续远征', 0, -145, 16, TEAL, 430);
+    label(intro, '完成第 10 阶段首领战，开启后续远征', 0, -145, 16, TEAL, 430);
     this.drawArena();
     const start = button(this.node, '开始游戏  →', 436, -250, 304, 76, () => this.startNewRun(), true); start.name = 'startGame';
     const saved = loadSaveV2();
-    if (saved?.round && (saved.round.phase !== 'ended' || saved.round.health > 0 && saved.round.lastSettlement?.winner === 0 && saved.floor >= 10)) {
+    if (saved?.round && saved.round.health > 0) {
       const resume = button(this.node, '继续游戏', 436, -160, 304, 48, () => this.enterGame(false)); resume.name = 'continueGame';
     }
     label(this.node, '11 阶段起：每小关增伤 +1% · 每阶段减伤 +1%（上限 95%）', -220, -259, 15, new Color(174, 198, 201), 720);

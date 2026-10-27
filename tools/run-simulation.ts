@@ -113,13 +113,16 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
       const result=basePort.act(action),delta=before-session!.economy.gold;
       if(result.ok){if(action.type==='buy')spending.unitSpending+=delta;if(action.type==='buyExp')spending.xpSpending+=delta;
         if(action.type==='stageChoice'&&action.choice==='buy'&&stageBefore?.kind==='specialShop'&&stageBefore.offers[action.index!]?.kind==='unit')spending.unitSpending+=delta;
-        if(action.type==='refresh')spending.refreshSpending+=delta;if(action.type==='sell')spending.saleIncome-=delta;}
+        if(action.type==='refresh'||(action.type==='stageChoice'&&action.choice==='refresh'))spending.refreshSpending+=delta;if(action.type==='sell')spending.saleIncome-=delta;}
       if(economyAudit){economyAudit.goldPeak=Math.max(economyAudit.goldPeak,session!.economy.gold);
         if(result.ok&&discarded){economyAudit.ignoredUsefulOffers+=discarded.offers.length;economyAudit.missedImmediate2Star+=discarded.offers.filter(s=>s.completes2).length;}
         if(result.ok&&boughtId==='iron_golem')economyAudit.ironGolemPurchases++;
         if(!result.ok&&result.error==='bench_full')economyAudit.benchFullEvents++;}
       const stageEquipment = action.type==='stageChoice' && ((stageBefore?.kind==='equipmentChoice'&&action.choice==='claim') || (stageBefore?.kind==='specialShop'&&action.choice==='buy'&&stageBefore.offers[action.index!]?.kind==='equipment'));
-      if(options.audit!==false){assertLegalSession(session!);if(equipmentCount(session!)!==equipmentBefore+(result.ok&&(action.type==='claimEquipmentReward'||stageEquipment)?1:0))throw Error('BOT_LEGALITY: equipment conservation');}
+      const grant=result.stageReward;
+      const grantedEquipment=result.ok?(grant?.kind==='mixed'||grant?.kind==='equipment'?grant.equipmentIds.length:action.type==='claimEquipmentReward'||stageEquipment?1:0):0;
+      const consumedEquipment=result.ok&&(result.copiedUnitId||action.type==='recycleEquipment')?1:0;
+      if(options.audit!==false){assertLegalSession(session!);if(equipmentCount(session!)!==equipmentBefore+grantedEquipment-consumedEquipment)throw Error('BOT_LEGALITY: equipment conservation');}
       return result;
     }}:undefined;
     while (true) {
@@ -203,7 +206,7 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
         || (wave.stage === maxStage && wave.round === wave.roundsInStage)) {
         report.result = 'MAX_WAVE_REACHED'; break;
       }
-      if (!session.nextWave()) throw new Error(`Cannot advance from wave ${wave.id}`);
+      if (!(session.portalAvailable?session.enterPortal():session.nextWave())) throw new Error(`Cannot advance from wave ${wave.id}`);
     }
   } catch (error) {
     report.result = 'SIMULATION_ERROR'; report.error = error instanceof Error ? error.message : String(error);

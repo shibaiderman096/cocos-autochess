@@ -56,10 +56,16 @@ export interface SkillConfigData {
   statRows?: Array<{ label: string; value: string; stars: string }>;
   /** Internal rules, excluded from the player-facing description. */
   mechanics?: string[];
+  inspiration?: import('../battle/types').InspirationConfig;
+  windHunt?: import('../battle/types').WindHuntConfig;
+  corrosion?: {damagePerPulse:number[];intervalSeconds:number;durationSeconds:number};
+  sandCompass?: { shieldSeconds: number };
+  ropeHunt?: import('../battle/types').RopeHuntConfig;
+  lanternGuard?: import('../battle/types').LanternGuardConfig;
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign' | 'inspiration' | 'lanternGuard' | 'windHunt' | 'stackingCorrosion' | 'sandCompass' | 'ropeHunt';
   chargedKnockup?: import('../battle/types').ChargedKnockupConfig;
   bloodDrain?: import('../battle/types').BloodDrainConfig;
   lineFear?: import('../battle/types').LineFearConfig;
@@ -232,6 +238,13 @@ export class ConfigManager {
   private equipment: Record<string, EquipmentConfigData> = {};
   allEquipment(): EquipmentConfigData[] { return Object.values(this.equipment); }
   setEquipment(data: EquipmentConfigData[]): void {
+    for (const item of data) {
+      if(item.quality!==undefined&&![1,2,3,4,5].includes(item.quality))throw new Error('Invalid equipment quality');
+      if (item.consumable && (item.consumable.kind !== 'copyUnit' || ![1,3,5].includes(item.consumable.maxCost)
+        || item.traitChoice || item.unitCapBonus !== undefined)) throw new Error('Invalid equipment consumable');
+      if (item.unitCapBonus !== undefined && (!Number.isSafeInteger(item.unitCapBonus) || item.unitCapBonus < 1)) throw new Error('Invalid equipment population bonus');
+      if (item.chestDrop !== undefined && typeof item.chestDrop !== 'boolean') throw new Error('Invalid chest equipment flag');
+    }
     for (const item of data) if (item.shopPrice !== undefined && (!Number.isSafeInteger(item.shopPrice) || item.shopPrice <= 0)) throw new Error('Invalid equipment shop price');
     for (const item of data) if (item.damageTakenStacks && (!Number.isInteger(item.damageTakenStacks.maxStacks) || item.damageTakenStacks.maxStacks <= 0
       || !Number.isFinite(item.damageTakenStacks.resistancePerStack) || item.damageTakenStacks.resistancePerStack < 0
@@ -326,6 +339,41 @@ export class ConfigManager {
           || ![skill.starDamage,e.healthGains].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&n>0))
           || ![e.length,e.width,e.attackWindupSeconds,e.rebirthSeconds,e.rebirthHealMaxHpFraction].every(n=>Number.isFinite(n)&&n>0)
           || !Number.isFinite(e.rebirthThreshold) || e.rebirthThreshold<=0 || e.rebirthThreshold>=1) throw new Error('Invalid blood reign skill');
+      }
+      if (skill.effect === 'ropeHunt') {
+        const e=skill.ropeHunt;
+        if (!e || skill.dmgType!=='physical' || skill.radius!==0
+          || ![skill.castSeconds,e.durationSeconds,e.intervalSeconds].every(v=>Number.isFinite(v)&&v!>0)
+          || !Number.isInteger(e.shotCount) || e.shotCount<=0 || Math.abs(e.durationSeconds-e.intervalSeconds*e.shotCount)>1e-8
+          || !Array.isArray(skill.starDamage) || skill.starDamage.length!==3 || !skill.starDamage.every(v=>Number.isFinite(v)&&v>=0))
+          throw new Error('Invalid rope hunt skill');
+      }
+      if (skill.effect === 'sandCompass') {
+        if (skill.dmgType !== 'physical' || skill.shieldScaling !== 'magic'
+          || !Number.isInteger(skill.radius) || skill.radius <= 0
+          || ![skill.castSeconds, skill.sandCompass?.shieldSeconds].every(v => Number.isFinite(v) && v! > 0)
+          || ![skill.starDamage, skill.shieldAmounts].every(a => Array.isArray(a) && a.length === 3 && a.every(v => Number.isFinite(v) && v >= 0)))
+          throw new Error('Invalid sand compass skill');
+      }
+      if(skill.effect==='stackingCorrosion'){
+        const e=skill.corrosion;
+        if(!e||skill.dmgType!=='magic'||!Array.isArray(e.damagePerPulse)||e.damagePerPulse.length!==3||!e.damagePerPulse.every(v=>Number.isFinite(v)&&v>=0)
+          ||![skill.castSeconds,e.intervalSeconds,e.durationSeconds].every(v=>Number.isFinite(v)&&v!>0)||e.durationSeconds<e.intervalSeconds)throw new Error('Invalid stacking corrosion skill');
+      }
+      if(skill.effect==='windHunt'){
+        const e=skill.windHunt;
+        if(!e||skill.radius!==0||skill.dmgType!=='physical'||!Number.isFinite(skill.castSeconds)||skill.castSeconds!<=0||!Number.isFinite(e.durationSeconds)||e.durationSeconds<=0
+          ||![e.attackSpeedBonuses,e.physicalPowerPerKill].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0)))throw new Error('Invalid wind hunt skill');
+      }
+      if(skill.effect==='inspiration'){
+        const e=skill.inspiration;
+        if(!e||skill.radius!==1||skill.dmgType!=='magic'||!Array.isArray(e.attackSpeedBonuses)||e.attackSpeedBonuses.length!==3
+          ||!e.attackSpeedBonuses.every(v=>Number.isFinite(v)&&v>=0)||!Number.isFinite(e.durationSeconds)||e.durationSeconds<=0)throw new Error('Invalid inspiration skill');
+      }
+      if(skill.effect==='lanternGuard'){
+        const e=skill.lanternGuard;
+        if(!e||skill.radius!==0||skill.dmgType!=='physical'||![e.maxArmorBonuses,e.physicalPowerPerArmor].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0))
+          ||!Number.isFinite(e.maxAttackSpeedPenalty)||e.maxAttackSpeedPenalty<0)throw new Error('Invalid lantern guard skill');
       }
       if (skill.effect === 'bloodAid') {
         const e=skill.bloodAid;
@@ -436,7 +484,7 @@ export class ConfigManager {
         let previous = 0;
         for (const tier of trait.breakpoints) {
           if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
-            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral && !tier.bloodfiend)
+            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral && !tier.bloodfiend && !tier.explorer)
             || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
             || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
           if (tier.formation) {
@@ -452,6 +500,11 @@ export class ConfigManager {
             }
             if ((bonus.critChance ?? 0) > 1 || (bonus.executeThreshold ?? 0) >= 1
               || (bonus.skillCanCrit !== undefined && typeof bonus.skillCanCrit !== 'boolean')) throw new Error('Invalid trait stat bonus');
+          }
+          if (tier.explorer) {
+            const e = tier.explorer;
+            if (![e.pointsPerBattle,e.pointsPerKill,e.lossMultiplier].every(v=>Number.isSafeInteger(v)&&v>0)
+              || !Number.isFinite(e.rewardValuePerPoint) || e.rewardValuePerPoint<=0) throw new Error('Invalid explorer trait');
           }
           if (tier.bloodfiend) {
             const e = tier.bloodfiend;

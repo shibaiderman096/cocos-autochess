@@ -38,6 +38,7 @@ export interface RunSessionState {
 }
 
 export type RunAction =
+  | { type: 'openExplorerChest' }
   | { type: 'chooseEquipmentTrait'; index: number }
   | { type: 'chooseOpeningEncounter'; id: import('./OpeningEncounter').OpeningEncounterId }
   | StageChoice
@@ -58,12 +59,15 @@ export interface ActionResult {
   error?: string;
   uid?: number;
   mergedUid?: number;
+  copiedUnitId?: string;
   gold?: number;
 }
 export interface ActionAttempt { action: RunAction; result: ActionResult }
 
 /** Deliberately excludes enemies, future waves, RNG state, debug grants and mutable core objects. */
 export interface PlayerObservation {
+  explorerPoints?: number;
+  explorerChestValue?: number;
   pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
   pendingOpeningEncounter?: boolean;
   freeRefreshes?: number;

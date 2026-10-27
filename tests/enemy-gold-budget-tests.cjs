@@ -12,10 +12,22 @@ const clone=x=>JSON.parse(JSON.stringify(x)),roster=new Map(i.units.map(u=>[u.id
 const build=(stages=99,seed=17)=>buildRunWaves(stages,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:seed,earlyEncounterLayout:'random-rounds-v1',
  difficulty:g.enemyDifficulty,power:g.enemyPower,equipmentPolicy:e.equipmentPolicy,equipmentRoles:f.enemyRoles,traits:i.battle.traits});
 const waves=build();
+// An investment pattern can support only one distinct member of every faction
+// (e.g. ten 3-cost 3-stars). Check the best feasible matching, not an impossible two-member floor.
+function feasibleThemeMembers(w,theme){
+ const slots=w.enemies.map(e=>enemyUnitGold(roster.get(e.unitId),e.star)),matches=new Map();
+ const eligible=i.units.filter(u=>theme.members.includes(u.id)&&w.goldBudget.shopRates[u.cost-1]>0);
+ function assign(slot,seen){
+  for(const u of eligible){if(seen.has(u.id)||![1,2,3].some(star=>enemyUnitGold(u,star)===slots[slot]))continue;
+   seen.add(u.id);if(!matches.has(u.id)||assign(matches.get(u.id),seen)){matches.set(u.id,slot);return true;}}
+  return false;
+ }
+ return slots.reduce((count,_gold,slot)=>count+Number(assign(slot,new Set())),0);
+}
 for(let seed=17;seed<23;seed++){
  const current=seed===17?waves:build(12,seed);let completed=0;
  for(const w of current.filter(w=>w.stage>=2)){
-  const base=3+completed+3*(w.stage-2);completed++;
+  const base=3+(w.stage<4?Math.floor(completed/2):completed)+3*(w.stage-2);if(w.encounterKind!=='specialShop')completed++;
   if(w.encounterKind==='monster'||w.encounterKind==='specialShop'){assert.equal(w.goldBudget,undefined);assert.equal(w.enemyUpgrade,undefined);continue;}
   const d=w.goldBudget,bonus=w.encounterKind==='elite'?w.stage:w.encounterKind==='boss'?2*w.stage:0;
   assert.equal(d.baseGold,base);assert.equal(d.bonusGold,bonus);assert.equal(d.totalGold,base+bonus);assert.equal(d.version,'gold-v1');
@@ -28,15 +40,17 @@ for(let seed=17;seed<23;seed++){
   for(const a of w.enemies)for(const b of w.enemies)if(roster.get(a.unitId).range<roster.get(b.unitId).range)assert.ok(a.y<=b.y,'shorter-range units stay in front of longer-range units');
   assert.ok(d.distinctUnits>=Math.min(w.enemies.length,5),'composition avoids repeat-heavy armies');
   const theme=i.battle.traits.find(t=>t.id===d.themeTrait);assert.ok(theme);assert.equal(d.themeMembers,new Set(w.enemies.filter(u=>theme.members.includes(u.unitId)).map(u=>u.unitId)).size);
-  assert.ok(d.themeMembers>=Math.min(2,w.enemies.length),'an army leans toward its declared faction');
+  assert.ok(d.themeMembers>=Math.min(2,feasibleThemeMembers(w,theme)),`an army leans toward its feasible faction: seed ${seed}, ${w.stage}-${w.round}, ${d.themeTrait}, ${d.themeMembers} members, ${d.totalGold} gold`);
   const eq=w.enemyUpgrade;assert.equal(eq.goldBudget,6*(w.stage-1)+bonus);assert.equal(eq.goldBudget,eq.goldSpent+eq.goldRemaining);
   assert.equal(eq.goldSpent,eq.equipmentIds.reduce((n,id)=>n+(e.equipmentPolicy.enemy.itemTags[id].goldCost??6),0));
   assert.ok(w.enemies.every(u=>u.equipment.length<=3));
  }
 }
 const authored=waves.filter(w=>w.goldBudget),find=(s,r)=>authored.find(w=>w.stage===s&&w.round===r);
-assert.equal(find(2,1).goldBudget.baseGold,3);assert.equal(find(3,1).goldBudget.baseGold,11);
-const direct=generateGoldArmy(rules,2,4,8,'normal',4,i.units,i.battle.traits,new RunRandomContext(1));assert.equal(direct.diagnostics.totalGold,7);
+assert.equal(find(2,1).goldBudget.baseGold,3);assert.equal(find(3,1).goldBudget.baseGold,8);
+assert.equal(generateGoldArmy(rules,2,1,50,'normal',3,i.units,i.battle.traits,new RunRandomContext(1)).diagnostics.baseGold,3);
+assert.equal(generateGoldArmy(rules,2,2,51,'normal',3,i.units,i.battle.traits,new RunRandomContext(1)).diagnostics.baseGold,4);
+const direct=generateGoldArmy(rules,2,4,8,'normal',4,i.units,i.battle.traits,new RunRandomContext(1));assert.equal(direct.diagnostics.totalGold,5);
 assert.ok(waves.find(w=>w.stage===99&&w.encounterKind==='boss').goldBudget.totalGold>1000,'unit gold has no budget cap');
 assert.equal(waves.find(w=>w.stage===99&&w.encounterKind==='elite').enemyUpgrade.goldBudget,687);
 assert.equal(waves.find(w=>w.stage===99&&w.encounterKind==='boss').enemyUpgrade.goldBudget,786);

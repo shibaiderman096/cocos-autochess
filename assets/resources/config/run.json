@@ -986,20 +986,37 @@
       ]
     },
     "monsterReward": {
-      "initialValue": 2,
-      "valuePerStage": 2,
-      "maxValue": 10
+      "initialValue": 3,
+      "valuePerStage": 1,
+      "maxValue": 30
     },
     "bossReward": {
       "healAmount": 5
     },
+    "chestReward": {
+      "version": "mixed-v1",
+      "healthGoldValue": 2,
+      "eliteValueMultiplier": 0.5,
+      "explorerGoldThreshold": 30
+    },
     "shop": {
       "slots": 5,
+      "refresh": {
+        "initialPrice": 2,
+        "priceIncrement": 2
+      },
       "equipmentPrices": {
         "basic": 6,
         "advanced": 6,
         "special": 10
-      }
+      },
+      "qualityRates": [
+        35,
+        30,
+        20,
+        10,
+        5
+      ]
     },
     "basicEquipmentIds": [
       "guinsoo",
@@ -1116,6 +1133,10 @@
   },
   "enemyGoldBudget": {
     "version": "gold-v1",
+    "earlyGrowth": {
+      "beforeStage": 4,
+      "roundsPerGold": 2
+    },
     "initialGold": 3,
     "goldPerRound": 1,
     "goldPerStage": 3,

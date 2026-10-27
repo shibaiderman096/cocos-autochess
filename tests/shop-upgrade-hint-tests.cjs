@@ -27,7 +27,7 @@ const source=ts.createSourceFile('BattleStage.ts',fs.readFileSync('assets/script
 const method=source.statements.find(ts.isClassDeclaration).members.find(m=>m.name?.getText(source)==='refreshShopUI').getText(source);
 const Stage=new Function('COST_PRICE',ts.transpileModule(`class Stage {${method}};return Stage;`,{compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText)(COST_PRICE);
 const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);
-const save=freshSaveV2(3,45,'legacy');save.gold=100;save.shopReserved=true;save.benchSlots=9;
+const save=freshSaveV2(3,45,'legacy');save.gold=100;save.level=2;save.shopReserved=true;save.benchSlots=9;
 save.owned=[copy(1,1,'board'),copy(2),copy(3,2,'board','helion'),copy(4,2,'bench','helion'),copy(5,1,'bench','helion'),copy(6,1,'bench','helion')];save.owned[2].x=4;
 save.shop=[{unitId:'ghostflame_blade'},{unitId:'helion'},{unitId:'saiph'},{unitId:'ghostflame_blade'},{unitId:null}];
 const session=new RunSession(cfg,inputs.run,inputs.waves,{save,enemyGenerationMode:'legacy'});
@@ -36,6 +36,7 @@ const stage=Object.assign(new Stage(),{refreshShopContent(){},shop:session.shop,
 const flush=()=>{while(pending.length)pending.shift()();};
 const hints=()=>ui.shopSlots.map(card=>{const n=card.node.getChildByName('upgradeBadge');return n.active?n.getChildByName('text').getComponent(Label).string:'';});
 stage.refreshShopUI();flush();assert.deepEqual(hints(),['★★','★★★','','★★','']);
+assert.ok(ui.shopSlots.every(card=>!card.node.getChildByName('starBadge')),'fixed lower-left one-star ornament is removed while upgrade hints remain');
 for(const card of ui.shopSlots){const badge=card.node.getChildByName('upgradeBadge'),size=badge.getComponent(UITransform).contentSize;
  assert.ok(badge.position.x>0&&badge.position.y>0);assert.ok(badge.position.x+size.width/2<=82&&badge.position.y+size.height/2<=52);}
 ui.onBuy=slot=>{assert.equal(session.buyShopSlot(slot).ok,true);stage.refreshShopUI();};

@@ -11,7 +11,7 @@ export interface SkillStatRow {
 const number = (v: number) => String(Number(v.toFixed(2)));
 
 /** Presentation only: current equipment/wave stats versus unequipped, unscaled base ranks. */
-export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false, passiveHealth = 0, passiveSpellPower = 0): SkillStatRow[] {
+export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData, star: number, skillScale: number, rich = false, passiveHealth = 0, passiveSpellPower = 0, passivePhysicalPower = 0): SkillStatRow[] {
   if (!unit.skillId) return [];
   const skill = configs.getSkill(unit.skillId);
   const base = configs.getUnit(unit.id);
@@ -24,7 +24,37 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
   const shadow = skill.shadow;
   const sunlight = skill.sunlight;
-  if (sunlight) {
+  if (skill.ropeHunt) {
+    add('单发伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('射击次数',()=>String(skill.ropeHunt!.shotCount),'neutral');
+    add('回旋持续',()=>`${number(skill.ropeHunt!.durationSeconds)}秒`,'neutral');
+    add('射击间隔',()=>`${number(skill.ropeHunt!.intervalSeconds)}秒`,'neutral');
+    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+  } else if (skill.sandCompass) {
+    add('友军护盾',(u,i)=>String(configuredShieldAmount(u,skill,i+1)),'shield');
+    add('沙浪伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('护盾持续',()=>`${number(skill.sandCompass!.shieldSeconds)}秒`,'neutral');
+    add('作用半径',()=>`${number(skill.radius)}格`,'neutral');
+    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+  } else if(skill.corrosion){
+    add('每层每次伤害',(u,i)=>number(skill.corrosion!.damagePerPulse[i]*(1+(u.spellPower??0)/100)*(1+(u.damageAmp??0))),'magic');
+    add('每层持续',()=>`${number(skill.corrosion!.durationSeconds)}秒`,'neutral');
+    add('伤害间隔',()=>`${number(skill.corrosion!.intervalSeconds)}秒`,'neutral');
+    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+  } else if(skill.effect==='windHunt'){
+    add('强化攻速',(_u,i)=>`${number(skill.windHunt!.attackSpeedBonuses[i]*100)}%`,'speed');
+    add('强化持续',()=>`${number(skill.windHunt!.durationSeconds)}秒`,'neutral');
+    add('击杀物理成长',(_u,i)=>`${number(skill.windHunt!.physicalPowerPerKill[i])}%`,'physical');
+    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+    rows.push({label:'累计物理成长',current:`${number(passivePhysicalPower)}%`,stars:'本局累计',tone:'physical'});
+  } else if(skill.effect==='lanternGuard'){
+    add('最多降低攻速',()=>`${number(skill.lanternGuard!.maxAttackSpeedPenalty*100)}%`,'speed');
+    add('最多获得护甲',(u,i)=>number(skill.lanternGuard!.maxArmorBonuses[i]*(1+(u.spellPower??0)/100)),'shield');
+    add('每点护甲转化',(_u,i)=>`${number(skill.lanternGuard!.physicalPowerPerArmor[i])}%`,'physical');
+  } else if(skill.effect==='inspiration'){
+    add('初始攻速',(u,i)=>`+${number(skill.inspiration!.attackSpeedBonuses[i]*(1+(u.spellPower??0)/100)*100)}%`,'speed');
+    add('持续时间',()=>`${number(skill.inspiration!.durationSeconds)}秒`,'neutral');
+  } else if (sunlight) {
     const hit = (label: string, values = skill.starDamage!, type = skill.dmgType, multiplier = 1) => add(label, (u, i) => String(Math.round(values[i]
       * (1 + (type === 'physical' ? u.physicalPower ?? 0 : type === 'magic' ? u.spellPower ?? 0 : 0) / 100) * (1 + (u.damageAmp ?? 0)) * multiplier)), type);
     const shield = (label = '护盾', values = skill.shieldAmounts!, multiplier = 1) => add(label, (u, i) => String(configuredShieldAmount(u, skill, i + 1, values) * multiplier), 'shield');
@@ -234,7 +264,25 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
       aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0, stun: skill.stunSeconds?.[star - 1] ?? 0 };
   }
   return {
-    dmg: kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', trail:current('沿途伤害'), knockup:skill.chargedKnockup?.durationsSeconds[star - 1]??skill.stellarBulwark?.knockupSeconds??skill.furnaceDash?.knockupSeconds??0, shield: current('护盾') || current('自身护盾'), heal: current('单目标治疗') || current('击杀治疗') || current('结束治疗') || current('每次治疗') || current('治疗'),
+    inspireSpeed:(skill.inspiration?.attackSpeedBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
+    inspireDuration:skill.inspiration?.durationSeconds??0,
+    guardSlow:skill.lanternGuard?.maxAttackSpeedPenalty??0,
+    guardArmor:(skill.lanternGuard?.maxArmorBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
+    guardConversion:skill.lanternGuard?.physicalPowerPerArmor[star-1]??0,
+    windSpeed:skill.windHunt?.attackSpeedBonuses[star-1]??0,
+    windDuration:skill.windHunt?.durationSeconds??0,
+    windGrowth:skill.windHunt?.physicalPowerPerKill[star-1]??0,
+    windCast:skill.castSeconds??0,
+    windPermanent:current('累计物理成长'),
+    corrosionDamage:(skill.corrosion?.damagePerPulse[star-1]??0)*(1+(unit?.spellPower??0)/100)*(1+(unit?.damageAmp??0)),
+    corrosionDuration:skill.corrosion?.durationSeconds??0,
+    corrosionInterval:skill.corrosion?.intervalSeconds??0,
+    corrosionCast:skill.castSeconds??0,
+    compassCast:skill.castSeconds??0,compassRadius:skill.radius,
+    compassShieldDuration:skill.sandCompass?.shieldSeconds??0,
+    ropeCast:skill.castSeconds??0,ropeDuration:skill.ropeHunt?.durationSeconds??0,
+    ropeInterval:skill.ropeHunt?.intervalSeconds??0,ropeCount:skill.ropeHunt?.shotCount??0,
+    dmg: skill.sandCompass ? current('沙浪伤害') : kind ? current(damageLabels[kind]) : rows[0]?.current ?? '0', trail:current('沿途伤害'), knockup:skill.chargedKnockup?.durationsSeconds[star - 1]??skill.stellarBulwark?.knockupSeconds??skill.furnaceDash?.knockupSeconds??0, shield: current('护盾') || current('自身护盾') || current('友军护盾'), heal: current('单目标治疗') || current('击杀治疗') || current('结束治疗') || current('每次治疗') || current('治疗'),
     killPower: skill.bloodDrain?.spellPowerPerKill[star - 1] ?? 0,
     permanentPower: current('本局累计法术加成'),
     lineLength: skill.lineFear?.length ?? 0,

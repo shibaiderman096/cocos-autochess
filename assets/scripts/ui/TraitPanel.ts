@@ -1,10 +1,11 @@
-import { Node, Sprite, Label, RichText, SpriteAtlas, UITransform, Color, Graphics, Mask, ScrollView, Vec2 } from 'cc';
+import { Node, Sprite, Label, RichText, SpriteAtlas, UITransform, Color, Graphics, Mask, ScrollView, Vec2, sys } from 'cc';
 import type { UnitConfigData } from '../core/ConfigManager';
 import type { TraitState } from '../battle/Traits';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
 import { UNIT_ART, UNIT_PORTRAIT, M2_UI_SPRITE, FX_SPRITE } from '../view/ArtPaths';
 import { panel, label, button, paintPanel } from './BattleUI';
 import { sunlightTierText } from './SunlightPresentation';
+import { setUISkin } from './UISkin';
 
 const TEXT = new Color(234, 231, 215), MUTED = new Color(138, 153, 164);
 const PHYSICAL = new Color(255, 151, 64), SPELL = new Color(80, 180, 255), HEALING = new Color(123, 245, 154);
@@ -64,7 +65,8 @@ export class TraitPanel {
   readonly root: Node;
   private rows: Node;
   private scrollView: ScrollView;
-  private readonly viewportHeight = 330;
+  private viewportHeight = 330;
+  private viewport: Node;
   private readonly rowSpacing = 56;
   private detail: Node | null = null;
   private catalogViewport: Node | null = null;
@@ -76,7 +78,7 @@ export class TraitPanel {
 
   constructor(private parent: Node) {
     this.root = panel(parent, 'traits', -510, 45, 192, 390);
-    const viewport = new Node('traitViewport');
+    const viewport = this.viewport = new Node('traitViewport');
     viewport.addComponent(UITransform).setContentSize(184, this.viewportHeight);
     this.root.addChild(viewport); viewport.setPosition(0, 0, 0);
     viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
@@ -90,6 +92,16 @@ export class TraitPanel {
     this.scrollView.elastic = false; this.scrollView.cancelInnerEvents = true;
     this.scrollView.content = this.rows;
     viewport.on(ScrollView.EventType.SCROLL_BEGAN, () => this.hideDetail());
+  }
+  setHeight(height: number): void {
+    this.viewportHeight=height-60;
+    this.root.getComponent(UITransform)!.setContentSize(192,height);
+    const g=this.root.getComponent(Graphics)!;
+    paintPanel(g,192,height,new Color(13,27,35),new Color(204,174,109));setUISkin(this.root,'panel_side',g);
+    this.viewport.getComponent(UITransform)!.setContentSize(184,this.viewportHeight);
+    this.viewport.setPosition(0,-20,0);
+    this.rows.getComponent(UITransform)!.setContentSize(178,Math.max(this.viewportHeight,this.states.length*this.rowSpacing-6));
+    this.rows.setPosition(0,this.viewportHeight/2,0);
   }
 
   refresh(states: TraitState[], roster: UnitConfigData[]): void {
@@ -107,9 +119,9 @@ export class TraitPanel {
       const row = panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
         new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85), null);
       badge(row, state, -61, 3, 34);
-      left(row, state.config.name, -35, 9, 14, 110, state.active ? TEXT : MUTED).isBold = true;
+      left(row, state.config.name, -35, 9, sys.isMobile ? 17 : 14, 110, state.active ? TEXT : MUTED).isBold = true;
       state.config.breakpoints.forEach((tier, index) => {
-        const item = label(row, String(tier.count), -22 + index * 25, -13, 11,
+        const item = label(row, String(tier.count), -22 + index * 25, -13, sys.isMobile ? 15 : 11,
           state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, 24);
         item.isBold = state.active?.count === tier.count;
       });
@@ -232,7 +244,8 @@ export class TraitPanel {
     const spellchanter = state.config.breakpoints.some(tier => !!tier.spellchanter);
     const swift = state.config.breakpoints.some(tier => !!tier.swiftmartialist);
     const bloodfiend = state.config.breakpoints.some(tier => !!tier.bloodfiend);
-    const warrior = bloodfiend || state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
+    const explorer = state.config.breakpoints.some(tier=>!!tier.explorer);
+    const warrior = explorer || bloodfiend || state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
     const tall = formation || shadow || swift;
     const headerY = shadow || warrior ? 264 : tall ? 232 : 177;
     const card = panel(this.parent, 'traitDetail', shadow || warrior ? -184 : -206, shadow || warrior ? 0 : tall ? 10 : 40, shadow || warrior ? 440 : 390, shadow || warrior ? 610 : tall ? 540 : 430,
@@ -272,7 +285,11 @@ export class TraitPanel {
       const row = panel(card, 'traitBreakpoint', 0, warrior ? [105, 63, 21, -49][index] : shadow ? [123, 58, -10, -94][index] : swift ? 80 - index * 60 : formation ? 80 - index * 72 : 48 - index * 36, shadow || warrior ? 400 : 350, warrior ? (index === 3 ? 88 : 36) : shadow ? (tier.shadow?.board ? 96 : index === 0 ? 56 : 64) : swift ? 56 : formation ? 64 : 32,
         active ? new Color(39, 43, 57) : new Color(15, 23, 34), active ? COLORS[tier.tier] : new Color(30, 42, 52), null);
       left(row, `(${tier.count})`, shadow || warrior ? -188 : -163, 0, shadow || warrior ? 18 : 16, 42, active ? COLORS[tier.tier] : MUTED).isBold = shadow || warrior;
-      if (tier.bloodfiend) {
+      if(tier.explorer){
+        const e=tier.explorer,reached=state.count>=tier.count;
+        const number=(v:number)=>`<color=${reached?'#e5c978':'#8a99a4'}><b>${v}</b></color>`;
+        rich(row,'explorerEffect',`<color=${reached?'#eae7d7':'#8a99a4'}>战斗结束 +${number(e.pointsPerBattle)} 探险值<br/>每次友方击杀 +${number(e.pointsPerKill)}，失败总收益 ×${number(e.lossMultiplier)}</color>`,-140,0,330,14);
+      } else if (tier.bloodfiend) {
         const e = tier.bloodfiend, reached = state.count >= tier.count;
         const percent = (value: number) => `${Number((value * 100).toFixed(2))}%`;
         const number = (value: string, color: string) => `<color=${reached ? color : '#8a99a4'}><b>${value}</b></color>`;

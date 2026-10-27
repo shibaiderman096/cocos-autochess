@@ -12,6 +12,10 @@ import { MechanicalVfx } from './MechanicalVfx';
 import { BloodfiendVfx } from './BloodfiendVfx';
 import { AstralVfx } from './AstralVfx';
 import { AstralUnitVfx } from './AstralUnitVfx';
+import { ExplorerUnitVfx } from './ExplorerUnitVfx';
+import { ExplorerSkillVfx } from './ExplorerSkillVfx';
+import { ExplorerSpriteVfx } from './ExplorerSpriteVfx';
+import { ropeHuntPoint } from '../battle/RopeHunt';
 import { GameAudio } from './GameAudio';
 
 const { ccclass } = _decorator;
@@ -41,9 +45,15 @@ export class BattleReplayer extends Component {
   private bloodfiendSprites: BloodfiendVfx | null = null;
   private astralVfx: AstralVfx | null = null;
   private astralUnitVfx: AstralUnitVfx | null = null;
+  private explorerUnitVfx: ExplorerUnitVfx | null = null;
+  private explorerSkillVfx: ExplorerSkillVfx | null = null;
+  private explorerSprites: ExplorerSpriteVfx | null = null;
   private stellarKnockups = new Map<number, {tick:number;duration:number}>();
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
+    this.explorerSprites?.destroy();this.explorerSprites=null;
+    this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null;
+    this.explorerUnitVfx?.destroy();this.explorerUnitVfx=null;
     this.astralUnitVfx?.destroy();this.astralUnitVfx=null;
     this.clearStellar();
     this.astralVfx?.clear(); this.astralVfx = null;
@@ -64,6 +74,18 @@ export class BattleReplayer extends Component {
 
   setFxRoot(root: Node): void {
     this.fxRoot = root;
+    if(this.sim?.units.some(u=>u.lanternGuard||['startrail_inspiration','windward_hunt','wayward_corrosion','sand_compass','rope_shadow_hunt'].includes(u.cfg.skillId??'')))
+      this.explorerSprites=new ExplorerSpriteVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+        ()=>this.sim.units,p=>this.boardView.logicalPointToWorld(p));
+    if(this.sim?.units.some(u=>['sand_compass','rope_shadow_hunt'].includes(u.cfg.skillId??'')))
+      this.explorerSkillVfx=new ExplorerSkillVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+        p=>this.boardView.logicalPointToWorld(p),id=>!!this.sim.units.find(u=>u.id===id)?.pendingCast);
+    if(this.sim?.units.some(u=>u.lanternGuard||['startrail_inspiration','windward_hunt','wayward_corrosion'].includes(u.cfg.skillId??'')))
+      this.explorerUnitVfx=new ExplorerUnitVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+        ()=>this.sim.finished?[]:this.sim.units.filter(u=>u.alive&&u.hp>0&&u.lanternGuard).map(u=>({id:u.id,missing:u.missingHealthFraction})),
+        ()=>this.sim.finished?[]:this.sim.units.filter(u=>u.alive&&u.hp>0&&u.cfg.skillId==='windward_hunt').map(u=>({id:u.id,active:u.windHuntActive,
+          windup:u.pendingCast?.skillId==='windward_hunt'?1-u.pendingCast.remainingTicks/u.windHuntCastTicks:null})),
+        id=>!!this.sim.units.find(u=>u.id===id)?.pendingCast);
     if(this.sim?.units.some(u=>['stellar_bulwark','milu_star_leap','moon_triple_arrow','nebula_tide','gravity_collapse'].includes(u.cfg.skillId??'')))
       this.astralUnitVfx=new AstralUnitVfx(root,this.cellSize,this.tickMs,
         (x,y)=>this.boardView.cellToWorld(x,y),id=>this.unitViews.get(id)?.node,
@@ -82,6 +104,13 @@ export class BattleReplayer extends Component {
   }
 
   private play(e: BattleEvent) {
+    this.explorerSprites?.play(e);
+    this.explorerSkillVfx?.play(e);
+    if(e.t==='rope_swing'||e.t==='rope_return'){
+      this.moves.delete(e.id);
+      if(e.t==='rope_return'&&this.boardView)this.unitViews.get(e.id)?.node.setPosition(this.boardView.cellToWorld(e.to.x,e.to.y));
+    }
+    this.explorerUnitVfx?.play(e);
     this.astralUnitVfx?.play(e);
     this.mechanicalArt()?.play(e);
     this.bloodfiendArt()?.play(e);
@@ -210,7 +239,7 @@ export class BattleReplayer extends Component {
         GameAudio.play(art?.includes('/shadow/') ? 'cast_shadow' : art?.includes('/sunlight/') ? 'cast_sunlight'
           : art?.includes('/astral/') ? 'cast_astral' : art?.includes('/mechanical/') ? 'cast_mechanical' : 'cast');
         if (e.duration !== undefined) {
-          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(e.duration);
+          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty','startrail_inspiration','wayward_corrosion','windward_hunt','sand_compass','rope_shadow_hunt'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(e.duration);
           const source = this.sim.units.find(unit => unit.id === e.id);
           const path = source && UNIT_ART[source.cfg.artId ?? source.cfg.id];
           const view = this.unitViews.get(e.id);
@@ -321,9 +350,9 @@ export class BattleReplayer extends Component {
       const uv = this.unitViews.get(u.id);
       if (!uv) continue;
       if (u.alive) {
-        const target = this.boardView.cellToWorld(u.x, u.y);
+        const target = u.ropeHunt ? this.boardView.logicalPointToWorld(ropeHuntPoint(u.ropeHunt,this.renderTick)) : this.boardView.cellToWorld(u.x, u.y);
         const movement = this.moves.get(u.id);
-        if (movement) {
+        if (movement && !u.ropeHunt) {
           const progress = Math.max(0, Math.min(1, (this.renderTick - movement.startTick) / movement.durationTicks));
           Vec3.lerp(target, movement.from, movement.to, progress);
           if (progress === 1) this.moves.delete(u.id);
@@ -339,6 +368,14 @@ export class BattleReplayer extends Component {
         const toward=cleave&&this.unitViews.get(cleave.targetId)?.node.position;
         const direction=toward?new Vec3(toward.x-uv.node.position.x,toward.y-uv.node.position.y,0):undefined;
         uv.animateBloodCleave?.(cleave?Math.max(0,Math.min(1,(this.renderTick-cleave.startTick)/(cleave.endTick-cleave.startTick))):null,direction);
+        if(u.cfg.skillId==='windward_hunt')uv.animateWindHunt?.(u.pendingCast?.skillId==='windward_hunt'
+          ?1-u.pendingCast.remainingTicks/u.windHuntCastTicks:null);
+        if(['sand_compass','rope_shadow_hunt'].includes(u.cfg.skillId??''))
+          uv.animateExpeditionCast?.(u.pendingCast?1-u.pendingCast.remainingTicks/u.expeditionCastTicks:null);
+        if(u.cfg.skillId==='wayward_corrosion'){
+          const charge=this.explorerSprites?.brewProgress(u.id,this.renderTick)??this.explorerUnitVfx?.brewProgress(u.id,this.renderTick)??null;
+          uv.animateExpeditionCast?.(charge);
+        }
         uv.animateSunlight?.(this.renderTick,this.tickMs,this.cellSize);
         this.mechanicalSprites?.syncUnit(u.id,this.renderTick);
         const domain = uv.node.getChildByName('shadowDomain');
@@ -357,6 +394,11 @@ export class BattleReplayer extends Component {
     this.boardView.animateAstralFields?.(this.renderTick, this.tickMs);
     this.astralVfx?.update(this.renderTick, this.sim);
     this.astralUnitVfx?.update(this.renderTick);
+    this.explorerUnitVfx?.update(this.renderTick);
+    this.explorerSkillVfx?.update(this.renderTick);
+    const painted=this.explorerSprites?.ready??false;
+    this.explorerUnitVfx?.setVisible(!painted);this.explorerSkillVfx?.setVisible(!painted);
+    this.explorerSprites?.update(this.renderTick);
   }
 
   private clearStellar(): void {
@@ -420,7 +462,7 @@ export class BattleReplayer extends Component {
     this.shadowFog = null;
   }
 
-  onDestroy(): void { this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
+  onDestroy(): void { this.explorerSprites?.destroy();this.explorerSprites=null; this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null; this.explorerUnitVfx?.destroy(); this.explorerUnitVfx=null; this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
 
   private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
     if (!this.fxRoot?.isValid) return;

@@ -85,7 +85,7 @@ const screenSetup={};
 const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Vec3,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
   input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
-  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
+  sys:{isMobile:false},ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
   resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:/trait_badges|trait_portrait_frames/.test(name)?2172:1536,height:/trait_badges|trait_portrait_frames/.test(name)?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{},executionOrder:()=>c=>c}};
 const cache=new Map();
@@ -96,4 +96,4 @@ function load(file) {
   new Function('require','exports',code)(id=>id==='cc'?cc:load(path.resolve(path.dirname(file),id+'.ts')),out); return out;
 }
 
-module.exports={load,Node,Sprite,Label,UITransform,pending};
+module.exports={load,Node,Sprite,Label,RichText,UITransform,pending};

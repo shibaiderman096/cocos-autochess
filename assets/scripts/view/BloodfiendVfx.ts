@@ -59,7 +59,7 @@ export class BloodfiendVfx {
       const from=this.node(e.id)?.position;
       // Coalesce same-tick kills visually; independent four-second gameplay stacks stay in the sim.
       if(from&&!this.slots.some(s=>s.layer?.art==='bloodfiendRevel'&&s.layer.owner===e.id&&s.layer.tick===e.tick))
-        this.add({art:'bloodfiendRevel',owner:e.id,from:from.clone(),follow:e.id,tick:e.tick,seconds:.8,size:1.75,angle:0,motion:'burst'});
+        this.add({art:'bloodfiendRevel',owner:e.id,from:from.clone(),follow:e.id,tick:e.tick,seconds:1,size:1.75,angle:0,motion:'burst'});
     }else if(e.t==='blood_rebirth'){
       const from=this.node(e.id)?.position;
       if(from)this.add({art:'bloodRebirth',owner:e.id,from:from.clone(),follow:e.id,tick:e.tick,
@@ -72,7 +72,7 @@ export class BloodfiendVfx {
     }else if(e.t==='blood_cleave'){
       const from=this.project(e.from.x,e.from.y),to=this.lineEnd(e.from,e.toward,e.length+2);
       this.add({art:'bloodCleave',owner:e.id,from:new Vec3((from.x+to.x)/2,(from.y+to.y)/2,0),tick:e.tick,
-        seconds:.55,size:Math.hypot(to.x-from.x,to.y-from.y)/this.cell,height:1.2,angle:angleTo(from,to),motion:'roar'});
+        seconds:.7,size:Math.hypot(to.x-from.x,to.y-from.y)/this.cell,height:1.2,angle:angleTo(from,to),motion:'roar'});
     }else if(e.t==='cast'&&e.skillId==='blood_sovereignty'){
       const from=this.node(e.id)?.position;
       if(from)this.add({art:'bloodRebirth',owner:e.id,from:from.clone(),follow:e.id,tick:e.tick,seconds:.4,size:1.25,angle:0,motion:'burst'});

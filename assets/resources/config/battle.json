@@ -40,6 +40,20 @@
   "legendaryThreeStarBonusHp": 5000,
   "traits": [
     {
+      "id": "explorer",
+      "name": "探险家",
+      "glyph": "探",
+      "description": "仅棋子战斗积累探险值，野怪和商店不计入。左侧宝箱非战斗时可开，价值=层数×0.1（向上取整），开箱后清零。奖励价值超过30时可混入金币。",
+      "members": ["startrail_fox", "starlamp_guide", "windlance_huntress", "wayward_alchemist", "sandsea_navigator", "hushrope_ranger"],
+      "pendingMembers": false,
+      "breakpoints": [
+        {"count": 3, "tier": "bronze", "explorer": {"pointsPerBattle": 10, "pointsPerKill": 2, "lossMultiplier": 2, "rewardValuePerPoint": 0.1}},
+        {"count": 5, "tier": "silver", "explorer": {"pointsPerBattle": 25, "pointsPerKill": 2, "lossMultiplier": 2, "rewardValuePerPoint": 0.1}},
+        {"count": 7, "tier": "gold", "explorer": {"pointsPerBattle": 50, "pointsPerKill": 3, "lossMultiplier": 2, "rewardValuePerPoint": 0.1}},
+        {"count": 9, "tier": "prismatic", "explorer": {"pointsPerBattle": 80, "pointsPerKill": 5, "lossMultiplier": 3, "rewardValuePerPoint": 0.1}}
+      ]
+    },
+    {
       "id": "bloodfiend",
       "name": "血魔",
       "glyph": "血",

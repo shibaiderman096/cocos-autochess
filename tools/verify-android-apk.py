@@ -39,6 +39,13 @@ def verify(apk, project):
                                         "mechanical_overclock"]] + ["art/ui/loading_emblem"] + [
             "art/units/bloodfiend/" + name for name in ["crimson_riftclaw", "bloodline_earl", "crimson_devourer",
                                                        "scarlet_enchantress", "crimson_demon_knight"]]
+        images += ["art/units/explorer/" + name for name in ["startrail_fox", "starlamp_guide", "windlance_huntress",
+                                                           "wayward_alchemist", "sandsea_navigator", "hushrope_ranger"]]
+        images += ["art/fx/explorer/" + name for name in ["startrail_inspiration", "lone_lantern_guard", "windward_hunt",
+                                                        "wayward_corrosion", "sand_compass", "rope_shadow_hunt"]]
+        images += ["art/equipment/" + name for name in ["replicator_glimmer", "replicator_starlight",
+                                                       "replicator_firmament", "expedition_command_crown"]]
+        images += ["art/fx/player_damage/player_damage_energy", "art/ui_m2/streak_win", "art/ui_m2/streak_loss"]
         for image in images:
             assert image + "/spriteFrame" in paths, "Missing packaged sprite: " + image
             uuid = paths[image]
@@ -46,7 +53,8 @@ def verify(apk, project):
         runtime = archive.read("assets/assets/main/index.js").decode("utf-8")
         for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay",
                       "bloodfiend_revel", "mechanical_overclock", "blood_cleave_charge", "attackWindupSeconds",
-                      "equipmentCredit", "flyChestSupplies"]:
+                      "equipmentCredit", "flyChestSupplies", "grantExplorerReward", "openExplorerChest",
+                      "flyMixedChestRewards", "explorerGoldThreshold", "equipmentDescriptionRichText"]:
             assert token in runtime, "Missing packaged behavior: " + token
         main = json.loads(archive.read("assets/assets/main/cc.config.json"))
         scenes = sorted(main["scenes"])

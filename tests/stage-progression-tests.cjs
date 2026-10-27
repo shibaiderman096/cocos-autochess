@@ -5,9 +5,11 @@ const {RunSession}=require('../assets/scripts/core/RunSession.ts');
 const {assertLegalSession}=require('../tools/bots/legality.ts');
 const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs,runSimulation}=require('../tools/run-simulation.ts');
 const inputs=loadRunInputs(),deps={...loadEnemyGenerationInputs(),...loadFormationInputs(),...loadEquipmentInputs()};
-function make(save,mode='legacy',seed=11){
+// Keep coverage for legacy unopened card/credit saves. Current mixed rewards are covered in mixed-chest-shop-tests.cjs.
+const legacyRun=JSON.parse(JSON.stringify(inputs.run));delete legacyRun.stageEncounters.chestReward;legacyRun.stageEncounters.monsterReward={initialValue:2,valuePerStage:2,maxValue:10};
+function make(save,mode='legacy',seed=save?.runSeed??11){
  const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);
- return new RunSession(cfg,inputs.run,inputs.waves,{...deps,stageCount:6,runSeed:seed,enemyGenerationMode:mode,...(save?{save}: {})});
+ return new RunSession(cfg,legacyRun,inputs.waves,{...deps,stageCount:6,runSeed:seed,enemyGenerationMode:mode,...(save?{save}: {})});
 }
 function win(s){
  if(!s.owned.onBoard().length)s.moveUnit(s.owned.all()[0].uid,{location:'board',x:3,y:3});
@@ -52,7 +54,7 @@ for(const mode of ['legacy','budget-v1']){
   const monster=waves.find(w=>w.encounterKind==='monster');
   assert.ok(monster.enemies.every(e=>inputs.run.monsters.some(m=>m.id===e.unitId)));
   const monsterSession=make(undefined,mode);assert.ok(monsterSession.debugJump(stage,monster.round));win(monsterSession);
-  assert.equal(monsterSession.pendingStageReward.kind,'unitBundle');assert.equal(monsterSession.pendingStageReward.value,Math.min(inputs.run.stageEncounters.monsterReward.maxValue,stage*2));
+  assert.equal(monsterSession.pendingStageReward.kind,'unitBundle');assert.equal(monsterSession.pendingStageReward.value,Math.min(legacyRun.stageEncounters.monsterReward.maxValue,stage*2));
   assert.equal(monsterSession.canAdvanceWave(),false);assert.ok(choose(monsterSession,'claim').ok);assertLegalSession(monsterSession);
  }
  jump(s,'boss');win(s);assert.equal(s.pendingStageReward.kind,'bossChoice');assert.equal(s.pendingEquipmentReward,undefined,'old automatic equipment reward is disabled');
@@ -65,7 +67,13 @@ for(const mode of ['legacy','budget-v1']){
 }
 console.log('PASS both generation modes: exact stage encounters, real monster configs, random boss chest, persistence, stale actions and no elite reward');
 
-const shop=make();shop.level.level=10;jump(shop,'specialShop');assert.equal(shop.pendingStageReward.offers.length,5);assert.equal(shop.startBattle(),null);
+// Fixed odds permit all-equipment visits; select a deterministic mixed visit for purchase coverage.
+let shop;
+for(let seed=1;seed<=200;seed++){
+ const candidate=make(undefined,'legacy',seed);candidate.level.level=10;jump(candidate,'specialShop');
+ if(['unit','equipment'].every(kind=>candidate.pendingStageReward.offers.some(o=>o.kind===kind))){shop=candidate;break;}
+}
+assert.ok(shop,'a mixed merchant visit is available');assert.equal(shop.pendingStageReward.offers.length,5);assert.equal(shop.startBattle(),null);
 const p=shop.pendingStageReward,eq=p.offers.findIndex(i=>i.kind==='equipment'),unit=p.offers.findIndex(i=>i.kind==='unit');
 const state=shop.state,streak=shop.economy.snapshot();assert.equal(choose(shop,'buy',eq).ok,false);shop.economy.add(100);
 const gold=shop.economy.gold;assert.ok(choose(shop,'buy',eq).ok);assert.equal(shop.economy.gold,gold-p.offers[eq].price);assert.equal(choose(shop,'buy',eq).ok,false);
@@ -78,8 +86,8 @@ console.log('PASS special shop: 5 persisted mixed offers, insufficient money, ac
 for(const [emblem,price] of [[false,6],[true,10]]){
  let priced,index;
  for(let seed=1;seed<=100;seed++){
-  const candidate=make(undefined,'legacy',seed);jump(candidate,'specialShop');
-  index=candidate.pendingStageReward.offers.findIndex(o=>o.kind==='equipment'&&!o.id.startsWith('basic_')&&(o.id==='trait_emblem')===emblem);
+  const candidate=make(undefined,'legacy',seed);candidate.level.level=10;jump(candidate,'specialShop');
+  index=candidate.pendingStageReward.offers.findIndex(o=>o.kind==='equipment'&&(emblem?o.id==='trait_emblem':candidate.cfg.getEquipment([o.id])[0].shopPrice===undefined&&!candidate.cfg.getEquipment([o.id])[0].specialShopOnly));
   if(index>=0){priced=candidate;break;}
  }
  assert.ok(priced);assert.equal(priced.pendingStageReward.offers[index].price,price);
@@ -90,7 +98,7 @@ for(const [emblem,price] of [[false,6],[true,10]]){
 }
 const oldRules=JSON.parse(JSON.stringify(inputs.run));oldRules.stageEncounters.shop.equipmentPrices={basic:3,advanced:6,special:8};
 const compatibility=make(undefined,'budget-v1'),oldCampaign=new RunSession(compatibility.cfg,oldRules,inputs.waves,{...deps,stageCount:6,runSeed:11,enemyGenerationMode:'budget-v1'});
-jump(oldCampaign,'specialShop');oldCampaign.economy.add(8);
+oldCampaign.level.level=10;jump(oldCampaign,'specialShop');oldCampaign.economy.add(8);
 assert.ok(choose(oldCampaign,'buy',oldCampaign.pendingStageReward.offers.findIndex(o=>o.kind==='equipment')).ok);
 const oldOffers=oldCampaign.pendingStageReward.offers;
 const resumedPricing=make(oldCampaign.snapshot(),'budget-v1');assert.deepEqual(resumedPricing.pendingStageReward.offers,oldOffers.map(o=>({...o,price:o.kind==='equipment'?(inputs.equipment.find(e=>e.id===o.id).shopPrice??(o.id==='trait_emblem'?10:6)):o.price})));

@@ -57,9 +57,9 @@ for(const mode of ['expired','shieldOnly','dead','noContribution']){
  const {sim,src}=setup(1,['spell_overdrive_armor','spell_overdrive_armor']);const base=src.attackSpeed;
  assert.equal(src.cfg.spellPower,40);assert.equal(src.manaPerSecond,2);
  const cast=()=>sim.emitCast({t:'cast',tick:sim.tick,id:src.id,target:src.id,skillId:src.cfg.skillId,duration:0});
- cast();assert.equal(src.attackSpeed,base+3);
- sim.tick=59;src.combatTick=59;assert.equal(src.attackSpeed,base+3);
- cast();sim.tick=60;src.combatTick=60;assert.equal(src.attackSpeed,base+3,'recast refreshes without adding stacks');
+ cast();assert.equal(src.attackSpeed,base+1);
+ sim.tick=59;src.combatTick=59;assert.equal(src.attackSpeed,base+1);
+ cast();sim.tick=60;src.combatTick=60;assert.equal(src.attackSpeed,base+1,'recast refreshes without adding stacks');
  sim.tick=119;src.combatTick=119;assert.equal(src.attackSpeed,base,'expires at refreshed 3-second boundary');
  src.cfg.atkSpeed=4;cast();assert.equal(src.attackSpeed,5,'500% cap');src.alive=false;assert.equal(src.equipmentAttackSpeedBonus,0);
  assert.equal(setup(1,['spell_overdrive_armor']).src.equipmentCastSpeedUntil.size,0,'new battle starts unbuffed');

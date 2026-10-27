@@ -8,6 +8,7 @@ import { RunRandomContext } from './RunRandomContext';
 export interface EnemyGoldRules {
   version: 'gold-v1'; initialGold: number; goldPerRound: number; goldPerStage: number;
   eliteGoldPerStage: number; bossGoldPerStage: number; maxShopRolls: number; themeTraits: string[];
+  earlyGrowth?: { beforeStage: number; roundsPerGold: number };
 }
 export interface EnemyGoldDiagnostics {
   version: 'gold-v1'; baseGold: number; bonusGold: number; totalGold: number; spentGold: number; remainingGold: number;
@@ -20,6 +21,8 @@ export function validateEnemyGoldRules(r: EnemyGoldRules): void {
     .every(n=>Number.isSafeInteger(n)&&n>=0) || r.initialGold<1 || r.maxShopRolls<10 || r.maxShopRolls>2000
     || !Array.isArray(r.themeTraits) || !r.themeTraits.length || new Set(r.themeTraits).size!==r.themeTraits.length
     || r.themeTraits.some(id=>typeof id!=='string'||!id)) throw new Error('Invalid enemy gold rules');
+  if(r.earlyGrowth&&(!Number.isSafeInteger(r.earlyGrowth.beforeStage)||r.earlyGrowth.beforeStage<3
+    ||!Number.isSafeInteger(r.earlyGrowth.roundsPerGold)||r.earlyGrowth.roundsPerGold<1))throw new Error('Invalid early enemy gold growth');
 }
 
 export const enemyUnitGold = (unit: Pick<UnitConfigData,'cost'>, star: number): number => COST_PRICE[validCost(unit.cost)] * 3 ** (star - 1);
@@ -53,7 +56,8 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
   validateEnemyGoldRules(rules);
   if(!Number.isSafeInteger(stage)||stage<2||!Number.isSafeInteger(completedRounds)||completedRounds<0
     ||!Number.isSafeInteger(population)||population<1||population>10)throw new Error('Invalid enemy gold context');
-  const baseGold=rules.initialGold+completedRounds*rules.goldPerRound+(stage-2)*rules.goldPerStage;
+  const interval=rules.earlyGrowth&&stage<rules.earlyGrowth.beforeStage?rules.earlyGrowth.roundsPerGold:1;
+  const baseGold=rules.initialGold+Math.floor(completedRounds/interval)*rules.goldPerRound+(stage-2)*rules.goldPerStage;
   const bonusGold=stage*(kind==='elite'?rules.eliteGoldPerStage:kind==='boss'?rules.bossGoldPerStage:0),totalGold=baseGold+bonusGold;
   if(!Number.isSafeInteger(totalGold)||totalGold<population||population<1||population>10)throw new Error('Enemy gold budget cannot fund population');
   const sorted=roster.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0),shopRates=shopCostRates(population,sorted.map(u=>validCost(u.cost)));

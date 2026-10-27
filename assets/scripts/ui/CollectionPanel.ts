@@ -1,13 +1,13 @@
-import { Node, UITransform, Label, Sprite, Color, Mask, ScrollView, BlockInputEvents } from 'cc';
+import { Node, UITransform, Label, Sprite, Color, Graphics, Mask, ScrollView, BlockInputEvents } from 'cc';
 import { ConfigManager } from '../core/ConfigManager';
 import { resolveTraits, TraitState } from '../battle/Traits';
 import { UNIT_ART } from '../view/ArtPaths';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
 import { unitRoleLabel } from './SkillPresentation';
 import { buildUnitDetailData } from './UnitDetailPresentation';
-import { equipmentDescriptionText, equipmentNameColor } from './EquipmentPresentation';
-import { equipmentStatIcons } from './EquipmentStatIcons';
-import { BattleUI, button, label, panel } from './BattleUI';
+import { EquipmentDisplayItem, equipmentNameColor } from './EquipmentPresentation';
+import { equipmentStatIcons, equipmentQualityBadge, createEquipmentDescription, setEquipmentDescription } from './EquipmentStatIcons';
+import { BattleUI, button, label, panel, paintPanel } from './BattleUI';
 import { TraitPanel, TRAIT_BADGES } from './TraitPanel';
 
 type Category = 'units' | 'traits' | 'equipment';
@@ -37,7 +37,10 @@ export class CollectionPanel {
   }
   show(category: Category = 'units'): void {
     this.category = category; this.page = 0; this.selected = 0; this.star = 1;
-    this.root.active = true; this.root.setSiblingIndex(this.root.parent!.children.length - 1); this.render();
+    this.root.active = true;
+    // Native Graphics discards its render data when this initially hidden panel is disabled.
+    paintPanel(this.root.getComponent(Graphics)!, 1240, 680, INK, GOLD);
+    this.root.setSiblingIndex(this.root.parent!.children.length - 1); this.render();
   }
   hide(): void { this.root.active = false; this.traitPanel.hideDetail(); }
   private entries(): Array<{ id: string; name: string }> {
@@ -110,25 +113,24 @@ export class CollectionPanel {
     const detail = panel(this.body, 'collectionDetail', 300, -20, 540, 446, INK, new Color(69, 107, 119), null);
     const item = this.cfg.allEquipment().find(e => e.id === entry.id)!;
     label(detail, entry.name, 0, 184, 27, new Color(...equipmentNameColor(item)), 490);
+    equipmentQualityBadge(detail,item,0,155,90,13);
     this.picture(detail, item.icon, 0, 118, 62);
     const stats = equipmentStatIcons(detail, item, 480, 3, 26, 18, 36);
     stats.root.setPosition(0, 62, 0);
     const textTop = 62 - stats.height;
-    this.scrollText(detail, equipmentDescriptionText(item), textTop, textTop + 182);
+    this.scrollText(detail, item, textTop, textTop + 182);
     label(detail, '上下滑动查看完整信息', 0, -201, 13, MUTED, 450);
   }
-  private scrollText(parent: Node, text: string, top = 102, height = 284): void {
+  private scrollText(parent: Node, item: EquipmentDisplayItem, top = 102, height = 284): void {
     const viewport = new Node('collectionViewport'); parent.addChild(viewport); viewport.setPosition(0, top - height / 2, 0);
     viewport.addComponent(UITransform).setContentSize(492, height);
     viewport.addComponent(Mask).type = Mask.Type.GRAPHICS_RECT;
     const content = new Node('collectionText'); viewport.addChild(content);
     const transform = content.addComponent(UITransform); transform.setAnchorPoint(.5, 1);
     transform.setContentSize(480, height); content.setPosition(0, height / 2, 0);
-    const body = content.addComponent(Label); body.string = text; body.fontSize = 17; body.lineHeight = 27;
-    body.color = TEXT; body.horizontalAlign = Label.HorizontalAlign.LEFT;
-    body.verticalAlign = Label.VerticalAlign.TOP; body.overflow = Label.Overflow.RESIZE_HEIGHT; body.enableWrapText = true;
-    body.updateRenderData(true);
-    transform.setContentSize(480, Math.max(height, transform.contentSize.height));
+    const body = createEquipmentDescription(content, 480, 18, 28); body.node.setPosition(-240, 0, 0);
+    setEquipmentDescription(body, item, () => transform.setContentSize(480,
+      Math.max(height, body.node.getComponent(UITransform)!.contentSize.height)));
     const scroll = viewport.addComponent(ScrollView); scroll.content = content;
     scroll.horizontal = false; scroll.vertical = true; scroll.elastic = false;
   }

@@ -17,7 +17,7 @@ for(const unit of cfg.allUnits())for(const star of [1,2,3]){
  for(const [index,row] of display.entries()){
   assert.doesNotMatch(JSON.stringify(row),/NaN|undefined|Infinity/);
   assert.equal(row.stars,base[index].stars,'bonuses do not alter base-star column');
-  if(['被动累计生命','本局累计法术加成'].includes(row.label))assert.equal(row.stars,'本局累计');
+  if(['被动累计生命','本局累计法术加成','累计物理成长'].includes(row.label))assert.equal(row.stars,'本局累计');
   else assert.equal(row.stars.split(' / ').length,3);
   const text=row.currentRich.replace(/<img[^>]*\/>/g,'').replace(/<[^>]*>/g,'').replace(/（）/g,'');
   if(unit.id==='nightmare_lamplighter'&&row.label==='每秒伤害'){assert.match(text,/^\d+(?:\.\d+)?＋\d+(?:\.\d+)?$/);assert.ok(Math.abs(text.split('＋').reduce((n,v)=>n+Number(v),0)-Number(row.current))<=.5);}

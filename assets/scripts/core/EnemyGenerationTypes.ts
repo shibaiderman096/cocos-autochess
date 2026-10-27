@@ -63,7 +63,7 @@ export function combatEquipmentIdentity(items: unknown): unknown {
   return items.map(item => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Invalid equipment identity');
     return Object.fromEntries(Object.entries(item).filter(([key]) =>
-      !['name', 'icon', 'description', 'effectDescription', 'introduction'].includes(key)));
+      !['name', 'icon', 'description', 'effectDescription', 'introduction', 'quality'].includes(key)));
   });
 }
 
@@ -76,6 +76,18 @@ export function adoptEquipmentCatalogueAdditions(previous: unknown, next: unknow
   const old = new Map(previous.map(item => [item.id, item]));
   if (previous.some(item => !next.some(candidate => candidate.id === item.id))) return previous;
   return next.map(item => old.get(item.id) ?? item);
+}
+
+/** Adopt this specific balance change without accepting any other mechanical drift. */
+export function adoptEquipmentBalanceChanges(previous: unknown, next: unknown): unknown {
+  if (!Array.isArray(previous) || !Array.isArray(next)) return previous;
+  return previous.map(item => {
+    if (item?.id !== 'spell_overdrive_armor') return item;
+    const current = next.find(candidate => candidate?.id === item.id);
+    if (item.castAttackSpeed?.bonus !== 1.5 || item.castAttackSpeed.seconds !== 3
+      || current?.castAttackSpeed?.bonus !== .5 || current.castAttackSpeed.seconds !== 3) return item;
+    return { ...item, castAttackSpeed: { ...item.castAttackSpeed, bonus: .5 } };
+  });
 }
 
 /** Display copy and table templates do not change difficulty or formation rules. */
@@ -104,6 +116,14 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
     }) } : battle;
   // Opening rewards do not change enemy generation and must not invalidate existing saves.
   const run = value.run && typeof value.run === 'object' ? Object.fromEntries(Object.entries(value.run).filter(([key]) => key !== 'openingEncounter')) : value.run;
+  if(run&&typeof run==='object'&&'stageEncounters' in run){
+    const rules=(run as any).stageEncounters;
+    if(rules){
+      // Player chest budgets and shop refresh prices do not change enemy generation.
+      const {chestReward,monsterReward,bossReward,...encounters}=rules, {refresh,equipmentQualityOdds,qualityRates,...shop}=rules.shop;
+      (run as any).stageEncounters={...encounters,shop};
+    }
+  }
   return stableEnemyJson({ ...value, ...(value.run === undefined ? {} : { run }), ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
     ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
 }
@@ -115,7 +135,11 @@ export function sameCombatConfigurationIdentity(saved: string, current: string):
     // Shop prices do not change generated enemies and must not invalidate existing campaigns.
     if (previous.run?.stageEncounters?.shop && next.run?.stageEncounters?.shop)
       previous.run.stageEncounters.shop.equipmentPrices = next.run.stageEncounters.shop.equipmentPrices;
+    if(previous.run?.enemyGoldBudget&&previous.run.enemyGoldBudget.earlyGrowth===undefined
+      &&next.run?.enemyGoldBudget?.earlyGrowth?.beforeStage===4&&next.run.enemyGoldBudget.earlyGrowth.roundsPerGold===2)
+      previous.run.enemyGoldBudget.earlyGrowth=next.run.enemyGoldBudget.earlyGrowth;
     if (previous.equipment && next.equipment) previous.equipment = adoptEquipmentCatalogueAdditions(previous.equipment, next.equipment);
+    if (previous.equipment && next.equipment) previous.equipment = adoptEquipmentBalanceChanges(previous.equipment, next.equipment);
       // Existing campaigns may adopt the newly introduced post-campaign portal rules.
       // Every pre-existing combat field still participates in identity validation.
       if (previous.run && next.run?.endlessProgression && previous.run.endlessProgression === undefined)

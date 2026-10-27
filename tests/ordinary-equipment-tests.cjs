@@ -15,25 +15,28 @@ function make(run,policy,save){const cfg=new ConfigManager();cfg.setUnits(input.
 const oldPolicy=JSON.parse(JSON.stringify(deps.equipmentPolicy));
 for(const id of ids)oldPolicy.tiers[id]=['totem_of_undying','forest_sanctuary'].includes(id)?'special':'advanced';
 const oldRun=JSON.parse(JSON.stringify(input.run));oldRun.stageEncounters.basicEquipmentIds=oldRun.stageEncounters.basicEquipmentIds.filter(id=>oldPolicy.tiers[id]!=='special');
+// Isolate the historical 6 -> 3 price migration from today's authored prices and random merchant catalogue.
+const currentRun=JSON.parse(JSON.stringify(input.run));currentRun.stageEncounters.shop.equipmentPrices.basic=3;
 const old=make(oldRun,oldPolicy);old.economy.add(100);
 const wave=old.waves.find(w=>w.stage===4&&w.encounterKind==='specialShop');assert.ok(old.debugJump(4,wave.round));
-const index=old.pendingStageReward.offers.findIndex(offer=>offer.kind==='equipment');assert.ok(index>=0);
+old.save.stageProgress.pending.offers=['guinsoo','totem_of_undying','jeweled_gauntlet','infinity_edge','forest_sanctuary'].map(id=>({kind:'equipment',id,price:oldRun.stageEncounters.shop.equipmentPrices[oldPolicy.tiers[id]],bought:false}));
+const index=0;
 assert.equal(old.pendingStageReward.offers[index].price,6);
 assert.ok(old.claimStageReward({type:'stageChoice',rewardId:old.pendingStageReward.id,choice:'buy',index}).ok);
 const saved=old.snapshot();delete saved.equipmentTierVersion;
-const resumed=make(input.run,deps.equipmentPolicy,saved);
+const resumed=make(currentRun,deps.equipmentPolicy,saved);
 assert.equal(resumed.economy.gold,old.economy.gold);assert.deepEqual(resumed.owned.equipmentReserve,old.owned.equipmentReserve);
 assert.ok(resumed.pendingStageReward.offers[index].bought);
 assert.ok(resumed.pendingStageReward.offers.filter(offer=>offer.kind==='equipment'&&ids.includes(offer.id)).every(offer=>offer.price===3));
 assert.equal(resumed.save.equipmentTierVersion,'all-basic-v1');
-assert.deepEqual(make(input.run,deps.equipmentPolicy,resumed.snapshot()).snapshot(),resumed.snapshot());
+assert.deepEqual(make(currentRun,deps.equipmentPolicy,resumed.snapshot()).snapshot(),resumed.snapshot());
 const corrupt=resumed.snapshot();corrupt.stageProgress.pending.offers[index].price=6;
-assert.throws(()=>make(input.run,deps.equipmentPolicy,corrupt),/Invalid pending stage reward/);
+assert.throws(()=>make(currentRun,deps.equipmentPolicy,corrupt),/Invalid pending stage reward/);
 const changed=JSON.parse(JSON.stringify(deps.equipmentPolicy));changed.reward.eliteChance+=.01;
 assert.ok(!sameEquipmentIdentity(equipmentIdentity(oldPolicy,input.equipment),equipmentIdentity(changed,input.equipment)));
 console.log('PASS all ordinary items: complete ordinary reward pool, early unlocks, legacy tier/pool/price migration, gold/inventory/claimed preservation, repeat load and invalid price/rule rejection');
 
-const {load,Node,Label,Sprite,pending}=require('./helpers/ui-harness.cjs');
+const {load,Node,Label,RichText,Sprite,pending}=require('./helpers/ui-harness.cjs');
 const {BattleUI}=load(require('node:path').resolve('assets/scripts/ui/BattleUI.ts'));
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 for(const item of input.equipment){
@@ -46,7 +49,7 @@ for(const item of input.equipment){
 console.log('PASS every equipment tooltip: attribute artwork and numeric bonuses, no repeated attribute-name boxes, preserved effect copy and recycled item cleanup');
 
 const {CollectionPanel}=load(require('node:path').resolve('assets/scripts/ui/CollectionPanel.ts'));
-const {equipmentStatRows,equipmentEffectText}=load(require('node:path').resolve('assets/scripts/ui/EquipmentPresentation.ts'));
+const {equipmentStatRows,equipmentDescriptionText}=load(require('node:path').resolve('assets/scripts/ui/EquipmentPresentation.ts'));
 const catalogueCfg=new ConfigManager();catalogueCfg.setUnits(input.units);catalogueCfg.setSkills(input.skills);catalogueCfg.setBattle(input.battle);catalogueCfg.setEquipment(input.equipment);
 const collection=new CollectionPanel(new Node('Canvas'),catalogueCfg);
 collection.show('equipment');
@@ -59,6 +62,6 @@ for(let i=0;i<input.equipment.length;i++){
   assert.equal(row.getChildByName('attributeName').active,false);
   assert.ok(row.getChildByName(expected[index].icon).getChildByName('skin').getComponent(Sprite).spriteFrame);
  });
- assert.equal(detail.getChildByName('collectionViewport').getChildByName('collectionText').getComponent(Label).string,equipmentEffectText(item));
+ assert.equal(detail.getChildByName('collectionViewport').getChildByName('collectionText').getChildByName('equipmentDescription').getComponent(RichText).string.replace(/<[^>]+>/g,''),equipmentDescriptionText(item));
 }
 console.log('PASS every catalogue item: shared base-attribute icons/values and effect-only text, including five-stat and newly added equipment');
