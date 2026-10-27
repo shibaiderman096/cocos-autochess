@@ -7,7 +7,7 @@ export function freshRunSeed(previous?: number): number {
   const seed = (Math.floor(Math.random() * 0x100000000) ^ Date.now()) >>> 0;
   return seed === previous ? (seed + 1) >>> 0 : seed;
 }
-export type RandomSubsystem = 'shop' | 'battle' | 'enemy' | 'formation' | 'reward' | 'bot' | 'encounter' | 'starter';
+export type RandomSubsystem = 'shop' | 'battle' | 'enemy' | 'formation' | 'reward' | 'bot' | 'encounter' | 'starter' | 'forge' | 'dice';
 
 export function isRunSeed(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 0xffffffff;
@@ -26,7 +26,7 @@ export function deriveSeed(runSeed: number, subsystem: RandomSubsystem, waveId: 
   return (h >>> 0) || 1;
 }
 
-/** Each request creates an independent local stream. Only shop roll indices need persistence. */
+/** Each request creates an independent local stream; repeatable actions persist their own indices. */
 export class RunRandomContext {
   constructor(readonly runSeed: number) {
     if (!isRunSeed(runSeed)) throw new Error('runSeed must be a uint32 integer');

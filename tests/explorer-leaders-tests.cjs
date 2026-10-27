@@ -84,7 +84,7 @@ for(const side of [0,1])for(const star of [1,2,3]){
  s.step();assert.equal(u.ropeHunt,null);assert.deepEqual(u.pos,state.from);
  const shots=s.events.filter(e=>e.t==='rope_shot');assert.equal(shots.length,10);assert.equal(shots[0].tick,start+6);assert.equal(shots.at(-1).tick,start+60);
  assert.ok(shots.every(e=>e.target===enemy.id));assert.equal(s.events.filter(e=>e.t==='attack'&&e.id===u.id).length,0);
- const hits=s.events.filter(e=>e.t==='hit'&&e.source===u.id);assert.ok(hits.every(e=>e.dmgType==='physical'&&e.dmg===Math.round([90,135,3000][star-1]*1.5*1.2)));
+ const hits=s.events.filter(e=>e.t==='hit'&&e.source===u.id);assert.ok(hits.every(e=>e.dmgType==='physical'&&e.dmg===Math.round([90,135,400][star-1]*1.5*1.2)));
  u.gainMana(10);assert.ok(u.mana>=10,'mana resumes after landing');
 }
 for(let y=0;y<8;y++)for(let x=0;x<7;x++){
@@ -124,7 +124,7 @@ for(const star of [1,2,3]){
  const s=buildUnitDetailData(cfg,{...cfg.scaleUnit(sand,star),spellPower:100,physicalPower:50},star);
  assert.ok(s.traits.includes('探险家'));assert.ok(s.traits.includes('迅武师'));assert.equal(s.skillStats[0].current,String([440,660,2000][star-1]));assert.equal(s.skillStats[1].current,String([420,630,2250][star-1]));
  assert.match(s.skillDescription,new RegExp(`${[440,660,2000][star-1]}.*护盾`));assert.match(s.skillDescription,new RegExp(`${[420,630,2250][star-1]}.*物理伤害`));
- const r=buildUnitDetailData(cfg,cfg.scaleUnit(ranger,star),star);assert.equal(r.range,4);assert.equal(r.skillStats[0].current,String([90,135,3000][star-1]));assert.equal(r.skillStats[1].current,'10');
+ const r=buildUnitDetailData(cfg,cfg.scaleUnit(ranger,star),star);assert.equal(r.range,4);assert.equal(r.skillStats[0].current,String([90,135,400][star-1]));assert.equal(r.skillStats[1].current,'10');
 }
 for(const id of ['sandsea_navigator','hushrope_ranger']){
  const p=`assets/resources/art/units/explorer/${id}.png`;

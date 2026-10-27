@@ -997,7 +997,12 @@
       "version": "mixed-v1",
       "healthGoldValue": 2,
       "eliteValueMultiplier": 0.5,
-      "explorerGoldThreshold": 30
+      "explorerGoldThreshold": 30,
+      "explorerQuality": {
+        "maxSteps": 1000,
+        "initialRates": [55, 30, 10, 4, 1],
+        "maxRates": [5, 10, 20, 30, 35]
+      }
     },
     "shop": {
       "slots": 5,
@@ -1016,7 +1021,11 @@
         20,
         10,
         5
-      ]
+      ],
+      "refreshQuality": {
+        "maxSteps": 20,
+        "maxRates": [5, 20, 30, 25, 20]
+      }
     },
     "basicEquipmentIds": [
       "guinsoo",

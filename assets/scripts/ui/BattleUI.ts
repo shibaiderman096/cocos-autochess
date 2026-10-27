@@ -740,7 +740,7 @@ export class BattleUI extends Component {
     const rules = new Node('skillRules'); this.detailPopup.addChild(rules);
     this.detailPopupRules = rules.addComponent(Graphics);
     this.detailPopupRows = new Node('skillStats'); this.detailPopup.addChild(this.detailPopupRows);
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 9; i++) {
       const root = new Node(`skillStat${i}`); this.detailPopupRows.addChild(root);
       const name = label(root, '', -214, 0, 13, TEXT, 116); name.horizontalAlign = Label.HorizontalAlign.LEFT;
       name.overflow = Label.Overflow.CLAMP; name.enableWrapText = false;

@@ -236,12 +236,20 @@ export class ConfigManager {
   private enemies: Record<string, UnitConfigData> = {};
   private skills: Record<string, SkillConfigData> = {};
   private equipment: Record<string, EquipmentConfigData> = {};
+  private runEquipment: Record<string, EquipmentConfigData> = {};
+  setRunEquipment(items: EquipmentConfigData[]): void { this.runEquipment = Object.fromEntries(items.map(item => [item.id, item])); }
+  registerRunEquipment(item: EquipmentConfigData): void { this.runEquipment[item.id] = item; }
   allEquipment(): EquipmentConfigData[] { return Object.values(this.equipment); }
   setEquipment(data: EquipmentConfigData[]): void {
     for (const item of data) {
       if(item.quality!==undefined&&![1,2,3,4,5].includes(item.quality))throw new Error('Invalid equipment quality');
-      if (item.consumable && (item.consumable.kind !== 'copyUnit' || ![1,3,5].includes(item.consumable.maxCost)
-        || item.traitChoice || item.unitCapBonus !== undefined)) throw new Error('Invalid equipment consumable');
+      if (item.consumable) {
+        const effect = item.consumable;
+        const valid = effect.kind === 'copyUnit' ? [1,3,5].includes(effect.maxCost)
+          : effect.kind === 'permanentStat' && ['hp','physicalPower','spellPower'].includes(effect.stat)
+            && Number.isSafeInteger(effect.amount) && effect.amount > 0;
+        if (!valid || item.traitChoice || item.unitCapBonus !== undefined) throw new Error('Invalid equipment consumable');
+      }
       if (item.unitCapBonus !== undefined && (!Number.isSafeInteger(item.unitCapBonus) || item.unitCapBonus < 1)) throw new Error('Invalid equipment population bonus');
       if (item.chestDrop !== undefined && typeof item.chestDrop !== 'boolean') throw new Error('Invalid chest equipment flag');
     }
@@ -261,6 +269,7 @@ export class ConfigManager {
     return ids.map(id => { const item = this.resolveEquipment(id); if (!item) throw new Error(`未知装备: ${id}`); return item; });
   }
   private resolveEquipment(id: string): EquipmentConfigData | undefined {
+    if (this.runEquipment[id]) return this.runEquipment[id];
     if (this.equipment[id]) return this.equipment[id];
     const parts = id.split('__');
     const base = this.equipment[parts[0]], trait = this.battle.traits?.find(t => t.id === parts[1]);

@@ -111,9 +111,9 @@ for(const star of [1,2,3]) {
 for(const star of [1,2,3]) {
  const {cfg,sim,u,target}=setup('atlas',star,{physicalPower:100,spellPower:900},Array.from({length:4},(_,i)=>({cfg:{...dummy,id:`extra_${i}`,hp:100000},side:1,x:i,y:6})));
  ready(sim,u);const hits=sim.events.filter(e=>e.t==='hit');assert.equal(hits.length,star===3?5:3);assert.equal(new Set(hits.map(e=>e.id)).size,hits.length);
- assert.equal(hits[0].id,target.id);assert.ok(hits.every(e=>e.dmg===[560,840,10000][star-1]));assert.equal(u.cfg.maxMana,125);
+ assert.equal(hits[0].id,target.id);assert.ok(hits.every(e=>e.dmg===[560,840,5600][star-1]));assert.equal(u.cfg.maxMana,125);
  if(target.alive){const old=target.hp;until(sim,20);assert.equal(target.hp,old);until(sim,21);assert.equal(old-target.hp,200);assert.equal(sim.events.at(-1).dmgType,'true');}
- assert.equal(cfg.getUnit('atlas').maxMana,130);assert.equal(Number(buildSkillStatRows(cfg,u.cfg,star,u.skillScale)[0].current),[560,840,10000][star-1]);
+ assert.equal(cfg.getUnit('atlas').maxMana,130);assert.equal(Number(buildSkillStatRows(cfg,u.cfg,star,u.skillScale)[0].current),[560,840,5600][star-1]);
 }
 {
  const {sim,u,target}=setup('atlas',1,{damageAmp:5,physicalPower:900,skillCanCrit:true,critChance:1});target.cfg.hp=1000000;target.hp=1000000;

@@ -1,11 +1,11 @@
 {
   "rope_shadow_hunt": {
     "id":"rope_shadow_hunt","name":"索影巡猎","effect":"ropeHunt","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
-    "starDamage":[90,135,3000],"ropeHunt":{"durationSeconds":3,"intervalSeconds":0.3,"shotCount":10},
+    "starDamage":[90,135,400],"ropeHunt":{"durationSeconds":3,"intervalSeconds":0.3,"shotCount":10},
     "description":"抛索蓄势{控制:ropeCast}秒后，先向较远的斜向棋盘边缘发射飞钩，钩住后收绳拉动自身沿弧线移动，再返回起点，持续{控制:ropeDuration}秒。\n期间每{控制:ropeInterval}秒向生命百分比最低的敌人射击，共{控制:ropeCount}发，每发造成{物理+:dmg}物理伤害。",
     "mechanics":["全程可以被选中和受到伤害；受控时提前结束射击并返回。","回旋期间不普攻、不回蓝，目标从全场存活且可选敌军中选择，每次重新判断生命百分比，同优先级选择最近者。","逻辑位置沿轨迹取最近合法空格，表现连续移动；原点被占用时返回距原点最近空格，死亡停止回旋。"],
     "statRows":[
-      {"label":"单发伤害","value":"{物理+:dmg}","stars":"90/135/3000"},
+      {"label":"单发伤害","value":"{物理+:dmg}","stars":"90/135/400"},
       {"label":"射击次数","value":"{控制:ropeCount}","stars":"10/10/10"},
       {"label":"回旋持续","value":"{控制:ropeDuration}秒","stars":"3/3/3秒"},
       {"label":"射击间隔","value":"{控制:ropeInterval}秒","stars":"0.3/0.3/0.3秒"},
@@ -406,7 +406,7 @@
     "starDamage": [
       280,
       420,
-      5000
+      2800
     ],
     "atlasMissiles": {
       "targetCounts": [
@@ -429,7 +429,7 @@
       {
         "label": "导弹伤害",
         "value": "{物理+:dmg}",
-        "stars": "280/420/5000"
+        "stars": "280/420/2800"
       },
       {
         "label": "目标数量",
@@ -1013,7 +1013,7 @@
       "collapseDamage": [
         180,
         270,
-        6000
+        500
       ],
       "collapseRadius": 2,
       "kind": "blackstars"
@@ -1027,17 +1027,17 @@
       {
         "label": "每颗伤害",
         "value": "{魔法+:dmg}",
-        "stars": "240/360/3000"
+        "stars": "240/360/400"
       },
       {
         "label": "重复命中伤害",
         "value": "{魔法+:repeat}",
-        "stars": "120/180/1500"
+        "stars": "120/180/200"
       },
       {
         "label": "坍缩伤害",
         "value": "{魔法+:collapse}",
-        "stars": "180/270/6000"
+        "stars": "180/270/500"
       }
     ],
     "mechanics": [
@@ -1047,7 +1047,7 @@
     "starDamage": [
       240,
       360,
-      3000
+      400
     ]
   },
   "voidscar_transit": {
@@ -1070,7 +1070,7 @@
       "markDamage": [
         160,
         240,
-        4000
+        500
       ],
       "kind": "void"
     },
@@ -1083,12 +1083,12 @@
       {
         "label": "每次跃迁伤害",
         "value": "{魔法+:dmg}",
-        "stars": "100/150/1500"
+        "stars": "100/150/400"
       },
       {
         "label": "虚痕爆炸伤害",
         "value": "{魔法+:mark}",
-        "stars": "160/240/4000"
+        "stars": "160/240/500"
       }
     ],
     "mechanics": [
@@ -1099,7 +1099,7 @@
     "starDamage": [
       100,
       150,
-      1500
+      400
     ]
   },
   "sunrise_bulwark": {
@@ -1395,7 +1395,7 @@
     "starDamage": [
       300,
       450,
-      4500
+      2500
     ],
     "sunlight": {
       "kind": "judgment",
@@ -1408,7 +1408,7 @@
       "trueDamage": [
         100,
         150,
-        1500
+        2000
       ],
       "allEnemiesStar": 3
     },
@@ -1422,12 +1422,12 @@
       {
         "label": "魔法伤害",
         "value": "{魔法+:dmg}",
-        "stars": "300/450/4500"
+        "stars": "300/450/2500"
       },
       {
         "label": "真实伤害",
         "value": "{真实:trueDamage}",
-        "stars": "100/150/1500"
+        "stars": "100/150/2000"
       },
       {
         "label": "眩晕时间",
@@ -1456,7 +1456,7 @@
     "starDamage": [
       90,
       135,
-      1600
+      400
     ],
     "sunlight": {
       "kind": "transit",
@@ -1469,7 +1469,7 @@
       "finalDamage": [
         450,
         675,
-        8000
+        600
       ],
       "recastDamageLoss": 0.2,
       "recastDamageLossCap": 0.4
@@ -1484,12 +1484,12 @@
       {
         "label": "普通段伤害",
         "value": "{物理+:dmg}",
-        "stars": "90/135/1600"
+        "stars": "90/135/400"
       },
       {
         "label": "最后一击伤害",
         "value": "{物理+:final}",
-        "stars": "450/675/8000"
+        "stars": "450/675/600"
       }
     ],
     "mechanics": [
@@ -1646,14 +1646,14 @@
     "starDamage": [
       250,
       375,
-      7500
+      2500
     ],
     "bloodReign": {
       "attackWindupSeconds": 0.5,
       "healthGains": [
         300,
         450,
-        9000
+        3000
       ],
       "length": 2,
       "width": 1,
@@ -1666,12 +1666,12 @@
       {
         "label": "生命提升",
         "value": "{治疗:reignHealth}",
-        "stars": "300/450/9000"
+        "stars": "300/450/3000"
       },
       {
         "label": "强化伤害",
         "value": "{物理+:reignDamage}",
-        "stars": "250/375/7500"
+        "stars": "250/375/2500"
       },
       {
         "label": "触发生命",

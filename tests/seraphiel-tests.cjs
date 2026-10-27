@@ -11,7 +11,7 @@ const skills = require('../assets/resources/config/skills.json');
 const battle = require('../assets/resources/config/battle.json');
 const equipment = require('../assets/resources/config/equipment.json');
 const clone = x => JSON.parse(JSON.stringify(x));
-const normal = [90, 135, 1600], final = [450, 675, 8000], counts = [2, 4, 10];
+const normal = [90, 135, 400], final = [450, 675, 600], counts = [2, 4, 10];
 function fixture({star = 1, side = 0, bonuses = {}, enemies = [{x:3,y:5},{x:6,y:7}], ally = false, friends = []} = {}) {
   const c = new ConfigManager(); c.setUnits(clone(units)); c.setSkills(clone(skills));
   c.setBattle({...clone(battle), traits:[]}); c.setEquipment(clone(equipment));

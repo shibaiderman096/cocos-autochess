@@ -8,6 +8,25 @@ import { equipmentQuality } from './EquipmentQuality';
 import type { WaveConfig } from './RoundFlow';
 import type { EquipmentTier } from './EquipmentPolicyTypes';
 
+export interface QualityGrowth {
+  maxSteps: number;
+  maxRates: number[];
+}
+/** Percentages retain two decimals; the final tier absorbs rounding so every row totals 100. */
+function growingQualityRates(initial: readonly number[], growth: QualityGrowth | undefined, steps: number): number[] {
+  if(!growth)return [...initial];
+  const fraction=Math.min(growth.maxSteps,Math.max(0,steps))/growth.maxSteps;
+  const rates=initial.slice(0,4).map((rate,index)=>Math.round((rate+(growth.maxRates[index]-rate)*fraction)*100)/100);
+  return [...rates,Math.round((100-rates.reduce((sum,rate)=>sum+rate,0))*100)/100];
+}
+export function stageShopQualityRates(refreshes: number, rules: Pick<StageEncounterRules['shop'],'qualityRates'|'refreshQuality'>): number[] {
+  return growingQualityRates(rules.qualityRates??[35,30,20,10,5],rules.refreshQuality,refreshes);
+}
+export function explorerLootQualityRates(points: number, rules: StageEncounterRules['chestReward']): number[] {
+  const growth=rules?.explorerQuality;
+  return growingQualityRates(growth?.initialRates??[55,30,10,4,1],growth,points);
+}
+
 export interface StageEncounterRules {
   version: 'stage-encounters-v1'; startStage: number;
   monsterStatGrowth: number;
@@ -17,8 +36,10 @@ export interface StageEncounterRules {
       pairs: NonNullable<StageEncounterRules['monsterFormation']>['pairs']; unitIdsByLeader: Record<string, string[]> } };
   monsterReward: { initialValue: number; valuePerStage: number; maxValue: number };
   bossReward?: { healAmount: number };
-  chestReward?: { version: 'mixed-v1'; healthGoldValue: number; eliteValueMultiplier: number; explorerGoldThreshold?: number };
-  shop: { slots: number; equipmentPrices: Record<EquipmentTier, number>; refresh?: { initialPrice: number; priceIncrement: number }; equipmentQualityOdds?: 'shop-level'; qualityRates?: number[] };
+  chestReward?: { version: 'mixed-v1'; healthGoldValue: number; eliteValueMultiplier: number; explorerGoldThreshold?: number;
+    explorerQuality?: QualityGrowth & {initialRates: number[]} };
+  shop: { slots: number; equipmentPrices: Record<EquipmentTier, number>; refresh?: { initialPrice: number; priceIncrement: number }; equipmentQualityOdds?: 'shop-level'; qualityRates?: number[];
+    refreshQuality?: QualityGrowth };
   basicEquipmentIds: string[];
 }
 export type StageOffer = { kind: 'unit' | 'equipment'; id: string; price: number; bought: boolean };
@@ -67,6 +88,19 @@ export class StageProgression {
     if(rules.shop.equipmentQualityOdds!==undefined&&rules.shop.equipmentQualityOdds!=='shop-level')throw new Error('Invalid merchant equipment quality odds');
     if(rules.shop.qualityRates&&(!Array.isArray(rules.shop.qualityRates)||rules.shop.qualityRates.length!==5
       ||rules.shop.qualityRates.some(rate=>!Number.isSafeInteger(rate)||rate<0)||rules.shop.qualityRates.reduce((a,b)=>a+b,0)!==100))throw new Error('Invalid fixed merchant quality odds');
+    const validRates=(rates:unknown):rates is number[]=>Array.isArray(rates)&&rates.length===5
+      &&rates.every(rate=>Number.isFinite(rate)&&rate>=0)&&Math.abs(rates.reduce((sum,rate)=>sum+rate,0)-100)<1e-8;
+    const validateGrowth=(growth:QualityGrowth|undefined,initial:readonly number[])=>{
+      if(!growth)return;
+      if(!Number.isSafeInteger(growth.maxSteps)||growth.maxSteps<1||!validRates(growth.maxRates)
+        ||!validRates(initial))throw new Error('Invalid loot quality growth');
+      // Increasing exploration/refreshes may never lower the chance of reaching any higher tier.
+      for(let tier=1;tier<5;tier++)if(growth.maxRates.slice(tier).reduce((sum,r)=>sum+r,0)<initial.slice(tier).reduce((sum,r)=>sum+r,0))
+        throw new Error('Invalid loot quality growth');
+    };
+    if(rules.shop.refreshQuality&&!rules.shop.qualityRates)throw new Error('Merchant quality growth needs initial rates');
+    validateGrowth(rules.shop.refreshQuality,rules.shop.qualityRates??[]);
+    validateGrowth(rules.chestReward?.explorerQuality,rules.chestReward?.explorerQuality?.initialRates??[]);
   }
   /** Save data crosses a runtime boundary: reject malformed entries before a UI or purchase consumes them. */
   private validateSavedRewards(): void {
@@ -168,6 +202,7 @@ export class StageProgression {
     const costRng = this.random.stream('encounter', wave.id, 4202+refreshes*2);
     const qualityRng=this.random.stream('encounter',wave.id,6201+refreshes);
     if(this.rules.shop.qualityRates){
+      const qualityRates=stageShopQualityRates(refreshes,this.rules.shop);
       for(let index=0;index<this.rules.shop.slots;index++){
         const available=[
           ...units.filter(unit=>offers.filter(o=>o.kind==='unit'&&o.id===unit.id).length<this.pool.count(unit.id))
@@ -175,7 +210,7 @@ export class StageProgression {
           ...equipment.filter(item=>!seen.has(item.id)).map(item=>({kind:'equipment' as const,id:item.id,quality:equipmentQuality(item),
             price:this.cfg.equipmentPrice(item.id,this.rules.shop.equipmentPrices[this.tiers[item.id]])}))
         ];
-        const weights=this.rules.shop.qualityRates.map((rate,n)=>available.some(item=>item.quality===n+1)?rate:0);
+        const weights=qualityRates.map((rate,n)=>available.some(item=>item.quality===n+1)?rate:0);
         const quality=rollShopCost(weights,()=>qualityRng.next()),choices=available.filter(item=>item.quality===quality);
         const selected=choices[rng.int(0,choices.length-1)];if(!selected)throw new Error('Insufficient fixed merchant catalogue');
         if(selected.kind==='equipment')seen.add(selected.id);
@@ -225,10 +260,10 @@ export class StageProgression {
     }
     else if (wave.encounterKind === 'boss' && !isChestlessBoss(wave)) this.state.pending = { id: this.id(wave, 'boss'), waveId: wave.id, kind: 'bossChoice', value: this.value(wave.stage!) };
   }
-  grantExplorerReward(value: number, waveId: number, healthCapacity: number): Extract<StageRewardGrant,{kind:'mixed'}> {
-    return this.mixedReward(value,waveId,healthCapacity,[],'explorer');
+  grantExplorerReward(value: number, waveId: number, healthCapacity: number, points = value*10): Extract<StageRewardGrant,{kind:'mixed'}> {
+    return this.mixedReward(value,waveId,healthCapacity,[],'explorer',points);
   }
-  private mixedReward(value: number, waveId: number, healthCapacity: number, returnedCards: string[] = [], source: 'stage'|'explorer' = 'stage'): Extract<StageRewardGrant,{kind:'mixed'}> {
+  private mixedReward(value: number, waveId: number, healthCapacity: number, returnedCards: string[] = [], source: 'stage'|'explorer' = 'stage', points = 0): Extract<StageRewardGrant,{kind:'mixed'}> {
     const roster=this.cfg.allUnits().slice().sort((a,b)=>a.id.localeCompare(b.id));
     const stock=new CardPool(roster,this.pool.snapshot(),this.pool.unlockedSpecialUnits(roster));
     const owned=new OwnedUnits(this.owned.snapshot(),this.owned.nextUnitUid,()=>true,this.owned.canMergeResult);
@@ -240,8 +275,10 @@ export class StageProgression {
     if(!Number.isSafeInteger(budget)||budget<0)throw new Error('Invalid mixed chest budget');
     for(const id of returnedCards)stock.give(id);
     const rates=SHOP_RATES[Math.max(0,Math.min(SHOP_RATES.length-1,Math.floor(this.shopLevel())-1))];
+    const lootRates=source==='explorer'&&this.rules.chestReward?.explorerQuality
+      ?explorerLootQualityRates(points,this.rules.chestReward):undefined;
     const gear=this.cfg.allEquipment().filter(e=>e.chestDrop||(!e.specialShopOnly&&!e.traitChoice&&['basic','advanced'].includes(this.tiers[e.id])))
-      .map(e=>({id:e.id,price:this.cfg.equipmentPrice(e.id,this.rules.shop.equipmentPrices[this.tiers[e.id]])})).filter(e=>e.price>0).sort((a,b)=>a.id.localeCompare(b.id));
+      .map(e=>({id:e.id,quality:equipmentQuality(e),price:this.cfg.equipmentPrice(e.id,this.rules.shop.equipmentPrices[this.tiers[e.id]])})).filter(e=>e.price>0).sort((a,b)=>a.id.localeCompare(b.id));
     const healthPrice=this.rules.chestReward?.healthGoldValue??2,rng=this.random.stream('reward',waveId,source==='explorer'?4700:4500);
     const result: Extract<StageRewardGrant,{kind:'mixed'}>={kind:'mixed',units:[],equipmentIds:[],health:0,gold:0,value:budget};
     const goldThreshold=this.rules.chestReward?.explorerGoldThreshold;
@@ -253,20 +290,22 @@ export class StageProgression {
     };
     // Plan against detached ownership first; no pending reward or wallet changes during the roll.
     for(let step=0;remaining>0&&step<128;step++){
-      const units=roster.filter(u=>stock.canDraw(u.id)&&stock.count(u.id)>0&&rates[validCost(u.cost)-1]>0&&COST_PRICE[validCost(u.cost)]<=remaining
+      const units=roster.filter(u=>stock.canDraw(u.id)&&stock.count(u.id)>0&&(lootRates??rates)[validCost(u.cost)-1]>0&&COST_PRICE[validCost(u.cost)]<=remaining
         &&(owned.inBench().length<this.benchSlots||owned.purchaseUpgradeStar(u.id)!==null));
-      const equipment=gear.filter(e=>e.price<=remaining);
+      const equipment=gear.filter(e=>e.price<=remaining&&(!lootRates||lootRates[e.quality-1]>0));
       const kinds=['units','equipment','health'].filter(k=>k==='units'?units.length:k==='equipment'?equipment.length:capacity>0&&remaining>=healthPrice);
       if(goldEligible)kinds.push('gold');
       if(!kinds.length)break;
       const kind=kinds[rng.int(0,kinds.length-1)];
       if(kind==='units'){
-        const costs=[...new Set(units.map(u=>validCost(u.cost)))];let roll=rng.next()*costs.reduce((sum,c)=>sum+rates[c-1],0);
-        const cost=costs.find(c=>{roll-=rates[c-1];return roll<0})??costs[costs.length-1];
+        const costs=[...new Set(units.map(u=>validCost(u.cost)))],weights=lootRates??rates;let roll=rng.next()*costs.reduce((sum,c)=>sum+weights[c-1],0);
+        const cost=costs.find(c=>{roll-=weights[c-1];return roll<0})??costs[costs.length-1];
         const choices=units.filter(u=>validCost(u.cost)===cost),unit=choices[rng.int(0,choices.length-1)];
         stock.take(unit.id);deliver(owned,unit.id);result.units.push(unit.id);remaining-=COST_PRICE[cost];
       }else if(kind==='equipment'){
-        const item=equipment[rng.int(0,equipment.length-1)];result.equipmentIds.push(item.id);remaining-=item.price;
+        const quality=lootRates?rollShopCost(lootRates.map((rate,index)=>equipment.some(item=>item.quality===index+1)?rate:0),()=>rng.next()):undefined;
+        const choices=quality?equipment.filter(item=>item.quality===quality):equipment;
+        const item=choices[rng.int(0,choices.length-1)];result.equipmentIds.push(item.id);remaining-=item.price;
       }else if(kind==='health'){result.health++;capacity--;remaining-=healthPrice;}
       else{result.gold++;remaining--;}
     }

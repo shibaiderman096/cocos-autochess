@@ -3,7 +3,7 @@ import { Node, Sprite, UITransform, Color, Label, Graphics, Mask, ScrollView } f
 import { panel, label, button } from './BattleUI';
 import { ConfigManager, UnitConfigData } from '../core/ConfigManager';
 import type { StagePending, StageChoice } from '../core/StageProgression';
-import { stageShopRefreshPrice } from '../core/StageProgression';
+import { stageShopRefreshPrice, stageShopQualityRates } from '../core/StageProgression';
 import type { StageEncounterRules } from '../core/StageProgression';
 import { UNIT_ART, UNIT_PORTRAIT, UI_SPRITE, ENCOUNTER_SPRITE as ENCOUNTER_ART } from '../view/ArtPaths';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
@@ -16,6 +16,7 @@ import { ShopDockPopup } from './ShopDockPopup';
 import { setUISkin } from './UISkin';
 import { QUALITY_COLORS } from '../core/EquipmentQuality';
 import { SHOP_REWARD_AREA } from './BattleUILayout';
+import { MerchantServicesPanel, MerchantServicesPort } from './MerchantServicesPanel';
 
 const GOLD = new Color(220, 187, 115), TEXT = new Color(231, 236, 223), MUTED = new Color(153, 178, 176);
 
@@ -23,9 +24,16 @@ const GOLD = new Color(220, 187, 115), TEXT = new Color(231, 236, 223), MUTED = 
 export class StageRewardPanel {
   private root: Node | null = null;
   private dockPopup = new ShopDockPopup();
+  private services?: MerchantServicesPanel;
   constructor(private parent: Node, private cfg: ConfigManager, private choose: (action: StageChoice) => void, private close?: () => void,
     private inspectEquipment?: (item: EquipmentDisplayItem | undefined) => void,
-    private refreshRules?: StageEncounterRules['shop']['refresh'],private inspectIncome?:()=>void,private qualityRates:readonly number[]=[35,30,20,10,5]) {}
+    private refreshRules?: StageEncounterRules['shop']['refresh'],private inspectIncome?:()=>void,private qualityRates:readonly number[]=[35,30,20,10,5], services?: MerchantServicesPort,
+    private qualityGrowth?: StageEncounterRules['shop']['refreshQuality']) {
+    if(services)this.services=new MerchantServicesPanel(cfg,services);
+  }
+  tryDropEquipment(index:number,event:any):boolean{return this.services?.tryDrop(index,event)??false;}
+  get forging():boolean{return this.services?.forging??false;}
+  update(dt:number):void{this.services?.update(dt);}
   hide(reset = true): void { this.dockPopup.clear(reset); if (reset) this.inspectEquipment?.(undefined); if (this.root) { this.root.active = false; this.root.destroy(); this.root = null; } }
   showTraitChoice(pending: PendingTraitChoice, units: OwnedUnit[], choose: (index: number) => void): void {
     this.hide(false);
@@ -59,9 +67,13 @@ export class StageRewardPanel {
     const host=!compact&&this.parent.name==='shopRewardDock'?this.parent.parent!:this.parent;
     const overlay = panel(host, 'stageReward', compact ? a.x : 0, compact ? a.y : 0, compact ? a.width : 1280, compact ? a.height : 720, merchant ? new Color(0, 0, 0, 0) : new Color(13, 27, 35), merchant ? new Color(0, 0, 0, 0) : GOLD, null);
     this.root = overlay;
+    if(merchant){const bounds=overlay.getComponent(UITransform)!;bounds.setContentSize(a.width+96,a.height);bounds.setAnchorPoint((a.width/2+96)/(a.width+96),.5);}
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) overlay.on(type, (e: any) => { e.propagationStopped = true; });
     const body = panel(overlay, 'stageRewardBody', 0, 0, compact ? a.width : 1150, compact ? a.height : 600, new Color(13, 27, 35), GOLD, null);
     if (merchant) setUISkin(body, 'panel_dock', body.getComponent(Graphics)!);
+    if (merchant && this.services?.mount(body,pending.id)) {
+      this.dockPopup.play(overlay,`${pending.kind}:${pending.id}`); return;
+    }
     if (!compact && this.close) button(body, '×', 530, 263, 34, 30, () => this.close!());
 
     const act = (choice: StageChoice['choice'], index?: number) => { if (this.root === overlay) this.choose({ type: 'stageChoice', rewardId: pending.id, choice, index }); };
@@ -108,7 +120,8 @@ export class StageRewardPanel {
       art(body, ENCOUNTER_ART.specialShop, -364, 66, 16);
       const title = label(body, heading, -277, 66, 12, GOLD, 140); title.isBold = true;
       const odds=new Node('merchantQualityRates');body.addChild(odds);odds.setPosition(-270,45,0);odds.addComponent(UITransform).setContentSize(240,18);
-      this.qualityRates.forEach((rate,index)=>{const text=label(odds,`${rate}%`,(index-2)*48,0,12,new Color(...QUALITY_COLORS[index]),48);text.node.name=`quality${index+1}`;text.node.getComponent(UITransform)!.setContentSize(48,18);});
+      const rates=stageShopQualityRates(pending.refreshes??0,{qualityRates:[...this.qualityRates],refreshQuality:this.qualityGrowth});
+      rates.forEach((rate,index)=>{const text=label(odds,`${rate}%`,(index-2)*48,0,12,new Color(...QUALITY_COLORS[index]),48);text.node.name=`quality${index+1}`;text.node.getComponent(UITransform)!.setContentSize(48,18);});
       const refreshPrice=stageShopRefreshPrice(pending.refreshes,this.refreshRules);
       const refresh=button(body,`刷新 ${refreshPrice} 金币`,302,54,148,30,()=>{if(gold>=refreshPrice)act('refresh');},true);
       refresh.name='stageShopRefresh';refresh.getChildByName('text')!.getComponent(Label)!.fontSize=13;

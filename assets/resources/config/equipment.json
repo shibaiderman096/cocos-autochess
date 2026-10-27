@@ -421,7 +421,7 @@
   {
     "id": "replicator_firmament",
     "name": "遗迹拓印·天穹",
-    "shopPrice": 6,
+    "shopPrice": 8,
     "specialShopOnly": true,
     "chestDrop": true,
     "consumable": {
@@ -434,7 +434,7 @@
     "description": "一次性角色复制道具。",
     "effectDescription": "拖到己方棋子身上，消耗道具并获得1张同名一星棋子。可复制所有费用（1～5费）。不继承装备或永久成长，不占装备槽。卡池无余量或备战席满且无法合成时不消耗。",
     "icon": "art/equipment/replicator_firmament/spriteFrame",
-    "quality": 4
+    "quality": 5
   },
   {
     "id": "expedition_command_crown",
@@ -450,5 +450,233 @@
     "effectDescription": "携带者上阵时，己方最大上阵人口+1，多个统御冠可叠加；不提升等级或商店概率。占用1个装备槽，携带者下场后加成消失。",
     "icon": "art/equipment/expedition_command_crown/spriteFrame",
     "quality": 5
+  },
+  {
+    "id": "stat_boost_health_small",
+    "name": "小·生命提升",
+    "shopPrice": 2,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "hp",
+      "amount": 80
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升最大生命值80。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加80最大生命值。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_health_small/spriteFrame",
+    "quality": 1
+  },
+  {
+    "id": "stat_boost_health_medium",
+    "name": "中·生命提升",
+    "shopPrice": 4,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "hp",
+      "amount": 160
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升最大生命值160。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加160最大生命值。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_health_medium/spriteFrame",
+    "quality": 2
+  },
+  {
+    "id": "stat_boost_health_large",
+    "name": "大·生命提升",
+    "shopPrice": 8,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "hp",
+      "amount": 320
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升最大生命值320。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加320最大生命值。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_health_large/spriteFrame",
+    "quality": 3
+  },
+  {
+    "id": "stat_boost_health_super",
+    "name": "超·生命提升",
+    "shopPrice": 12,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "hp",
+      "amount": 640
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升最大生命值640。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加640最大生命值。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_health_super/spriteFrame",
+    "quality": 4
+  },
+  {
+    "id": "stat_boost_physical_small",
+    "name": "小·物理提升",
+    "shopPrice": 2,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "physicalPower",
+      "amount": 4
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升物理加成4%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加4%物理加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_physical_small/spriteFrame",
+    "quality": 1
+  },
+  {
+    "id": "stat_boost_physical_medium",
+    "name": "中·物理提升",
+    "shopPrice": 4,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "physicalPower",
+      "amount": 8
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升物理加成8%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加8%物理加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_physical_medium/spriteFrame",
+    "quality": 2
+  },
+  {
+    "id": "stat_boost_physical_large",
+    "name": "大·物理提升",
+    "shopPrice": 8,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "physicalPower",
+      "amount": 16
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升物理加成16%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加16%物理加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_physical_large/spriteFrame",
+    "quality": 3
+  },
+  {
+    "id": "stat_boost_physical_super",
+    "name": "超·物理提升",
+    "shopPrice": 12,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "physicalPower",
+      "amount": 32
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升物理加成32%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加32%物理加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_physical_super/spriteFrame",
+    "quality": 4
+  },
+  {
+    "id": "stat_boost_spell_small",
+    "name": "小·法术提升",
+    "shopPrice": 2,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "spellPower",
+      "amount": 4
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升法术加成4%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加4%法术加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_spell_small/spriteFrame",
+    "quality": 1
+  },
+  {
+    "id": "stat_boost_spell_medium",
+    "name": "中·法术提升",
+    "shopPrice": 4,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "spellPower",
+      "amount": 8
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升法术加成8%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加8%法术加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_spell_medium/spriteFrame",
+    "quality": 2
+  },
+  {
+    "id": "stat_boost_spell_large",
+    "name": "大·法术提升",
+    "shopPrice": 8,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "spellPower",
+      "amount": 16
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升法术加成16%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加16%法术加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_spell_large/spriteFrame",
+    "quality": 3
+  },
+  {
+    "id": "stat_boost_spell_super",
+    "name": "超·法术提升",
+    "shopPrice": 12,
+    "specialShopOnly": true,
+    "chestDrop": true,
+    "consumable": {
+      "kind": "permanentStat",
+      "stat": "spellPower",
+      "amount": 32
+    },
+    "spellPower": 0,
+    "attackSpeedBonus": 0,
+    "attackSpeedPerAttack": 0,
+    "description": "永久提升法术加成32%。",
+    "effectDescription": "拖到己方棋子身上，消耗道具，永久增加32%法术加成。跨小关保留，升星合并累计，不占装备槽；本局远征结束后清除。",
+    "icon": "art/equipment/stat_boost_spell_super/spriteFrame",
+    "quality": 4
   }
 ]

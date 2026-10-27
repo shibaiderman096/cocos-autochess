@@ -82,12 +82,41 @@ export function adoptEquipmentCatalogueAdditions(previous: unknown, next: unknow
 export function adoptEquipmentBalanceChanges(previous: unknown, next: unknown): unknown {
   if (!Array.isArray(previous) || !Array.isArray(next)) return previous;
   return previous.map(item => {
+    const current = next.find(candidate => candidate?.id === item?.id);
+    if (item?.id === 'replicator_firmament' && item.shopPrice === 6 && current?.shopPrice === 8)
+      return { ...item, shopPrice: 8 };
     if (item?.id !== 'spell_overdrive_armor') return item;
-    const current = next.find(candidate => candidate?.id === item.id);
     if (item.castAttackSpeed?.bonus !== 1.5 || item.castAttackSpeed.seconds !== 3
       || current?.castAttackSpeed?.bonus !== .5 || current.castAttackSpeed.seconds !== 3) return item;
     return { ...item, castAttackSpeed: { ...item.castAttackSpeed, bonus: .5 } };
   });
+}
+
+/** One-way adoption of the authored three-star legendary rebalance, preserving other rules. */
+export function adoptLegendarySkillBalanceChanges(previous: any, next: any): any {
+  if (!previous || !next || typeof previous !== 'object' || typeof next !== 'object') return previous;
+  const result = JSON.parse(JSON.stringify(previous));
+  const changes: Array<[string, string[], number[], number]> = [
+    ['rope_shadow_hunt', ['starDamage'], [3000,2000], 400],
+    ['sky_annihilation', ['starDamage'], [5000], 2800],
+    ['blackstar_annihilation', ['starDamage'], [3000,2000], 400],
+    ['blackstar_annihilation', ['shadow','collapseDamage'], [6000,2500], 500],
+    ['voidscar_transit', ['starDamage'], [1500,2000], 400],
+    ['voidscar_transit', ['shadow','markDamage'], [4000,2500], 500],
+    ['celestial_judgment', ['starDamage'], [4500], 2500],
+    ['celestial_judgment', ['sunlight','trueDamage'], [1500], 2000],
+    ['corona_transit', ['starDamage'], [1600,2000], 400],
+    ['corona_transit', ['sunlight','finalDamage'], [8000,3000], 600],
+    ['blood_sovereignty', ['starDamage'], [7500], 2500],
+    ['blood_sovereignty', ['bloodReign','healthGains'], [9000], 3000],
+  ];
+  for (const [id, path, oldValues, value] of changes) {
+    const before = path.reduce((o, key) => o?.[key], result[id]);
+    const after = path.reduce((o, key) => o?.[key], next[id]);
+    if (Array.isArray(before) && Array.isArray(after) && before.length === 3 && after.length === 3
+      && before[0] === after[0] && before[1] === after[1] && oldValues.includes(before[2]) && after[2] === value) before[2] = value;
+  }
+  return result;
 }
 
 /** Display copy and table templates do not change difficulty or formation rules. */
@@ -120,7 +149,7 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
     const rules=(run as any).stageEncounters;
     if(rules){
       // Player chest budgets and shop refresh prices do not change enemy generation.
-      const {chestReward,monsterReward,bossReward,...encounters}=rules, {refresh,equipmentQualityOdds,qualityRates,...shop}=rules.shop;
+      const {chestReward,monsterReward,bossReward,...encounters}=rules, {refresh,equipmentQualityOdds,qualityRates,refreshQuality,...shop}=rules.shop;
       (run as any).stageEncounters={...encounters,shop};
     }
   }
@@ -132,6 +161,7 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
 export function sameCombatConfigurationIdentity(saved: string, current: string): boolean {
   try {
     const previous=JSON.parse(saved),next=JSON.parse(current);
+    previous.skills = adoptLegendarySkillBalanceChanges(previous.skills, next.skills);
     // Shop prices do not change generated enemies and must not invalidate existing campaigns.
     if (previous.run?.stageEncounters?.shop && next.run?.stageEncounters?.shop)
       previous.run.stageEncounters.shop.equipmentPrices = next.run.stageEncounters.shop.equipmentPrices;

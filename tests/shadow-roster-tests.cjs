@@ -15,7 +15,7 @@ const expected=[
  ['nightmare_lamplighter',2,30,.6,1,40,110,[25,40,60]],['shadow_seam_assassin',2,60,.9,1,20,70,[90,135,210]],
  ['soulcleaver_general',3,65,.7,1,30,100,[260,390,650]],['ghostflame_blade',3,50,.8,1,0,60,[55,85,140]],
  ['eclipse_crossbow',4,65,.9,4,0,70,[360,560,2240]],['nether_lantern_witch',4,45,.75,4,30,100,[160,240,960]],
- ['blackstar_warlock',5,50,.75,4,30,120,[240,360,3000]],['voidscar_reaver',5,70,1,1,20,90,[100,150,1500]],
+ ['blackstar_warlock',5,50,.75,4,30,120,[240,360,400]],['voidscar_reaver',5,70,1,1,20,90,[100,150,400]],
 ];
 assert.deepEqual(shadow.members,expected.map(row=>row[0]));assert.equal(shadow.pendingMembers,false);
 for(const [id,cost,atk,speed,range,start,max,damage] of expected) {
@@ -130,7 +130,7 @@ const multiple=create('nether_lantern_witch',1,{enemies:[{x:1,y:4},{x:2,y:4},{x:
 assert.equal(new Set(skillPulses(multiple,'lanterns').map(e=>`${e.center.x},${e.center.y}`)).size,3,'lanterns prefer distinct enemy cells');
 for(const star of [1,2,3]) {
  const f=create('blackstar_warlock',star,{enemies:[{x:3,y:3}]});activate(f);const count=[3,3,9][star-1];advance(f,(count-1)*4);
- const base=[240,360,3000][star-1],collapse=[180,270,6000][star-1];
+ const base=[240,360,400][star-1],collapse=[180,270,500][star-1];
  assert.deepEqual(sourceHits(f).map(e=>e.dmg),[base,...Array(count-1).fill(base*.5),collapse]);assert.equal(skillPulses(f,'collapse').length,1);
 }
 const moving=create('blackstar_warlock',1,{enemies:[{x:3,y:3},{x:3,y:4},{x:6,y:6}]});activate(moving);moving.enemies[0].x=6;moving.enemies[0].y=5;advance(moving,4);
@@ -141,7 +141,7 @@ for(const star of [1,2,3]) {
  const count=[5,7,20][star-1];advance(f,(count-1)*3);
  assert.equal(sourceHits(f).length,count+2);assert.equal(skillPulses(f,'voidMark').length,2,'one mark per distinct enemy');
  const strikes=skillPulses(f,'void');for(let i=1;i<strikes.length;i++)assert.notDeepEqual(strikes[i].center,strikes[i-1].center);
- assert.equal(sourceHits(f).reduce((n,e)=>n+e.dmg,0),count*[100,150,1500][star-1]+2*[160,240,4000][star-1]);
+ assert.equal(sourceHits(f).reduce((n,e)=>n+e.dmg,0),count*[100,150,400][star-1]+2*[160,240,500][star-1]);
  assert.equal(f.src.skillUntargetable,false);assert.equal(f.sim.targetable(f.src),true);
 }
 const single=create('voidscar_reaver',1,{enemies:[{x:3,y:5}]});activate(single);advance(single,3);assert.deepEqual(sourceHits(single).map(e=>e.dmg),[100,160]);assert.equal(single.src.skillUntargetable,false);
@@ -197,7 +197,7 @@ const fs=require('node:fs'),crypto=require('node:crypto');
 const {UNIT_ART,UNIT_PORTRAIT}=require('../assets/scripts/view/ArtPaths.ts');
 const manifest=require('../art-source/shadow-roster/manifest.json'),roles=require('../assets/resources/config/enemy-roles.json');
 for(const item of manifest.filter(item=>!retired.units.some(unit=>unit.id===item.id))) {
- const updated=[...require('../docs/art-provenance/faction-portrait-update.json').assets,...require('../docs/art-provenance/bloodfiend-generated.json').assets].find(a=>a.file===item.runtime.replace(/\\/g,'/'));
+ const updated=[...require('../docs/art-provenance/unit-art-compression.json').assets,...require('../docs/art-provenance/faction-portrait-update.json').assets,...require('../docs/art-provenance/bloodfiend-generated.json').assets].find(a=>a.file===item.runtime.replace(/\\/g,'/'));
  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(item.runtime)).digest('hex'),updated?.sha256??item.sha256,'runtime image matches original or authorized faction-element revision');
  assert.ok(UNIT_ART[item.id]&&UNIT_PORTRAIT[item.id]&&roles.units[item.id]);
  const [x,y,w,h]=UNIT_PORTRAIT[item.id].split('#rawrect,')[1].split(',').map(Number);

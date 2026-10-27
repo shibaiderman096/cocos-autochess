@@ -32,10 +32,15 @@ const STATS: Array<{ key: StatKey; name: string; icon: UISkinKey; scale?: number
 
 /** Keep numeric bonuses in sync with config, including the project's additive attack speed. */
 export function equipmentStatRows(item: EquipmentDisplayItem): EquipmentStatDisplay[] {
-  return STATS.filter(stat => Number.isFinite(item[stat.key]) && item[stat.key] !== 0).map(stat => {
+  const rows = STATS.filter(stat => Number.isFinite(item[stat.key]) && item[stat.key] !== 0).map(stat => {
     const value = Number((item[stat.key]! * (stat.scale ?? 1)).toFixed(2));
     return { name: stat.name, icon: stat.icon, value: `${value > 0 ? '+' : ''}${value}${stat.percent ? '%' : ''}${stat.key === 'manaPerSecond' ? '/秒' : ''}` };
   });
+  if (item.consumable?.kind === 'permanentStat') {
+    const effect = item.consumable, stat = STATS.find(row => row.key === effect.stat)!;
+    rows.push({ name: `永久${stat.name}`, icon: stat.icon, value: `+${effect.amount}${stat.percent ? '%' : ''}` });
+  }
+  return rows;
 }
 
 export function equipmentEffectText(item: EquipmentDisplayItem): string {

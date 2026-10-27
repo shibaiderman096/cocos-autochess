@@ -1,0 +1,55 @@
+{
+  "art_source": "host_image",
+  "route": "image_gen",
+  "transparent_background": true,
+  "prompts": [
+    {
+      "id": "stat_boost_health_small",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: small white-quality permanent health boost. Subject: a compact clear vial with a plain silver neck, containing a luminous ruby-red heart-shaped life crystal suspended in red elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_health_medium",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: medium green-quality permanent health boost. Subject: a taller emerald-trimmed flask with twin silver side braces, containing a luminous ruby-red heart-shaped life crystal suspended in red elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_health_large",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: large blue-quality permanent health boost. Subject: a broad sapphire-trimmed flask with a star-shaped silver casing, containing a luminous ruby-red heart-shaped life crystal suspended in red elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_health_super",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: supreme purple-quality permanent health boost. Subject: a majestic amethyst-trimmed alchemical reliquary flask with four silver prongs, containing a luminous ruby-red heart-shaped life crystal suspended in red elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_physical_small",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: small white-quality permanent physical boost. Subject: a compact clear vial with a plain silver neck, containing a bright amber-gold miniature crossed blade crystal suspended in orange elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_physical_medium",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: medium green-quality permanent physical boost. Subject: a taller emerald-trimmed flask with twin silver side braces, containing a bright amber-gold miniature crossed blade crystal suspended in orange elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_physical_large",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: large blue-quality permanent physical boost. Subject: a broad sapphire-trimmed flask with a star-shaped silver casing, containing a bright amber-gold miniature crossed blade crystal suspended in orange elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_physical_super",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: supreme purple-quality permanent physical boost. Subject: a majestic amethyst-trimmed alchemical reliquary flask with four silver prongs, containing a bright amber-gold miniature crossed blade crystal suspended in orange elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_spell_small",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: small white-quality permanent spell boost. Subject: a compact clear vial with a plain silver neck, containing a luminous cyan-blue arcane star crystal suspended in blue elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_spell_medium",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: medium green-quality permanent spell boost. Subject: a taller emerald-trimmed flask with twin silver side braces, containing a luminous cyan-blue arcane star crystal suspended in blue elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_spell_large",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: large blue-quality permanent spell boost. Subject: a broad sapphire-trimmed flask with a star-shaped silver casing, containing a luminous cyan-blue arcane star crystal suspended in blue elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    },
+    {
+      "id": "stat_boost_spell_super",
+      "prompt": "Create ONE polished fantasy autochess consumable item icon: supreme purple-quality permanent spell boost. Subject: a majestic amethyst-trimmed alchemical reliquary flask with four silver prongs, containing a luminous cyan-blue arcane star crystal suspended in blue elixir. Hand-painted 2.5D game inventory asset, refined ivory-silver metal, clean bold silhouette, subtle material facets, restrained glow, rich but uncluttered, readable at 80 pixels. Center the complete single item with 14% transparent padding, square canvas, three-quarter front view, no words, letters, digits, labels, rarity frame, ground plane, background scene or multiple icons. Transparent background. This is one icon in a coherent 12-item family: the vial size and ornamentation show tier; the inner crystal clearly shows stat type."
+    }
+  ]
+}

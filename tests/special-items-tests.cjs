@@ -15,7 +15,17 @@ function cfg(items=i.equipment){const c=new ConfigManager();c.setUnits(i.units);
 function make(save,items=i.equipment,overrides={}){return new RunSession(cfg(items),i.run,i.waves,{...deps,...overrides,stageCount:6,runSeed:17,enemyGenerationMode:'budget-v1',...(save?{save}:{})});}
 function card(s,cost=1,star=1){const c=i.units.find(u=>u.cost===cost&&!u.specialShopUnlock&&!s.owned.all().some(o=>o.unitId===u.id));assert.ok(c);for(let n=0;n<3**(star-1);n++)assert.ok(s.pool.take(c.id));const u=s.owned.addToBench(c.id,s.save.benchSlots,-1,star);assert.ok(u);return u;}
 function use(s,id,u){s.owned.equipmentReserve.push(id);return s.equipItem(u.uid,s.owned.equipmentReserve.length-1);}
-for(let n=0;n<4;n++){const item=i.equipment.find(e=>e.id===ids[n]);assert.equal(item.shopPrice,[2,4,6,16][n]);assert.equal(item.chestDrop,true);assert.equal(deps.equipmentPolicy.tiers[item.id],'special');assert.equal(deps.equipmentPolicy.enemy.itemTags[item.id].enabled,false);}
+for(let n=0;n<4;n++){const item=i.equipment.find(e=>e.id===ids[n]);assert.equal(item.shopPrice,[2,4,8,16][n]);assert.equal(item.chestDrop,true);assert.equal(deps.equipmentPolicy.tiers[item.id],'special');assert.equal(deps.equipmentPolicy.enemy.itemTags[item.id].enabled,false);}
+assert.equal(i.equipment.find(e=>e.id==='replicator_firmament').quality,5);
+{
+ const oldItems=clone(i.equipment);Object.assign(oldItems.find(e=>e.id==='replicator_firmament'),{shopPrice:6,quality:4});
+ const old=make(undefined,oldItems),wave=old.waves.find(w=>w.stage===4&&w.encounterKind==='specialShop');assert.ok(old.debugJump(4,wave.round));
+ const saved=old.snapshot();saved.stageProgress.pending.offers[0]={kind:'equipment',id:'replicator_firmament',price:6,bought:false};
+ const updated=make(saved);assert.equal(updated.pendingStageReward.offers[0].price,8);assert.equal(updated.economy.gold,saved.gold);assert.deepEqual(updated.owned.snapshot(),saved.owned);
+ const bought=clone(saved);bought.stageProgress.pending.offers[0].bought=true;assert.equal(make(bought).economy.gold,saved.gold,'completed purchases are never charged again');
+ const altered=clone(oldItems);altered.find(e=>e.id==='replicator_firmament').consumable.maxCost=3;
+ assert.throws(()=>make(saved,altered),/configuration mismatch/,'unrelated copy-rule changes still reject saves');
+}
 for(const [id,max]of ids.slice(0,3).map((id,n)=>[id,[1,3,5][n]])){
  for(let cost=1;cost<=5;cost++){
   const s=make(),target=card(s,cost);target.equipment=['basic_iron_shield','basic_mystic_cloak','basic_life_heart'];target.permanentMaxHp=123;target.permanentSpellPower=45;

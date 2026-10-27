@@ -245,8 +245,9 @@ export interface EquipmentConfigData {
   specialShopOnly?: boolean;
   /** Explicit exception allowing special equipment/consumables in mixed-value chests. */
   chestDrop?: boolean;
-  /** Consumed on an owned target; produces one unmodified 1-star card, never occupies a slot. */
-  consumable?: { kind: 'copyUnit'; maxCost: 1 | 3 | 5 };
+  /** Consumed on an owned target, never occupies an equipment slot. */
+  consumable?: { kind: 'copyUnit'; maxCost: 1 | 3 | 5 }
+    | { kind: 'permanentStat'; stat: 'hp' | 'physicalPower' | 'spellPower'; amount: number };
   /** Extra deployment capacity while carried by a deployed unit; copies stack. */
   unitCapBonus?: number;
   /** Unbound emblem opens a frozen four-trait choice on first equip. */

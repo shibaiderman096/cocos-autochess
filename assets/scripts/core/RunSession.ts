@@ -1,4 +1,6 @@
 import { BattleSim } from '../battle/BattleSim';
+import { freshMerchantServices, restoreMerchantServices, forgedItem, forgeCandidates, forgePrice, dicePayout, validDicePicks, diceMultiplier } from './MerchantServices';
+import type { DiceBet } from './MerchantServices';
 import { resolveTraits } from '../battle/Traits';
 import { freshExplorerProgress, validateExplorerProgress, settleExplorerProgress, isExplorerBattle } from './ExplorerProgress';
 import type { Placement } from '../battle/BattleSim';
@@ -32,7 +34,7 @@ import { equipmentIdentity,sameEquipmentIdentity,validateEquipmentPolicy } from 
 import type { EquipmentPolicyConfig,PendingEquipmentReward } from './EquipmentPolicyTypes';
 import { createEquipmentReward } from './EquipmentReward';
 import type { BotPlayerPort,BotCatalog } from './BotObservation';
-import { StageProgression, freshStageProgress, isChestlessBoss } from './StageProgression';
+import { StageProgression, freshStageProgress, isChestlessBoss, explorerLootQualityRates } from './StageProgression';
 import type { StageChoice, StagePending } from './StageProgression';
 import { traitEmblemChoices } from './TraitEmblem';
 import type { PendingTraitChoice } from './TraitEmblem';
@@ -68,6 +70,8 @@ export class RunSession {
       encounterRules.victoryGold, encounterRules.battleExp, encounterRules.victoryHeal].every(n => Number.isSafeInteger(n) && n > 0))) throw new Error('Invalid opening encounter rules');
     const loaded = options.save !== undefined;
     this.save = loaded ? migrateSaveV2(options.save) : freshSaveV2(options.stageCount ?? DEFAULT_STAGE_COUNT, options.runSeed ?? DEFAULT_RUN_SEED, options.enemyGenerationMode ?? 'budget-v1');
+    this.save.merchantServices ??= freshMerchantServices();
+    restoreMerchantServices(cfg, this.save.merchantServices);
     this.save.explorerProgress ??= freshExplorerProgress();
     validateExplorerProgress(this.save.explorerProgress);
     if (loaded && options.runSeed !== undefined && options.runSeed !== this.save.runSeed) throw new Error('Cannot replace the seed of a saved run');
@@ -169,9 +173,10 @@ export class RunSession {
       if (pendingShop?.kind === 'specialShop') for (const offer of pendingShop.offers) {
         if (offer.kind !== 'equipment') continue;
         const tier = this.stageEquipmentTiers[offer.id];
+        if (offer.id === 'replicator_firmament' && offer.price === 6 && cfg.getEquipmentReserve([offer.id])[0]?.shopPrice === 8) offer.price = 8;
         // Adopt the authored 3→6 / 8→10 price update without charging or rerolling saved merchandise.
         if ((tier === 'basic' && cfg.getEquipmentReserve([offer.id])[0]?.shopPrice === undefined && offer.price === 3 && prices.basic === 6)
-          || (tier === 'special' && offer.price === 8 && prices.special === 10)) offer.price = prices[tier];
+          || (tier === 'special' && cfg.getEquipmentReserve([offer.id])[0]?.shopPrice === undefined && offer.price === 8 && prices.special === 10)) offer.price = prices[tier];
       }
       this.validateStageReward();
       // Retire only a validated, unopened 10-10 chest from older saves; keep the rest of the run.
@@ -179,6 +184,10 @@ export class RunSession {
         && ['bossChoice', 'equipmentChoice'].includes(this.save.stageProgress?.pending?.kind ?? '')) delete this.save.stageProgress!.pending;
       if (this.flow.phase === 'prepare') this.stageProgression.enter(this.flow.wave);
     }
+    const unfinishedBet = this.save.merchantServices!.dice;
+    if(unfinishedBet&&!unfinishedBet.settled&&(!this.merchantAvailable()||unfinishedBet.waveId!==this.flow.wave.id))throw new Error('Invalid pending merchant bet');
+    const forgedInventory=[...(this.save.equipmentReserve??[]),...this.save.owned.flatMap(u=>u.equipment??[])].filter(id=>!!this.save.merchantServices!.forged[id]);
+    if(new Set(forgedInventory).size!==forgedInventory.length)throw new Error('Duplicate forged equipment instance');
     this.snapshot();
   }
 
@@ -280,6 +289,7 @@ export class RunSession {
     }
   }
   claimStageReward(action: StageChoice): ActionResult {
+    if (this.save.merchantServices?.dice && !this.save.merchantServices.dice.settled) return fail('dice_rolling');
     if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (!this.stageProgression) return fail('stage_rewards_disabled');
     const result = this.stageProgression.act(action, this.flow.wave,this.cfg.battle.initialHealth-this.flow.health);
@@ -295,7 +305,58 @@ export class RunSession {
     }
     this.snapshot(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
   }
+  private merchantAvailable(): boolean {
+    return this.flow.phase === 'prepare' && this.flow.wave.encounterKind === 'specialShop'
+      && this.pendingStageReward?.kind === 'specialShop' && !this.save.pendingTraitChoice;
+  }
+  get merchantDice(): DiceBet | undefined {
+    const bet = this.save.merchantServices!.dice;
+    return bet?.waveId === this.flow.wave.id ? { ...bet, picks: [...bet.picks] } : undefined;
+  }
+  forgeLevel(id: string): number { return this.save.merchantServices!.forged[id]?.upgrades.length ?? 0; }
+  canForge(id: string): boolean {
+    return !!this.save.merchantServices!.forged[id] || this.cfg.allEquipment().some(e => e.id === id && id.startsWith('basic_') && !e.consumable && !e.traitChoice);
+  }
+  enhanceEquipment(reserveIndex: number, expectedId: string): ActionResult {
+    if (!this.merchantAvailable() || (this.merchantDice && !this.merchantDice.settled)) return fail('merchant_unavailable');
+    if (!Number.isInteger(reserveIndex) || reserveIndex < 0 || this.owned.equipmentReserve[reserveIndex] !== expectedId || !this.canForge(expectedId)) return fail('invalid_equipment');
+    const state = this.save.merchantServices!, previous = state.forged[expectedId], level = this.forgeLevel(expectedId), cost = forgePrice(level);
+    if (!Number.isSafeInteger(cost) || !Number.isSafeInteger(state.forgeRoll + 1) || !Number.isSafeInteger(state.nextUid + 1)) return fail('attribute_overflow');
+    if (this.economy.gold < cost) return fail('not_enough_gold');
+    const item = this.cfg.getEquipmentReserve([expectedId])[0], candidates = forgeCandidates(item, level);
+    if (!candidates.length) return fail('invalid_equipment');
+    const stat = candidates[this.random.stream('forge', this.flow.wave.id, state.forgeRoll).int(0, candidates.length - 1)];
+    const id = previous ? expectedId : `forged_${state.nextUid}`;
+    const record = { baseId: previous?.baseId ?? expectedId, upgrades: [...(previous?.upgrades ?? []), stat] };
+    let upgraded; try { upgraded = forgedItem(this.cfg, id, record); } catch { return fail('attribute_overflow'); }
+    if (!this.economy.spend(cost)) return fail('not_enough_gold');
+    state.forged[id] = record; state.forgeRoll++; if (!previous) state.nextUid++;
+    this.cfg.registerRunEquipment(upgraded); this.owned.equipmentReserve[reserveIndex] = id;
+    this.snapshot(); return ok();
+  }
+  beginDiceBet(stake: number, picks: number[]): ActionResult {
+    if (!this.merchantAvailable() || (this.merchantDice && !this.merchantDice.settled)) return fail('merchant_unavailable');
+    if (![1,5,10].includes(stake) || !validDicePicks(picks)) return fail('invalid_bet');
+    const state = this.save.merchantServices!;
+    const maximumGold=this.economy.gold+stake*(diceMultiplier(picks.length)-1);
+    if (!Number.isSafeInteger(state.diceRoll + 1) || !Number.isSafeInteger(maximumGold) || maximumGold > 999999) return fail('attribute_overflow');
+    if (!this.economy.spend(stake)) return fail('not_enough_gold');
+    const face = this.random.stream('dice', this.flow.wave.id, state.diceRoll).int(1, 6);
+    state.dice = { id: ++state.diceRoll, waveId: this.flow.wave.id, stake, picks: [...picks].sort((a,b)=>a-b), face, settled: false };
+    this.snapshot(); return ok();
+  }
+  finishDiceBet(id: number): ActionResult {
+    const bet = this.merchantDice;
+    if (!this.merchantAvailable() || !bet || bet.id !== id || bet.settled) return fail('invalid_bet');
+    const payout = dicePayout(bet);
+    if (!Number.isSafeInteger(this.economy.gold + payout)) return fail('attribute_overflow');
+    this.save.merchantServices!.dice!.settled = true; this.economy.gold += payout;
+    this.snapshot(); return ok();
+  }
   get explorerPoints(): number { return this.save.explorerProgress!.points; }
+  get explorerChestQualityRates(): number[] {
+    return explorerLootQualityRates(this.explorerPoints,this.runConfig.stageEncounters?.chestReward);
+  }
   get explorerChestValue(): number {
     const effect=this.cfg.battle.traits?.find(t=>t.id==='explorer')?.breakpoints[0]?.explorer;
     return Math.ceil(this.explorerPoints*(effect?.rewardValuePerPoint??0));
@@ -311,7 +372,7 @@ export class RunSession {
   }
   openExplorerChest(): ActionResult {
     if(!this.explorerChestOpenable||!this.stageProgression)return fail('explorer_chest_unavailable');
-    const reward=this.stageProgression.grantExplorerReward(this.explorerChestValue,this.flow.wave.id,this.cfg.battle.initialHealth-this.flow.health);
+    const reward=this.stageProgression.grantExplorerReward(this.explorerChestValue,this.flow.wave.id,this.cfg.battle.initialHealth-this.flow.health,this.explorerPoints);
     reward.health=this.flow.restoreHealth(reward.health);
     this.save.explorerProgress!.points=0;this.save.explorerProgress!.lastOpenedWaveId=this.flow.wave.id;
     this.snapshot();return {ok:true,stageReward:reward};
@@ -549,7 +610,17 @@ export class RunSession {
     if (!id || !this.cfg.getEquipmentReserve([id]).length) return fail('invalid_equipment');
     const target=this.owned.get(uid);if(!target)return fail('not_owned');
     const item=this.cfg.getEquipment([id])[0];
-    if(item.consumable){
+    if (item.consumable?.kind === 'permanentStat') {
+      const { stat, amount } = item.consumable;
+      const totalKey = stat === 'hp' ? 'permanentMaxHp' : stat === 'physicalPower' ? 'permanentPhysicalPower' : 'permanentSpellPower';
+      const sourceKey = stat === 'hp' ? 'itemHealth' : stat === 'physicalPower' ? 'itemPhysicalPower' : 'itemSpellPower';
+      const total = (target[totalKey] ?? 0) + amount, source = (target[sourceKey] ?? 0) + amount;
+      if (!Number.isSafeInteger(total) || !Number.isSafeInteger(source)) return fail('attribute_overflow');
+      target[totalKey] = total; target[sourceKey] = source;
+      this.owned.equipmentReserve.splice(reserveIndex, 1);
+      return ok();
+    }
+    if(item.consumable?.kind === 'copyUnit'){
       if(this.cfg.getUnit(target.unitId).cost>item.consumable.maxCost)return fail('copy_cost_limit');
       if(this.pool.count(target.unitId)<1)return fail('pool_empty');
       const deliver=(owned:OwnedUnits)=>{

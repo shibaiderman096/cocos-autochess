@@ -74,6 +74,7 @@ export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], bo
 }
 
 export interface SaveDataV2 extends SaveData {
+  merchantServices?: import('./MerchantServices').MerchantServicesState;
   /** Stage-entry subsidies already handled; retained across reloads and debug revisits. */
   earlyGoldStages?: number[];
   explorerProgress?: import('./ExplorerProgress').ExplorerProgress;
@@ -154,6 +155,10 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       const uid = Number.isSafeInteger(u.uid) && u.uid > 0 && u.uid < Number.MAX_SAFE_INTEGER && !used.has(u.uid) ? u.uid : nextUid;
       used.add(uid);
       owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentPhysicalPower === undefined ? {} : { permanentPhysicalPower: safeInt(u.permanentPhysicalPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentSpellPower === undefined ? {} : { permanentSpellPower: safeInt(u.permanentSpellPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
+      const restored = owned[owned.length - 1];
+      for (const [source, total] of [['itemHealth','permanentMaxHp'], ['itemPhysicalPower','permanentPhysicalPower'], ['itemSpellPower','permanentSpellPower']] as const) {
+        if (u[source] !== undefined) restored[source] = safeInt(u[source], 0, 0, restored[total] ?? 0);
+      }
     }
   }
 
@@ -196,6 +201,7 @@ export function migrateSaveV2(raw: unknown): SaveDataV2 {
       lastIncomeStage: safeInt(d.openingEncounter?.lastIncomeStage, 1, 1, 99),
     } }),
     ...(d.stageProgress === undefined ? {} : { stageProgress: JSON.parse(JSON.stringify(d.stageProgress)) }),
+    ...(d.merchantServices === undefined ? {} : { merchantServices: JSON.parse(JSON.stringify(d.merchantServices)) }),
     ...(typeof d.balanceVersion==='string'?{balanceVersion:d.balanceVersion}:{}),
     enemyEquipmentVersion:d.enemyEquipmentVersion??'none',
     equipmentRewardVersion:d.equipmentRewardVersion??'none',

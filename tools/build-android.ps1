@@ -36,6 +36,13 @@ $creatorProcess = Start-Process -FilePath $CreatorExe -ArgumentList @('--project
 $creatorProcess.WaitForExit()
 # Creator reports a successful build with exit code 36.
 if ($creatorProcess.ExitCode -notin @(0, 36)) { throw "Cocos Android export failed ($($creatorProcess.ExitCode)). See $creatorLog" }
+# Creator's native debug export enables stats regardless of the supplied showFPS option.
+$launcherPath = Join-Path $buildRoot 'data\application.js'
+$launcher = Get-Content -LiteralPath $launcherPath -Raw -Encoding utf8
+$fpsSetting = 'this\.showFPS\s*=\s*(?:true|false);'
+if ([regex]::Matches($launcher, $fpsSetting).Count -ne 1) { throw 'Cannot locate native performance-stat setting' }
+$fpsValue = if ($options.showFPS -eq $true) { 'true' } else { 'false' }
+[regex]::Replace($launcher, $fpsSetting, "this.showFPS = $fpsValue;") | Set-Content -LiteralPath $launcherPath -Encoding utf8NoBOM
 $gradleProject = Join-Path $buildRoot 'proj'
 $wrapper = Join-Path $gradleProject 'gradlew.bat'
 if (!(Test-Path -LiteralPath $wrapper)) { throw "Android Gradle project was not generated: $gradleProject" }

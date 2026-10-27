@@ -4,6 +4,7 @@
   "outputName": "android",
   "buildPath": "project://build",
   "debug": true,
+  "showFPS": false,
   "packages": {
     "android": {
       "packageName": "com.shibaiderman.autochess",

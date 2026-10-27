@@ -21,13 +21,13 @@ assert.equal(resolveTraits(battle.traits,[authored.id],roster).find(t=>t.config.
 for(const side of [0,1])for(const star of [1,2,3])for(const atk of [40,800]){
  const f=fixture(star,side,{physicalPower:50,spellPower:900,atk,damageAmp:.25}),{sim,src,enemy,skill}=f;
  const originalMax=src.cfg.hp;src.hp=originalMax-100;src.mana=30;sim.cast(src,skill,enemy);
- const gain=[300,450,9000][star-1];assert.equal(src.cfg.hp,originalMax+gain);assert.equal(src.hp,originalMax-100+gain);assert.equal(src.bloodCleaveReady,true);assert.equal(src.mana,0);
+ const gain=[300,450,3000][star-1];assert.equal(src.cfg.hp,originalMax+gain);assert.equal(src.hp,originalMax-100+gain);assert.equal(src.bloodCleaveReady,true);assert.equal(src.mana,0);
  assert.equal(sim.events.filter(e=>e.t==='heal').length,0,'growth is not healing');assert.equal(sim.events.filter(e=>e.t==='hit').length,0);
  src.mana=30;sim.cast(src,skill,enemy);assert.equal(src.cfg.hp,originalMax+gain,'pending cleave cannot be stacked');
  src.atkCd=0;sim.updateUnit(src);settle(sim);assert.equal(sim.events.filter(e=>e.t==='attack').length,0);
  clock(f,9);sim.updateUnit(src);settle(sim);assert.equal(sim.events.filter(e=>e.t==='attack').length,0,'0.5s windup must finish before the basic');
  clock(f,10);sim.updateUnit(src);settle(sim);
- const expected=Math.round([250,375,7500][star-1]*1.5*1.25),hits=sim.events.filter(e=>e.t==='hit'&&e.source===src.id);
+ const expected=Math.round([250,375,2500][star-1]*1.5*1.25),hits=sim.events.filter(e=>e.t==='hit'&&e.source===src.id);
  assert.equal(hits.length,3,'one primary basic plus two full extra hits');assert.equal(hits[0].dmg,Math.round(src.cfg.atk*1.5*1.25));
  assert.deepEqual(hits.slice(1).map(e=>[e.id,e.dmg]),[[2,expected],[3,expected]]);assert.ok(hits.every(e=>e.dmgType==='physical'));
  assert.equal(src.bloodCleaveReady,false);assert.equal(sim.events.filter(e=>e.t==='blood_cleave').length,1);

@@ -44,7 +44,7 @@ for(const stage of [3,6,10,11,99])for(const winner of [0,1]){
 }
 const dead=make();endBoundary(dead,10,1,1);assert.equal(dead.flow.health,0);assert.equal(dead.flow.phase,'ended');assert.equal(dead.flow.result,'defeat');assert.equal(dead.portalAvailable,false);assert.equal(dead.nextWave(),false);
 const flow=new RoundFlow([{id:1,name:'test',enemies:[]}],{initialHealth:100,lossPerEnemy:1,continueAtBoundary:true});flow.startBattle();flow.settle(1,0);assert.equal(flow.phase,'settlement');assert.equal(flow.nextWave(),false,'a finite buffer cannot advance out of bounds before the session extends it');
-const oldItems=i.equipment.map(({quality,...rest})=>rest),oldRun=clone(i.run);delete oldRun.stageEncounters.shop.qualityRates;oldRun.stageEncounters.shop.equipmentQualityOdds="shop-level";
+const oldItems=i.equipment.map(({quality,...rest})=>rest),oldRun=clone(i.run);delete oldRun.stageEncounters.shop.qualityRates;delete oldRun.stageEncounters.shop.refreshQuality;oldRun.stageEncounters.shop.equipmentQualityOdds="shop-level";
 const old=new RunSession(cfg(oldItems),oldRun,i.waves,{...deps,runSeed:217}),save=old.snapshot(),restored=make({save});assert.equal(restored.economy.gold,save.gold);assert.deepEqual(restored.owned.snapshot(),save.owned);
 console.log('PASS health-only game end: survived wins/losses at stages 3/6/10/11/99, stage-10 portal, stage 100 reload, lethal loss and catalogue/quality rule migration');
 const report=t.runSimulation({...i,battle:{...i.battle,maxTicks:1,lossPerEnemy:0}},{runSeed:217,stageCount:11,maxStage:11,enemyGenerationMode:'legacy'});

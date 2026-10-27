@@ -9,7 +9,14 @@ import { MERGE_COUNT } from './ShopConfig';
 
 export type UnitLocation = 'bench' | 'board';
 
-export interface OwnedUnit {
+/** Source breakdown for permanent consumable bonuses, already included in the permanent totals. */
+export interface ItemStatGrowth {
+  itemHealth?: number;
+  itemPhysicalPower?: number;
+  itemSpellPower?: number;
+}
+
+export interface OwnedUnit extends ItemStatGrowth {
   /** 唯一实例 id */
   uid: number;
   /** 棋子配置 id（如 helion） */
@@ -197,6 +204,10 @@ export class OwnedUnits {
         if (permanentSpellPower) keep.permanentSpellPower = permanentSpellPower;
         const permanentPhysicalPower=group.reduce((sum,unit)=>sum+(unit.permanentPhysicalPower??0),0);
         if(permanentPhysicalPower)keep.permanentPhysicalPower=permanentPhysicalPower;
+        for (const key of ['itemHealth','itemPhysicalPower','itemSpellPower'] as const) {
+          const total = group.reduce((sum, unit) => sum + (unit[key] ?? 0), 0);
+          if (total) keep[key] = total;
+        }
         const equipment = same.slice(0, MERGE_COUNT).flatMap(unit => unit.equipment ?? []);
         keep.equipment = equipment.slice(0, MAX_EQUIPMENT);
         this.equipmentReserve.push(...equipment.slice(MAX_EQUIPMENT));

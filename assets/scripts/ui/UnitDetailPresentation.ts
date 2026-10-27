@@ -2,6 +2,7 @@ import type { ConfigManager, UnitConfigData } from '../core/ConfigManager';
 import { resolveTraits, isTraitMember } from '../battle/Traits';
 import type { UnitDetailData } from './BattleUI';
 import { buildSkillStatRows, buildSkillDescription } from './SkillPresentation';
+import type { ItemStatGrowth } from '../core/OwnedUnits';
 
 interface DetailContext {
   runtimeStats?: boolean;
@@ -14,6 +15,7 @@ interface DetailContext {
   passiveSpellPower?: number;
   passivePhysicalPower?: number;
   detailKey?: string;
+  itemGrowth?: ItemStatGrowth;
 }
 
 /** Shared by the live unit inspector and the unequipped collection preview. */
@@ -31,6 +33,10 @@ export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData
   const healing = rows.find(row => row.label === '治疗')?.current ?? '0';
   const shielding = rows.find(row => row.label === '护盾')?.current ?? '0';
   const damageType = skill?.dmgType === 'physical' ? '物理' : skill?.dmgType === 'magic' ? '魔法' : '真实';
+  const growth = context.itemGrowth;
+  if (growth?.itemHealth) rows.push({ label: '道具永久生命', current: `+${growth.itemHealth}`, stars: '本局累计', tone: 'healing' });
+  if (growth?.itemPhysicalPower) rows.push({ label: '道具永久物理', current: `+${growth.itemPhysicalPower}%`, stars: '本局累计', tone: 'physical' });
+  if (growth?.itemSpellPower) rows.push({ label: '道具永久法术', current: `+${growth.itemSpellPower}%`, stars: '本局累计', tone: 'magic' });
   return {
     name: unit.name, star, cost: unit.cost, artId: unit.artId ?? unit.id, side, tint: unit.tint, role: unit.role, damageType: unit.damageType,
     detailKey: context.detailKey ?? `${unit.id}:${side}:${star}`,

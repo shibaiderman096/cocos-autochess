@@ -5,6 +5,7 @@ const { ConfigManager } = source('core/ConfigManager.ts');
 const { CollectionPanel } = source('ui/CollectionPanel.ts');
 const { BattleUI } = source('ui/BattleUI.ts');
 const { BattleStage } = source('view/BattleStage.ts');
+const { buildUnitDetailData } = source('ui/UnitDetailPresentation.ts');
 const { TraitPanel, TRAIT_PORTRAIT_FRAMES } = source('ui/TraitPanel.ts');
 const { resolveTraits } = source('battle/Traits.ts');
 const cfg = new ConfigManager();
@@ -92,3 +93,12 @@ for (const base of resolveTraits(cfg.battle.traits, [], roster)) {
 }
 assert.equal(JSON.stringify(cfg.battle.traits), baseline, 'UI sorting preserves authored trait configuration');
 console.log('PASS all trait renderers: mixed costs, stable ties, duplicates/missing IDs, live/catalogue parity and matching rarity frames');
+const growthUI=new BattleUI();growthUI.node=new Node('GrowthUI');new Node('GrowthCanvas').addChild(growthUI.node);growthUI.init();
+for(const entry of cfg.allUnits()){
+  const data=buildUnitDetailData(cfg,cfg.scaleUnit(entry,3),3,{itemGrowth:{itemHealth:640,itemPhysicalPower:32,itemSpellPower:32}});
+  growthUI.showUnitDetail(data);growthUI.skillIconNode.events.get(Node.EventType.TOUCH_END)();
+  assert.equal(growthUI.detailPopupStatLabels.filter(row=>row.root.active).length,data.skillStats.length,entry.id+' renders all skill and consumable rows');
+  for(const [index,row] of data.skillStats.entries())assert.equal(growthUI.detailPopupStatLabels[index].name.string,row.label+'：');
+  growthUI.closeDetailPopup();
+}
+console.log('PASS permanent growth UI: all 39 units retain every skill row and all three item growth rows');

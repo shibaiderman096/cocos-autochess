@@ -1,5 +1,6 @@
 import { Node, UITransform, Vec3, Prefab, resources, instantiate, director, Layers, isValid, Animation, AnimationClip, animation, Label, Color, Graphics } from 'cc';
 import { unprojectBoardPoint, projectGroundPoint } from './BoardPresentation';
+import { QUALITY_COLORS } from '../core/EquipmentQuality';
 
 const MODELS = {
   shop: 'models/board-encounters/ruins-shop/ruins-shop',
@@ -20,6 +21,7 @@ export class ShopVisitor {
   private openClip: AnimationClip | null = null;
   private finishOpen: (() => void) | null = null;
   private caption: Label | null = null;
+  private lootOdds: Label[] = [];
   private modelScale = 1;
   get isOpening(): boolean { return this.opening; }
 
@@ -113,18 +115,27 @@ export class ShopVisitor {
     if (this.lid && this.lidBase && isValid(this.lid, true)) this.lid.setRotationFromEuler(this.lidBase);
   }
 
-  setCaption(text: string): void {
+  setLootCaption(points: number, rates: readonly number[], scale = 1): void {
     if(!this.caption){
       const node=new Node('explorerChestLayers');this.root.addChild(node);node.layer=this.root.layer;
-      const width=184,height=48;
+      const width=224,height=60;
       node.setPosition(0,116*this.modelScale,0);node.addComponent(UITransform).setContentSize(width,height);
       const background=node.addComponent(Graphics);background.fillColor=new Color(8,17,24,235);background.strokeColor=new Color(169,141,78);
       background.lineWidth=1;background.roundRect(-width/2,-height/2,width,height,8);background.fill();background.stroke();
-      const copy=new Node('text');node.addChild(copy);copy.layer=node.layer;copy.addComponent(UITransform).setContentSize(width-8,height-2);
-      this.caption=copy.addComponent(Label);this.caption.fontSize=18;this.caption.lineHeight=23;
+      const copy=new Node('text');node.addChild(copy);copy.layer=node.layer;copy.setPosition(0,13,0);copy.addComponent(UITransform).setContentSize(width-8,28);
+      this.caption=copy.addComponent(Label);this.caption.fontSize=21;this.caption.lineHeight=25;
       this.caption.color=new Color(255,224,146);this.caption.isBold=true;
+      this.caption.enableWrapText=false;this.caption.overflow=Label.Overflow.SHRINK;
+      QUALITY_COLORS.forEach((rgb,index)=>{
+        const cell=new Node(`odds${index+1}`);node.addChild(cell);cell.layer=node.layer;cell.setPosition((index-2)*43,-14,0);
+        cell.addComponent(UITransform).setContentSize(43,21);const label=cell.addComponent(Label);
+        label.fontSize=13;label.lineHeight=20;label.color=new Color(...rgb);label.enableWrapText=false;label.overflow=Label.Overflow.SHRINK;
+        this.lootOdds.push(label);
+      });
     }
-    this.caption.string=text;
+    this.caption.node.parent!.setScale(scale,scale,1);
+    this.caption.string=`${points} 层`;
+    this.lootOdds.forEach((label,index)=>{label.string=`${rates[index]}%`;});
   }
 
   /** Board-local mouth position, projected at the actual chest rim height. */

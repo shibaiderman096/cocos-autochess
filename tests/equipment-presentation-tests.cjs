@@ -38,7 +38,8 @@ for(const item of items){
 const overdrive=items.find(i=>i.id==='spell_overdrive_armor');
 assert.equal(overdrive.castAttackSpeed.bonus,.5);
 assert.ok(items.filter(i=>!i.id.startsWith('basic_')&&!i.specialShopOnly&&!i.consumable).every(i=>i.quality===2),'all completed equipment is green');
-assert.deepEqual(items.filter(i=>i.specialShopOnly).map(i=>i.quality),[5,1,3,4,5],'special items retain their authored quality');
+assert.deepEqual(items.filter(i=>i.specialShopOnly&&i.consumable?.kind!=='permanentStat').map(i=>i.quality),[5,1,3,5,5],'special items use authored quality, including orange firmament replicator');
+for(const stat of ['hp','physicalPower','spellPower']) assert.deepEqual(items.filter(i=>i.consumable?.kind==='permanentStat'&&i.consumable.stat===stat).map(i=>i.quality),[1,2,3,4],'permanent boosts progress through white, green, blue and purple');
 ui.showEquipmentTooltip(items.find(i=>i.id==='totem_of_undying'),0);
 ui.showEquipmentTooltip(overdrive,0);flush();
 assert.match(ui.equipmentTooltipText.string,/<img src='attr_aspd'/);

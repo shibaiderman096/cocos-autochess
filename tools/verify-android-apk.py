@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import zipfile
 
@@ -17,6 +18,8 @@ def verify(apk, project):
     with zipfile.ZipFile(apk) as archive:
         assert archive.testzip() is None, "APK ZIP integrity check failed"
         names = archive.namelist()
+        launcher = archive.read("assets/application.js").decode("utf-8")
+        assert re.search(r"this\.showFPS\s*=\s*false\s*;", launcher), "Android performance overlay must be disabled"
         libraries = [name for name in names if name.endswith(".so")]
         assert libraries == ["lib/arm64-v8a/libcocos.so"], libraries
         prefix = "assets/assets/resources/"
@@ -45,6 +48,8 @@ def verify(apk, project):
                                                         "wayward_corrosion", "sand_compass", "rope_shadow_hunt"]]
         images += ["art/equipment/" + name for name in ["replicator_glimmer", "replicator_starlight",
                                                        "replicator_firmament", "expedition_command_crown"]]
+        images += ["art/equipment/stat_boost_" + stat + "_" + tier for stat in ["health", "physical", "spell"]
+                   for tier in ["small", "medium", "large", "super"]]
         images += ["art/fx/player_damage/player_damage_energy", "art/ui_m2/streak_win", "art/ui_m2/streak_loss"]
         for image in images:
             assert image + "/spriteFrame" in paths, "Missing packaged sprite: " + image
@@ -54,7 +59,9 @@ def verify(apk, project):
         for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay",
                       "bloodfiend_revel", "mechanical_overclock", "blood_cleave_charge", "attackWindupSeconds",
                       "equipmentCredit", "flyChestSupplies", "grantExplorerReward", "openExplorerChest",
-                      "flyMixedChestRewards", "explorerGoldThreshold", "equipmentDescriptionRichText"]:
+                      "flyMixedChestRewards", "explorerGoldThreshold", "equipmentDescriptionRichText",
+                      "forgeEnhance", "dicePick_", "validDicePicks", "beginDiceBet", "restoreMerchantServices",
+                      "stageShopQualityRates", "explorerLootQualityRates", "setLootCaption"]:
             assert token in runtime, "Missing packaged behavior: " + token
         main = json.loads(archive.read("assets/assets/main/cc.config.json"))
         scenes = sorted(main["scenes"])

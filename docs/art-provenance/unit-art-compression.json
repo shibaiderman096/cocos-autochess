@@ -1,0 +1,513 @@
+{
+  "maxEdge": 1024,
+  "method": "RGBA Lanczos resize; lossless PNG encoding; original framing preserved",
+  "assets": [
+    {
+      "file": "assets/resources/art/units/astral/gravity_executor.png",
+      "sourceSha256": "8f7757ef403a21d0d6feb4f40f2021410304dfa03fe031ba133f97c02db9f973",
+      "sha256": "341b530ca3411e3ade0858e7c34c174f3333d6e46d8be93e66157123451b4982",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 3162151,
+      "bytes": 1601013
+    },
+    {
+      "file": "assets/resources/art/units/astral/milu.png",
+      "sourceSha256": "83f8c44a714316f1176c432700850ced793f852ac1e25b09be9238a4d478a4b4",
+      "sha256": "bdd96dc344b33702c79d4343f99d6a52366905a8e7fd6f15c20c9ad2503d26b1",
+      "sourceSize": [
+        1230,
+        1278
+      ],
+      "width": 986,
+      "height": 1024,
+      "sourceBytes": 2293408,
+      "bytes": 1519295
+    },
+    {
+      "file": "assets/resources/art/units/astral/nebula_weaver.png",
+      "sourceSha256": "1703e2e6e00dde241a32dcf8bd8dce20e65623ba3cab108c413d39c115aea331",
+      "sha256": "443ce20e8a954357322357661514448d3819b78c3c53b787e92de7224331af18",
+      "sourceSize": [
+        1189,
+        1323
+      ],
+      "width": 920,
+      "height": 1024,
+      "sourceBytes": 2663503,
+      "bytes": 1634520
+    },
+    {
+      "file": "assets/resources/art/units/astral/star_armor_guard.png",
+      "sourceSha256": "56b020c573595bb2e9d7bea5c4f5119db042c3aee70288693d976047414b8ee5",
+      "sha256": "38d62a670b6edd23e1db461211da913796a668518a8f02e91063f2667ca24dec",
+      "sourceSize": [
+        1218,
+        1292
+      ],
+      "width": 965,
+      "height": 1024,
+      "sourceBytes": 2852405,
+      "bytes": 1797441
+    },
+    {
+      "file": "assets/resources/art/units/astral/xiya.png",
+      "sourceSha256": "2e31e63a40b8915f8f56ace5ae89dc6c1d9e60ff8079757eb1bf499aa4fa7458",
+      "sha256": "b68c11035740ecc68fd1a1fe59709c007510632af857dbada03cdeae214f013e",
+      "sourceSize": [
+        1190,
+        1322
+      ],
+      "width": 922,
+      "height": 1024,
+      "sourceBytes": 2301435,
+      "bytes": 1385626
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/bloodline_earl.png",
+      "sourceSha256": "998c60ff29530558c9725f253632c1a4ca41cbf42ccfc6446d759af21bb1b37b",
+      "sha256": "4a486fa9e748a97997e80341bb0dadaacc2905b0b0989145623249ae9ad3d3ca",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 1896077,
+      "bytes": 1002865
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/crimson_demon_knight.png",
+      "sourceSha256": "8db3b44c55453e435ae0d675431c9774855abb21835ce0080857ceeb279732fe",
+      "sha256": "215084cd3b830aca0238aed7882dd78c063ccfeb69347bd5e8ce43908bed483d",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3066443,
+      "bytes": 1280633
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/crimson_devourer.png",
+      "sourceSha256": "4cbed7df4016769db7a54dcda2b8f6921a6703e6025484dbecb8f0a797743141",
+      "sha256": "e890fd7fc085ecbd407ce1a9c999b6da20e9c37c1768da48cdaa488a054e1429",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "width": 1024,
+      "height": 683,
+      "sourceBytes": 2760152,
+      "bytes": 1085488
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/crimson_riftclaw.png",
+      "sourceSha256": "4ac0c48fbaf14faf9fd0ac490fb43d9dd34690f3d029d76d867e43f9e3e98fb6",
+      "sha256": "8102ba9df1205b3e56791067ae0c6411ec1d9581302037dbea9c96c3efb1da3c",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2017956,
+      "bytes": 1054814
+    },
+    {
+      "file": "assets/resources/art/units/bloodfiend/scarlet_enchantress.png",
+      "sourceSha256": "72f9605625bf25bec34dfba8d4892bcfa3ff78c1cf7ecc721824efffd33f4176",
+      "sha256": "f2f72680133843c7f2492cb18eeea853eaea2c0c1e22659a4ead85bec59f1b86",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2430748,
+      "bytes": 953931
+    },
+    {
+      "file": "assets/resources/art/units/explorer/hushrope_ranger.png",
+      "sourceSha256": "1f2692f4fff8453aa89df7e3480a2914c61f6ecd75b953d9bfa97b8beeef8bf0",
+      "sha256": "df8f6279d5cc53748520db0522f6e2ab1478ef4bd3c234667c68e14ca2e27009",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 1647796,
+      "bytes": 846587
+    },
+    {
+      "file": "assets/resources/art/units/explorer/sandsea_navigator.png",
+      "sourceSha256": "6cdcd90940823d649d5bcbf662deb6cbb0b892453fa9b33cdf0488fe0ec4c46b",
+      "sha256": "8c188d2231a5685b1a5802419e48317b17515078cf7a47d3699f2183efeaf150",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2378604,
+      "bytes": 1214200
+    },
+    {
+      "file": "assets/resources/art/units/explorer/starlamp_guide.png",
+      "sourceSha256": "8e80898f5fbb7d4df13141f568d6bcda4fa232fd6ad4f76e23abda0d40a9af02",
+      "sha256": "57628cb0058f08f2046afef39708dbe0f737b021d2d90481790d0ccc41b28eae",
+      "sourceSize": [
+        1305,
+        1205
+      ],
+      "width": 1024,
+      "height": 946,
+      "sourceBytes": 2078487,
+      "bytes": 1323626
+    },
+    {
+      "file": "assets/resources/art/units/explorer/startrail_fox.png",
+      "sourceSha256": "f5de999e706e2e275351d8c974c93be51ce5c73a1da0d98db35a28c50e396566",
+      "sha256": "f4f48c77f92335b4b17bf6da1349e486f943e4c4d62cec91ed9e5374c947dec4",
+      "sourceSize": [
+        1122,
+        1402
+      ],
+      "width": 819,
+      "height": 1024,
+      "sourceBytes": 1858428,
+      "bytes": 1041917
+    },
+    {
+      "file": "assets/resources/art/units/explorer/wayward_alchemist.png",
+      "sourceSha256": "ae1b0f7088543b8ab350dd598e30542f609ae4a21fc0bb4bd1a9e6f82fb591c3",
+      "sha256": "b0a4e4fe2ea22f73c18c73a0385ece907eb80737dadb25a84126a64f0cc6df01",
+      "sourceSize": [
+        1373,
+        1145
+      ],
+      "width": 1024,
+      "height": 854,
+      "sourceBytes": 2261689,
+      "bytes": 1279116
+    },
+    {
+      "file": "assets/resources/art/units/explorer/windlance_huntress.png",
+      "sourceSha256": "3b096d05a45a43c35aa13b58a99a23b98cff1ba1d7bb4d7a2d609d7c2dfb9265",
+      "sha256": "933e33aaccc4d74f74c71207e6fe39eb51098e8565b7e720351b7788c5015ff5",
+      "sourceSize": [
+        1182,
+        1330
+      ],
+      "width": 910,
+      "height": 1024,
+      "sourceBytes": 1625144,
+      "bytes": 989182
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/arc_repairer.png",
+      "sourceSha256": "531cf827bfc35e7a23b78a2ee5ad2a15f0a2620ad66162ef41ecffa87510fe1b",
+      "sha256": "602c03ba7532bf9835ba3ff8552db6582e122a458054fc14831f11ab76d8a954",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2697631,
+      "bytes": 1080038
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/atlas.png",
+      "sourceSha256": "cbda51d51a6629386091323f66aec28a270cf96a8ed978b49353dabaf0eb54c1",
+      "sha256": "7d4d7b9d64ec924ef8842a7b6d3476d6deb147c2bfb851d00b4b84b2507fc6b8",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3325189,
+      "bytes": 1424310
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/bao_zero.png",
+      "sourceSha256": "6f60c7357fc71ada5e59e95b5c2e10cb6d585b7f914d6ab95ffee5f0fa8e8b52",
+      "sha256": "8a8be5dd32b0de217ee880c11b85a7ef7eca64d3286cc7121f582c9540813adc",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2922847,
+      "bytes": 1180627
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/furnace_executioner.png",
+      "sourceSha256": "7e95f92cfb3a1ac8b0272d5a678b77e3a9a45d7c7b90fc926dfcebe9dd7ddd1f",
+      "sha256": "ed4bd6bead8bd097ff5112fa9b9ef2027cc50230fa86102ddd483b3d11412a6a",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3125071,
+      "bytes": 1263560
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/rail_hunter_07.png",
+      "sourceSha256": "8fabc1f792dc6767664e59411f637e88026a5746456b5c227f23cd7652c18332",
+      "sha256": "1e08c4910b7624b30ab8856abf3e3ae948d270b1ae14cc6922ce0f370c85fd2a",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2293587,
+      "bytes": 754287
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/ripsaw_spider.png",
+      "sourceSha256": "1edb66914998ca5a066a9ac1e886089e36145ea8c78ce304c48186fe735afe0d",
+      "sha256": "12310aefbc2b9e4db46c2814144f6c13b33079d2b6db46b20283370d4c33d49b",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "width": 1024,
+      "height": 683,
+      "sourceBytes": 2119072,
+      "bytes": 658298
+    },
+    {
+      "file": "assets/resources/art/units/mechanical/turbo_fist_tiger.png",
+      "sourceSha256": "92865256631463630918b1ee5655d480374687283c51d5547b92e383c90afa90",
+      "sha256": "fd8ef68ec534b92b85410099fb3e7f3e5d0cc3a9e1e221c6f6b4d01bc8e7bb4a",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2622870,
+      "bytes": 945289
+    },
+    {
+      "file": "assets/resources/art/units/shadow/abyss_iron_guard.png",
+      "sourceSha256": "60c39f2174bb112a89574d55ab2d9fc99c7e1ca3bd047405a7b16ba03afee1f6",
+      "sha256": "ac5d76fda79c43766eba298c61676b94e06891ea280d4ba27a76b87efd02fd3d",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2321044,
+      "bytes": 1189045
+    },
+    {
+      "file": "assets/resources/art/units/shadow/blackfeather_hunter.png",
+      "sourceSha256": "d60c060fd9d1b320a0d16acc0ef6fe682255759731898b8568213c26d338cf40",
+      "sha256": "34cd4fd0c20bd385ad4dc6f63c1d75812c79fe6683103ba23cd8e8f7ce802700",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 1942441,
+      "bytes": 998809
+    },
+    {
+      "file": "assets/resources/art/units/shadow/blackstar_warlock.png",
+      "sourceSha256": "b65127494b6244e776b7be714e369adf5979ae210ebe2f94c0f23a9622ee345f",
+      "sha256": "6584ed317b09ba39294d73be01080400d065a256a7a1fe0be129633c1ae09b31",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2924883,
+      "bytes": 1496044
+    },
+    {
+      "file": "assets/resources/art/units/shadow/eclipse_crossbow.png",
+      "sourceSha256": "91dd2a8e3571a05dd350016b7149351dcd1a1a2ab1399be345e077155efd9cb6",
+      "sha256": "74446dadac5d89562c79b7d23f34bc5ec25494343b5f63e4155b6bf66cf63265",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 1968995,
+      "bytes": 1021903
+    },
+    {
+      "file": "assets/resources/art/units/shadow/ghostflame_blade.png",
+      "sourceSha256": "a1c577b43bc58d41ab14027b8167a6e7e01445e3b860a041d6cd982827aa7bf8",
+      "sha256": "7e5222feed903797a69d8c7bd78add083c9430f614df479d12245a6527b2cade",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2509860,
+      "bytes": 1300254
+    },
+    {
+      "file": "assets/resources/art/units/shadow/nether_lantern_witch.png",
+      "sourceSha256": "264e69e5f18a9a95cceff63e6e828c14f89c4cc0daed23bc52359d6b83b44616",
+      "sha256": "b7d5ffc9a0b470e2b469f75507d491e7a1aaeeadc5ac239a83dc1bd2a245a6f7",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2290344,
+      "bytes": 1217499
+    },
+    {
+      "file": "assets/resources/art/units/shadow/nightmare_lamplighter.png",
+      "sourceSha256": "30171ae411f0970bef69c26523e43521c177231770c5d9e177ed430a894af4fe",
+      "sha256": "aad0c15187eb253b19654e560b35adf7a74123e7131eca010f2c96feb405aff7",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2338219,
+      "bytes": 1223231
+    },
+    {
+      "file": "assets/resources/art/units/shadow/voidscar_reaver.png",
+      "sourceSha256": "32d1cb26b4a21eb6db17588ac628c317b195228f323f30d2b6cb0c6b410a94fe",
+      "sha256": "54b3ac6f1c8a46c3625b6d382083752806ad807fe8188d13dd9dc05cfda29bcf",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2711841,
+      "bytes": 1433064
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/aurelia.png",
+      "sourceSha256": "be37a1b39c920cdeedc6a8fef1c8cd6edfea8379fbf690f4cb9654d526f1fc67",
+      "sha256": "219f53b00e426f11709fea9c6fb002358503a36fd7d1feaa9594909e4f86808b",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3003948,
+      "bytes": 1224063
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/celine.png",
+      "sourceSha256": "b4dbca85ef269e82780927003e310a64a8112673e7189cf80060bf924bc3c51f",
+      "sha256": "b1ed23ccb78a9267d0387c4748a6ee186c14af43e4e06ad8d8bc0704616387a7",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3243906,
+      "bytes": 1399071
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/helion.png",
+      "sourceSha256": "166a13abd2e839644aecc2547627d5449b77ffc5e94f26e2c07049504a0e5177",
+      "sha256": "591dde1037a6b6e0189243af22e1a07761de2b7383031d8eee39304060c9338b",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3248312,
+      "bytes": 1391282
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/kaeru.png",
+      "sourceSha256": "cf6d9d39aa796de37c3bb9daa8e31148471b311f5d387ca89c428961ee31305f",
+      "sha256": "dc089c485b1780bbe450f1033170b8c4a7822a2e18c45c9826e1c930202bb518",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3007141,
+      "bytes": 1242761
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/oris.png",
+      "sourceSha256": "e26961c28620036de925c5c3429ae8e75a01343a53a2790f3ae765e08603732e",
+      "sha256": "5abe2aa3a97d30cf37d0065ab2362c419aecdcd04b07cc8e0ef3c147777f61dc",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3656190,
+      "bytes": 1650585
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/phinia.png",
+      "sourceSha256": "ea860096b673fc99caffa04ce1bf186e8e21c73d280958cf056fe73054802273",
+      "sha256": "410c61f2b117e7a166fabb65767ac8ba84b2a432c32dc7d05a665592ffb2713e",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2959243,
+      "bytes": 1208027
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/saiph.png",
+      "sourceSha256": "b86464676cfd8cbda1c4f986b6eeacada7ec0b452541137c5d6d9e63caee0328",
+      "sha256": "8652b6a12dd1083de5b045804c39b11e86d4ff28490e66d3003d8db33946736a",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2875457,
+      "bytes": 1155310
+    },
+    {
+      "file": "assets/resources/art/units/sunlight/seraphiel.png",
+      "sourceSha256": "fbb64838a42257961c99aceac447b290da4119e0fb136da83dbb005208ca0fbe",
+      "sha256": "edf896bbbeeae452d45699a565b0084324641f32a7b630d370c89d69cd92800b",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 3127161,
+      "bytes": 1324296
+    }
+  ]
+}

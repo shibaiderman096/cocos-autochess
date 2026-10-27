@@ -30,7 +30,19 @@
     "replicator_glimmer": "special",
     "replicator_starlight": "special",
     "replicator_firmament": "special",
-    "expedition_command_crown": "special"
+    "expedition_command_crown": "special",
+    "stat_boost_health_small": "special",
+    "stat_boost_health_medium": "special",
+    "stat_boost_health_large": "special",
+    "stat_boost_health_super": "special",
+    "stat_boost_physical_small": "special",
+    "stat_boost_physical_medium": "special",
+    "stat_boost_physical_large": "special",
+    "stat_boost_physical_super": "special",
+    "stat_boost_spell_small": "special",
+    "stat_boost_spell_medium": "special",
+    "stat_boost_spell_large": "special",
+    "stat_boost_spell_super": "special"
   },
   "enemy": {
     "calibratedItems": [
@@ -387,6 +399,54 @@
       "expedition_command_crown": {
         "enabled": false,
         "roles": []
+      },
+      "stat_boost_health_small": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_health_medium": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_health_large": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_health_super": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_physical_small": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_physical_medium": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_physical_large": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_physical_super": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_spell_small": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_spell_medium": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_spell_large": {
+        "enabled": false,
+        "roles": []
+      },
+      "stat_boost_spell_super": {
+        "enabled": false,
+        "roles": []
       }
     },
     "equipmentEconomy": {
@@ -428,7 +488,19 @@
       "replicator_glimmer",
       "replicator_starlight",
       "replicator_firmament",
-      "expedition_command_crown"
+      "expedition_command_crown",
+      "stat_boost_health_small",
+      "stat_boost_health_medium",
+      "stat_boost_health_large",
+      "stat_boost_health_super",
+      "stat_boost_physical_small",
+      "stat_boost_physical_medium",
+      "stat_boost_physical_large",
+      "stat_boost_physical_super",
+      "stat_boost_spell_small",
+      "stat_boost_spell_medium",
+      "stat_boost_spell_large",
+      "stat_boost_spell_super"
     ]
   }
 }
