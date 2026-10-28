@@ -58,10 +58,10 @@ const output = path.resolve('docs/evidence/home-portal'); fs.mkdirSync(output, {
   await click(() => point(menu.collection.body.getChildByName('collectionTab_equipment')));
   await page.waitForFunction(() => menu.collection.body.getComponentsInChildren('cc.Sprite').every(sprite => !!sprite.spriteFrame));
   await page.screenshot({ path: path.join(output, '04-equipment.png') });
-  const equipmentBefore = await page.evaluate(() => localStorage.getItem('autochess_save_v2'));
+  const equipmentBefore = await page.evaluate(() => localStorage.getItem('autochess_save_v3'));
   await click(() => point(menu.collection.root.getChildByName('closeCollection')));
   assert.equal(await page.evaluate(() => menu.collection.root.active), false);
-  assert.equal(await page.evaluate(() => localStorage.getItem('autochess_save_v2')), equipmentBefore);
+  assert.equal(await page.evaluate(() => localStorage.getItem('autochess_save_v3')), equipmentBefore);
   await click(() => point(menu.node.getChildByName('startGame')));
   await page.waitForFunction(() => testCC.find('Canvas/Stage')?.getComponent('BattleStage')?.loaded, null, { timeout: 45000 });
   await page.evaluate(() => { window.stage = testCC.find('Canvas/Stage').getComponent('BattleStage'); });

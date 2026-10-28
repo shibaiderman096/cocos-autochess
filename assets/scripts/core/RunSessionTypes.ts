@@ -1,6 +1,6 @@
 import type { OwnedUnit, UnitLocation } from './OwnedUnits';
 import type { RoundPhase, RunResult, RoundSettlement, WaveEnemy } from './RoundFlow';
-import type { SaveDataV2 } from './ShopSave';
+import type { RunSaveData } from './ShopSave';
 import type { ShopSlot } from './ShopSystem';
 import type { EnemyDifficultyConfig, EnemyGenerationMode, EnemyGenerationDiagnostics, WaveKind } from './EnemyGenerationTypes';
 import type { EnemyPowerData } from './EnemyPowerTypes';
@@ -83,20 +83,18 @@ export interface PlayerObservation {
   pendingEquipmentReward?:PendingEquipmentReward;
   pendingStageReward?: StagePending;
   unitRewardReserve?: string[];
-  deferredUnitValue?: number;
 }
 export interface RunPlayerPort {
   observe(): PlayerObservation;
   act(action: RunAction): ActionResult;
 }
 export type EndReason = 'PLAYER_DEAD' | 'RUN_COMPLETED' | 'MAX_WAVE_REACHED' | 'SIMULATION_ERROR';
-export type SessionReward = NonNullable<SaveDataV2['lastReward']>;
+export type SessionReward = NonNullable<RunSaveData['lastReward']>;
 export interface SessionSettlement { round: RoundSettlement; reward: SessionReward }
 
 export interface RunWaveReport extends Partial<Omit<EnemyGenerationDiagnostics,'enemyGenerationMode'>> {
   goldBudget?: import('./EnemyGoldArmy').EnemyGoldDiagnostics;
   enemyUpgrade?: import('./EquipmentPolicyTypes').EnemyUpgradeDiagnostics;
-  unitDrop?: NonNullable<import('./StageProgression').StageProgressState['lastUnitDrop']>;
   stageReward?: import('./StageProgression').StagePending;
   botMetrics?:{refreshSpending:number;xpSpending:number;unitSpending:number;saleIncome:number;formationChanges:number;
     mainCarryUid:number|null;mainCarryUnitId:string|null;mainCarryStar:number|null;mainTankUid:number|null;mainTankUnitId:string|null;mainTankStar:number|null;

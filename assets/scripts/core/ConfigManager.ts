@@ -2,7 +2,7 @@
  * 配置读取（M1：units.json / skills.json / battle 基础配置）。
  * 逻辑层不 import cc：由调用方（view 或 Node 模拟器）把 JSON 喂进来。
  */
-import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig, ShadowSkillData, SunlightSkillData, HydraulicBulwarkConfig, SpiderLeapConfig } from '../battle/types';
+import { CombatAttributes, EquipmentConfigData, MAX_EQUIPMENT, TraitConfigData, BattleOvertimeConfig, BattleTargetingConfig, ShadowSkillData, SunlightSkillData, HydraulicBulwarkConfig, SpiderLeapConfig } from '../battle/types';
 
 export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttributes {
   const safe = (v: number | undefined, fallback: number, max: number) => Number.isFinite(v) ? Math.max(0, Math.min(max, v!)) : fallback;
@@ -208,6 +208,8 @@ export function hybridSpellDamage(unit: UnitConfigData, skill: SkillConfigData, 
 
 export interface BattleConfigData {
   traits?: TraitConfigData[];
+  targeting?: BattleTargetingConfig;
+  movementCellsPerSecond?: number;
   boardWidth: number;
   boardHeight: number;
   ownRows: number;       // 己方可摆的行数（从下往上）
@@ -241,6 +243,11 @@ export class ConfigManager {
   registerRunEquipment(item: EquipmentConfigData): void { this.runEquipment[item.id] = item; }
   allEquipment(): EquipmentConfigData[] { return Object.values(this.equipment); }
   setEquipment(data: EquipmentConfigData[]): void {
+    for(const item of data)if(item.radiantBaseId){
+      const base=data.find(candidate=>candidate.id===item.radiantBaseId);
+      if(!base||base.quality!==2||base.radiantBaseId||base.consumable||base.traitChoice||base.specialShopOnly||item.quality!==4||item.consumable||item.traitChoice)
+        throw new Error('Invalid radiant equipment');
+    }
     for (const item of data) {
       if(item.quality!==undefined&&![1,2,3,4,5].includes(item.quality))throw new Error('Invalid equipment quality');
       if (item.consumable) {
@@ -323,6 +330,7 @@ export class ConfigManager {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
     maxTicks: 900,
     tickMs: 50,
+    targeting: { tankDistanceBias: 1, retargetSeconds: 0.5 },
     combatSeconds: 30,
     overtime: { seconds: 15, attackSpeedBonus: 1, damageAmp: 1 },
     preparationSeconds: 1,
@@ -477,6 +485,9 @@ export class ConfigManager {
   }
 
   setBattle(data: Partial<BattleConfigData>): void {
+    if(data.movementCellsPerSecond!==undefined&&(!Number.isFinite(data.movementCellsPerSecond)||data.movementCellsPerSecond<=0))throw new Error('Invalid movement speed');
+    if(data.targeting&&(!Number.isFinite(data.targeting.tankDistanceBias)||data.targeting.tankDistanceBias<0))throw new Error('Invalid targeting configuration');
+    if(data.targeting?.retargetSeconds!==undefined&&(!Number.isFinite(data.targeting.retargetSeconds)||data.targeting.retargetSeconds<=0))throw new Error('Invalid retarget delay');
     if (data.combatSeconds !== undefined && (!Number.isFinite(data.combatSeconds) || data.combatSeconds <= 0)) throw new Error('Invalid combat duration');
     if (data.overtime && (!Number.isFinite(data.overtime.seconds) || data.overtime.seconds <= 0
       || !Number.isFinite(data.overtime.attackSpeedBonus) || data.overtime.attackSpeedBonus < 0

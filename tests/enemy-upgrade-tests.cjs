@@ -76,11 +76,6 @@ assert.equal(boosted.skillScale,unboosted.skillScale);
 function session(policy=p,save){const c=new ConfigManager();c.setUnits(input.units);c.setSkills(input.skills);c.setEquipment(input.equipment);c.setBattle(input.battle);
  return new RunSession(c,input.run,input.waves,{...deps,equipmentPolicy:policy,stageCount:10,runSeed:17,...(save?{save}:{})});}
 const s=session(),saved=s.snapshot();assert.deepEqual(session(p,saved).waves,s.waves,'save/load preserves items and health');
-const oldPolicy=clone(p);delete oldPolicy.enemy.equipmentEconomy;delete oldPolicy.enemy.itemTags;
-const old=session(oldPolicy).snapshot(),migrated=session(p,old);
-assert.deepEqual(migrated.waves,s.waves,'old current saves adopt the new AI rules');
-const changed=clone(p);changed.enemy.equipmentEconomy.boss.initialGold+=6;
-assert.throws(()=>session(changed,migrated.snapshot()),/equipment configuration mismatch/,'migration pins the adopted rules');
 const boss=s.waves.find(w=>w.stage===4&&w.encounterKind==='boss');assert.ok(s.debugJump(4,boss.round));
 assert.deepEqual(applyEnemyUpgrades(boss,p,input.units,new RunRandomContext(17),deps.enemyRoles),boss,'applying bonuses twice cannot double-buy or stack health');
 assert.ok(s.createPreview().sim.units.filter(u=>u.side===1).some(u=>u.equipment.length),'preview gets actual equipment');
@@ -95,4 +90,4 @@ assert.ok(actual.run().ticks>0);
 const isolated=new RunRandomContext(17),reference=new RunRandomContext(17);
 applyEnemyUpgrades({...boss,enemyUpgrade:undefined,enemies:boss.enemies.map(e=>({...e,equipment:[]}))},p,input.units,isolated,deps.enemyRoles);
 for(const subsystem of ['shop','battle','formation','reward','bot'])assert.equal(isolated.stream(subsystem,boss.id).next(),reference.stream(subsystem,boss.id).next());
-console.log('PASS enemy upgrades: full hidden label coverage, all eligible items, role/damage/mana matching, 10 seeds through 99 stages, per-item prices, separate gold, exact HP-only bonus, preview, deterministic save migration, prefixes and isolated RNG');
+console.log('PASS enemy upgrades: full hidden label coverage, all eligible items, role/damage/mana matching, 10 seeds through 99 stages, per-item prices, separate gold, exact HP-only bonus, preview, deterministic save continuation, prefixes and isolated RNG');

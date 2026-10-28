@@ -23,7 +23,7 @@ fs.mkdirSync(output, { recursive: true });
       const s = window.stage = cc.find('Canvas').getComponentInChildren('BattleStage'); s.enabled = false;
       for (let seed = 1; seed <= 100; seed++) {
         const run = new s.session.constructor(s.cfg, s.runConfig, s.waveTemplates, {
-          runSeed: seed, stageCount: 6, enemyGenerationMode: 'legacy', equipmentPolicy: s.equipmentPolicy,
+          runSeed: seed, stageCount: 6, enemyGenerationMode:'budget-v1', equipmentPolicy: s.equipmentPolicy,
           enemyRoles: s.enemyRoles, formationConfig: s.formationConfig, enemyDifficulty: s.enemyDifficulty, enemyPower: s.enemyPower,
         });
         run.level.level = 10;

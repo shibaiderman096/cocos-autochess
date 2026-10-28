@@ -1,8 +1,8 @@
 import type { UnitConfigData,SkillConfigData } from './ConfigManager';
 import { EnemyPowerModel } from './EnemyPowerModel';
 import { RunRandomContext } from './RunRandomContext';
-import { stableEnemyJson, combatConfigurationIdentity, sameCombatConfigurationIdentity } from './EnemyGenerationTypes';
-import { formationHash } from './EnemyFormationTypes';
+import { stableEnemyJson, combatConfigurationIdentity } from './EnemyGenerationTypes';
+import { FORMATION_VERSION, formationHash } from './EnemyFormationTypes';
 import type { EnemyFormationConfig,EnemyRoleConfig,EnemyFormationContext,EnemyFormationResult } from './EnemyFormationTypes';
 import { validateFormationConfig } from './FormationPolicy';
 import { resolveEnemyRole,snapshotIdentity } from './EnemyRoles';
@@ -12,7 +12,7 @@ import { nextStep } from '../battle/Pathfinding';
 import type { FormationScore,RoleEntry } from './EnemyFormationTypes';
 import type { WaveEnemy } from './RoundFlow';
 
-export function compatibilityFormation(enemies:readonly WaveEnemy[],version='l0-compat'):EnemyFormationResult {
+export function staticFormation(enemies:readonly WaveEnemy[],version=FORMATION_VERSION):EnemyFormationResult {
   return {placements:JSON.parse(JSON.stringify(enemies)),level:'L0',strength:0,version,
     diagnostics:{roleCounts:{},spacingViolations:0,fallbackSteps:[],templateId:null,templateUsed:false,templateSlotsMatched:0,templateSlotsAvailable:0,
       playerSnapshotUsed:false,playerSnapshotHash:null,counterReasons:[],score:{role:0,cover:0,spacing:0,flank:0,counter:0,template:0,total:0},iterations:0,roleDepthViolations:0,roles:[]}};
@@ -27,16 +27,15 @@ export class EnemyFormation {
   private distances:number[][];
   private adjacent:boolean[][];
   constructor(config:EnemyFormationConfig,roles:EnemyRoleConfig,private roster:UnitConfigData[],private skills:Record<string,SkillConfigData>,
-    private model:EnemyPowerModel,private legacyCells:Array<{x:number;y:number}>,savedIdentity?:string) {
+    private model:EnemyPowerModel,private baselineCells:Array<{x:number;y:number}>,savedIdentity?:string) {
     validateFormationConfig(config);
     if(!roles||!roles.version||!roles.units)throw new Error('Invalid enemy role configuration');
     this.config=JSON.parse(JSON.stringify(config));this.roles=JSON.parse(JSON.stringify(roles));
     for(let y=4;y<8;y++)for(let x=0;x<7;x++)this.cells.push({x,y});
-    const currentIdentity=combatConfigurationIdentity({config,roles,legacyCells,units:roster.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0),skills,
+    const currentIdentity=combatConfigurationIdentity({config,roles,baselineCells,units:roster.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0),skills,
       board:{width:7,height:8,ownRows:4}});
-    if(savedIdentity!==undefined&&!sameCombatConfigurationIdentity(savedIdentity,currentIdentity))throw new Error('Saved formation configuration mismatch');
-    // Retain the original RNG input when continuing an older run.
-    this.identity=savedIdentity??currentIdentity;
+    if(savedIdentity!==undefined&&savedIdentity!==currentIdentity)throw new Error('Saved formation configuration mismatch');
+    this.identity=currentIdentity;
     this.distances=this.cells.map(a=>this.cells.map(b=>hexDist(a,b)));
     this.adjacent=this.cells.map(a=>this.cells.map(b=>hexNeighbors(a.x,a.y).some(p=>p.x===b.x&&p.y===b.y)));
   }
@@ -46,8 +45,8 @@ export class EnemyFormation {
     if(!['L0','L1','L2','L3'].includes(settings.level))throw new Error('Invalid formation level');
     if(settings.level!=='L0'&&![settings.strength,settings.roleStrength,settings.spacingStrength,settings.counterStrength].every(n=>Number.isFinite(n)&&n>=0&&n<=1))throw new Error('Invalid formation strength');
     const rng=new RunRandomContext(context.runSeed).stream('formation',context.globalWaveId,parseInt(formationHash(this.identity+'|'+stableEnemyJson(settings)),16));
-    const blank=compatibilityFormation(context.enemies,this.config.version);
-    if(context.waveKind!=='intro'&&settings.level==='L0')blank.placements=blank.placements.map((e,i)=>({...e,...this.legacyCells[i]}));
+    const blank=staticFormation(context.enemies,this.config.version);
+    if(context.waveKind!=='intro'&&settings.level==='L0')blank.placements=blank.placements.map((e,i)=>({...e,...this.baselineCells[i]}));
     if(settings.level==='L0'||context.waveKind==='intro')return {blank,rng};
     const fallback=blank.diagnostics.fallbackSteps,c=this.config,n=context.enemies.length;
     const available=context.candidateCells??this.cells;

@@ -1,4 +1,4 @@
-import { Color, Graphics, Label, Node, Sprite, UITransform, Vec3 } from 'cc';
+import { Color, Graphics, Label, Node, Sprite, UITransform, Vec3, sys } from 'cc';
 import type { EquipmentConfigData } from '../battle/types';
 import type { ConfigManager } from '../core/ConfigManager';
 import { dicePayout, diceMultiplier, forgePrice } from '../core/MerchantServices';
@@ -48,12 +48,12 @@ export class MerchantServicesPanel {
       if (tab === 'forge') { g.moveTo(-10,7);g.lineTo(10,7);g.lineTo(6,0);g.lineTo(0,-2);g.lineTo(0,-8);g.moveTo(-8,-9);g.lineTo(8,-9);g.stroke(); }
       else if (tab === 'lucky') { g.roundRect(-9,-9,18,18,3);g.stroke();g.circle(-4,4,1.5);g.circle(0,0,1.5);g.circle(4,-4,1.5);g.fill(); }
       else { g.moveTo(-10,0);g.lineTo(0,10);g.lineTo(10,0);g.lineTo(0,-10);g.close();g.stroke();g.circle(0,0,2);g.fill(); }
-      label(control, ['旅行','铁匠','幸运'][i], 12, 0, 17, active ? GOLD : TEXT, 43);
+      label(control, ['旅行','铁匠','幸运'][i], 12, 0, sys.isMobile ? 20 : 17, active ? GOLD : TEXT, 43);
       if (rolling && !active) setUISkin(control,'btn_disabled');
     });
     if (this.tab === 'travel') return false;
-    label(body, this.tab === 'forge' ? '铁匠商店' : '幸运商店', -275, 66, 18, GOLD, 190).isBold = true;
-    label(body, `${state.gold} 金币`, 285, 65, 18, GOLD, 170).isBold = true;
+    label(body, this.tab === 'forge' ? '铁匠商店' : '幸运商店', -275, 66, sys.isMobile ? 22 : 18, GOLD, 190).isBold = true;
+    label(body, `${state.gold} 金币`, 285, 65, sys.isMobile ? 22 : 18, GOLD, 170).isBold = true;
     if (this.tab === 'forge') this.forge(body, state.items, state.gold);
     else this.lucky(body, state.dice, state.gold);
     return true;
@@ -61,28 +61,29 @@ export class MerchantServicesPanel {
   private forge(body: Node, ids: string[], gold: number): void {
     if (!ids.includes(this.selected)) this.selected = '';
     const index = ids.indexOf(this.selected), item = this.cfg.getEquipmentReserve(this.selected ? [this.selected] : [])[0];
-    label(body, '前两次获得新属性 · 此后随机提升已有属性 · 强化永久保留', -30, 39, 14, MUTED, 680);
+    const radiant=this.cfg.allEquipment().find(candidate=>candidate.radiantBaseId===item?.id);
+    label(body, item?.radiantBaseId?'沐光装备已完成强化 · 属性及效果收益翻倍':radiant?'成装仅强化一次 · 绿色 → 紫色 · 属性及效果收益翻倍':'基础装备 3 金币强化 · 成装 18 金币沐光强化', -30, 39, sys.isMobile ? 17 : 14, MUTED, 680);
     const slot = this.drop = panel(body, 'forgeDropTarget', -260, -23, 192, 106, new Color(9,23,31), TEAL, null);
     if (item) {
       const art = new Node('forgeItemIcon'); slot.addChild(art); art.setPosition(-58,7,0); art.addComponent(UITransform).setContentSize(48,48);
       const sprite = art.addComponent(Sprite); sprite.sizeMode=Sprite.SizeMode.CUSTOM;
       loadArtSprite(item.icon,(error,frame)=>{if(!error&&sprite.isValid)sprite.spriteFrame=frame;});
-      const name=label(slot,item.name,26,15,16,new Color(...equipmentNameColor(item)),132);
+      const name=label(slot,item.name,26,15,sys.isMobile ? 20 : 16,new Color(...equipmentNameColor(item)),132);
       name.enableWrapText=false;name.overflow=Label.Overflow.SHRINK;name.node.getComponent(UITransform)!.setContentSize(132,26);
-      equipmentQualityBadge(slot,item,26,-10,100,12);
-      label(slot,`价值 ${item.shopPrice ?? 3} 金币`,0,-38,14,GOLD,175);
+      equipmentQualityBadge(slot,item,26,-10,100,sys.isMobile ? 15 : 12);
+      label(slot,`价值 ${item.shopPrice ?? 3} 金币`,0,-38,sys.isMobile ? 17 : 14,GOLD,175);
       slot.on(Node.EventType.TOUCH_END,()=>this.port.inspect(item));
-      const rows = equipmentStatIcons(body,item,256,2,20,15,23); rows.root.setPosition(0,-4,0);
+      const rows = equipmentStatIcons(body,item,256,2,sys.isMobile ? 24 : 20,sys.isMobile ? 19 : 15,sys.isMobile ? 27 : 23); rows.root.setPosition(0,-4,0);
     } else {
       const g=slot.getComponent(Graphics)!;g.strokeColor=TEAL;g.lineWidth=2;
       g.moveTo(-18,15);g.lineTo(18,15);g.lineTo(9,3);g.lineTo(0,0);g.lineTo(0,-9);g.moveTo(-16,-10);g.lineTo(16,-10);g.stroke();
-      label(slot,'将基础装备拖到这里',0,-33,14,TEXT,185);
-      label(body,'从左侧背包拖入装备\n装备仍保留在背包中',0,-18,15,MUTED,252);
+      label(slot,'拖入基础装备或绿色成装',0,-33,sys.isMobile ? 17 : 14,TEXT,185);
+      label(body,'从左侧背包拖入装备\n装备仍保留在背包中',0,-18,sys.isMobile ? 19 : 15,MUTED,252);
     }
-    const cost=forgePrice(this.port.level(this.selected)), enabled=!!item&&gold>=cost;
-    const control=button(body,item?`强化 · ${cost} 金币`:'等待放入装备',280,-13,174,44,()=>{if(enabled){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
+    const cost=forgePrice(this.port.level(this.selected),!!radiant), enabled=!!item&&this.port.eligible(item.id)&&gold>=cost;
+    const control=button(body,item?.radiantBaseId?'已完成沐光强化':item?`${radiant?'沐光强化':'强化'} · ${cost} 金币`:'等待放入装备',280,-13,174,sys.isMobile ? 52 : 44,()=>{if(enabled){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
     control.name='forgeEnhance'; if(!enabled)setUISkin(control,'btn_disabled');
-    label(body,item?`下次 ${cost+2} 金币 · 无等级上限`:'仅支持基础装备及其强化版本',280,-53,14,MUTED,210);
+    label(body,item?.radiantBaseId?'每件仅限一次':radiant?'装备价值增加 18 金币':item?`每次固定 ${cost} 金币${sys.isMobile ? '' : ' · 无等级上限'}`:'特殊道具不能强化',280,-53,sys.isMobile ? 17 : 14,MUTED,210);
   }
   tryDrop(index: number, event: {getUILocation(): {x: number; y: number}}): boolean {
     if (this.tab !== 'forge' || !this.drop?.isValid || !this.drop.activeInHierarchy) return false;
@@ -94,27 +95,29 @@ export class MerchantServicesPanel {
   }
   private lucky(body: Node, bet: DiceBet | undefined, gold: number): void {
     const rolling=!!bet&&!bet.settled;
-    label(body,'最多选 3 个点数 · 选 1 / 2 / 3 个，命中返还 6 / 3 / 2 倍（含本金）',-25,39,14,MUTED,680);
+    label(body,'最多选 3 个点数 · 选 1 / 2 / 3 个，命中返还 6 / 3 / 2 倍（含本金）',-25,39,sys.isMobile ? 17 : 14,MUTED,680);
     const die=this.die=new Node('luckyDie');body.addChild(die);die.setPosition(-267,-15,0);die.addComponent(UITransform).setContentSize(62,62);
     this.dieGraphics=die.addComponent(Graphics);this.drawDie(bet?.settled?bet.face:1);
-    label(body,rolling?'摇骰中…':bet?`${bet.face} 点 · ${dicePayout(bet)?`返还 ${dicePayout(bet)} 金币`:'本次未中奖'}`:'选择投注后摇骰',-265,-64,15,bet?.settled&&dicePayout(bet)?GOLD:MUTED,210);
+    label(body,rolling?'摇骰中…':bet?`${bet.face} 点 · ${dicePayout(bet)?`返还 ${dicePayout(bet)} 金币`:'本次未中奖'}`:'选择投注后摇骰',-265,-64,sys.isMobile ? 18 : 15,bet?.settled&&dicePayout(bet)?GOLD:MUTED,210);
     [1,2,3,4,5,6].forEach((face,i)=>{
       const active=this.picks.includes(face);
-      const control=button(body,`${face}${active?' ✓':''}`,-126+(i%3)*80,6-Math.floor(i/3)*49,72,39,()=>{
+      const control=button(body,`${face}${active?' ✓':''}`,-126+(i%3)*80,6-Math.floor(i/3)*49,72,sys.isMobile ? 46 : 39,()=>{
         if(rolling)return;
         if(active)this.picks=this.picks.filter(n=>n!==face);else if(this.picks.length<3)this.picks.push(face);
         this.port.refresh();
       },active);
-      control.name=`dicePick_${face}`;if(rolling||(!active&&this.picks.length===3))setUISkin(control,'btn_disabled');
+      control.name=`dicePick_${face}`;if(sys.isMobile)control.getChildByName('text')!.getComponent(Label)!.fontSize=23;
+      if(rolling||(!active&&this.picks.length===3))setUISkin(control,'btn_disabled');
     });
     [1,5,10].forEach((stake,i)=>{
-      const control=button(body,`${stake} 金币`,154+i*81,7,75,32,()=>{if(!rolling){this.stake=stake;this.port.refresh();}},stake===this.stake);
+      const control=button(body,`${stake} 金币`,154+i*81,7,75,sys.isMobile ? 44 : 32,()=>{if(!rolling){this.stake=stake;this.port.refresh();}},stake===this.stake);
+      if(sys.isMobile)control.getChildByName('text')!.getComponent(Label)!.fontSize=20;
       control.name=`diceStake_${stake}`;
     });
     const enabled=!rolling&&this.picks.length>0&&gold>=this.stake;
     const roll=button(body,rolling?'摇骰中…':this.picks.length?`摇骰 · ${this.stake} 金币 · ${diceMultiplier(this.picks.length)} 倍`:'请选择点数',235,-41,236,40,()=>{if(enabled)this.port.bet(this.stake,[...this.picks]);},true);
     roll.name='diceRoll';if(!enabled)setUISkin(roll,'btn_disabled');
-    label(body,rolling?`已押 ${bet!.picks.join('、')} · 动画后结算`:`已选 ${this.picks.length} / 3 个点数`,-46,-75,12,MUTED,250);
+    label(body,rolling?`已押 ${bet!.picks.join('、')} · 动画后结算`:`已选 ${this.picks.length} / 3 个点数`,-46,-75,sys.isMobile ? 16 : 12,MUTED,250);
   }
   private drawDie(face: number): void {
     const g=this.dieGraphics;if(!g?.isValid)return;

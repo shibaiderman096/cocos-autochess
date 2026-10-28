@@ -15,10 +15,6 @@
  */
 
 export interface EconomyConfig {
-  /** Legacy field, ignored: there is no fixed stage income. */
-  incomePerFloor: number;
-  /** Legacy field, ignored. */
-  incomeCap?: number;
   /** 利息上限 */
   interestCap: number;
   /** 利息比率 */
@@ -32,8 +28,6 @@ export interface EconomyConfig {
 }
 
 export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
-  incomePerFloor: 0,
-  incomeCap: 0,
   interestCap: 5,
   interestRate: 0.1,
   streakCap: 3,
@@ -54,8 +48,6 @@ export interface BattleOutcome {
 }
 
 export interface SettlementBreakdown {
-  /** Kept as zero for old save/report readers. */
-  floorIncome: number;
   extraIncome: number;
   winBonus: number;
   interest: number;
@@ -107,7 +99,6 @@ export class EconomySystem {
     if (!Number.isSafeInteger(floor) || floor < 1 || ![-1, 0, 1].includes(outcome.winner)) throw new Error('Invalid settlement input');
     const extraIncome = outcome.extraIncome ?? 0;
     if (!Number.isSafeInteger(extraIncome) || extraIncome < 0) throw new Error('Invalid extra income');
-    const floorIncome = 0;
     const projected = extraIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
     if (!Number.isFinite(projected) || projected > Number.MAX_SAFE_INTEGER - this.gold) throw new Error('Settlement exceeds safe range');
     // 1. 先更新连胜/连败（在计算奖励之前）
@@ -137,7 +128,7 @@ export class EconomySystem {
     this.gold += total;
 
     return {
-      floorIncome, winBonus, interest, streakBonus, extraIncome, total,
+      winBonus, interest, streakBonus, extraIncome, total,
       goldBefore, goldAfter: this.gold,
       winStreak: this.winStreak, loseStreak: this.loseStreak,
     };

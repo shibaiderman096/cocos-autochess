@@ -78,20 +78,13 @@ for(const item of boosts) {
   assert.equal(s.equipItem(u.uid,-1).error,'invalid_equipment');assert.deepEqual(s.snapshot(),before);
   u.permanentMaxHp=Number.MAX_SAFE_INTEGER;before=s.snapshot();assert.equal(s.equipItem(u.uid,0).error,'attribute_overflow');assert.deepEqual(s.snapshot(),before);
   u.permanentMaxHp=80;u.itemHealth=Number.MAX_SAFE_INTEGER;
-  const restored=session(s.snapshot());assert.equal(restored.owned.get(u.uid).itemHealth,80,'source counters are bounded by their total on load');
+  assert.throws(()=>session(s.snapshot()),/Invalid current run save/);
 }
 for(const effect of [{kind:'permanentStat',stat:'armor',amount:4},{kind:'permanentStat',stat:'hp',amount:-1},
   {kind:'permanentStat',stat:'hp',amount:1.5},{kind:'permanentStat',stat:'hp',amount:NaN},{kind:'other',stat:'hp',amount:80}]){
   const bad=clone(input.equipment);bad.find(e=>e.id===boosts[0].id).consumable=effect;assert.throws(()=>config(bad),/Invalid equipment consumable/);
 }
 console.log('PASS permanent items: 12 items/all stars, repeated use with full slots, exact growth, real battle stats, cross-wave/save persistence, two-level merge, source UI, atomic invalid/overflow and config validation');
-// New catalogue entries migrate old saves, without returning a consumed item or changing their inventory.
-{
-  const ids=new Set(boosts.map(e=>e.id)),policy=clone(deps.equipmentPolicy),items=input.equipment.filter(e=>!ids.has(e.id));
-  for(const id of ids){delete policy.tiers[id];delete policy.enemy.itemTags[id];}policy.reward.excludedIds=policy.reward.excludedIds.filter(id=>!ids.has(id));
-  const old=session(undefined,items,policy),save=old.snapshot(),restored=session(save);
-  assert.deepEqual(restored.owned.snapshot(),save.owned);assert.equal(restored.economy.gold,save.gold);assert.deepEqual(restored.owned.equipmentReserve,save.equipmentReserve);
-}
 const chestSeen=new Set(),merchantSeen=new Set(),c=config();
 for(let seed=1;seed<=2048&&(chestSeen.size<12||merchantSeen.size<12);seed++){
   if(chestSeen.size<12){
@@ -114,4 +107,4 @@ for(let seed=1;seed<=2048&&(chestSeen.size<12||merchantSeen.size<12);seed++){
   }
 }
 assert.equal(chestSeen.size,12);assert.equal(merchantSeen.size,12);
-console.log('PASS permanent item acquisition: all 12 in mixed-budget chests and fixed-quality merchant offers, exact reward accounting, paid purchase and catalogue migration');
+console.log('PASS permanent item acquisition: all 12 in mixed-budget chests and fixed-quality merchant offers, exact reward accounting, paid purchase');

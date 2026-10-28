@@ -28,7 +28,7 @@ function make(options={}){
  if(s.pendingStageReward)assert.ok(s.claimStageReward({type:'stageChoice',rewardId:s.pendingStageReward.id,choice:'claim'}).ok);
  const gold=s.economy.gold;assert.ok(s.nextWave());
  assert.deepEqual([s.state.stage,s.state.round,s.economy.gold],[2,1,gold+5],'2-1 pays immediately on real advance');
- assert.equal(s.incomePreview.entrySubsidy,5);assert.equal(s.incomePreview.win.floorIncome,0,'already paid entry subsidy is not paid again in settlement');
+ assert.equal(s.incomePreview.entrySubsidy,5);assert.equal(s.incomePreview.win.extraIncome,0,'already paid entry subsidy is not paid again in settlement');
  const restored=make({save:s.snapshot()});assert.equal(restored.economy.gold,gold+5,'reload cannot duplicate subsidy');
  let paid3=false;
  for(const target of [[2,2],[2,1],[3,1],[3,2],[3,1],[4,1]]){
@@ -37,11 +37,7 @@ function make(options={}){
   if(target[0]===3&&target[1]===1)paid3=true;
  }
  assert.deepEqual(restored.snapshot().earlyGoldStages,[2,3]);
- const old=s.snapshot();delete old.earlyGoldStages;
- assert.equal(make({save:old}).economy.gold,old.gold+5,'old save currently at 2-1 adopts the subsidy once');
- assert.ok(s.debugJump(3,2));const past=s.snapshot();delete past.earlyGoldStages;
- const migrated=make({save:past});assert.equal(migrated.economy.gold,past.gold,'no retroactive subsidies for old saves past the entry');
- assert.ok(migrated.debugJump(2,1));assert.equal(migrated.economy.gold,past.gold,'past entries cannot be farmed by revisiting');
+
 }
 {
  let s;
@@ -64,4 +60,4 @@ function make(options={}){
  assert.equal(s.economy.gold,3);
  assert.equal(make({save:s.snapshot()}).economy.gold,3,'same-wave spending and sale persist');
 }
-console.log('PASS early economy: 1-1 board/bench sales blocked without side effects, 1-2 sale enabled, merchant sale instantly spendable, 2-1/3-1 entry +5 once, reload/revisit/migration and no later subsidy');
+console.log('PASS early economy: 1-1 board/bench sales blocked without side effects, 1-2 sale enabled, merchant sale instantly spendable, 2-1/3-1 entry +5 once, reload/revisit and no later subsidy');

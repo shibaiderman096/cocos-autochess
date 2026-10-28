@@ -12,9 +12,9 @@ const { OwnedUnits } = core('OwnedUnits');
 const { ShopSystem } = core('ShopSystem');
 const { EconomySystem } = core('EconomySystem');
 const { Rng } = core('Rng');
-const { migrateSaveV2, freshSaveV2: createSaveV2, SAVE_KEY } = core('ShopSave');
+const { readRunSave, freshRunSave: createSaveV2, SAVE_KEY } = core('ShopSave');
 // Existing stage assertions describe legacy behavior; budget-v1 has separate runtime coverage below.
-const freshSaveV2=(stages,seed)=>createSaveV2(stages,seed,'legacy');
+const freshRunSave=(stages,seed)=>createSaveV2(stages,seed,'budget-v1');
 const sceneLoads = [];
 const { BoardGeometry } = require('../assets/scripts/view/BoardGeometry.ts');
 const {projectBoardPoint,unprojectBoardPoint,projectGroundPoint,benchGroundPoint}=require('../assets/scripts/view/BoardPresentation.ts');
@@ -182,7 +182,7 @@ async function makeStage(saved) {
 // Board inputs become Canvas coordinates, including the board's 60-pixel offset.
 const touch = pos => ({ getUILocation: () => new Vec3(pos.x,pos.y+60) });
 function twoUnitSave() {
-  const saved = freshSaveV2(); saved.shopReserved = true;
+  const saved = freshRunSave(); saved.shopReserved = true;
   saved.owned = [{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
     {uid:2,unitId:'archer',star:1,location:'bench',x:-1,y:1}];
   return saved;
@@ -252,7 +252,7 @@ function drag(stage, from, to) {
     assert.equal(stage.ui.populationBoard,stage.boardNode);
   });
   await test('one second preparation uses real time and never ticks early or charges twice', async () => {
-    const stage=await makeStage({...freshSaveV2(),gold:20});stage.owned.move(1,{location:'board',x:3,y:3});
+    const stage=await makeStage({...freshRunSave(),gold:20});stage.owned.move(1,{location:'board',x:3,y:3});
     stage.speed=3;stage.startFight();const sim=stage.sim, tick=sim.tick;
     stage.startFight();assert.equal(stage.sim,sim);assert.equal(stage.ui.countdown,1);
     stage.update(.5);assert.equal(sim.tick,tick);assert.equal(stage.ui.countdown,.5);
@@ -272,12 +272,6 @@ function drag(stage, from, to) {
     const stage=await makeStage();stage.owned.move(1,{location:'board',x:3,y:3});stage.startFight();
     const tick=stage.sim.tick;stage.update(1.125);assert.equal(stage.preparationRemaining,0);
     assert.equal(stage.sim.tick-tick,2,'125ms leftover produces two 50ms ticks');
-  });
-  await test('legacy ten-round progress maps to the same stage and clamps its subround', async () => {
-    const saved={...freshSaveV2(4),runRulesVersion:1,round:{phase:'prepare',waveIndex:18,health:20,result:null,lastSettlement:null}};
-    const stage=await makeStage(saved);assert.equal(stage.flow.wave.stage,3);assert.equal(stage.flow.wave.round,6);
-    assert.equal(stage.save.runRulesVersion,2);
-    const restored=await makeStage(JSON.parse(storage.get(SAVE_KEY)));assert.equal(restored.flow.wave.stage,3);assert.equal(restored.flow.wave.round,6);
   });
   await test('audit: run numeric configuration cannot produce infinite counts or population', () => {
     const run=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/run.json'),'utf8'));
@@ -320,10 +314,6 @@ function drag(stage, from, to) {
     const pool=new CardPool(units,{warrior:Infinity,archer:-1});
     assert.ok(Number.isFinite(pool.total()));assert.ok(pool.count('warrior')<=30);assert.equal(pool.count('archer'),0);
   });
-  await test('audit: saved coordinates and reward fields are finite', () => {
-    const saved=migrateSaveV2({owned:[{unitId:'warrior',star:2,x:Infinity,y:Infinity}],lastReward:{breakdown:{total:1,interest:Infinity},expGained:NaN}});
-    assert.ok(saved.owned.every(u=>Number.isFinite(u.x)&&Number.isFinite(u.y)));assert.equal(saved.lastReward,undefined);
-  });
   await test('audit: failed full-bench merge rolls back gold, units, UID and reservation', () => {
     for(const mode of ['null','throw']) {
       const owned=new OwnedUnits([{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},{uid:2,unitId:'warrior',star:1,location:'bench',x:-1,y:1}]);
@@ -336,7 +326,7 @@ function drag(stage, from, to) {
     }
   });
   await test('locked shop retains exact slots and inventory across waves and reload', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.ui.onLock();
+    const stage = await makeStage({ ...freshRunSave(), gold: 20 }); stage.ui.onLock();
     const slots = stage.shop.snapshot(), pool = stage.pool.snapshot();
     stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown = true; stage.fighting = true;
     stage.restart();
@@ -348,7 +338,7 @@ function drag(stage, from, to) {
     assert.equal(reloaded.economy.gold,gold-2,'explicit refresh still rerolls while locked');
   });
   await test('tap opens star-scaled attributes and skill without moving or selling', async () => {
-    const saved = freshSaveV2(); saved.owned = [{uid:1,unitId:'mage',star:1,location:'bench',x:-1,y:0}];
+    const saved = freshRunSave(); saved.owned = [{uid:1,unitId:'mage',star:1,location:'bench',x:-1,y:0}];
     const stage = await makeStage(saved), before = stage.owned.snapshot(), gold = stage.economy.gold;
     const p = stage.benchSlotWorld(0); stage.onTouchStart(touch(p)); stage.onTouchEnd(touch(p));
     assert.match(stage.ui.detail.name,/法师/); assert.match(stage.ui.detail.skillName,/火球/);
@@ -356,7 +346,7 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.owned.snapshot(),before); assert.equal(stage.economy.gold,gold);
   });
   await test('skill detail resolves current-star damage instead of multiplier lists', async () => {
-    const stage = await makeStage(freshSaveV2());
+    const stage = await makeStage(freshRunSave());
     for (const star of [1,2,3]) {
       for (const id of ['mage','enderman','sasuke']) {
         const base = stage.cfg.getUnit(id), unit = stage.cfg.scaleUnit(base,star);
@@ -379,7 +369,7 @@ function drag(stage, from, to) {
     }
   });
   await test('drag sale refunds discounted upgraded unit and restores original cards once', async () => {
-    const saved = freshSaveV2(); saved.shopReserved = true;
+    const saved = freshRunSave(); saved.shopReserved = true;
     saved.pool = {mage:15};
     saved.owned = [{uid:1,unitId:'mage',star:2,location:'bench',x:-1,y:0}];
     const stage = await makeStage(saved), pool = stage.pool.count('mage'), gold = stage.economy.gold;
@@ -475,7 +465,7 @@ function drag(stage, from, to) {
     assert.equal(restored.pool.total()+1+5,total);
   });
   await test('experience button exchanges exactly four gold for four XP and persists upgrades', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }), beforeShop = stage.shop.snapshot();
+    const stage = await makeStage({ ...freshRunSave(), gold: 20 }), beforeShop = stage.shop.snapshot();
     const original = stage.owned.snapshot(), gold = stage.economy.gold;
     stage.ui.onBuyExp();
     assert.equal(stage.economy.gold, gold - 4);
@@ -486,27 +476,27 @@ function drag(stage, from, to) {
     assert.equal(reloaded.economy.gold, gold - 4); assert.equal(reloaded.levelSys.level, 3);
   });
   await test('XP purchase rejects insufficient gold and max level, and remains available during combat', async () => {
-    const poor = await makeStage({ ...freshSaveV2(), gold: 3 });
+    const poor = await makeStage({ ...freshRunSave(), gold: 3 });
     const before = storage.get(SAVE_KEY); poor.ui.onBuyExp();
     assert.equal(poor.economy.gold, 3); assert.equal(poor.levelSys.exp, 0); assert.equal(poor.levelSys.level, 1);
     assert.equal(storage.get(SAVE_KEY), before); assert.equal(poor.ui.warn, '金币不足');
-    const max = await makeStage({ ...freshSaveV2(), gold: 20, level: 10 }); max.ui.onBuyExp();
+    const max = await makeStage({ ...freshRunSave(), gold: 20, level: 10 }); max.ui.onBuyExp();
     assert.equal(max.economy.gold, 20); assert.equal(max.levelSys.exp, 0); assert.equal(max.ui.warn, '已达最高等级');
-    const fighting = await makeStage({ ...freshSaveV2(), gold: 20 });
+    const fighting = await makeStage({ ...freshRunSave(), gold: 20 });
     fighting.owned.move(fighting.owned.all()[0].uid, { location: 'board', x: 2, y: 3 }); fighting.startFight();
     const sim=fighting.sim; fighting.ui.onBuyExp(); assert.equal(fighting.economy.gold, 16); assert.equal(fighting.levelSys.level, 3);
     assert.equal(fighting.sim,sim);
   });
   await test('XP purchase carries remaining XP and stops charging after reaching level ten', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), gold: 20, level: 9, exp: 66 });
+    const stage = await makeStage({ ...freshRunSave(), gold: 20, level: 9, exp: 66 });
     stage.ui.onBuyExp();
     assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.level, 10); assert.equal(stage.levelSys.exp, 2);
     stage.ui.onBuyExp(); assert.equal(stage.economy.gold, 16); assert.equal(stage.levelSys.exp, 2);
-    const normal = await makeStage({ ...freshSaveV2(), gold: 20, level: 3, exp: 3 }); normal.ui.onBuyExp();
+    const normal = await makeStage({ ...freshRunSave(), gold: 20, level: 3, exp: 3 }); normal.ui.onBuyExp();
     assert.equal(normal.levelSys.level, 4); assert.equal(normal.levelSys.exp, 1);
   });
   await test('star rank reaches bench and combat views and updates after merging', async () => {
-    const saved = freshSaveV2(); saved.owned = [
+    const saved = freshRunSave(); saved.owned = [
       { uid: 1, unitId: 'warrior', star: 3, location: 'board', x: 2, y: 3 },
       { uid: 2, unitId: 'mage', star: 2, location: 'bench', x: -1, y: 0 },
       { uid: 3, unitId: 'archer', star: 1, location: 'bench', x: -1, y: 1 },
@@ -545,18 +535,6 @@ function drag(stage, from, to) {
     drag(stage, bv.cellToWorld(6, 3), bv.cellToWorld(6, 4));
     assert.equal(first.y, 3, 'enemy half must reject deployment');
   });
-  await test('old eighth-column save retains unit identity and star in a free valid cell', async () => {
-    const saved = freshSaveV2();
-    saved.owned = [{ uid: 1, unitId: 'warrior', star: 2, location: 'board', x: 7, y: 2 },
-      { uid: 2, unitId: 'archer', star: 1, location: 'board', x: 6, y: 2 }];
-    const stage = await makeStage(saved), migrated = stage.owned.get(1);
-    assert.equal(migrated.star, 2); assert.equal(migrated.location, 'board');
-    assert.ok(migrated.x < 7 && migrated.y < 4);
-    assert.notEqual(`${migrated.x},${migrated.y}`, '6,2');
-    assert.equal(stage.owned.all().length, 2);
-    const persisted = JSON.parse(storage.get(SAVE_KEY));
-    assert.deepEqual(persisted.owned, stage.owned.snapshot());
-  });
   await test('refresh conserves cards across owned, shop and remaining pool', () => {
     const pool = new CardPool(units); const owned = new OwnedUnits();
     const shop = new ShopSystem(pool, owned, new EconomySystem(undefined, { gold: 100 }), new Map(units.map(u => [u.id, u])), new Rng(42), () => 1, 9);
@@ -576,11 +554,6 @@ function drag(stage, from, to) {
     assert.equal(shop.slots.filter(s => s.unitId).length, 1);
     assert.equal(pool.count('warrior'), 0);
     assert.equal(shop.buy(0).error, undefined);
-  });
-  await test('zero inventory survives save migration and reload', () => {
-    const pool = new CardPool(units, Object.fromEntries(units.map(u => [u.id, 0])));
-    const migrated = migrateSaveV2({ pool: pool.snapshot() });
-    assert.equal(new CardPool(units, migrated.pool).total(), 0);
   });
   await test('fresh game renders bench and populates shop without charging', async () => {
     const stage = await makeStage();
@@ -626,24 +599,13 @@ function drag(stage, from, to) {
     assert.equal(stage.replayer.sim, stage.sim);
   });
   await test('purchase immediately renders new bench unit and persists initialization', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.buyFromShop(0);
+    const stage = await makeStage({ ...freshRunSave(), gold: 20 }); stage.buyFromShop(0);
     assert.equal(stage.ownedViews?.size, stage.owned.all().length);
     const saved = JSON.parse(storage.get(SAVE_KEY));
     assert.equal(saved.owned.length, stage.owned.all().length);
     const reloaded = await makeStage(saved);
     assert.deepEqual(reloaded.pool.snapshot(), stage.pool.snapshot());
     assert.deepEqual(reloaded.shop.snapshot(), stage.shop.snapshot());
-  });
-  await test('legacy unreserved shop is deducted exactly once on restore', async () => {
-    const saved = { ...freshSaveV2(), pool: { warrior: 29, archer: 30, mage: 18 },
-      owned: [{ uid: 1, unitId: 'warrior', star: 1, location: 'bench', x: -1, y: 0 }],
-      shop: Array.from({ length: 5 }, () => ({ unitId: 'warrior' })) };
-    const stage = await makeStage(saved);
-    assert.equal(stage.pool.count('warrior'), 24);
-    const snapshot = JSON.parse(storage.get(SAVE_KEY));
-    assert.equal(snapshot.shopReserved, true);
-    const reloaded = await makeStage(snapshot);
-    assert.equal(reloaded.pool.count('warrior'), 24);
   });
   await test('full bench merge and sale return the original three cards', () => {
     const pool = new CardPool([units[0]]); const owned = new OwnedUnits();
@@ -656,7 +618,7 @@ function drag(stage, from, to) {
     assert.equal(pool.count('warrior'), 30);
   });
   await test('empty formation cannot start, and combat freezes deployed units while allowing shop purchases', async () => {
-    const stage = await makeStage({ ...freshSaveV2(), gold: 20 }); stage.startFight();
+    const stage = await makeStage({ ...freshRunSave(), gold: 20 }); stage.startFight();
     assert.equal(stage.fighting, false);
     const bv = stage.boardNode.getComponent(BoardView);
     drag(stage, stage.benchSlotWorld(0), bv.cellToWorld(2, 2)); stage.startFight();
@@ -677,21 +639,8 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.owned.snapshot(), initial);
     assert.deepEqual(stage.ownedViews.get(1).node.position, original);
   });
-  await test('legacy stage count survives reload and a complete restart uses ten stages', async () => {
-    const stage = await makeStage(freshSaveV2(4)); assert.equal(stage.waves.length,21);
-    for(let i=0;i<3;i++) {
-      stage.flow.startBattle(); stage.flow.settle(0,0); stage.resultShown=true; stage.fighting=true; stage.restart();
-    }
-    assert.equal(stage.flow.wave.stage,2); assert.equal(stage.flow.wave.round,1); assert.equal(stage.save.floor,2);
-    const reloaded = await makeStage(JSON.parse(storage.get(SAVE_KEY)));
-    assert.equal(reloaded.waves.length,21); assert.equal(reloaded.flow.waveIndex,3);
-    assert.equal(reloaded.flow.wave.stage,2); assert.equal(reloaded.flow.wave.round,1);
-    reloaded.flow.startBattle(); reloaded.flow.settle(1,99); reloaded.resultShown=true; reloaded.restart();
-    assert.equal(reloaded.save.stageCount,10); assert.equal(reloaded.waves.length,78);
-    assert.equal(reloaded.owned.all().length,1); assert.equal(reloaded.flow.wave.stage,1);
-  });
   await test('runtime population grows across stages without increasing shared base stats', async () => {
-    const resumed=(count,index)=>({...freshSaveV2(count),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
+    const resumed=(count,index)=>({...freshRunSave(count),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
     const previous=await makeStage(resumed(3,7));
     const next=await makeStage(resumed(3,8));
     const longer=await makeStage(resumed(6,8));
@@ -707,7 +656,7 @@ function drag(stage, from, to) {
     const run=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/run.json'),'utf8'));
     const templates=JSON.parse(fs.readFileSync(path.join(root,'assets/resources/config/waves.json'),'utf8'));
     const waves=core('RunSetup').buildRunWaves(10,run,templates,units),index=waves.findIndex(w=>w.stage===10);
-    const stage=await makeStage({...freshSaveV2(10),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
+    const stage=await makeStage({...freshRunSave(10),round:{phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null}});
     assert.equal(stage.sim.units.filter(u=>u.side===1).length,10);
     const enemy=stage.sim.units.find(u=>u.side===1);stage.showBattleDetail(enemy.id);
     assert.equal(stage.ui.detail.damageAmp,.05);assert.equal(stage.ui.detail.damageReduction,.05);
@@ -718,14 +667,14 @@ function drag(stage, from, to) {
     assert.equal(stage.ui.detail.spellPower,0);assert.equal(stage.ui.detail.critChance,.25);
   });
   await test('main menu return preserves run and is blocked during battle', async () => {
-    const stage=await makeStage(freshSaveV2(5)); sceneLoads.length=0;
+    const stage=await makeStage(freshRunSave(5)); sceneLoads.length=0;
     stage.ui.onHome(); assert.deepEqual(sceneLoads,['main']);
     assert.equal(JSON.parse(storage.get(SAVE_KEY)).stageCount,5);
     stage.owned.move(1,{location:'board',x:3,y:3}); stage.startFight();
     stage.ui.onHome(); assert.equal(sceneLoads.length,1);
   });
   await test('combat shop, XP, lock, reserve swap/sale and board merging preserve the active battle', async () => {
-    const saved=freshSaveV2(); saved.level=4;saved.gold=100;
+    const saved=freshRunSave(); saved.level=4;saved.gold=100;
     saved.owned=[{uid:1,unitId:'warrior',star:1,location:'board',x:2,y:2},
       {uid:2,unitId:'warrior',star:1,location:'board',x:4,y:2},
       {uid:3,unitId:'archer',star:1,location:'bench',x:-1,y:0},
@@ -769,7 +718,7 @@ function drag(stage, from, to) {
     const gold=stage.economy.gold;stage.onTouchEnd(touch(shopDrop()));assert.equal(stage.economy.gold,gold);assert.ok(stage.owned.get(2));
   });
   await test('combat merge keeps the deployed position even when the oldest copy was on the bench', async () => {
-    const saved=freshSaveV2();saved.gold=20;saved.owned=[{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
+    const saved=freshRunSave();saved.gold=20;saved.owned=[{uid:1,unitId:'warrior',star:1,location:'bench',x:-1,y:0},
       {uid:2,unitId:'warrior',star:1,location:'board',x:3,y:3}];
     saved.shop=['warrior',null,null,null,null].map(unitId=>({unitId}));
     const stage=await makeStage(saved);stage.startFight();const sim=stage.sim;stage.buyFromShop(0);
@@ -797,7 +746,7 @@ function drag(stage, from, to) {
     assert.equal(stage.ui.detail.skillDescription,enemy.cfg.description);
   });
   await test('displayed cost rates match implemented tiers and refresh stays populated at high level', async () => {
-    const saved=freshSaveV2();saved.level=10;saved.gold=100;
+    const saved=freshRunSave();saved.level=10;saved.gold=100;
     const stage=await makeStage(saved);const rates=stage.shop.costRates();
     assert.ok(rates[3]>0);assert.ok(rates[4]>0);assert.ok(Math.abs(rates.reduce((a,b)=>a+b,0)-100)<1e-8);
     assert.deepEqual(stage.ui.rates,rates);
@@ -907,7 +856,7 @@ function drag(stage, from, to) {
     assert.deepEqual(stage.owned.snapshot(),before);assert.deepEqual(stage.pool.snapshot(),pool);
   });
   await test('debug stage jump extends the run without changing existing waves, resources or shop and resumes exactly', async () => {
-    const stage=await makeStage(freshSaveV2(3));stage.ui.onDebugGold(100);stage.ui.onGrantEquipment('totem_of_undying');
+    const stage=await makeStage(freshRunSave(3));stage.ui.onDebugGold(100);stage.ui.onGrantEquipment('totem_of_undying');
     const oldWaves=JSON.parse(JSON.stringify(stage.waves)),gold=stage.economy.gold,exp=stage.levelSys.exp,
       owned=stage.owned.snapshot(),shop=stage.shop.snapshot(),pool=stage.pool.snapshot();
     stage.ui.onDebugStage(5,2);
@@ -953,7 +902,7 @@ function drag(stage, from, to) {
     assert.equal(stage.economy.gold,gold);assert.equal(stage.sim,sim);assert.deepEqual(stage.owned.snapshot(),before);
   });
   await test('RunSession: repeated UI preview rebuilds preserve shops, combat seed and complete battle events', async () => {
-    const saved={...freshSaveV2(3,12345),owned:[{uid:17,unitId:'warrior',star:1,location:'board',x:3,y:3}],shopReserved:false};
+    const saved={...freshRunSave(3,12345),owned:[{uid:17,unitId:'warrior',star:1,location:'board',x:3,y:3}],shopReserved:false};
     const a=await makeStage(saved),b=await makeStage(saved);
     const before=b.shop.snapshot(),seed=b.session.battleSeed;
     for(let i=0;i<25;i++)b.resetBattle(false);
@@ -965,7 +914,7 @@ function drag(stage, from, to) {
   await test('RunSession: Cocos adapter and pure headless session consume identical actions and settlement', async () => {
     const {RunSession}=core('RunSession'),{ConfigManager}=core('ConfigManager');
     const {MinimalBaselineBot}=require('../tools/bots/minimal-baseline.ts');
-    const saved=freshSaveV2(3,12345),stage=await makeStage(saved),cfg=new ConfigManager();
+    const saved=freshRunSave(3,12345),stage=await makeStage(saved),cfg=new ConfigManager();
     cfg.setUnits(units);cfg.setSkills(skills);cfg.setBattle(require('../assets/resources/config/battle.json'));
     cfg.setEquipment(require('../assets/resources/config/equipment.json'));
     const session=new RunSession(cfg,legacyRun,require('../assets/resources/config/waves.json'),{save:saved});
@@ -1060,7 +1009,7 @@ function drag(stage, from, to) {
   await test('new stage UI persists purchases, skips noncombat shop, blocks unopened Boss chest and resumes after random reward',async()=>{
     stageEncountersEnabled=true;
     try {
-      const ticket=createSaveV2(6,1,'legacy');ticket.level=10;
+      const ticket=createSaveV2(6,1,'budget-v1');ticket.level=10;
       ticket.owned=['helion','bao_zero','atlas','oris','seraphiel','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:n%7,y:2+Math.floor(n/7),equipment:[]}));ticket.nextOwnedUid=11;
       const stage=await makeStage(ticket);
       stage.ui.onDebugGold(100);stage.ui.onDebugStage(4,3);
@@ -1092,7 +1041,7 @@ function drag(stage, from, to) {
   await test('monster chest waits for click and preserves battle result, positions, HP and board views before claim',async()=>{
     stageEncountersEnabled=true;
     try {
-      const ticket=createSaveV2(3,1,'legacy');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
+      const ticket=createSaveV2(3,1,'budget-v1');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
       const stage=await makeStage(ticket);
       stage.owned.move(stage.owned.all()[0].uid,{location:'board',x:3,y:3});stage.startFight();stage.preparationRemaining=0;
       // The authored one-star Helion must beat the actual opening monster.
@@ -1113,7 +1062,7 @@ function drag(stage, from, to) {
   await test('reward flight commits once, holds transition until arrival, and reload keeps already awarded units',async()=>{
     stageEncountersEnabled=true;deferRewardFlights=true;
     try {
-      const ticket=createSaveV2(3,1,'legacy');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
+      const ticket=createSaveV2(3,1,'budget-v1');ticket.owned=[{uid:1,unitId:'helion',star:1,location:'board',x:3,y:3,equipment:[]}];
       const stage=await makeStage(ticket);stage.startFight();stage.preparationRemaining=0;assert.equal(stage.sim.run().winner,0);stage.update(.1);
       const before=stage.owned.all().reduce((n,u)=>n+3**(u.star-1),0),count=stage.session.pendingStageReward.units.length;
       stage.openStageReward();assert.ok(stage.rewardFlight);assert.equal(stage.session.pendingStageReward,undefined);

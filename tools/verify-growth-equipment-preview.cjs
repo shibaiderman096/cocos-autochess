@@ -14,7 +14,7 @@ const output=path.resolve('docs/evidence/growth-equipment');fs.mkdirSync(output,
   await page.waitForFunction(()=>ccTest.find('Canvas')?.getComponentInChildren('MainMenu')?.ready);
   await page.evaluate(()=>window.menu=ccTest.find('Canvas').getComponentInChildren('MainMenu'));
   const click=async(fn,arg)=>{const p=await page.evaluate(fn,arg);await page.mouse.click(p.x,p.y);await page.waitForTimeout(160);};
-  const saved=await page.evaluate(()=>localStorage.getItem('autochess_save_v2'));
+  const saved=await page.evaluate(()=>localStorage.getItem('autochess_save_v3'));
   await click(()=>point(menu.node.getChildByName('menuHeader').getChildByName('openCollection_equipment')));
   const report={items:[]},items=require('../assets/resources/config/equipment.json');assert.equal(items.length,13);
   for(let i=0;i<items.length;i++){
@@ -36,7 +36,7 @@ const output=path.resolve('docs/evidence/growth-equipment');fs.mkdirSync(output,
   report.codexScroll=await page.evaluate(()=>{const scroll=menu.collection.body.getChildByName('collectionDetail').getChildByName('collectionViewport').getComponent('cc.ScrollView');return{offset:scroll.getScrollOffset().y,max:scroll.getMaxScrollOffset().y};});
   if(report.codexScroll.max>0)assert.ok(report.codexScroll.offset>0);else assert.equal(report.codexScroll.offset,0,'short equipment copy fits without scrolling');
   await page.screenshot({path:path.join(output,'codex-scroll.png')});
-  await click(()=>point(menu.collection.root.getChildByName('closeCollection')));assert.equal(await page.evaluate(()=>localStorage.getItem('autochess_save_v2')),saved);
+  await click(()=>point(menu.collection.root.getChildByName('closeCollection')));assert.equal(await page.evaluate(()=>localStorage.getItem('autochess_save_v3')),saved);
   await click(()=>point(menu.node.getChildByName('startGame')));
   await page.waitForFunction(()=>ccTest.find('Canvas/Stage')?.getComponent('BattleStage')?.loaded,null,{timeout:45000});
   await page.evaluate(()=>{

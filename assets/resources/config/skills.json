@@ -27,11 +27,11 @@
   },
   "wayward_corrosion": {
     "id":"wayward_corrosion","name":"诡秘蚀剂","effect":"stackingCorrosion","dmgType":"magic","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
-    "corrosion":{"damagePerPulse":[40,60,90],"intervalSeconds":1,"durationSeconds":6},
+    "corrosion":{"damagePerPulse":[50,75,115],"intervalSeconds":1,"durationSeconds":6},
     "description":"投瓶蓄势{控制:corrosionCast}秒，优先选择自己本场尚未选中过的敌人，施加一层蚀剂，每{控制:corrosionInterval}秒造成{魔法:corrosionDamage}魔法伤害，持续{控制:corrosionDuration}秒。\n重复命中可叠加，每层分别计时。",
     "mechanics":["从全场可选敌人中优先选择本场未被自己成功施加过蚀剂的目标，同优先级选择最近者。","前摇可被控制打断；落点目标阵亡或不可选中时本次失效。","每层蚀剂独立计时和造成伤害，不同来源也可叠加；施法者阵亡后已施加的蚀剂继续生效。"],
     "statRows":[
-      {"label":"每层每次伤害","value":"{魔法:corrosionDamage}","stars":"40/60/90"},
+      {"label":"每层每次伤害","value":"{魔法:corrosionDamage}","stars":"50/75/115"},
       {"label":"每层持续","value":"{控制:corrosionDuration}秒","stars":"6/6/6秒"},
       {"label":"伤害间隔","value":"{控制:corrosionInterval}秒","stars":"1/1/1秒"},
       {"label":"施法前摇","value":"{控制:corrosionCast}秒","stars":"0.4/0.4/0.4秒"}

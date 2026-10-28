@@ -17,7 +17,7 @@ try{
   const cc=window.cc||await System.import('cc');window.testCC=cc;window.testStage=cc.find('Canvas/Stage').getComponent('BattleStage');
   window.point=node=>{const world=node.getComponent('cc.UITransform').convertToWorldSpaceAR(new cc.Vec3());const camera=cc.find('Canvas').getComponent('cc.Canvas').cameraComponent;const screen=camera.worldToScreen(world);const canvas=document.querySelector('canvas'),rect=canvas.getBoundingClientRect();return {x:rect.x+screen.x/canvas.width*rect.width,y:rect.y+(1-screen.y/canvas.height)*rect.height};};
   const s=testStage;
-  s.session=new s.session.constructor(s.cfg,s.runConfig,s.waveTemplates,{runSeed:1,stageCount:6,enemyGenerationMode:'legacy',openingEncounter:true,equipmentPolicy:s.equipmentPolicy,enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
+  s.session=new s.session.constructor(s.cfg,s.runConfig,s.waveTemplates,{runSeed:1,stageCount:6,enemyGenerationMode:'budget-v1',openingEncounter:true,equipmentPolicy:s.equipmentPolicy,enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
   s.resetBattle(false);s.refreshShopUI();s.refreshEconomyUI();s.refreshRunUI();
  });
  await page.waitForTimeout(400);

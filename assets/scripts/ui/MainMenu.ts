@@ -1,7 +1,7 @@
 import { SettingsPanel } from './SettingsPanel';
-import { _decorator, Component, Node, UITransform, Graphics, Color, Label, Sprite, resources, JsonAsset, SpriteFrame, director } from 'cc';
+import { _decorator, Component, Node, UITransform, Graphics, Color, Label, Sprite, resources, JsonAsset, SpriteFrame, director, sys } from 'cc';
 import { button, label, panel, fillScreen } from './BattleUI';
-import { loadSaveV2, writeSaveV2, freshSaveV2, SAVE_KEY } from '../core/ShopSave';
+import { loadRunSave, writeRunSave, freshRunSave, SAVE_KEY } from '../core/ShopSave';
 import { freshRunSeed } from '../core/RunRandomContext';
 import { RunConfig, DEFAULT_STAGE_COUNT, runRoundCount } from '../core/RunSetup';
 import { UNIT_ART } from '../view/ArtPaths';
@@ -88,27 +88,30 @@ export class MainMenu extends Component {
     setSkyBackground(background, g, new Color(105, 130, 150));
     const header = panel(this.node, 'menuHeader', 0, 300, 1184, 68, new Color(12, 28, 40, 238), new Color(75, 105, 115), null);
     label(header, '浮空棋境  /  远征', -364, 0, 22, GOLD, 350);
-    button(header, '图鉴', 310, 0, 128, 44, () => {
+    button(header, '图鉴', 310, 0, 128, sys.isMobile ? 54 : 44, () => {
       if (this.collection && !this.loading) this.collection.show();
     }).name = 'openCollection';
-    button(header, '设置', 480, 0, 128, 44, () => {
+    button(header, '设置', 480, 0, 128, sys.isMobile ? 54 : 44, () => {
       if (!this.loading) this.settingsPanel.show();
     }).name = 'openSettings';
+    if(sys.isMobile)for(const name of ['openCollection','openSettings'])
+      header.getChildByName(name)!.getChildByName('text')!.getComponent(Label)!.fontSize=23;
     this.settingsPanel = new SettingsPanel(this.node);
     const intro = panel(this.node, 'expeditionIntro', -345, 34, 460, 376, new Color(9, 25, 36, 235), new Color(62, 99, 109), null);
     label(intro, '浮 空 棋 境', 0, 118, 48, GOLD, 440).isBold = true;
     label(intro, '布阵成军 · 羁绊同行', 0, 63, 20, TEAL, 420);
     this.countLabel = label(intro, '10 阶段远征', 0, -4, 30, GOLD, 420);
-    this.summary = label(intro, '', 0, -70, 17, new Color(174, 198, 201), 420);
+    this.summary = label(intro, '', 0, -70, sys.isMobile ? 21 : 17, new Color(174, 198, 201), 420);
     this.summary.node.getComponent(UITransform)!.setContentSize(420, 70);
-    label(intro, '完成第 10 阶段首领战，开启后续远征', 0, -145, 16, TEAL, 430);
+    label(intro, '完成第 10 阶段首领战，开启后续远征', 0, -145, sys.isMobile ? 20 : 16, TEAL, 430);
     this.drawArena();
     const start = button(this.node, '开始游戏  →', 436, -250, 304, 76, () => this.startNewRun(), true); start.name = 'startGame';
-    const saved = loadSaveV2();
+    const saved = loadRunSave();
     if (saved?.round && saved.round.health > 0) {
-      const resume = button(this.node, '继续游戏', 436, -160, 304, 48, () => this.enterGame(false)); resume.name = 'continueGame';
+      const resume = button(this.node, '继续游戏', 436, -160, 304, sys.isMobile ? 58 : 48, () => this.enterGame(false)); resume.name = 'continueGame';
+      if(sys.isMobile)resume.getChildByName('text')!.getComponent(Label)!.fontSize=24;
     }
-    label(this.node, '11 阶段起：每小关增伤 +1% · 每阶段减伤 +1%（上限 95%）', -220, -259, 15, new Color(174, 198, 201), 720);
+    label(this.node, '11 阶段起：每小关增伤 +1% · 每阶段减伤 +1%（上限 95%）', -220, -259, sys.isMobile ? 19 : 15, new Color(174, 198, 201), 720);
     this.status = label(this.node, '正在加载关卡配置…', 0, -324, 14, GOLD, 1100);
   }
 
@@ -145,12 +148,12 @@ export class MainMenu extends Component {
     if (!this.ready || this.loading) return;
     this.loading = true; this.status.string = '正在进入棋境…';
     this.loadScreen = GameLoadingOverlay.show(this.node, '正在进入棋境');
-    const previous = loadSaveV2();
-    if (fresh) writeSaveV2(freshSaveV2(this.stageCount,freshRunSeed(previous?.runSeed),'budget-v1',true));
+    const previous = loadRunSave();
+    if (fresh) writeRunSave(freshRunSave(this.stageCount,freshRunSeed(previous?.runSeed),'budget-v1',true));
     const fail = () => {
       // Keep an existing run if the target scene cannot be launched.
       if (fresh) {
-        if (previous) writeSaveV2(previous);
+        if (previous) writeRunSave(previous);
         else { try { localStorage.removeItem(SAVE_KEY); } catch {} }
       }
       this.loading = false;

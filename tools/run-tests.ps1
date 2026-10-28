@@ -12,9 +12,7 @@ $srcs = @(
   'tests/unit-tests.ts', 'tests/smoke.ts', 'tests/economy-tests.ts', 'tests/shop-tests.ts',
   'tools/run-sim.ts', 'tools/run-simulation.ts', 'tools/bots/minimal-baseline.ts',
   'tools/calibrate-enemy-power.ts',
-  'tools/report-enemy-budget.ts',
   'tools/report-enemy-formation.ts',
-  'tools/report-equipment.ts',
   'tools/balance-sim.ts',
   'tools/balance/tune-balance.ts', 'tools/balance/continue-training.ts',
   'tools/balance/replay-run.ts',
@@ -25,30 +23,27 @@ $srcs = @(
   'assets/scripts/battle/Grid.ts',
   'assets/scripts/battle/Pathfinding.ts',
   'assets/scripts/battle/types.ts',
-  'assets/scripts/battle/index.ts',
   'assets/scripts/core/ConfigManager.ts',
   'assets/scripts/core/Rng.ts',
-  'assets/scripts/core/EventBus.ts',
   'assets/scripts/core/TickDriver.ts',
   'assets/scripts/core/EconomySystem.ts',
   'assets/scripts/core/LevelSystem.ts',
-  'assets/scripts/core/SaveData.ts',
   'assets/scripts/core/ShopConfig.ts',
   'assets/scripts/core/CardPool.ts',
   'assets/scripts/core/OwnedUnits.ts',
   'assets/scripts/core/ShopSystem.ts',
-  'assets/scripts/core/ShopSave.ts',
-  'assets/scripts/core/index.ts'
+  'assets/scripts/core/ShopSave.ts'
 )
 npx tsc --target ES2020 --module CommonJS --moduleResolution Node --esModuleInterop --skipLibCheck --strict false --outDir .test-build @srcs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item -Recurse -Force assets\resources .test-build\assets\
 $taskFailures = @()
 $taskTests = @(
+  'tests/current-save-tests.cjs'
+  'tests/target-lock-tests.cjs'
   'tests/permanent-stat-items-tests.cjs'
   'tests/merchant-services-tests.cjs'
   'tests/loot-quality-growth-tests.cjs'
-  'tests/legendary-balance-migration-tests.cjs'
   'tests/neutral-streak-tests.cjs'
   'tests/early-economy-sales-tests.cjs'
   'tests/explorer-units-tests.cjs'
@@ -89,7 +84,6 @@ $taskTests = @(
   'tests/stage-advance-ui-tests.cjs'
   'tests/special-shop-rate-tests.cjs'
   'tests/shop-dock-popup-tests.cjs'
-  'tests/encounter-chest-regression-tests.cjs'
   'tests/expedition-portal-tests.cjs'
   'tests/monster-chest-tests.cjs'
   'tests/star-upgrade-animation-tests.cjs'
@@ -139,7 +133,6 @@ $taskTests = @(
   'tests/skill-attack-isolation-tests.cjs'
   'tests/stage-encounter-layout-tests.cjs'
   'tests/stage-reward-validation-tests.cjs'
-  'tests/stage-progression-tests.cjs'
   'tests/role-mana-and-start-tests.cjs'
   'tests/monster-drop-rate-tests.cjs'
   'tests/fairness-tests.cjs'
@@ -148,7 +141,6 @@ $taskTests = @(
   'tests/combat-statistics-tests.cjs'
   'tests/fantasy-monster-tests.cjs'
   'tests/skill-presentation-tests.cjs'
-  'tests/skill-layout-save-tests.cjs'
   'tests/equipment-tests.cjs'
   'tests/equipment-presentation-tests.cjs'
   'tests/divine-protection-tests.cjs'
@@ -156,7 +148,6 @@ $taskTests = @(
   'tests/ordinary-equipment-tests.cjs'
   'tests/growth-equipment-tests.cjs'
   'tests/codex-equipment-tests.cjs'
-  'tests/equipment-display-save-tests.cjs'
   'tests/totem-tests.cjs'
   'tests/skill-crit-equipment-tests.cjs'
   'tests/run-session-tests.cjs'
@@ -164,9 +155,7 @@ $taskTests = @(
   'tests/advanced-equipment-tests.cjs'
   'tests/enemy-power-tests.cjs'
   'tests/power-calibration-tests.cjs'
-  'tests/enemy-budget-tests.cjs'
   'tests/enemy-formation-tests.cjs'
-  'tests/p3-equipment-tests.cjs'
   'tests/formal-bot-tests.cjs'
   'tests/medium-economy-tests.cjs'
   'tests/qualification-cli-tests.cjs'

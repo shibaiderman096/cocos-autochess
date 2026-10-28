@@ -1,6 +1,5 @@
-import { Node, UITransform, Vec3, Prefab, resources, instantiate, director, Layers, isValid, Animation, AnimationClip, animation, Label, Color, Graphics } from 'cc';
+import { Node, UITransform, Vec3, Prefab, resources, instantiate, director, Layers, isValid, Animation, AnimationClip, animation, Label, LabelOutline, Color } from 'cc';
 import { unprojectBoardPoint, projectGroundPoint } from './BoardPresentation';
-import { QUALITY_COLORS } from '../core/EquipmentQuality';
 
 const MODELS = {
   shop: 'models/board-encounters/ruins-shop/ruins-shop',
@@ -21,11 +20,10 @@ export class ShopVisitor {
   private openClip: AnimationClip | null = null;
   private finishOpen: (() => void) | null = null;
   private caption: Label | null = null;
-  private lootOdds: Label[] = [];
   private modelScale = 1;
   get isOpening(): boolean { return this.opening; }
 
-  constructor(parent: Node, position: Vec3, enter: () => void, kind: 'shop' | 'chest' = 'shop', options?: {name?:string;canEnter?:()=>boolean;modelScale?:number;yawDegrees?:number}) {
+  constructor(parent: Node, position: Vec3, enter: () => void, kind: 'shop' | 'chest' = 'shop', options?: {name?:string;canEnter?:()=>boolean;modelScale?:number;yawDegrees?:number;inspectOnClick?:boolean}) {
     this.root = new Node(kind === 'shop' ? 'shopVisitor' : 'bossChest'); parent.addChild(this.root);
     if(options?.name)this.root.name=options.name;
     this.modelScale=options?.modelScale??1;
@@ -37,7 +35,7 @@ export class ShopVisitor {
       event.propagationStopped = true;
       if (this.disposed || !this.visible || this.opening || this.opened) return;
       if(options?.canEnter&&!options.canEnter())return;
-      if (kind === 'shop') { enter(); return; }
+      if (kind === 'shop' || options?.inspectOnClick) { enter(); return; }
       this.openChest(enter);
     });
     // The 2D node is an input proxy only. Geometry is drawn by the board's 3D camera.
@@ -92,7 +90,8 @@ export class ShopVisitor {
     this.lidAnimation = this.lid.addComponent(Animation); this.lidAnimation.addClip(clip);
   }
 
-  private openChest(enter: () => void): void {
+  openChest(enter: () => void): void {
+    if (this.disposed || !this.visible || this.opening || this.opened) return;
     if (!this.lidAnimation || !this.openClip) { this.opened = true; enter(); return; }
     this.opening = true;
     this.finishOpen = () => {
@@ -115,27 +114,19 @@ export class ShopVisitor {
     if (this.lid && this.lidBase && isValid(this.lid, true)) this.lid.setRotationFromEuler(this.lidBase);
   }
 
-  setLootCaption(points: number, rates: readonly number[], scale = 1): void {
+  setLootCaption(points: number, scale = 1): void {
     if(!this.caption){
       const node=new Node('explorerChestLayers');this.root.addChild(node);node.layer=this.root.layer;
-      const width=224,height=60;
+      const width=100,height=28;
       node.setPosition(0,116*this.modelScale,0);node.addComponent(UITransform).setContentSize(width,height);
-      const background=node.addComponent(Graphics);background.fillColor=new Color(8,17,24,235);background.strokeColor=new Color(169,141,78);
-      background.lineWidth=1;background.roundRect(-width/2,-height/2,width,height,8);background.fill();background.stroke();
-      const copy=new Node('text');node.addChild(copy);copy.layer=node.layer;copy.setPosition(0,13,0);copy.addComponent(UITransform).setContentSize(width-8,28);
-      this.caption=copy.addComponent(Label);this.caption.fontSize=21;this.caption.lineHeight=25;
+      const copy=new Node('text');node.addChild(copy);copy.layer=node.layer;copy.addComponent(UITransform).setContentSize(width-8,30);
+      this.caption=copy.addComponent(Label);this.caption.fontSize=18;this.caption.lineHeight=24;
       this.caption.color=new Color(255,224,146);this.caption.isBold=true;
+      const outline=copy.addComponent(LabelOutline);outline.width=2;outline.color=new Color(8,17,24,230);
       this.caption.enableWrapText=false;this.caption.overflow=Label.Overflow.SHRINK;
-      QUALITY_COLORS.forEach((rgb,index)=>{
-        const cell=new Node(`odds${index+1}`);node.addChild(cell);cell.layer=node.layer;cell.setPosition((index-2)*43,-14,0);
-        cell.addComponent(UITransform).setContentSize(43,21);const label=cell.addComponent(Label);
-        label.fontSize=13;label.lineHeight=20;label.color=new Color(...rgb);label.enableWrapText=false;label.overflow=Label.Overflow.SHRINK;
-        this.lootOdds.push(label);
-      });
     }
     this.caption.node.parent!.setScale(scale,scale,1);
-    this.caption.string=`${points} 层`;
-    this.lootOdds.forEach((label,index)=>{label.string=`${rates[index]}%`;});
+    this.caption.string=String(Math.max(0,Math.floor(points)));
   }
 
   /** Board-local mouth position, projected at the actual chest rim height. */

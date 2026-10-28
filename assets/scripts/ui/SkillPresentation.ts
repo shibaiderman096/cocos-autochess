@@ -1,6 +1,8 @@
 import { ConfigManager, hybridSpellDamage, configuredSkillDamage, channelHealAmount, configuredShieldAmount, hydraulicBulwarkValues, UnitConfigData, SkillConfigData } from '../core/ConfigManager';
 
 export interface SkillStatRow {
+  /** Constants remain in the description, but do not need a star-comparison row. */
+  fixed?: boolean;
   label: string;
   current: string;
   currentRich?: string;
@@ -18,42 +20,44 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   const ranks = [1, 2, 3].map(rank => configs.scaleUnit(base, rank));
   const rows: SkillStatRow[] = [];
   const add = (label: string, value: (u: UnitConfigData, rank: number, scale: number) => string, tone: SkillStatRow['tone']) => {
-    rows.push({ label, current: value(unit, star - 1, skillScale),
-      stars: ranks.map((u, i) => value(u, i, configs.battle.starScaling[i].skill)).join(' / '), tone });
+    const display=(text:string)=>/^[+-]?\d+(?:\.\d+)?$/.test(text)?String(Math.round(Number(text))):text;
+    rows.push({ label, current: display(value(unit, star - 1, skillScale)),
+      stars: ranks.map((u, i) => display(value(u, i, configs.battle.starScaling[i].skill))).join(' / '), tone });
   };
+  const addFixed: typeof add = (label,value,tone) => { add(label,value,tone); rows[rows.length-1].fixed=true; };
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
   const shadow = skill.shadow;
   const sunlight = skill.sunlight;
   if (skill.ropeHunt) {
     add('单发伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
-    add('射击次数',()=>String(skill.ropeHunt!.shotCount),'neutral');
-    add('回旋持续',()=>`${number(skill.ropeHunt!.durationSeconds)}秒`,'neutral');
-    add('射击间隔',()=>`${number(skill.ropeHunt!.intervalSeconds)}秒`,'neutral');
-    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+    addFixed('射击次数',()=>String(skill.ropeHunt!.shotCount),'neutral');
+    addFixed('回旋持续',()=>`${number(skill.ropeHunt!.durationSeconds)}秒`,'neutral');
+    addFixed('射击间隔',()=>`${number(skill.ropeHunt!.intervalSeconds)}秒`,'neutral');
+    addFixed('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
   } else if (skill.sandCompass) {
     add('友军护盾',(u,i)=>String(configuredShieldAmount(u,skill,i+1)),'shield');
     add('沙浪伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
-    add('护盾持续',()=>`${number(skill.sandCompass!.shieldSeconds)}秒`,'neutral');
-    add('作用半径',()=>`${number(skill.radius)}格`,'neutral');
-    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+    addFixed('护盾持续',()=>`${number(skill.sandCompass!.shieldSeconds)}秒`,'neutral');
+    addFixed('作用半径',()=>`${number(skill.radius)}格`,'neutral');
+    addFixed('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
   } else if(skill.corrosion){
     add('每层每次伤害',(u,i)=>number(skill.corrosion!.damagePerPulse[i]*(1+(u.spellPower??0)/100)*(1+(u.damageAmp??0))),'magic');
-    add('每层持续',()=>`${number(skill.corrosion!.durationSeconds)}秒`,'neutral');
-    add('伤害间隔',()=>`${number(skill.corrosion!.intervalSeconds)}秒`,'neutral');
-    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+    addFixed('每层持续',()=>`${number(skill.corrosion!.durationSeconds)}秒`,'neutral');
+    addFixed('伤害间隔',()=>`${number(skill.corrosion!.intervalSeconds)}秒`,'neutral');
+    addFixed('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
   } else if(skill.effect==='windHunt'){
     add('强化攻速',(_u,i)=>`${number(skill.windHunt!.attackSpeedBonuses[i]*100)}%`,'speed');
-    add('强化持续',()=>`${number(skill.windHunt!.durationSeconds)}秒`,'neutral');
+    addFixed('强化持续',()=>`${number(skill.windHunt!.durationSeconds)}秒`,'neutral');
     add('击杀物理成长',(_u,i)=>`${number(skill.windHunt!.physicalPowerPerKill[i])}%`,'physical');
-    add('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
+    addFixed('施法前摇',()=>`${number(skill.castSeconds!)}秒`,'neutral');
     rows.push({label:'累计物理成长',current:`${number(passivePhysicalPower)}%`,stars:'本局累计',tone:'physical'});
   } else if(skill.effect==='lanternGuard'){
-    add('最多降低攻速',()=>`${number(skill.lanternGuard!.maxAttackSpeedPenalty*100)}%`,'speed');
+    addFixed('最多降低攻速',()=>`${number(skill.lanternGuard!.maxAttackSpeedPenalty*100)}%`,'speed');
     add('最多获得护甲',(u,i)=>number(skill.lanternGuard!.maxArmorBonuses[i]*(1+(u.spellPower??0)/100)),'shield');
     add('每点护甲转化',(_u,i)=>`${number(skill.lanternGuard!.physicalPowerPerArmor[i])}%`,'physical');
   } else if(skill.effect==='inspiration'){
     add('初始攻速',(u,i)=>`+${number(skill.inspiration!.attackSpeedBonuses[i]*(1+(u.spellPower??0)/100)*100)}%`,'speed');
-    add('持续时间',()=>`${number(skill.inspiration!.durationSeconds)}秒`,'neutral');
+    addFixed('持续时间',()=>`${number(skill.inspiration!.durationSeconds)}秒`,'neutral');
   } else if (sunlight) {
     const hit = (label: string, values = skill.starDamage!, type = skill.dmgType, multiplier = 1) => add(label, (u, i) => String(Math.round(values[i]
       * (1 + (type === 'physical' ? u.physicalPower ?? 0 : type === 'magic' ? u.spellPower ?? 0 : 0) / 100) * (1 + (u.damageAmp ?? 0)) * multiplier)), type);
@@ -89,8 +93,8 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
         add('最大生命系数', (_u, i) => `${number(shadow.maxHpFractions[i] * 100)}%`, 'healing');
         add('参与击杀永久生命', (_u, i) => number(shadow.takedownHealth[i]), 'healing');
         rows.push({ label: '被动累计生命', current: number(passiveHealth), stars: '本局累计', tone: 'healing' });
-        add('持续时间', () => `${number(shadow.durationSeconds)}秒`, 'neutral'); break;
-      case 'flurry': hit('每段伤害'); add('三段总伤害', (u, i) => String(Number(damage(u, i)) * shadow.hits), skill.dmgType); add('法力回复', () => number(shadow.refundMana), 'neutral'); break;
+        addFixed('持续时间',()=> `${number(shadow.durationSeconds)}秒`, 'neutral'); break;
+      case 'flurry': hit('每段伤害'); add('三段总伤害', (u, i) => String(Number(damage(u, i)) * shadow.hits), skill.dmgType); addFixed('法力回复',()=> number(shadow.refundMana), 'neutral'); break;
       case 'cleave': hit('基础伤害'); hit('最高伤害', skill.starDamage, 1 + shadow.missingHpBonusCap); break;
       case 'empower':
         hit('附加魔法伤害'); hit('爆炸伤害', shadow.burstDamage);
@@ -110,14 +114,14 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     add('每次伤害',(u,i)=>String(hit(u,i)),'magic');
     add('完整伤害',(u,i)=>String(hit(u,i)*pulses),'magic');
     add('每名敌人双抗',(_u,i)=>String(skill.gravity!.resistancePerEnemy[i]),'neutral');
-    add('持续时间',()=>`${number(skill.gravity!.durationSeconds)}秒`,'neutral');
+    addFixed('持续时间',()=>`${number(skill.gravity!.durationSeconds)}秒`,'neutral');
   } else if (skill.effect === 'nebula') {
     const pulses=Math.floor(skill.nebula!.durationSeconds/skill.nebula!.intervalSeconds+1e-9);
     const hit=(u: UnitConfigData,i:number)=>Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)));
     add('每次伤害',(u,i)=>String(hit(u,i)),'magic');
     add('完整伤害',(u,i)=>String(hit(u,i)*pulses),'magic');
-    add('攻速降低',()=>`${number(skill.nebula!.attackSpeedPenalty*100)}%`,'speed');
-    add('持续时间',()=>`${number(skill.nebula!.durationSeconds)}秒`,'neutral');
+    addFixed('攻速降低',()=>`${number(skill.nebula!.attackSpeedPenalty*100)}%`,'speed');
+    addFixed('持续时间',()=>`${number(skill.nebula!.durationSeconds)}秒`,'neutral');
   } else if (skill.effect === 'arrowVolley') {
     const hit = (u: UnitConfigData, i: number) => Math.round(skill.starDamage![i] * power(u) * (1 + (u.damageAmp ?? 0)));
     add('每箭伤害', (u, i) => String(hit(u, i)), 'physical');
@@ -125,7 +129,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   } else if (skill.effect === 'hydraulicBulwark') {
     add('双抗提升', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).resistanceBonus), 'physical');
     add('结束治疗', (u, i) => number(hydraulicBulwarkValues(u, skill, i + 1).healAmount), 'healing');
-    add('持续时间', () => `${number(skill.hydraulicBulwark!.durationSeconds)}秒`, 'neutral');
+    addFixed('持续时间',()=> `${number(skill.hydraulicBulwark!.durationSeconds)}秒`, 'neutral');
   } else if (skill.effect === 'susanoo') {
     add('持续时间', (u, i) => `${number(skill.formDurations![i] * (1 + (u.physicalPower ?? 0) / 100))}秒`, 'neutral');
     add('伤害减免', (_u, i) => `${number(skill.formReductions![i] * 100)}%`, 'shield');
@@ -135,35 +139,35 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   } else if (skill.effect === 'atlasMissiles') {
     add('导弹伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
     add('目标数量',(_u,i)=>String(skill.atlasMissiles!.targetCounts[i]),'neutral');
-    add('每次蓝条降低',()=>String(skill.atlasMissiles!.manaReductionPerCast),'neutral');
-    add('最多降低',()=>String(skill.atlasMissiles!.maxManaReduction),'neutral');
+    addFixed('每次蓝条降低',()=>String(skill.atlasMissiles!.manaReductionPerCast),'neutral');
+    addFixed('最多降低',()=>String(skill.atlasMissiles!.maxManaReduction),'neutral');
   } else if (skill.effect === 'stellarBulwark') {
     add('护盾',(u,i)=>String(configuredShieldAmount(u,skill,i+1)),'shield');
-    add('护盾持续',()=>`${number(skill.stellarBulwark!.shieldSeconds)}秒`,'neutral');
-    add('冲刺距离',()=>`${skill.stellarBulwark!.distance}格`,'neutral');
-    add('击飞时间',()=>`${number(skill.stellarBulwark!.knockupSeconds)}秒`,'neutral');
+    addFixed('护盾持续',()=>`${number(skill.stellarBulwark!.shieldSeconds)}秒`,'neutral');
+    addFixed('冲刺距离',()=>`${skill.stellarBulwark!.distance}格`,'neutral');
+    addFixed('击飞时间',()=>`${number(skill.stellarBulwark!.knockupSeconds)}秒`,'neutral');
   } else if (skill.effect === 'furnaceDash') {
     add('目标伤害', (u,i) => String(Math.round(skill.starDamage![i] * power(u) * (1+(u.damageAmp??0)))), 'magic');
     add('沿途伤害', (u,i) => String(Math.round(skill.furnaceDash!.trailDamage[i] * power(u) * (1+(u.damageAmp??0)))), 'magic');
-    add('击飞时间', () => `${number(skill.furnaceDash!.knockupSeconds)}秒`, 'neutral');
+    addFixed('击飞时间',()=> `${number(skill.furnaceDash!.knockupSeconds)}秒`, 'neutral');
   } else if (skill.effect === 'lineFear') {
     add('伤害', (u,i) => String(Math.round(skill.starDamage![i] * power(u) * (1 + (u.damageAmp ?? 0)))), 'magic');
     add('恐惧时间', (_u,i) => `${number(skill.lineFear!.fearSeconds[i])}秒`, 'neutral');
-    add('怒吼距离', () => `${number(skill.lineFear!.length)}格`, 'neutral');
-    add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+    addFixed('怒吼距离',()=> `${number(skill.lineFear!.length)}格`, 'neutral');
+    addFixed('蓄力时间',()=> `${number(skill.castSeconds!)}秒`, 'neutral');
   } else if (skill.effect === 'bloodReign') {
     add('生命提升',(_u,i)=>number(skill.bloodReign!.healthGains[i]),'healing');
     add('强化伤害',(u,i)=>String(Math.round(skill.starDamage![i]*(1+(u.physicalPower??0)/100)*(1+(u.damageAmp??0)))),'physical');
-    add('触发生命',()=>`${number(skill.bloodReign!.rebirthThreshold*100)}%`,'healing');
-    add('恢复比例',()=>`${number(skill.bloodReign!.rebirthHealMaxHpFraction*100)}%`,'healing');
-    add('恢复时间',()=>`${number(skill.bloodReign!.rebirthSeconds)}秒`,'neutral');
-    add('斩击距离',()=>`${number(skill.bloodReign!.length)}格`,'neutral');
+    addFixed('触发生命',()=>`${number(skill.bloodReign!.rebirthThreshold*100)}%`,'healing');
+    addFixed('恢复比例',()=>`${number(skill.bloodReign!.rebirthHealMaxHpFraction*100)}%`,'healing');
+    addFixed('恢复时间',()=>`${number(skill.bloodReign!.rebirthSeconds)}秒`,'neutral');
+    addFixed('斩击距离',()=>`${number(skill.bloodReign!.length)}格`,'neutral');
   } else if (skill.effect === 'bloodAid') {
     add('治疗',(u,i)=>String(Math.round(skill.bloodAid!.healAmounts[i]*(1+(u.spellPower??0)/100))),'healing');
     add('双抗提升',(_u,i)=>number(skill.bloodAid!.resistanceBonuses[i]),'shield');
     add('普攻附伤',(u,i)=>String(Math.round(skill.bloodAid!.attackBonusDamage[i]*(1+(u.spellPower??0)/100)*(1+(u.damageAmp??0)))),'magic');
-    add('停留时间',()=>`${number(skill.bloodAid!.staySeconds)}秒`,'neutral');
-    add('双抗持续',()=>`${number(skill.bloodAid!.resistanceSeconds)}秒`,'neutral');
+    addFixed('停留时间',()=>`${number(skill.bloodAid!.staySeconds)}秒`,'neutral');
+    addFixed('双抗持续',()=>`${number(skill.bloodAid!.resistanceSeconds)}秒`,'neutral');
   } else if (skill.effect === 'bloodDrain') {
     add('伤害', (u,i) => String(Math.round(skill.starDamage![i] * power(u) * (1 + (u.damageAmp ?? 0)))), 'magic');
     add('治疗', (u,i) => String(Math.round(skill.bloodDrain!.healAmounts[i] * (1 + (u.spellPower ?? 0) / 100))), 'healing');
@@ -188,7 +192,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       return String(Math.round(raw * power(u) * (1 + (u.damageAmp ?? 0))));
     }, skill.dmgType);
   }
-  if (skill.effect === 'starLeap') add('位移距离',()=>`${skill.starLeap!.distance}格`,'neutral');
+  if (skill.effect === 'starLeap') addFixed('位移距离',()=>`${skill.starLeap!.distance}格`,'neutral');
   if (skill.hybrid) {
     add('基础物理伤害', (_u, i) => number(skill.hybrid!.physicalDamage[i]), 'physical');
     add('基础魔法伤害', (_u, i) => number(skill.hybrid!.magicDamage[i]), 'magic');
@@ -197,12 +201,12 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   if (skill.stunSeconds) add('眩晕时间', (_u, i) => `${number(skill.stunSeconds![i])}秒`, 'neutral');
   if (skill.chargedKnockup) {
     add('击飞时间', (_u,i) => `${number(skill.chargedKnockup!.durationsSeconds[i])}秒`, 'neutral');
-    add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+    addFixed('蓄力时间',()=> `${number(skill.castSeconds!)}秒`, 'neutral');
   }
-  if (skill.effect === 'railShot') add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+  if (skill.effect === 'railShot') addFixed('蓄力时间',()=> `${number(skill.castSeconds!)}秒`, 'neutral');
   if (skill.effect === 'spiderLeap') {
     add('已损失生命伤害', (_u, i) => `${number(skill.spiderLeap!.missingHealthFractions[i] * 100)}%`, 'physical');
-    add('蓄力时间', () => `${number(skill.castSeconds!)}秒`, 'neutral');
+    addFixed('蓄力时间',()=> `${number(skill.castSeconds!)}秒`, 'neutral');
   }
   if (skill.guard) {
     add('伤害减免', (_u, i) => `${number(skill.guard!.reductions[i] * 100)}%`, 'shield');
@@ -213,7 +217,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
       const bonus = skill.burn!.dmgType === 'magic' ? u.spellPower ?? 0 : skill.burn!.dmgType === 'physical' ? u.physicalPower ?? 0 : 0;
       return `${number(skill.burn!.maxHpFraction * 100 * (skill.burn!.untilBattleEnd ? 1 : (1 + bonus / 100) * (1 + (u.damageAmp ?? 0))))}%`;
     }, skill.burn.dmgType);
-    if (!skill.burn.untilBattleEnd) add('持续时间', () => `${number(skill.burn!.durationSeconds)}秒`, 'neutral');
+    if (!skill.burn.untilBattleEnd) addFixed('持续时间',()=> `${number(skill.burn!.durationSeconds)}秒`, 'neutral');
   }
   if (!rich) return rows;
   const values = skillCurrentValues(skill, rows, star, unit, passiveHealth);
@@ -267,14 +271,14 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
     inspireSpeed:(skill.inspiration?.attackSpeedBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
     inspireDuration:skill.inspiration?.durationSeconds??0,
     guardSlow:skill.lanternGuard?.maxAttackSpeedPenalty??0,
-    guardArmor:(skill.lanternGuard?.maxArmorBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
+    guardArmor:current('最多获得护甲'),
     guardConversion:skill.lanternGuard?.physicalPowerPerArmor[star-1]??0,
     windSpeed:skill.windHunt?.attackSpeedBonuses[star-1]??0,
     windDuration:skill.windHunt?.durationSeconds??0,
     windGrowth:skill.windHunt?.physicalPowerPerKill[star-1]??0,
     windCast:skill.castSeconds??0,
     windPermanent:current('累计物理成长'),
-    corrosionDamage:(skill.corrosion?.damagePerPulse[star-1]??0)*(1+(unit?.spellPower??0)/100)*(1+(unit?.damageAmp??0)),
+    corrosionDamage:current('每层每次伤害'),
     corrosionDuration:skill.corrosion?.durationSeconds??0,
     corrosionInterval:skill.corrosion?.intervalSeconds??0,
     corrosionCast:skill.castSeconds??0,
@@ -296,8 +300,8 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
     count: current('目标数量') || current('治疗目标') || current('黑星数量') || current('跃迁次数'),
     manaReduction: current('每次蓝条降低'), manaCap:current('最多降低'),
     lampDamage: current('每秒伤害'), permanentHealth: current('参与击杀永久生命'),
-    lampBase: skill.shadow?.kind === 'soulLamp' ? number(skill.starDamage![star - 1] * (1 + (unit?.spellPower ?? 0) / 100) * (1 + (unit?.damageAmp ?? 0))) : 0,
-    lampHp: skill.shadow?.kind === 'soulLamp' ? number((unit?.hp ?? 0) * skill.shadow.maxHpFractions[star - 1] * (1 + (unit?.damageAmp ?? 0))) : 0,
+    lampBase: skill.shadow?.kind === 'soulLamp' ? Math.round(skill.starDamage![star - 1] * (1 + (unit?.spellPower ?? 0) / 100) * (1 + (unit?.damageAmp ?? 0))) : 0,
+    lampHp: skill.shadow?.kind === 'soulLamp' ? Number(current('每秒伤害'))-Math.round(skill.starDamage![star - 1] * (1 + (unit?.spellPower ?? 0) / 100) * (1 + (unit?.damageAmp ?? 0))) : 0,
     passiveHealth,
     lampRatio: skill.shadow?.kind === 'soulLamp' ? number(skill.shadow.maxHpFractions[star - 1] * 100) : 0,
     slow: skill.nebula ? number(skill.nebula.attackSpeedPenalty*100) : skill.shadow?.kind === 'domain' ? skill.shadow.slowAmounts[star - 1] : 0,
@@ -321,7 +325,7 @@ function formatSkillTokens(template: string, values: Record<string, string | num
     return template.replace(/\{(物理|魔法|真实|治疗|生命|攻速|控制)(\+{0,2}):([A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?%?)\}/g,
       (_match, type: string, plus: string, key: string) => {
         const raw = values[key] ?? key;
-        const value = type === '攻速' && typeof raw === 'number' ? `${number(raw * 100)}%` : String(raw);
+        const value = typeof raw === 'number' ? type === '攻速' ? `${number(raw * 100)}%` : number(raw) : String(raw);
         if (!rich) return value;
         const icons = type === '生命' ? ['stat_hp'] : plus.length === 2 ? ['attr_phys_bonus', 'attr_spell_bonus']
           : plus ? [type === '物理' || (type === '治疗' && healingScaling === 'physical') ? 'attr_phys_bonus' : 'attr_spell_bonus'] : [];

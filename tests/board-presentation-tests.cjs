@@ -73,7 +73,7 @@ const pinch=new FloatingRuinsBoard();pinch.ready=true;let validations=0,cancels=
 pinch.scheduleOnce=()=>validations++;pinch.unschedule=()=>{};
 pinch.board={interactionActive:false,node:{setScale(x,y){assert.equal(x,y);}}};
 pinch.node={getComponent:()=>({convertToNodeSpaceAR:p=>new V(p.x-640,p.y-360)}),getChildByName:()=>null,
- emit(){cancels++;pinch.board.interactionActive=false;}};
+ emit(type){if(type==='board-pinch-start'){cancels++;pinch.board.interactionActive=false;}}};
 const touch=(id,x,y)=>({getID:()=>id,getUILocation:()=>({x,y}),propagationStopped:false});
 pinch.onTouchStart(touch(1,540,480));pinch.board.interactionActive=true;
 pinch.onTouchStart(touch(2,740,480));assert.equal(cancels,1);assert.equal(pinch.touchGestureActive,true);

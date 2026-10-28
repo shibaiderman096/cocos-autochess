@@ -71,7 +71,7 @@ for(const [id,key,bad]of [['startrail_inspiration','inspiration',{attackSpeedBon
  const skills=clone(inputs.skills);skills[id][key]=bad;assert.throws(()=>new ConfigManager().setSkills(skills));
 }
 console.log('PASS explorer presentation/config: exact role/range/mana/trait membership, icon stats, AP-scaled skill ranks, passive preview and live inspector without double counting, invalid config rejection');
-const hunt=cfg.getUnit('windlance_huntress'),{RunSession}=require('../assets/scripts/core/RunSession.ts'),{OwnedUnits}=require('../assets/scripts/core/OwnedUnits.ts'),{migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts');
+const hunt=cfg.getUnit('windlance_huntress'),{RunSession}=require('../assets/scripts/core/RunSession.ts'),{OwnedUnits}=require('../assets/scripts/core/OwnedUnits.ts'),{readRunSave}=require('../assets/scripts/core/ShopSave.ts');
 assert.deepEqual([hunt.cost,hunt.range,hunt.startMana,hunt.maxMana,hunt.classTraitId],[3,4,0,60,'swift_marksman']);
 function huntBattle(star=1,side=0){return sim([place(hunt,side,2,2,star),place(dummy,1-side,3,2),place(dummy,side,4,2),place(dummy,1-side,5,2),place(dummy,1-side,6,2)]);}
 function beginHunt(s,u){u.mana=60;u.atkCd=0;s.step();assert.ok(u.pendingCast);assert.equal(u.windHuntActive,false);const start=s.tick;
@@ -105,20 +105,20 @@ for(const flag of ['shadowBoardSide','sunlightJudgmentSide','astralMeteorSide'])
  s.pendingDamage.push({src:u,dst:enemy,raw:enemy.hp,damageAmp:0,resistance:0,reduction:0,type:'true',critical:false,targeted:true,[flag]:u.side});s.resolveDamage();assert.equal(u.permanentPhysicalPower,0);
 }
 {
- const sessionCfg=config(),session=new RunSession(sessionCfg,inputs.run,inputs.waves,{runSeed:83,enemyGenerationMode:'legacy'});
+ const sessionCfg=config(),session=new RunSession(sessionCfg,inputs.run,inputs.waves,{runSeed:83,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  const owned=session.owned.forceAdd(hunt.id);Object.assign(owned,{location:'board',x:3,y:3,permanentPhysicalPower:7});
  const s=session.startBattle(),u=s.units.find(u=>u.id===session.activeBattleIds.get(owned.uid)),enemy=s.units.find(u=>u.side===1);
  assert.equal(u.cfg.physicalPower,7);u.combatTick=s.tick;u.windHuntUntilTick=s.tick+120;hit(s,u,enemy);hit(s,enemy,u);s.end(1);
  assert.ok(session.settleBattle());assert.equal(owned.permanentPhysicalPower,8);assert.equal(session.settleBattle(),null);assert.equal(owned.permanentPhysicalPower,8);
- const migrated=migrateSaveV2(session.snapshot());assert.equal(migrated.owned.find(u=>u.uid===owned.uid).permanentPhysicalPower,8);
- const restored=new RunSession(sessionCfg,inputs.run,inputs.waves,{save:migrated,enemyGenerationMode:'legacy'});
+ const migrated=readRunSave(session.snapshot());assert.equal(migrated.owned.find(u=>u.uid===owned.uid).permanentPhysicalPower,8);
+ const restored=new RunSession(sessionCfg,inputs.run,inputs.waves,{save:migrated,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  assert.equal(restored.owned.get(owned.uid).permanentPhysicalPower,8);assert.equal(restored.createPreview().sim.units.find(u=>u.side===0&&u.cfg.id===hunt.id).cfg.physicalPower,8);
  const merged=new OwnedUnits([1,2,3].map((uid,n)=>({uid,unitId:hunt.id,star:1,location:'bench',x:-1,y:n,permanentPhysicalPower:n+1})));merged.mergeAll();assert.equal(merged.all()[0].star,2);assert.equal(merged.all()[0].permanentPhysicalPower,6);
 }
 assert.deepEqual(huntBattle().run(),huntBattle().run());
 console.log('PASS wind hunt: both sides/all stars, 0.4s interruptible windup, full 6s buff, attack/regen mana lock and recovery, 1/2/3 personal-kill growth, once per kill, exclusions, expiry, death/defeat/save/next-round/merge persistence, exact UI and determinism');
 const alchemist=cfg.getUnit('wayward_alchemist');
-assert.deepEqual([alchemist.cost,alchemist.role,alchemist.damageType,alchemist.range,alchemist.startMana,alchemist.maxMana],[3,'caster','magic',3,0,50]);
+assert.deepEqual([alchemist.cost,alchemist.role,alchemist.damageType,alchemist.range,alchemist.startMana,alchemist.maxMana],[3,'caster','magic',3,0,30]);
 function dose(s,u){u.mana=50;u.atkCd=0;s.step();assert.ok(u.pendingCast);const target=u.pendingCast.targetId;
  for(let n=0;n<8;n++)s.step();u.atkCd=10000;assert.equal(u.pendingCast,null);return s.units.find(u=>u.id===target);}
 for(const side of [0,1])for(const star of [1,2,3]){
@@ -132,8 +132,8 @@ for(const side of [0,1])for(const star of [1,2,3]){
  const second=nearby.burns[1],secondEnd=second.nextTick+100,firstEnd=firstDue+100;
  assert.ok(secondEnd>firstEnd);while(s.tick<firstEnd)s.step();assert.equal(nearby.burns.length,1,'older layer expires independently');
  while(s.tick<secondEnd)s.step();assert.equal(nearby.burns.length,0);
- assert.equal(nearby.cfg.hp-nearby.hp,[40,60,90][star-1]*2*12,'two independently complete six-pulse AP-scaled layers');
- const detail=buildUnitDetailData(cfg,u.cfg,star);assert.equal(detail.skillStats[0].current,String([80,120,180][star-1]));assert.match(detail.skillDescription,/叠加.*分别计时/);
+ assert.equal(nearby.cfg.hp-nearby.hp,[50,75,115][star-1]*2*12,'two independently complete six-pulse AP-scaled layers');
+ const detail=buildUnitDetailData(cfg,u.cfg,star);assert.equal(detail.skillStats[0].current,String([100,150,230][star-1]));assert.match(detail.skillDescription,/叠加.*分别计时/);
  assert.doesNotMatch(detail.skillDescription,/\{[^}]+\}|NaN|undefined/);
 }
 for(const mode of ['interrupt','targetDeath','untargetable','casterDeath','end']){

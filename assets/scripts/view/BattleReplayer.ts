@@ -138,7 +138,7 @@ export class BattleReplayer extends Component {
         if (unit && this.boardView) this.moves.set(e.id, {
           from: this.boardView.cellToWorld(e.from.x, e.from.y),
           to: this.boardView.cellToWorld(e.to.x, e.to.y),
-          startTick: e.tick, durationTicks: Math.max(1, unit.cfg.moveTicks),
+          startTick: e.tick, durationTicks: Math.max(1, e.durationTicks ?? unit.cfg.moveTicks),
         });
         break;
       }

@@ -3,7 +3,7 @@
  * - 初始 1 级，上限 10 级。
  * - 每回合战斗结束 +2 经验。
  * - 备战期可单次花费 4 金币购买 4 经验。
- * - 升级表：2→3 需 2，3→4 需 6，4→5 需 10，5→6 需 32，6→7 需 48，7→8 需 74，8→9 需 96，9→10 需 128。
+ * - 5 级起升级经验降低 10%，取最接近的偶数。
  * - 支持一次奖励连续升级；剩余经验保留。
  * - 当前等级 = 上阵棋子数上限；降级不会发生；升级不删除已有棋子（超员提示由调用方处理）。
  */
@@ -20,11 +20,11 @@ export const LEVEL_UP_EXP: ReadonlyArray<number> = [
   2,  // 2 → 3
   6,  // 3 → 4
   10, // 4 → 5
-  32, // 5 → 6
-  48, // 6 → 7
-  74, // 7 → 8
-  96, // 8 → 9
-  128, // 9 → 10
+  28, // 5 → 6
+  44, // 6 → 7
+  66, // 7 → 8
+  86, // 8 → 9
+  116, // 9 → 10
 ];
 
 export interface LevelUpEvent {
@@ -62,7 +62,7 @@ export class LevelSystem {
    * 返回升级路径（如 1→2→3 则 [{from:1,to:2},{from:2,to:3}]）。
    */
   addExp(amount: number): LevelUpEvent[] {
-    if (!Number.isFinite(amount) || amount <= 0) return [];
+    if (!Number.isFinite(amount) || amount < 0) return [];
     this.exp = Math.min(Number.MAX_SAFE_INTEGER, this.exp + Math.floor(amount));
     const ups: LevelUpEvent[] = [];
     while (this.level < MAX_LEVEL && this.exp >= this.expToNext()) {

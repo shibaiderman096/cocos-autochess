@@ -4,7 +4,7 @@ const { RoundFlow } = require('../assets/scripts/core/RoundFlow.ts');
 const { ConfigManager } = require('../assets/scripts/core/ConfigManager.ts');
 const { BattleSim } = require('../assets/scripts/battle/BattleSim.ts');
 const { OwnedUnits } = require('../assets/scripts/core/OwnedUnits.ts');
-const { buildRunWaves, buildLegacyRunWaves, buildMonsterUnits, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
+const { buildRunWaves, buildMonsterUnits, normalizeStageCount, runRoundCount } = require('../assets/scripts/core/RunSetup.ts');
 const units = require('../assets/resources/config/units.json');
 const skills = require('../assets/resources/config/skills.json');
 const rules = require('../assets/resources/config/battle.json');
@@ -36,7 +36,7 @@ for(const count of [4,6,99]) {
   assert.deepEqual(build(count).slice(0,waves.length),waves,'adding stages must keep all existing encounters identical');
 }
 for(const invalid of [NaN,Infinity,-1,0]) assert.throws(()=>build(3,{...runConfig,enemyProgression:{...runConfig.enemyProgression,populationEveryRounds:invalid}}),/Invalid run configuration/);
-const populationWaves=buildLegacyRunWaves(10,runConfig,templates,units);
+const populationWaves=buildRunWaves(10,runConfig,templates,units);
 assert.deepEqual(populationWaves.filter(w=>w.stage===2).map(w=>w.enemies.length),[3,3,3,3,4]);
 assert.deepEqual(populationWaves.filter(w=>w.stage===3).map(w=>w.enemies.length),[4,5,5,5,5,5]);
 assert.deepEqual([4,5,6,7,8,9,10].map(stage=>populationWaves.find(w=>w.stage===stage).enemies.length),[6,7,8,9,10,10,10]);

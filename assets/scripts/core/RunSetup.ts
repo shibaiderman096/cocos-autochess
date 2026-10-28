@@ -1,8 +1,5 @@
 import { UnitConfigData, combatAttributes } from './ConfigManager';
 import { WaveConfig } from './RoundFlow';
-import { EnemyGenerator } from './EnemyGenerator';
-import { EnemyBudget, classifyWave } from './EnemyBudget';
-import type { WaveBudgetBounds } from './EnemyBudget';
 import { RunRandomContext } from './RunRandomContext';
 import type { EnemyDifficultyConfig, EnemyGenerationMode } from './EnemyGenerationTypes';
 import type { EnemyPowerData } from './EnemyPowerTypes';
@@ -116,10 +113,9 @@ export function buildMonsterUnits(config: RunConfig, roster: UnitConfigData[]): 
     damageReduction: attributes.damageReduction * multiplier })), ...strong];
 }
 
-/** Four-argument calls retain the legacy public contract; sessions explicitly select their saved mode. */
+/** Current seeded enemy generation options. */
 export interface EnemyGenerationOptions { mode:EnemyGenerationMode; runSeed?:number; difficulty?:EnemyDifficultyConfig; power?:EnemyPowerData;
   traits?: TraitConfigData[];
-  earlyEncounterLayout?: 'legacy' | 'random-rounds-v1';
   equipmentPolicy?:EquipmentPolicyConfig;
   equipmentRoles?:EnemyRoleConfig;
   /** Optional offline timing observer. Timing is never read by the generator or serialized into waves. */
@@ -141,7 +137,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   const stagePlan=(stage:number)=>{
     if(!config.stageEncounters||stage===1)return undefined;
     let plan=encounterPlans.get(stage);
-    if(!plan){plan=planStageEncounters(stage,stageRoundCount(stage,config),encounterRandom,config.stageEncounters.startStage,generation?.earlyEncounterLayout!=='legacy');encounterPlans.set(stage,plan);}
+    if(!plan){plan=planStageEncounters(stage,stageRoundCount(stage,config),encounterRandom,config.stageEncounters.startStage);encounterPlans.set(stage,plan);}
     return plan;
   };
   const progressionRounds=(stage:number,through:number)=>stagePlan(stage)?.slice(0,through).filter(kind=>kind!=='specialShop').length??through;
@@ -163,7 +159,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   }
   const decorateEncounter = (wave: WaveConfig): WaveConfig => {
     const rules = config.stageEncounters; if (!rules) return wave;
-    const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage, generation?.earlyEncounterLayout !== 'legacy')[wave.round! - 1];
+    const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage)[wave.round! - 1];
     const result = { ...wave, encounterKind: kind, waveKind: wave.stage === 1 ? 'intro' as const : kind === 'elite' || kind === 'boss' ? kind : 'normal' as const };
     if (kind === 'specialShop') return { ...result, name: '秘境行商', enemies: [], budget: undefined };
     if (kind === 'monster' && wave.stage! > 1) {
@@ -210,21 +206,20 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
       (wave.stage! - endless.startStage + 1) * endless.damageReductionPerStage).toFixed(4));
     return { ...result, enemies: result.enemies.map(enemy => ({ ...enemy, damageAmp, damageReduction })) };
   };
-  if(!generation||generation.mode==='legacy')return buildLegacyRunWaves(stageCount,config,templates,roster).map(decorate);
-  if(generation.mode!=='budget-v1')throw new Error('Unsupported enemy generation mode');
+  if(generation&&generation.mode!=='budget-v1')throw new Error('Unsupported enemy generation mode');
   if(config.enemyGoldBudget){
     validateEnemyGoldRules(config.enemyGoldBudget);
-    const waves=buildLegacyRunWaves(MIN_STAGE_COUNT,config,templates,roster).filter(w=>w.stage===1)
+    const waves=buildIntroWaves(config,templates,roster)
       .map(w=>decorate({...w,waveKind:'intro',enemyGenerationMode:'budget-v1'}));
     let completed=0;
     for(let stage=2;stage<=normalizeStageCount(stageCount);stage++){
       const rounds=stageRoundCount(stage,config);
-      const encounters=config.stageEncounters?planStageEncounters(stage,rounds,encounterRandom,config.stageEncounters.startStage,generation.earlyEncounterLayout!=='legacy'):undefined;
+      const encounters=config.stageEncounters?planStageEncounters(stage,rounds,encounterRandom,config.stageEncounters.startStage):undefined;
       for(let round=1;round<=rounds;round++){
         const encounter=encounters?.[round-1],kind=encounter==='elite'||encounter==='boss'?encounter:'normal';
-        generation.onWave?.(waves.length+1,'start');
-        const generated=generateGoldArmy(config.enemyGoldBudget,stage,completed,waves.length+1,kind,enemyPopulation(stage,round,completed,config),roster,generation.traits??[],encounterRandom);
-        generation.onWave?.(waves.length+1,'end');
+        generation?.onWave?.(waves.length+1,'start');
+        const generated=generateGoldArmy(config.enemyGoldBudget,stage,completed,waves.length+1,kind,enemyPopulation(stage,round,completed,config),roster,generation?.traits??[],encounterRandom);
+        generation?.onWave?.(waves.length+1,'end');
         const wave=decorate({id:waves.length+1,name:templates[Math.min(stage-2,templates.length-1)].name,stage,round,roundsInStage:rounds,
           waveKind:kind,enemyGenerationMode:'budget-v1',enemies:generated.enemies,goldBudget:generated.diagnostics});
         if(wave.encounterKind==='monster'||wave.encounterKind==='specialShop')delete wave.goldBudget;
@@ -234,47 +229,11 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     }
     return waves;
   }
-  if(generation.mode!=='budget-v1'||!generation.difficulty||!generation.power)throw new Error('budget-v1 requires its difficulty configuration and calibrated power model');
-  const legacy=buildLegacyRunWaves(MIN_STAGE_COUNT,config,templates,roster);
-  if(config.enemyProgression.populationCap!==generation.difficulty.maxPopulation)throw new Error('Enemy population policy must retain the existing curve');
-  const generator=new EnemyGenerator(generation.difficulty,generation.power,roster,new RunRandomContext(generation.runSeed??1),generation.equipmentPolicy,generation.equipmentRoles);
-  const canonicalRoster=roster.slice().sort((a,b)=>a.id===config.starterUnitId?-1:b.id===config.starterUnitId?1:a.id<b.id?-1:a.id>b.id?1:0);
-  const baseline=buildLegacyRunWaves(MIN_STAGE_COUNT,config,templates,canonicalRoster).find(w=>w.stage===2&&w.round===1)!;
-  const b0=generator.model.estimateTeamPower(baseline.enemies.map(e=>({unitId:e.unitId,cost:roster.find(u=>u.id===e.unitId)?.cost,star:e.star,equipment:e.equipment??[]}))).power;
-  const bounds:WaveBudgetBounds[]=[];let w=0,progress=0;
-  // One complete stage of lookahead makes the last selected stage independent of campaign length.
-  for(let stage=2;stage<=Math.max(MAX_STAGE_COUNT,normalizeStageCount(stageCount))+1;stage++){
-    const rounds=stageRoundCount(stage,config);
-    const encounters = config.stageEncounters ? planStageEncounters(stage, rounds, encounterRandom, config.stageEncounters.startStage, generation.earlyEncounterLayout !== 'legacy') : undefined;
-    for(let round=1;round<=rounds;round++){
-      const encounter = encounters?.[round - 1];
-      const kind = encounters ? (encounter === 'elite' || encounter === 'boss' ? encounter : 'normal') : classifyWave(stage,round,rounds,generation.difficulty) as 'normal'|'elite'|'boss';
-      const population=enemyPopulation(stage,round,progress,config);
-      const interval=generator.bounds(stage,kind,population);w++;
-      const countsForProgress=encounter!=='specialShop';if(countsForProgress)progress++;
-      bounds.push({globalWaveId:config.introWaves.length+w,budgetWaveIndex:Math.max(1,progress),stage,round,rounds,population,kind,...interval,
-        countsForProgress,progressRound:progressionRounds(stage,round),progressRounds:progressionRounds(stage,rounds)});
-    }
-  }
-  const budget=new EnemyBudget(b0,generation.difficulty,bounds.filter(b=>b.countsForProgress));
-  const waves:WaveConfig[]=legacy.filter(w=>w.stage===1).map(w=>decorate({...w,waveKind:'intro',enemyGenerationMode:'budget-v1'}));
-  for(const b of bounds.filter(v=>v.stage<=normalizeStageCount(stageCount))){
-    if(!b.countsForProgress){
-      waves.push(decorate({id:b.globalWaveId,name:'秘境行商',stage:b.stage,round:b.round,roundsInStage:b.rounds,
-        waveKind:b.kind,enemyGenerationMode:'budget-v1',enemies:[]}));continue;
-    }
-    generation.onWave?.(b.globalWaveId,'start');
-    const generated=generator.generate(budget.calculate(b),b.population,config.enemyProgression.cells);
-    generation.onWave?.(b.globalWaveId,'end');
-    waves.push(decorate({id:b.globalWaveId,name:templates[Math.min(b.stage-2,templates.length-1)].name,stage:b.stage,round:b.round,roundsInStage:b.rounds,
-      waveKind:b.kind,enemyGenerationMode:'budget-v1',enemies:generated.enemies,budget:JSON.parse(JSON.stringify(generated.diagnostics))}));
-  }
-  return waves;
+  throw new Error('budget-v1 requires enemyGoldBudget configuration');
 }
 
-/** Legacy body retained for byte-equivalent P0 enemies, including its late free scaling. */
-export function buildLegacyRunWaves(stageCount: number, config: RunConfig, templates: WaveConfig[], roster: UnitConfigData[]): WaveConfig[] {
-  runRoundCount(stageCount, config);
+/** Validate shared progression rules and construct the authored opening encounters. */
+function buildIntroWaves(config: RunConfig, templates: WaveConfig[], roster: UnitConfigData[]): WaveConfig[] {
   const growth = config.enemyProgression;
   if (!config.introWaves.length || !templates.length || !roster?.length || !growth
     || ![growth.initialPopulation, growth.populationEveryRounds, growth.populationCap, growth.lateStartStage].every(n => Number.isSafeInteger(n) && n > 0)
@@ -298,24 +257,5 @@ export function buildLegacyRunWaves(stageCount: number, config: RunConfig, templ
   const waves: WaveConfig[] = [];
   config.introWaves.forEach((wave, i) => waves.push({ ...wave, id: waves.length + 1, stage: 1, round: i + 1,
     roundsInStage: config.introWaves.length, enemies: wave.enemies.map(e => ({ ...e, star: 1, statMultiplier: 1 })) }));
-  let completedRounds = 0;
-  for (let stage = 2; stage <= normalizeStageCount(stageCount); stage++) {
-    const template = templates[Math.min(stage - 2, templates.length - 1)];
-    const tier = growth.tiers.filter(t => t.stage <= stage).slice(-1)[0];
-    const cost = Math.max(...roster.filter(u => (u.cost ?? 1) <= tier.cost).map(u => u.cost ?? 1));
-    const units = roster.filter(u => (u.cost ?? 1) === cost);
-    if (!units.length) throw new Error('Invalid run configuration: no units for enemy cost tier');
-    const lateStages = config.endlessProgression ? 0 : Math.max(0, stage - growth.lateStartStage + 1);
-    const damageAmp = Number((lateStages * growth.damageAmpPerStage).toFixed(4));
-    const damageReduction = Number(Math.min(growth.damageReductionCap, lateStages * growth.damageReductionPerStage).toFixed(4));
-    const rounds = stageRoundCount(stage, config);
-    for (let round = 1; round <= rounds; round++) {
-      const population = enemyPopulation(stage, round, completedRounds, config);
-      waves.push({ id: waves.length + 1, name: template.name, stage, round, roundsInStage: rounds,
-        enemies: Array.from({ length: population }, (_, i) => ({ unitId: units[i % units.length].id, star: tier.star,
-          ...growth.cells[i], statMultiplier: 1, damageAmp, damageReduction })) });
-      completedRounds++;
-    }
-  }
   return waves;
 }

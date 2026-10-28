@@ -47,7 +47,8 @@ assert.ok(!traits.find(t=>t.config.id==='armored_tank').memberIds.includes(guard
 {
  const pool=new CardPool(roster),owned=new OwnedUnits(),economy=new EconomySystem(undefined,{gold:10,winStreak:0,loseStreak:0});
  const stock=pool.count(guard.id),slots=[0,1,2,3,4].map(i=>({unitId:i<3?guard.id:null}));
- const shop=new ShopSystem(pool,owned,economy,new Map(roster.map(u=>[u.id,u])),new Rng(1022),()=>1,9,slots,false);
+ for(const slot of slots)if(slot.unitId)assert.ok(pool.take(slot.unitId));
+ const shop=new ShopSystem(pool,owned,economy,new Map(roster.map(u=>[u.id,u])),new Rng(1022),()=>1,9,slots);
  for(let i=0;i<3;i++)assert.equal(shop.buy(i).error,undefined);
  assert.equal(economy.gold,7);assert.equal(pool.count(guard.id),stock-3);
  assert.equal(owned.all().length,1);assert.equal(owned.all()[0].star,2);assert.equal(owned.all()[0].unitId,guard.id);

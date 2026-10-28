@@ -108,8 +108,9 @@ export class TraitPanel {
     this.states = states.filter(state => state.count > 0); this.roster = roster;
     const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds]));
     if (key === this.key) return;
+    // The first native layout can report an offset from the pre-resize viewport.
+    const offset = this.key ? this.scrollView.getScrollOffset().y : 0;
     this.key = key;
-    const offset = this.scrollView.getScrollOffset().y;
     this.scrollView.stopAutoScroll();
     this.closeCard();
     for (const node of [...this.rows.children]) { node.active = false; node.destroy(); }
@@ -144,6 +145,7 @@ export class TraitPanel {
     this.root.active = visible;
     if (!visible) { this.scrollView.stopAutoScroll(); this.hideDetail(); }
   }
+  get detailVisible():boolean { return !!this.detail?.active; }
   hideDetail(): void { this.selected = null; this.closeCard(); }
   private membersByCost(state: TraitState): UnitConfigData[] {
     return Array.from(new Set([...state.config.members, ...state.memberIds]))

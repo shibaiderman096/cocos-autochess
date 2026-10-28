@@ -43,7 +43,7 @@ export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData
     skillDisplayName: skill?.name ?? '普通攻击',
     traits: resolveTraits(configs.battle.traits ?? [], [], configs.allUnits())
       .filter(state => isTraitMember(state, unit)).map(state => state.config.name),
-    skillStats: rows,
+    skillStats: rows.filter(row=>!row.fixed),
     skillRichDescription: buildSkillDescription(configs, unit, star, skillScale, true, passiveHealth),
     skillIcon: skill?.effect === 'inspiration' || skill?.effect === 'windHunt' ? 'attr_aspd' : skill?.effect === 'lanternGuard' || skill?.effect === 'sandCompass' ? 'attr_armor' : skill?.effect === 'healChannel' ? 'stat_hp' : skill?.effect === 'teleportEmpower' ? 'icon_speed'
       : skill?.dmgType === 'magic' ? 'attr_spell_bonus' : skill?.dmgType === 'true' ? 'attr_dmg_amp' : 'icon_swords',

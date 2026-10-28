@@ -14,7 +14,7 @@ const wave={id:10,name:'merchant',stage:2,round:2,encounterKind:'specialShop',en
 function sample(seed,level,prepare=()=>{}) {
  const pool=new CardPool(cfg.allUnits()),owned=new OwnedUnits(),economy=new EconomySystem();prepare(pool);
  const state=freshStageProgress(),random=new RunRandomContext(seed);
- const ordinary=new ShopSystem(pool,owned,economy,new Map(cfg.allUnits().map(u=>[u.id,u])),random.stream('shop',10),()=>level,9,Array.from({length:5},()=>({unitId:null})),true);
+ const ordinary=new ShopSystem(pool,owned,economy,new Map(cfg.allUnits().map(u=>[u.id,u])),random.stream('shop',10),()=>level,9,Array.from({length:5},()=>({unitId:null})));
  const rates=ordinary.costRates(),progress=new StageProgression(rules,state,cfg,pool,owned,economy,random,9,tiers,()=>level);
  progress.enter(wave);return{state,progress,pool,owned,economy,random,rates};
 }

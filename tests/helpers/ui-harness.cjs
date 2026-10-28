@@ -82,7 +82,7 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Vec3,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+const cc={game:{frameRate:60},Node,UITransform,Sprite,Label,LabelOutline:class LabelOutline{},RichText,Color,Graphics,Mask,ScrollView,Vec2,Vec3,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
   input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
   sys:{isMobile:false},ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
@@ -96,4 +96,4 @@ function load(file) {
   new Function('require','exports',code)(id=>id==='cc'?cc:load(path.resolve(path.dirname(file),id+'.ts')),out); return out;
 }
 
-module.exports={load,Node,Sprite,Label,RichText,UITransform,pending};
+module.exports={cc,load,Node,Sprite,Label,RichText,UITransform,pending};

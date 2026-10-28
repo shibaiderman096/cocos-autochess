@@ -9,7 +9,7 @@ const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipment
 const inputs=loadRunInputs(),deps={...loadEnemyGenerationInputs(),...loadFormationInputs(),...loadEquipmentInputs()};
 const clone=x=>JSON.parse(JSON.stringify(x));
 const members=inputs.units.filter(u=>!u.specialShopUnlock).slice(0,9).map(u=>u.id);
-function make(count=3,save,mode='legacy',seed=71,run=inputs.run){
+function make(count=3,save,mode='budget-v1',seed=71,run=inputs.run){
  const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setEquipment(inputs.equipment);
  const battle=clone(inputs.battle),trait=battle.traits.find(t=>t.id==='explorer');trait.members=members;trait.pendingMembers=false;cfg.setBattle(battle);
  const s=new RunSession(cfg,run,inputs.waves,{...deps,stageCount:6,runSeed:seed,enemyGenerationMode:mode,...(save?{save}:{})});
@@ -82,15 +82,15 @@ assert.equal(twice.openExplorerChest().ok,false,'zeroing the bank prevents dupli
 // Gold participates in the full random budget above 30, rather than replacing a fixed excess.
 const legacyRun=clone(inputs.run);delete legacyRun.stageEncounters.chestReward.explorerGoldThreshold;
 for(const budget of [1,4,29,30]){
- const a=make(3,undefined,'legacy',83),b=make(3,undefined,'legacy',83,legacyRun);
+ const a=make(3,undefined,'budget-v1',83),b=make(3,undefined,'budget-v1',83,legacyRun);
  const grant=a.stageProgression.grantExplorerReward(budget,a.flow.wave.id,10);
  assert.deepEqual(grant,b.stageProgression.grantExplorerReward(budget,b.flow.wave.id,10),'30 and below retain the exact reward roll');
 }
 const goldDraws=[];
 for(let seed=1;seed<=24;seed++){
- const initial=make(3,undefined,'legacy',seed);initial.save.explorerProgress.points=450;
+ const initial=make(3,undefined,'budget-v1',seed);initial.save.explorerProgress.points=450;
  const saved=initial.snapshot();saved.round.health=90;
- const s=make(3,saved,'legacy',seed),restored=make(3,saved,'legacy',seed),before=s.economy.gold;
+ const s=make(3,saved,'budget-v1',seed),restored=make(3,saved,'budget-v1',seed),before=s.economy.gold;
  const grant=s.openExplorerChest().stageReward;
  assert.deepEqual(grant,restored.openExplorerChest().stageReward,'mixed gold cannot be rerolled by reloading');
  assert.equal(value(s,grant),45);assert.equal(s.economy.gold-before,grant.gold);
@@ -102,5 +102,5 @@ assert.ok(goldDraws.some(gold=>gold>1),'gold is an intentional draw, not just an
 assert.ok(goldDraws.some(gold=>gold>0&&gold<15),'non-gold rewards can exceed 30; gold is not fixed to the excess');
 assert.ok(new Set(goldDraws).size>1,'gold quantity varies with the seeded reward roll');
 const edge=make(3);edge.save.explorerProgress.points=301;const edgeGrant=edge.openExplorerChest().stageReward;assert.equal(value(edge,edgeGrant),31);
-for(const invalid of [-1,.5,NaN]){const run=clone(inputs.run);run.stageEncounters.chestReward.explorerGoldThreshold=invalid;assert.throws(()=>make(3,undefined,'legacy',71,run),/mixed chest rules/);}
+for(const invalid of [-1,.5,NaN]){const run=clone(inputs.run);run.stageEncounters.chestReward.explorerGoldThreshold=invalid;assert.throws(()=>make(3,undefined,'budget-v1',71,run),/mixed chest rules/);}
 console.log('PASS explorer gold: exact threshold/rounding, full-budget random mixing, deterministic reload, immediate wallet credit, total value, health cap and once-only opening');

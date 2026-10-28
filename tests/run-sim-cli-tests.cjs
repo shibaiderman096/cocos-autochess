@@ -9,7 +9,7 @@ const tempRoot = fs.realpathSync(path.join(root, 'temp'));
 const output = fs.mkdtempSync(path.join(tempRoot, 'run-session-cli-'));
 const hash = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 function run(args) {
-  const mode=args.includes('--enemy-mode')?[]:['--enemy-mode','legacy'];
+  const mode=args.includes('--enemy-mode')?[]:['--enemy-mode','budget-v1'];
   const p = spawnSync(process.execPath, ['--require', 'tsx/cjs', 'tools/run-sim.ts', ...mode,...args], {cwd:root,encoding:'utf8',timeout:30000});
   if(p.error) throw p.error;
   return p;

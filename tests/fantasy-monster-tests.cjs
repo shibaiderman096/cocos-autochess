@@ -49,7 +49,7 @@ console.log('PASS fantasy roster: five families of six, 25 normal/5 strong, orig
 const strongIds = run.stageEncounters.strongMonster.unitIds;
 const seen = new Set();
 for (let seed=1;seed<=40;seed++) {
-  const options={mode:'legacy',runSeed:seed};
+  const options={mode:'budget-v1',runSeed:seed};
   const waves=buildRunWaves(10,run,templates,units,options);
   assert.deepEqual(waves,buildRunWaves(10,run,templates,units,options),'same seed and roster reproduce layouts');
   const short=buildRunWaves(4,run,templates,units,options);

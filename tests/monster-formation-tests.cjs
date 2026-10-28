@@ -1,6 +1,6 @@
 require('tsx/cjs');
 const assert=require('node:assert/strict');
-const {buildRunWaves,buildLegacyRunWaves,monsterFormationGroups}=require('../assets/scripts/core/RunSetup.ts');
+const {buildRunWaves,monsterFormationGroups}=require('../assets/scripts/core/RunSetup.ts');
 const {offsetToWorld}=require('../assets/scripts/battle/HexMath.ts');
 const run=require('../assets/resources/config/run.json'),units=require('../assets/resources/config/units.json'),templates=require('../assets/resources/config/waves.json'),battle=require('../assets/resources/config/battle.json');
 const layout=run.stageEncounters.monsterFormation,strong=run.stageEncounters.strongMonster,roster=new Map(run.monsters.map(m=>[m.id,m]));
@@ -26,9 +26,9 @@ for(const l of bad)assert.throws(()=>monsterFormationGroups(10,l),/Invalid monst
 for(const n of [0,1.5,12,NaN])assert.throws(()=>monsterFormationGroups(n,layout),/Invalid monster formation/);
 const ordinaryCounts=new Set(),seenLeaders=new Set();
 for(let seed=1;seed<=30;seed++){
- const waves=buildRunWaves(99,run,templates,units,{mode:'legacy',runSeed:seed});
- const before=buildLegacyRunWaves(99,run,templates,units);
- assert.deepEqual(buildRunWaves(4,run,templates,units,{mode:'legacy',runSeed:seed}),waves.filter(w=>w.stage<=4),'campaign length cannot reroll an encounter');
+ const waves=buildRunWaves(99,run,templates,units,{mode:'budget-v1',runSeed:seed});
+ const before=buildRunWaves(99,run,templates,units);
+ assert.deepEqual(buildRunWaves(4,run,templates,units,{mode:'budget-v1',runSeed:seed}),waves.filter(w=>w.stage<=4),'campaign length cannot reroll an encounter');
  for(const w of waves){
   if(w.encounterKind!=='monster')continue;
   check(w,w.stage>1);
@@ -53,7 +53,7 @@ assert.deepEqual(seenLeaders,new Set(strong.unitIds));assert.ok(ordinaryCounts.h
 const difficulty=require('../assets/resources/config/enemy-difficulty.json'),power=require('../assets/resources/config/enemy-power.json');
 for(const seed of [5,37]){
  const waves=buildRunWaves(10,run,templates,units,{mode:'budget-v1',runSeed:seed,difficulty,power});
- const expected=buildRunWaves(10,run,templates,units,{mode:'legacy',runSeed:seed}).filter(w=>w.encounterKind==='monster');
+ const expected=buildRunWaves(10,run,templates,units,{mode:'budget-v1',runSeed:seed}).filter(w=>w.encounterKind==='monster');
  const formation=w=>({id:w.id,stage:w.stage,round:w.round,name:w.name,enemies:w.enemies});
  assert.deepEqual(waves.filter(w=>w.encounterKind==='monster').map(formation),expected.map(formation),'budget and legacy consume the same authored monster formations');
 }

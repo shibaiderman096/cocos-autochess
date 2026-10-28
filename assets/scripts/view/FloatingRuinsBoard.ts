@@ -11,6 +11,7 @@ const { ccclass, executionOrder } = _decorator;
 const BENCH = 'models/ruins-bench/ruins-bench/ruins-bench';
 const MODEL = 'backgrounds/RuinsBackground';
 export const BOARD_PINCH_START = 'board-pinch-start';
+export const BOARD_ZOOM_CHANGED = 'board-zoom-changed';
 interface BoardTouch { x: number; y: number; eligible: boolean }
 
 /** Production board presentation. Uses normal game saves and the existing battle/input layers. */
@@ -191,9 +192,11 @@ export class FloatingRuinsBoard extends Component {
 
   setZoom(value: number): void {
     if(this.board?.interactionActive) return;
+    const previous=this.zoom;
     this.zoom=clampBoardZoom(value);
     // One uniform parent transform scales the RT, portraits, highlights, effects and hit conversion together.
     if(this.board) this.board.node.setScale(this.zoom,this.zoom,1);
+    if(previous!==this.zoom)this.node.emit(BOARD_ZOOM_CHANGED,this.zoom);
     if(this.ready&&!this.pinchBlocking){this.unschedule(this.validateAlignment);this.scheduleOnce(this.validateAlignment,0);}
   }
 

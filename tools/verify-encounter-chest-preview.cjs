@@ -20,7 +20,7 @@ const output=path.resolve('.test-build/encounter-chest');fs.mkdirSync(output,{re
   const report={};
   report.initial=await page.evaluate(()=>{
    window.stage=ccTest.find('Canvas/Stage').getComponent('BattleStage');
-   window.makeRun=seed=>new stage.session.constructor(stage.cfg,stage.runConfig,stage.waveTemplates,{runSeed:seed,stageCount:6,enemyGenerationMode:'legacy',equipmentPolicy:stage.equipmentPolicy,enemyRoles:stage.enemyRoles,formationConfig:stage.formationConfig,enemyDifficulty:stage.enemyDifficulty,enemyPower:stage.enemyPower});
+   window.makeRun=seed=>new stage.session.constructor(stage.cfg,stage.runConfig,stage.waveTemplates,{runSeed:seed,stageCount:6,enemyGenerationMode:'budget-v1',equipmentPolicy:stage.equipmentPolicy,enemyRoles:stage.enemyRoles,formationConfig:stage.formationConfig,enemyDifficulty:stage.enemyDifficulty,enemyPower:stage.enemyPower});
    stage.session=makeRun(7);stage.resetBattle(false);stage.refreshShopUI();stage.refreshEconomyUI();stage.refreshRunUI();
    return{health:stage.flow.health,label:stage.ui.healthLabel.string};
   });

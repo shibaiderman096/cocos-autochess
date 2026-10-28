@@ -62,7 +62,7 @@ console.log('PASS Gravity Executor: radius 2/eight pulses, ranks/sides, dynamic 
  const {RunSession}=require('../assets/scripts/core/RunSession.ts');
  const {loadRunInputs}=require('../tools/run-simulation.ts');const input=loadRunInputs();
  const cfg=new ConfigManager();cfg.setBattle(input.battle);cfg.setUnits(input.units);cfg.setSkills(input.skills);cfg.setEquipment(input.equipment);
- const s=new RunSession(cfg,input.run,input.waves,{runSeed:1024,stageCount:3,enemyGenerationMode:'legacy'});
+ const s=new RunSession(cfg,input.run,input.waves,{runSeed:1024,stageCount:3,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  s.level.level=10;s.economy.add(100000);const wave=s.waves.find(w=>w.stage===2&&w.encounterKind==='normal');assert.ok(s.debugJump(2,wave.round));
  const wanted=new Set(['xiya','nebula_weaver','gravity_executor']);
  for(let n=0;n<300&&wanted.size;n++){
@@ -70,7 +70,7 @@ console.log('PASS Gravity Executor: radius 2/eight pulses, ranks/sides, dynamic 
   if(wanted.size)assert.ok(s.refreshShop().ok);
  }
  assert.equal(wanted.size,0,'all three characters enter ordinary shop rolls and can actually be bought');
- const restored=new RunSession(cfg,input.run,input.waves,{runSeed:1024,stageCount:3,enemyGenerationMode:'legacy',save:s.snapshot()});
+ const restored=new RunSession(cfg,input.run,input.waves,{runSeed:1024,stageCount:3,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),save:s.snapshot()});
  assert.ok(['xiya','nebula_weaver','gravity_executor'].every(id=>restored.owned.all().some(u=>u.unitId===id)),'purchases survive save and restore');
  console.log('PASS all three new Astral characters: actual ordinary shop rolls, paid purchases and save restoration');
 }

@@ -3,7 +3,6 @@
  */
 import { EconomySystem, DEFAULT_ECONOMY_CONFIG } from '../assets/scripts/core/EconomySystem';
 import { LevelSystem, LEVEL_UP_EXP, MAX_LEVEL, EXP_PER_BATTLE } from '../assets/scripts/core/LevelSystem';
-import { migrateSave, SAVE_VERSION } from '../assets/scripts/core/SaveData';
 
 let pass = 0, fail = 0;
 function assert(cond: boolean, msg: string): void {
@@ -20,10 +19,10 @@ console.log('[1] 经济结算');
   assert(e.gold === 0, `初始金币应为 0，得 ${e.gold}`);
 
   const s1 = e.settleBattle(1, { winner: 0 });
-  assert(s1.floorIncome === 0 && s1.winBonus === 1 && s1.interest === 0 && s1.streakBonus === 0, '首胜只获得胜利金币');
+  assert(s1.winBonus === 1 && s1.interest === 0 && s1.streakBonus === 0, '首胜只获得胜利金币');
   assert(s1.total === 1 && e.gold === 1, '首胜收入1金币');
   const s2 = e.settleBattle(2, { winner: 0 });
-  assert(s2.winStreak === 2 && s2.streakBonus === 1 && s2.floorIncome === 0, '两连胜奖励1，无阶段金币');
+  assert(s2.winStreak === 2 && s2.streakBonus === 1, '两连胜奖励1，无阶段金币');
   assert(s2.total === 2 && e.gold === 3, '第二场收入2金币');
   const s3 = e.settleBattle(3, { winner: 1 });
   assert(s3.winStreak === 0 && s3.loseStreak === 1 && s3.total === 0, '首败没有基础或胜利金币');
@@ -120,7 +119,8 @@ console.log('[6] 等级经验');
   const lv3 = new LevelSystem();
   lv3.addExp(3); // 1→2 需 2，剩 1
   assert(lv3.level === 2 && lv3.exp === 1, `3 经验应升 2 级剩 1，得 Lv.${lv3.level} exp=${lv3.exp}`);
-  for (const [index, need] of [32, 48, 74, 96, 128].entries()) {
+  assert(LEVEL_UP_EXP.every(need => need % 2 === 0), '所有等级经验需求均为偶数');
+  for (const [index, need] of [28, 44, 66, 86, 116].entries()) {
     const level = index + 5, boundary = new LevelSystem({ level, exp: need - 1 });
     assert(boundary.expToNext() === need, `${level}→${level + 1} 应需 ${need} 经验`);
     assert(boundary.level === level, '未达到门槛时保留当前等级');
@@ -143,31 +143,6 @@ console.log('[7] 10 级上限');
   const lv2 = new LevelSystem({ level: 9, exp: 0 });
   lv2.addExp(500);
   assert(lv2.level === 10, `9 级 +500 应停在 10 级，得 ${lv2.level}`);
-}
-
-// ─── 8. 旧存档兼容 ───
-console.log('[8] 旧存档兼容');
-{
-  // 完全空档
-  const s1 = migrateSave(null);
-  assert(s1.version === SAVE_VERSION, '版本号应写入');
-  assert(s1.gold === DEFAULT_ECONOMY_CONFIG.initialGold, `空档金币默认 ${DEFAULT_ECONOMY_CONFIG.initialGold}，得 ${s1.gold}`);
-  assert(s1.floor === 1 && s1.level === 1 && s1.exp === 0, '空档 floor=1 level=1 exp=0');
-
-  // 部分字段旧档
-  const s2 = migrateSave({ floor: 3 });
-  assert(s2.floor === 3, '保留已有 floor');
-  assert(s2.level === 1 && s2.gold === DEFAULT_ECONOMY_CONFIG.initialGold, '缺失字段用默认值');
-
-  // 非法值
-  const s3 = migrateSave({ gold: -50, level: 99, exp: 'abc' });
-  assert(s3.gold === 0, `负金币应钳到 0，得 ${s3.gold}`);
-  assert(s3.level === 10, `超上限等级应钳到 10，得 ${s3.level}`);
-  assert(s3.exp === 0, `非数字经验应钳到 0，得 ${s3.exp}`);
-
-  // 正常读回
-  const s4 = migrateSave({ version: 1, floor: 5, gold: 33, level: 4, exp: 7, winStreak: 2, loseStreak: 0 });
-  assert(s4.floor === 5 && s4.gold === 33 && s4.level === 4 && s4.exp === 7 && s4.winStreak === 2, '合法档应原样保留');
 }
 
 // ─── 结果 ───

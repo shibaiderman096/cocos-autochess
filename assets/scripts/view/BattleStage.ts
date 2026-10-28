@@ -17,13 +17,13 @@ import type { OwnedUnit, ItemStatGrowth } from '../core/OwnedUnits';
 import { UNIT_ART, M2_UI_SPRITE, UI_SPRITE } from './ArtPaths';
 import { BattleReplayer } from './BattleReplayer';
 import { GameAudio } from './GameAudio';
-import { FloatingRuinsBoard, BOARD_PINCH_START } from './FloatingRuinsBoard';
+import { FloatingRuinsBoard, BOARD_PINCH_START, BOARD_ZOOM_CHANGED } from './FloatingRuinsBoard';
 import { GameLoadingOverlay } from '../ui/GameLoadingOverlay';
 import { BattleUI } from '../ui/BattleUI';
 import { StageRewardPanel } from '../ui/StageRewardPanel';
 import { freshRunSeed } from '../core/RunRandomContext';
 import type { StageChoice, StageRewardGrant } from '../core/StageProgression';
-import { loadSaveV2, writeSaveV2 } from '../core/ShopSave';
+import { loadRunSave, writeRunSave } from '../core/ShopSave';
 import { RunSession } from '../core/RunSession';
 import { COST_PRICE, Cost, sellPrice } from '../core/ShopConfig';
 import { WaveConfig } from '../core/RoundFlow';
@@ -67,6 +67,7 @@ export class BattleStage extends Component {
   private shopVisitor: ShopVisitor | null = null;
   private bossChest: ShopVisitor | null = null;
   private explorerChest: ShopVisitor | null = null;
+  private traitChoiceIdentity = '';
   private expeditionPortal: Node | null = null;
   private portalRequested = false;
   private stageRewardOpen = false;
@@ -111,7 +112,7 @@ export class BattleStage extends Component {
     PlayerDamageFlight.preload();
     this.loadScreen = GameLoadingOverlay.show(this.node.parent ?? this.node, '正在布置棋盘');
     try {
-      const loadedSave = loadSaveV2();
+      const loadedSave = loadRunSave();
       await this.loadConfigs();
       if (!this.isValid) return;
       this.session = new RunSession(this.cfg, this.runConfig, this.waveTemplates, {
@@ -164,7 +165,9 @@ export class BattleStage extends Component {
       this.speed = settings.speed;
       this.replayer.damageNumbers = settings.damageNumbers;
       this.replayer.healingNumbers = settings.healingNumbers;
+      this.node.parent?.getComponent(FloatingRuinsBoard)?.setZoom(settings.cameraZoom);
     };
+    this.node.parent?.on(BOARD_ZOOM_CHANGED,this.onBoardZoomChanged,this);
     this.ui.onSettings(this.ui.getBattleSettings());
     this.ui.onRestart = () => this.restart();
     this.ui.onNextWave = () => this.nextSpecialEncounter();
@@ -534,6 +537,7 @@ export class BattleStage extends Component {
       this.resetDrag();
       this.refreshOwnedViews();
       this.persistShopState();
+      this.refreshShopUI();
       return;
     }
 
@@ -560,6 +564,7 @@ export class BattleStage extends Component {
     this.resetDrag();
     this.resetBattle(false);
     this.persistShopState();
+    this.refreshShopUI();
   }
 
   /** 备战席槽位的世界坐标（棋盘下方一排） */
@@ -621,7 +626,7 @@ export class BattleStage extends Component {
     if(!result.ok){this.ui.showWarn(result.error==='copy_cost_limit'?'该复制器无法复制此费用棋子':result.error==='pool_empty'?'该棋子卡池已空，道具未消耗':result.error==='bench_full'?'备战席已满且无法合成，道具未消耗':result.error==='population_cap'?'请先减少上阵棋子再操作':result.error==='attribute_overflow'?'属性已达上限，道具未消耗':'该棋子已装备3件');return;}
     GameAudio.play('equip');
     this.persistShopState(); this.refreshOwnedViews(); this.refreshRunUI();
-    if(this.owned.get(uid))this.showOwnedDetail(uid);else this.ui.closeUnitDetail();
+    if(this.owned.get(uid)&&!this.session.pendingTraitChoice)this.showOwnedDetail(uid);else this.ui.closeUnitDetail();
     if(result.copiedUnitId)this.ui.showWarn(`已复制1张一星${this.cfg.getUnit(result.copiedUnitId).name}`);
   }
   private refreshBackpack(): void {
@@ -711,11 +716,11 @@ export class BattleStage extends Component {
     this.refreshBackpack();
     this.ui.refreshRun(this.damageHealthBefore ?? this.flow.health, this.cfg.battle.initialHealth, this.flow.waveIndex + 1, this.waves.length, this.flow.wave.name,
       this.flow.wave, this.save.stageCount, this.waves.filter(w => w.stage === this.flow.wave.stage).map(w => w.encounterKind ?? 'normal'));
-    this.ui.setRewardStorage(this.save.stageProgress?.unitReserve.length ?? 0, this.save.stageProgress?.unitCredit ?? 0, this.save.stageProgress?.equipmentCredit ?? 0);
+    this.ui.setRewardStorage(this.save.stageProgress?.unitReserve.length ?? 0);
     const pending = this.session.pendingStageReward;
     const shopEncounter = this.flow.phase === 'prepare' && pending?.kind === 'specialShop';
     if (!pending) this.stageRewardOpen = false;
-    if (!this.session.pendingTraitChoice) this.stageRewards.show((pending?.kind === 'unitBundle' || pending?.kind === 'bossChoice'||pending?.kind==='mixedChest') && !this.stageRewardOpen ? undefined : pending, this.economy.gold);
+    if (!this.session.pendingTraitChoice) this.stageRewards.show((pending?.kind==='mixedChest') && !this.stageRewardOpen ? undefined : pending, this.economy.gold);
     this.refreshShopContent();
     this.ui.setShopEncounter(shopEncounter);
     // A real back-row tile keeps the prop away from the central restored enemy portrait.
@@ -729,14 +734,12 @@ export class BattleStage extends Component {
     this.bossChest?.setVisible(chestVisible);
     const explorerVisible=this.session.explorerChestVisible;
     const explorerPosition=this.boardNode.getComponent(BoardView)!.cellToWorld(0,3);explorerPosition.x-=72;
-    if(explorerVisible&&!this.explorerChest)this.explorerChest=new ShopVisitor(this.boardNode,explorerPosition,()=>this.openExplorerChest(),'chest',{
-      name:'explorerChest',modelScale:.7,yawDegrees:90,canEnter:()=>{
-        if(this.transitioning||this.rewardFlight||this.damageFlight||this.draggingId||this.flow.phase==='battle'||!this.session.explorerChestVisible)return false;
-        if(!this.session.explorerPoints){this.ui.showWarn('探索战斗后积累探险值，再开启宝箱');return false;}
-        return this.session.explorerChestOpenable;
-      }});
-    this.explorerChest?.setLootCaption(this.session.explorerPoints,this.session.explorerChestQualityRates,sys.isMobile?1.7:1);
+    if(explorerVisible&&!this.explorerChest)this.explorerChest=new ShopVisitor(this.boardNode,explorerPosition,()=>this.inspectExplorerChest(),'chest',{
+      name:'explorerChest',modelScale:.7,yawDegrees:90,inspectOnClick:true,canEnter:()=>
+        !this.transitioning&&!this.rewardFlight&&!this.damageFlight&&!this.draggingId&&this.session.explorerChestVisible});
+    this.explorerChest?.setLootCaption(this.session.explorerPoints,sys.isMobile?1.2:1);
     this.explorerChest?.setVisible(explorerVisible);
+    if(!explorerVisible||this.flow.phase==='battle')this.ui.hideExplorerChest();
     const portalVisible = this.session.portalAvailable && !this.transitioning;
     if (portalVisible && !this.expeditionPortal) {
       this.expeditionPortal = new Node('expeditionPortal'); this.expeditionPortal.layer = this.boardNode.layer;
@@ -766,7 +769,7 @@ export class BattleStage extends Component {
       || !this.session.pendingStageReward) return;
     const pending = this.session.pendingStageReward;
     if (!this.stageRewardOpen) GameAudio.play(pending.kind === 'specialShop' ? 'confirm' : 'chest');
-    if (pending.kind==='mixedChest'||pending.kind === 'bossChoice' || (this.flow.wave.encounterKind === 'monster' && pending.kind === 'unitBundle')) {
+    if (pending.kind==='mixedChest') {
       this.chooseStageReward({ type: 'stageChoice', rewardId: pending.id, choice: 'claim' });
       return;
     }
@@ -788,21 +791,24 @@ export class BattleStage extends Component {
   private chooseStageReward(action: StageChoice): void {
     if (this.rewardFlight || this.explorerChest?.isOpening) return;
     const pending = this.session.pendingStageReward;
-    let rewards = pending?.kind === 'unitBundle' && action.choice === 'claim' ? [...pending.units] : [];
-    const before = rewards.length || pending?.kind === 'bossChoice'||pending?.kind==='mixedChest' ? this.owned.snapshot() : [];
-    const beforeEquipment = pending?.kind === 'bossChoice'||pending?.kind==='mixedChest' ? this.owned.equipmentReserve.length : 0;
+    const before = pending?.kind==='mixedChest' ? this.owned.snapshot() : [];
     const result = this.session.claimStageReward(action);
     if (!result.ok) { this.ui.showWarn(result.error === 'dice_rolling' ? '请等待摇骰结算' : result.error === 'not_enough_gold' ? '金币不足' : result.error === 'unit_sold_out' ? '该棋子已售罄' : '无法领取该奖励'); return; }
     GameAudio.play(action.choice==='refresh'?'refresh':'reward');
-    if (result.stageReward?.kind === 'units') rewards = result.stageReward.units;
     this.persistShopState();
     if(result.stageReward?.kind==='mixed'){
       if(this.flyMixedChestRewards(result.stageReward,before))return;
       this.finishStageReward();return;
     }
-    if (rewards.length && this.flyChestRewards(rewards, before)) return;
-    if (result.stageReward && result.stageReward.kind !== 'units' && this.flyChestSupplies(result.stageReward, beforeEquipment)) return;
     this.finishStageReward();
+  }
+
+  private inspectExplorerChest():void {
+    this.ui.showExplorerChest(this.session.explorerPoints,this.session.explorerChestQualityRates,
+      this.flow.phase!=='battle'&&this.session.explorerChestOpenable,()=>{
+        if(this.transitioning||this.rewardFlight||this.damageFlight||this.draggingId||this.flow.phase==='battle'||!this.session.explorerChestOpenable)return;
+        this.explorerChest?.openChest(()=>this.openExplorerChest());
+      });
   }
 
   private openExplorerChest():void {
@@ -843,62 +849,6 @@ export class BattleStage extends Component {
     });
     return true;
   }
-  private flyChestSupplies(reward: Exclude<StageRewardGrant, { kind: 'units' }|{kind:'mixed'}>, firstEquipment: number): boolean {
-    if (reward.kind === 'equipment' && !reward.equipmentIds.length) return false;
-    this.stageRewards.hide(); this.stageRewardOpen = false; this.nextWaveRemaining = null;
-    const root = new Node('chestRewardFlight'); root.layer = this.ui.node.layer; this.ui.node.addChild(root);
-    const transform = root.addComponent(UITransform); transform.setContentSize(1280, 720);
-    const worldToOverlay = (node: Node, local = new Vec3()): Vec3 => transform.convertToNodeSpaceAR(
-      node.getComponent(UITransform)!.convertToWorldSpaceAR(local));
-    const flight = this.rewardFlight = root.addComponent(ChestRewardFlight);
-    let targets: ChestFlightTarget[];
-    if (reward.kind === 'equipment') {
-      this.refreshBackpack(); this.ui.prepareBackpackReward(firstEquipment);
-      targets = reward.equipmentIds.map((id, index) => {
-        const slot = this.ui.backpackRewardSlot(firstEquipment+index);
-        return { art: this.cfg.getEquipmentReserve([id])[0].icon, recipient: slot,
-          size: { width: 48, height: 48 }, position: () => worldToOverlay(slot ?? this.ui.backpackRewardAnchor) };
-      });
-    } else {
-      targets = [{ art: M2_UI_SPRITE.stat_hp, size: { width: 48, height: 48 },
-        position: () => worldToOverlay(this.ui.healthRewardAnchor), land: () => {
-          this.refreshRunUI(); this.ui.showWarn(reward.amount ? `恢复 ${reward.amount} 点生命` : '生命已满');
-        } }];
-    }
-    flight.play(() => worldToOverlay(this.boardNode, this.bossChest?.rewardOrigin()
-      ?? this.boardNode.getComponent(BoardView)!.cellToWorld(3, 6)), targets, () => {
-      this.rewardFlight = null; this.finishStageReward();
-    });
-    return true;
-  }
-
-  private flyChestRewards(rewards: string[], before: OwnedUnit[]): boolean {
-    const plan = rewardDeliveryPlan(rewards, before, this.owned.snapshot());
-    if (!plan.length) return false;
-    // Core ownership is already committed. Refresh real landing nodes, but hide recipients until arrival.
-    this.refreshOwnedViews(false); this.stageRewards.hide(); this.stageRewardOpen = false;
-    this.nextWaveRemaining = null;
-    const root = new Node('chestRewardFlight'); root.layer = this.ui.node.layer; this.ui.node.addChild(root);
-    const transform = root.addComponent(UITransform); transform.setContentSize(1280, 720);
-    const worldToOverlay = (node: Node, local = new Vec3()): Vec3 => transform.convertToNodeSpaceAR(
-      node.getComponent(UITransform)!.convertToWorldSpaceAR(local));
-    const flight = this.rewardFlight = root.addComponent(ChestRewardFlight);
-    const targets = plan.map(delivery => {
-      const view = delivery.uid === undefined ? undefined : this.ownedViews.get(delivery.uid);
-      const cfg = this.cfg.getUnit(delivery.unitId), old = before.find(unit => unit.uid === delivery.uid);
-      const upgraded = old && delivery.uid !== undefined && this.owned.get(delivery.uid)!.star > old.star;
-      return {art: UNIT_ART[cfg.artId ?? cfg.id] ?? UNIT_ART[cfg.id], recipient: view?.node,
-        position: () => view ? worldToOverlay(view.node, new Vec3(0, 18, 0))
-          : worldToOverlay(this.ui.rewardStorageAnchor ?? this.ui.node),
-        land: upgraded ? () => view?.playStarUpgrade() : undefined};
-    });
-    flight.play(() => worldToOverlay(this.boardNode, this.bossChest?.rewardOrigin()
-      ?? this.boardNode.getComponent(BoardView)!.cellToWorld(3, 6)), targets, () => {
-      this.rewardFlight = null; this.finishStageReward(false);
-    });
-    return true;
-  }
-
   private finishStageReward(refreshOwned = true): void {
     if (refreshOwned) this.refreshOwnedViews();
     this.refreshShopUI(); this.refreshEconomyUI(); this.refreshRunUI();
@@ -1061,9 +1011,11 @@ export class BattleStage extends Component {
     this.persistShopState(); this.refreshShopUI(); this.refreshEconomyUI(); this.refreshRunUI();
     this.ui.showWarn(`已跳转到${stage}-${round}`);
   }
+  private onBoardZoomChanged(zoom: number): void { this.ui.setCameraZoom(zoom); }
   onDestroy(): void {
     if(this.damageFlight){this.damageFlight.cancel();this.damageFlight.node.destroy();this.damageFlight=null;}
     this.node.parent?.off(BOARD_PINCH_START, this.cancelBoardDrag, this);
+    this.node.parent?.off(BOARD_ZOOM_CHANGED, this.onBoardZoomChanged, this);
     this.unschedule(this.finishInitialLoading);
     this.loadScreen?.finish(); this.loadScreen = null;
     this.stageRewards?.hide();
@@ -1124,11 +1076,12 @@ export class BattleStage extends Component {
   }
 
   private persistShopState() {
-    writeSaveV2(this.session.snapshot());
+    writeRunSave(this.session.snapshot());
     this.refreshBackpack();
   }
 
   private refreshShopUI() {
+    const deployed=new Set(this.owned.onBoard().map(unit=>unit.unitId));
     const slots = this.shop.slots.map(s => {
       if (!s.unitId) return { unitId: null, name: '', cost: 0, price: 0, poolLeft: 0 };
       const cfg = this.unitMap().get(s.unitId)!;
@@ -1138,6 +1091,7 @@ export class BattleStage extends Component {
         name: cfg.name,
         cost, price: COST_PRICE[cost],
         poolLeft: this.pool.count(s.unitId),
+        deployed: deployed.has(s.unitId),
         upgradeStar: this.owned.purchaseUpgradeStar(s.unitId),
         artId:cfg.artId, role:cfg.role, damageType:cfg.damageType, tint:cfg.tint,
       };
@@ -1151,15 +1105,20 @@ export class BattleStage extends Component {
     const traitChoice = this.session.pendingTraitChoice;
     if (traitChoice) {
       this.ui.setShopContentOccupied(true); this.ui.hideOpeningEncounter(); this.ui.hideFightBtn();
+      const identity=JSON.stringify(traitChoice);
+      if(this.traitChoiceIdentity!==identity){
+        this.traitChoiceIdentity=identity;this.ui.hideExplorerChest();this.ui.closeUnitDetail();this.ui.revealShopContent();
+      }
       this.stageRewards.showTraitChoice(traitChoice, this.owned.all(), index => {
         if (!this.session.chooseEquipmentTrait(index).ok) return;
         this.persistShopState(); this.resetBattle(false); this.refreshRunUI(); this.showOwnedDetail(traitChoice.uid);
       });
       return;
     }
+    this.traitChoiceIdentity='';
     const pending = this.session.pendingStageReward;
     // Keep the outgoing shop hidden until advanceWave swaps the encounter under the curtain.
-    const boardChest=pending&&['unitBundle','bossChoice','mixedChest'].includes(pending.kind);
+    const boardChest=pending&&pending.kind==='mixedChest';
     const stageContent = this.flow.wave.encounterKind === 'specialShop' || (!!pending && (!boardChest || this.stageRewardOpen));
     this.ui.setShopContentOccupied(stageContent || this.session.pendingOpeningEncounter || !!this.session.pendingEquipmentReward);
     if (this.session.pendingOpeningEncounter) {

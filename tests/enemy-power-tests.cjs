@@ -65,8 +65,4 @@ test('star and equipment diagnostics expose non-monotonic evidence instead of fo
  assert.ok(analysis.negativeEquipment.some(r=>r.unitId==='warrior'&&r.star===1&&r.equipment==='guinsoo'));
  const m=new EnemyPowerModel(fixture);assert.ok(m.estimateUnitPower({unitId:'warrior',star:1,equipment:['guinsoo']}).power<m.estimateUnitPower({unitId:'warrior',star:1}).power);
 });
-test('P0 archived waves remain reproducible',()=>{
- const {buildRunWaves}=require('../assets/scripts/core/RunSetup.ts'),inputs=require('./historical-inputs.cjs').archivedInputs;
- assert.deepEqual(buildRunWaves(99,inputs.run,inputs.waves,inputs.units),require('../docs/p0-enemy-difficulty/baseline/waves-before.json'));
-});
 console.log(`EnemyPowerModel: ${passed} passed, 0 failed`);

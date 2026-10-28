@@ -598,6 +598,7 @@ export class BattleSim {
   }
 
   private updateUnit(u: Unit) {
+    if(u.attackTargetId!==null&&!this.attackTarget(u,u.attackTargetId))this.releaseAttackTarget(u);
     if (this.ropeHunt.busy(u)) return;
     if (this.bloodReign.busy(u)) return;
     if (u.atkCd > 0) u.atkCd--;
@@ -976,10 +977,11 @@ export class BattleSim {
     const preparedTarget = u.bloodCleaveWindup && this.units.find(e => e.id === u.bloodCleaveWindup!.targetId
       && this.targetable(e) && e.hp>0 && u.canSelectEnemy(e) && e.side!==u.side && dist(u.pos,e.pos)<=u.cfg.range
       && (u.tauntSourceId===null||u.tauntSourceId===e.id));
-    const target = priority ?? preparedTarget ?? this.nearestEnemy(u);
+    const target = this.selectAttackTarget(u, priority ?? preparedTarget ?? null);
     if (!target) { u.bloodCleaveWindup = null; return; }
 
     const d = dist(u.pos, target.pos);
+    if(d<=u.cfg.range)u.blockedTargetSinceTick=null;
 
     if (canCast && teleportSkill?.effect === 'sandCompass' && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0 && d<=u.cfg.range) {
       const duration = teleportSkill.castSeconds!;
@@ -1083,8 +1085,14 @@ export class BattleSim {
         const from = { x: u.x, y: u.y };
         u.x = step.x;
         u.y = step.y;
-        u.moveCd = u.cfg.moveTicks;
-        this.events.push({ t: 'move', tick: this.tick, id: u.id, from, to: { ...step } });
+        u.blockedTargetSinceTick=null;
+        u.moveCd = this.configs.battle.movementCellsPerSecond===undefined ? u.cfg.moveTicks
+          : Math.max(1,Math.round(1000/this.configs.battle.tickMs/this.configs.battle.movementCellsPerSecond));
+        this.events.push({ t: 'move', tick: this.tick, id: u.id, from, to: { ...step }, durationTicks:u.moveCd });
+      } else if(u.blockedTargetSinceTick===null) {
+        u.blockedTargetSinceTick=this.tick;
+      } else if(this.tick-u.blockedTargetSinceTick>=this.attackCooldown(u)) {
+        this.releaseAttackTarget(u);
       }
     }
   }
@@ -1454,6 +1462,47 @@ export class BattleSim {
     if (amount > 0) this.events.push({ t: 'trait_mana', tick: this.tick, id: unit.id, amount, mana: unit.mana });
   }
 
+  private attackTarget(source: Unit, id: number): Unit | null {
+    return this.units.find(enemy=>enemy.id===id&&enemy.side!==source.side&&enemy.hp>0
+      &&this.targetable(enemy)&&source.canSelectEnemy(enemy))??null;
+  }
+
+  private get retargetCooldown(): number {
+    return Math.max(1, Math.round((this.configs.battle.targeting?.retargetSeconds ?? 0.5) * 1000 / this.configs.battle.tickMs));
+  }
+
+  private releaseAttackTarget(unit: Unit): void {
+    if(unit.priorityTarget===unit.attackTargetId)unit.priorityTarget=null;
+    unit.attackTargetId=null;unit.blockedTargetSinceTick=null;
+    unit.retargetAtTick=this.tick+this.retargetCooldown;
+    unit.bloodCleaveWindup=null;
+  }
+
+  private selectAttackTarget(unit: Unit, skillTarget: Unit | null): Unit | null {
+    // Forced skill targets override a normal lock and its recovery delay.
+    const forced=unit.tauntSourceId===null?skillTarget:this.attackTarget(unit,unit.tauntSourceId);
+    if(forced){
+      if(unit.attackTargetId!==forced.id)unit.blockedTargetSinceTick=null;
+      unit.attackTargetId=forced.id;unit.retargetAtTick=0;return forced;
+    }
+    const locked=unit.attackTargetId===null?null:this.attackTarget(unit,unit.attackTargetId);
+    if(locked)return locked;
+    if(this.tick<unit.retargetAtTick)return null;
+    const tank=(enemy:Unit)=>['tank','magicTank','frontline'].includes(enemy.cfg.role??'');
+    const bias=this.configs.battle.targeting?.tankDistanceBias??0;
+    const candidates=this.units.filter(enemy=>enemy.side!==unit.side&&enemy.hp>0&&this.targetable(enemy)&&unit.canSelectEnemy(enemy))
+      .sort((a,b)=>Number(dist(unit.pos,a.pos)>unit.cfg.range)-Number(dist(unit.pos,b.pos)>unit.cfg.range)
+        ||(dist(unit.pos,a.pos)-Number(tank(a))*bias)-(dist(unit.pos,b.pos)-Number(tank(b))*bias)
+        ||Number(tank(b))-Number(tank(a))||a.id-b.id);
+    for(const enemy of candidates){
+      if(dist(unit.pos,enemy.pos)>unit.cfg.range&&!nextStep(unit.pos,this.w,this.h,
+        (x,y)=>this.occupied(x,y),(x,y)=>dist({x,y},enemy.pos)<=unit.cfg.range))continue;
+      unit.attackTargetId=enemy.id;unit.blockedTargetSinceTick=null;return enemy;
+    }
+    unit.retargetAtTick=this.tick+this.retargetCooldown;
+    return null;
+  }
+
   /** 最近敌人；平手取 id 小者（遍历有序保证确定性） */
   private nearestEnemy(u: Unit): Unit | null {
     let best: Unit | null = null;
@@ -1486,7 +1535,8 @@ export class BattleSim {
     if (manaDamage > 0 && unit.cfg.maxMana > 0) {
       const priority = this.units.find(enemy => enemy.id === unit.priorityTarget && this.targetable(enemy) && unit.canSelectEnemy(enemy)
         && enemy.side !== unit.side && dist(unit.pos, enemy.pos) <= unit.cfg.range);
-      const target = priority ?? this.nearestEnemy(unit);
+      const locked=unit.attackTargetId===null?null:this.attackTarget(unit,unit.attackTargetId);
+      const target = priority ?? locked ?? this.nearestEnemy(unit);
       if (target) this.damage(unit, target, unit.cfg.maxMana * manaDamage, 'magic');
     }
     const effect = unit.spellblade;

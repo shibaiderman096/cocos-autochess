@@ -11,8 +11,7 @@ export function claimStageRewards(player: RunPlayerPort): ActionAttempt[] {
     }
     const o = player.observe(), p = o.pendingStageReward; if (!p) break;
     const base = { type: 'stageChoice' as const, rewardId: p.id };
-    if (p.kind === 'bossChoice') { if (!act({ ...base, choice: 'claim' })) break; }
-    else if (p.kind === 'specialShop') {
+    if (p.kind === 'specialShop') {
       for (let index = 0; index < p.offers.length; index++) {
         const offer = p.offers[index];
         if (!offer.bought && player.observe().state.gold >= offer.price) act({ ...base, choice: 'buy', index });

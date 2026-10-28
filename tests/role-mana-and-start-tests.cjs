@@ -10,10 +10,10 @@ const inputs=loadRunInputs();
 function cfg(){const c=new ConfigManager();c.setUnits(inputs.units);c.setSkills(inputs.skills);c.setBattle(inputs.battle);c.setEquipment(inputs.equipment);return c;}
 const starters=new Set();
 for(let seed=1;seed<=30;seed++){
- const s=new RunSession(cfg(),inputs.run,inputs.waves,{runSeed:seed,enemyGenerationMode:'legacy'}),unit=s.owned.all()[0];
+ const s=new RunSession(cfg(),inputs.run,inputs.waves,{runSeed:seed,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()}),unit=s.owned.all()[0];
  assert.equal(s.owned.all().length,1);assert.equal(s.cfg.getUnit(unit.unitId).cost,1);assert.equal(unit.star,1);starters.add(unit.unitId);assertLegalSession(s);
- const again=new RunSession(cfg(),inputs.run,inputs.waves,{runSeed:seed,enemyGenerationMode:'legacy'});assert.deepEqual(again.snapshot(),s.snapshot());
- const loaded=new RunSession(cfg(),inputs.run,inputs.waves,{save:s.snapshot()});assert.deepEqual(loaded.owned.snapshot(),s.owned.snapshot());assertLegalSession(loaded);
+ const again=new RunSession(cfg(),inputs.run,inputs.waves,{runSeed:seed,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});assert.deepEqual(again.snapshot(),s.snapshot());
+ const loaded=new RunSession(cfg(),inputs.run,inputs.waves,{save:s.snapshot(),...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});assert.deepEqual(loaded.owned.snapshot(),s.owned.snapshot());assertLegalSession(loaded);
 }
 assert.ok(starters.size>=3,'fresh seeds cover varied one-cost starters');
 const monsters=buildMonsterUnits(inputs.run,inputs.units);

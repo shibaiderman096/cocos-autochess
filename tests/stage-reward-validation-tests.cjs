@@ -32,7 +32,7 @@ console.log('PASS stage reward restore: valid states, unknown IDs, invalid price
 const {RunSession}=require('../assets/scripts/core/RunSession.ts');
 const run=require('../assets/resources/config/run.json'),waves=require('../assets/resources/config/waves.json');
 cfg.setSkills(require('../assets/resources/config/skills.json'));cfg.setBattle(require('../assets/resources/config/battle.json'));
-function session(save){return new RunSession(cfg,run,waves,{runSeed:7,stageCount:4,enemyGenerationMode:'legacy',...(save?{save}:{})});}
+function session(save){return new RunSession(cfg,run,waves,{runSeed:7,stageCount:4,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),...(save?{save}:{})});}
 const s=session(),shop=s.waves.find(w=>w.stage===3&&w.encounterKind==='specialShop');
 assert.ok(s.debugJump(shop.stage,shop.round));const saved=s.snapshot();
 assert.doesNotThrow(()=>session(saved),'valid persisted shop restores normally');

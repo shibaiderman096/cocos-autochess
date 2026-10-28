@@ -22,7 +22,7 @@ for(let stage=1;stage<=99;stage++)for(const winner of [0,1,null]){
  const action={type:'stageChoice',rewardId:state.pending.id,choice:'claim'};
  assert.equal(progress.act(action,wave).ok,true);assert.equal(state.pending,undefined);assert.equal(progress.act(action,wave).ok,false);
 }
-for(const mode of ['legacy','budget-v1']){
+for(const mode of ['budget-v1']){
  const s=new RunSession(config(),inputs.run,inputs.waves,{...deps,stageCount:6,runSeed:17,enemyGenerationMode:mode});
  const monsters=s.waves.filter(w=>w.encounterKind==='monster');
  for(const w of monsters){

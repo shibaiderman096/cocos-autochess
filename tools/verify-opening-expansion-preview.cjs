@@ -17,7 +17,7 @@ const output=path.resolve('docs/evidence/opening-expansion');fs.mkdirSync(output
   await page.waitForFunction(()=>ccTest.find('Canvas')?.getComponent('FloatingRuinsBoard')?.ready,null,{timeout:45000});
   await page.evaluate(()=>{
    window.stage=ccTest.find('Canvas/Stage').getComponent('BattleStage');
-   window.makeRun=(seed,save)=>new stage.session.constructor(stage.cfg,stage.runConfig,stage.waveTemplates,{runSeed:save?.runSeed??seed,stageCount:6,enemyGenerationMode:'legacy',openingEncounter:true,equipmentPolicy:stage.equipmentPolicy,enemyRoles:stage.enemyRoles,formationConfig:stage.formationConfig,enemyDifficulty:stage.enemyDifficulty,enemyPower:stage.enemyPower,...(save?{save}:{})});
+   window.makeRun=(seed,save)=>new stage.session.constructor(stage.cfg,stage.runConfig,stage.waveTemplates,{runSeed:save?.runSeed??seed,stageCount:6,enemyGenerationMode:'budget-v1',openingEncounter:true,equipmentPolicy:stage.equipmentPolicy,enemyRoles:stage.enemyRoles,formationConfig:stage.formationConfig,enemyDifficulty:stage.enemyDifficulty,enemyPower:stage.enemyPower,...(save?{save}:{})});
    window.bind=s=>{stage.nextWaveRemaining=null;stage.stageRewards.hide();stage.ui.hideOpeningEncounter();stage.ui.hideEquipmentReward();stage.session=s;stage.resetBattle(false);stage.refreshShopUI();stage.refreshEconomyUI();stage.refreshRunUI();};
   });
   const report={cases:[]};

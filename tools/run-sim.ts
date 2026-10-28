@@ -28,7 +28,7 @@ function parse(args: string[]): { options: SimulationOptions; json?: string; hel
       result.options.formation=value as SimulationOptions['formation'];continue;
     }
     if (flag === '--enemy-mode') {
-      if(value!=='legacy'&&value!=='budget-v1')throw new Error('Invalid --enemy-mode');
+      if(value!=='budget-v1')throw new Error('Invalid --enemy-mode');
       result.options.enemyGenerationMode=value;continue;
     }
     if (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value))) throw new Error(`Invalid integer for ${flag}`);
@@ -76,7 +76,7 @@ let code = 0;
 try {
   const parsed = parse(process.argv.slice(2));
   if (parsed.help) {
-    console.log('npm.cmd run run-sim -- --seed 1 [--bot minimal|weak|medium|strong] [--stages 99] [--enemy-mode legacy|budget-v1] [--formation auto|L0|L1|L2|L3] [--equipment-policy auto|none] [--max-stage 6] [--max-waves 20] [--json temp/run-1.json]');
+    console.log('npm.cmd run run-sim -- --seed 1 [--bot minimal|weak|medium|strong] [--stages 99] [--enemy-mode budget-v1] [--formation auto|L0|L1|L2|L3] [--equipment-policy auto|none] [--max-stage 6] [--max-waves 20] [--json temp/run-1.json]');
     console.log('MinimalBaselineBot validates infrastructure only. Default campaign: 99 stages; no wall-clock waiting.');
   } else {
     let report: RunSimulationReport;

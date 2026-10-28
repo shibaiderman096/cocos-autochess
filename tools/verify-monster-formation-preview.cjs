@@ -15,7 +15,7 @@ const out=path.resolve('temp/monster-formations');fs.mkdirSync(out,{recursive:tr
    const s=window.stage=cc.find('Canvas').getComponentInChildren('BattleStage');s.enabled=false;s.persistShopState=()=>{};
    const Session=s.session.constructor;
    window.installFormation=(level,intro=false)=>{
-    const run=new Session(s.cfg,s.runConfig,s.waveTemplates,{runSeed:5,stageCount:10,enemyGenerationMode:'legacy',openingEncounter:false,equipmentPolicy:s.equipmentPolicy,enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
+    const run=new Session(s.cfg,s.runConfig,s.waveTemplates,{runSeed:5,stageCount:10,enemyGenerationMode:'budget-v1',openingEncounter:false,equipmentPolicy:s.equipmentPolicy,enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
     const wave=intro?run.waves.find(w=>w.stage===1&&w.round===3):run.waves.find(w=>w.stage===level&&w.encounterKind==='monster');
     run.debugJump(wave.stage,wave.round);s.stageRewards.hide();s.ui.hideOpeningEncounter();s.ui.hideEquipmentReward();s.session=run;s.resetBattle(false);s.refreshShopUI();s.refreshEconomyUI();s.refreshRunUI();
     return{stage:wave.stage,round:wave.round,enemies:wave.enemies};

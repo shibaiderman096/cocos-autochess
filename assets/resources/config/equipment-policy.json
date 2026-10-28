@@ -42,7 +42,23 @@
     "stat_boost_spell_small": "special",
     "stat_boost_spell_medium": "special",
     "stat_boost_spell_large": "special",
-    "stat_boost_spell_super": "special"
+    "stat_boost_spell_super": "special",
+    "radiant_guinsoo": "special",
+    "radiant_totem_of_undying": "special",
+    "radiant_jeweled_gauntlet": "special",
+    "radiant_infinity_edge": "special",
+    "radiant_arcane_sovereignty": "special",
+    "radiant_crimson_bloodclaw": "special",
+    "radiant_abyssal_plate": "special",
+    "radiant_divine_judgment": "special",
+    "radiant_arcane_veil": "special",
+    "radiant_forest_sanctuary": "special",
+    "radiant_stonegrowth_bulwark": "special",
+    "radiant_blazing_feather": "special",
+    "radiant_arcane_overflow_codex": "special",
+    "radiant_spell_overdrive_armor": "special",
+    "radiant_divine_protection": "special",
+    "radiant_thousand_forged_armor": "special"
   },
   "enemy": {
     "calibratedItems": [
@@ -445,6 +461,70 @@
         "roles": []
       },
       "stat_boost_spell_super": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_guinsoo": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_totem_of_undying": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_jeweled_gauntlet": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_infinity_edge": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_arcane_sovereignty": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_crimson_bloodclaw": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_abyssal_plate": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_divine_judgment": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_arcane_veil": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_forest_sanctuary": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_stonegrowth_bulwark": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_blazing_feather": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_arcane_overflow_codex": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_spell_overdrive_armor": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_divine_protection": {
+        "enabled": false,
+        "roles": []
+      },
+      "radiant_thousand_forged_armor": {
         "enabled": false,
         "roles": []
       }

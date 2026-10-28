@@ -2,8 +2,6 @@ import type { Rng } from './Rng';
 
 export const OPENING_ENCOUNTER_IDS = ['inspiration', 'stipend', 'tempered', 'bounty', 'study', 'renewal'] as const;
 export type OpeningEncounterId = typeof OPENING_ENCOUNTER_IDS[number];
-/** Pending saves made before the six-choice pool keep the three cards they already showed. */
-export const LEGACY_OPENING_ENCOUNTERS: OpeningEncounterId[] = ['inspiration', 'stipend', 'tempered'];
 export interface OpeningEncounterRules {
   name: string;
   refreshesPerLevel: number;
@@ -18,7 +16,7 @@ export interface OpeningEncounterState {
   selected?: OpeningEncounterId;
   freeRefreshes: number;
   lastIncomeStage: number;
-  offered?: OpeningEncounterId[];
+  offered: OpeningEncounterId[];
 }
 export function drawOpeningEncounters(rng: Rng): OpeningEncounterId[] {
   const pool: OpeningEncounterId[] = [...OPENING_ENCOUNTER_IDS];

@@ -24,7 +24,7 @@ const output=path.resolve('docs/evidence/special-shop');fs.mkdirSync(output,{rec
   report.shop=await page.evaluate(()=>{const s=ccTest.find('Canvas/Stage').getComponent('BattleStage');window.stage=s;
    const Session=s.session.constructor;
    for(let seed=1;seed<=150;seed++){
-    const run=new Session(s.cfg,s.runConfig,s.waveTemplates,{runSeed:seed,enemyGenerationMode:'legacy',equipmentPolicy:s.equipmentPolicy,
+    const run=new Session(s.cfg,s.runConfig,s.waveTemplates,{runSeed:seed,enemyGenerationMode:'budget-v1',equipmentPolicy:s.equipmentPolicy,
       enemyRoles:s.enemyRoles,formationConfig:s.formationConfig,enemyDifficulty:s.enemyDifficulty,enemyPower:s.enemyPower});
     run.level.level=10;const wave=run.waves.find(w=>w.stage===2&&w.encounterKind==='specialShop');run.debugJump(2,wave.round);
     const offers=run.pendingStageReward.offers;

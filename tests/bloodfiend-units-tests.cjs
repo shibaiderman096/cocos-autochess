@@ -81,13 +81,13 @@ for(const flag of ['shadowBoardSide','sunlightJudgmentSide','astralMeteorSide'])
  assert.equal(next.cfg.damageAmp,cfg.equipmentStats({...cfg.scaleUnit(cfg.getUnit('bloodline_earl')),spellPower:effect.step*2},[item.id]).damageAmp,'battle entry includes saved power before equipment');
 }
 {
- const cfg=config(),session=new RunSession(cfg,input.run,input.waves,{runSeed:83,enemyGenerationMode:'legacy'});
+ const cfg=config(),session=new RunSession(cfg,input.run,input.waves,{runSeed:83,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  const owned=session.owned.forceAdd('bloodline_earl');owned.location='board';owned.x=3;owned.y=3;owned.permanentSpellPower=7;
  const sim=session.startBattle(),src=sim.units.find(u=>u.id===session.activeBattleIds.get(owned.uid)),enemy=sim.units.find(u=>u.side===1);
  assert.equal(src.cfg.spellPower,7);hit(sim,src,enemy,enemy.hp);hit(sim,enemy,src,src.hp);sim.end(1);
  assert.ok(session.settleBattle());assert.equal(owned.permanentSpellPower,9,'growth survives defeat and death');
  assert.equal(session.settleBattle(),null);assert.equal(owned.permanentSpellPower,9,'settlement is idempotent');
- const restored=new RunSession(cfg,input.run,input.waves,{save:session.snapshot(),enemyGenerationMode:'legacy'});
+ const restored=new RunSession(cfg,input.run,input.waves,{save:session.snapshot(),...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  assert.equal(restored.owned.get(owned.uid).permanentSpellPower,9);
  assert.equal(restored.createPreview().sim.units.find(u=>u.side===0&&u.cfg.id===owned.unitId).cfg.spellPower,9,'next round preview restores growth');
  const merged=new OwnedUnits([1,2,3].map((uid,i)=>({uid,unitId:owned.unitId,star:1,location:'bench',x:-1,y:i,permanentSpellPower:i+2})));

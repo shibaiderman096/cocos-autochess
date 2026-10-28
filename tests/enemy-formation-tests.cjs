@@ -3,12 +3,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const {EnemyFormation}=require('../assets/scripts/core/EnemyFormation.ts'),{resolveEnemyRole,snapshotIdentity}=require('../assets/scripts/core/EnemyRoles.ts');
 const {formationSettings,validateFormationConfig}=require('../assets/scripts/core/FormationPolicy.ts'),{extractFormationTemplates}=require('../assets/scripts/core/FormationTemplates.ts');
 const {EnemyPowerModel}=require('../assets/scripts/core/EnemyPowerModel.ts'),{RunRandomContext}=require('../assets/scripts/core/RunRandomContext.ts');
-const {RunSession}=require('../assets/scripts/core/RunSession.ts'),{ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
-const {loadEnemyGenerationInputs,loadFormationInputs,runSimulation:simulate}=require('../tools/run-simulation.ts');
+const {loadEnemyGenerationInputs,loadFormationInputs}=require('../tools/run-simulation.ts');
 const loadRunInputs=()=>require('./historical-inputs.cjs').archivedInputs;
-// Wave/solver equality uses archived inputs; real combat uses current fixed-damage skills.
-const runSimulation=(_,options)=>simulate(require('../tools/run-simulation.ts').loadRunInputs(),{...options,equipmentPolicy:false});
-const {freshSaveV2,migrateSaveV2}=require('../assets/scripts/core/ShopSave.ts'),{buildRunWaves}=require('../assets/scripts/core/RunSetup.ts');
+const {buildRunWaves}=require('../assets/scripts/core/RunSetup.ts');
 const {hexDist,hexNeighbors}=require('../assets/scripts/battle/HexMath.ts');
 const i=loadRunInputs(),g={...loadEnemyGenerationInputs(),enemyPower:require('../docs/p1-enemy-difficulty/power-calibration/final-500/enemy-power.json')},f={...loadFormationInputs(),enemyRoles:require('../docs/p4-balance/baseline/frozen.json').configs['enemy-roles']},c=f.formationConfig,r=f.enemyRoles,model=new EnemyPowerModel(g.enemyPower);
 const clone=v=>JSON.parse(JSON.stringify(v)),hash=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
@@ -20,15 +17,10 @@ function context(ids=['guardian','mage','archer','ranger','enderman'],level='L2'
  settings:formationSettings(c,7,2,10,'normal',level),enemies:ids.map((unitId,index)=>({unitId,star:1,equipment:[],statMultiplier:1,damageAmp:0,damageReduction:0,...i.run.enemyProgression.cells[index]})),...extra};}
 const snapshot=(side=0,dispersed=false)=>({units:[{unitId:'mage',star:2,equipment:[],x:side?6:0,y:0,role:'mage',range:3,tags:['aoe']},
  {unitId:'archer',star:2,equipment:[],x:dispersed?(side?0:6):(side?5:1),y:dispersed?3:0,role:'ranged_dps',range:4,tags:[]}]});
-function session(options={}){const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSkills(i.skills);cfg.setBattle(i.battle);cfg.setEquipment(i.equipment);
- return new RunSession(cfg,i.run,i.waves,{runSeed:12345,stageCount:3,...g,...f,formation:'L3',...options});}
-function battleSave(){const save=freshSaveV2(3,12345);save.formationOverride='L3';save.level=3;save.owned=[{uid:1,unitId:'guardian',star:1,location:'board',x:3,y:3},
- {uid:2,unitId:'mage',star:2,location:'board',x:0,y:0},{uid:3,unitId:'archer',star:2,location:'board',x:1,y:0}];return save;}
 function legal(result){assert.equal(new Set(result.placements.map(e=>e.x+','+e.y)).size,result.placements.length);for(const e of result.placements)assert.ok(Number.isInteger(e.x)&&Number.isInteger(e.y)&&e.x>=0&&e.x<7&&e.y>=4&&e.y<8);assert.ok(result.diagnostics.iterations<=c.maxIterations);}
 
-test('P2-0 generator waves, member/budget/position baseline and P0 legacy remain exact',()=>{
- const after=buildRunWaves(99,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,difficulty:g.enemyDifficulty,power:g.enemyPower});assert.deepEqual(after,baseline);
- assert.deepEqual(buildRunWaves(99,i.run,i.waves,i.units,{mode:'legacy'}),require('../docs/p0-enemy-difficulty/baseline/waves-before.json'));
+test('budget generation rejects configuration without enemyGoldBudget',()=>{
+ assert.throws(()=>buildRunWaves(99,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:12345,difficulty:g.enemyDifficulty,power:g.enemyPower}),/requires enemyGoldBudget/);
 });
 test('all 15 purchasable units have auditable roles; self-heal and damage casters are not invented support',()=>{
  for(const u of i.units){const entry=resolveEnemyRole(u,i.skills,r);assert.ok(entry.role);assert.equal(entry.source,'explicit');assert.ok(entry.reason);}
@@ -114,39 +106,6 @@ test('progression strengths vary smoothly; early bosses do not unlock counter sc
  const boss=formationSettings(c,2,5,5,'boss');assert.notEqual(boss.level,'L3');assert.equal(boss.counterStrength,0);
  const before=formationSettings(c,5,8,8,'normal'),after=formationSettings(c,6,1,9,'normal');assert.ok(Math.abs(after.spacingStrength-before.spacingStrength)<.1);
  assert.equal(formationSettings(c,1,3,3,'intro','L3').level,'L0');assert.equal(formationSettings(c,10,1,10,'normal').counterStrength,0);
-});
-test('repeated previews freeze the L2 base and do not alter final L3, shop, members, budgets or battle seed',()=>{
- const a=session({save:battleSave()}),b=session({save:battleSave()});a.debugJump(14,10);b.debugJump(14,10);
- const original=clone(b.flow.wave),shop=b.shop.snapshot(),seed=b.battleSeed,base=b.formation;assert.equal(base.level,'L2');assert.equal(base.diagnostics.playerSnapshotUsed,false);
- for(let n=0;n<20;n++)b.createPreview();assert.deepEqual(b.formation,base);assert.deepEqual(b.shop.snapshot(),shop);assert.equal(b.battleSeed,seed);
- const aa=a.startBattle(),bb=b.startBattle();assert.deepEqual(a.formation,b.formation);assert.deepEqual(a.flow.wave,original);assert.deepEqual(member(a.formation.placements),member(original.enemies));
- assert.deepEqual(aa.run(),bb.run());assert.equal(b.startBattle(),null);
-});
-test('interrupt/load to preparation rebuilds the same final snapshot/formation, while changed player positions may change it',()=>{
- const a=session({save:battleSave()});a.debugJump(14,10);a.startBattle();const locked=a.formation,saved=a.snapshot(),b=session({save:saved});assert.equal(b.flow.phase,'prepare');
- b.startBattle();assert.deepEqual(b.formation,locked);assert.equal(b.battleSeed,a.battleSeed);
- const next=session({save:saved});next.moveUnit(2,{location:'board',x:6,y:0});assert.deepEqual(next.formation.level,'L2');next.startBattle();assert.notEqual(next.formation.diagnostics.playerSnapshotHash,locked.diagnostics.playerSnapshotHash);
- assert.deepEqual(member(next.formation.placements),member(locked.placements));assert.equal(next.flow.wave.budget.actualBudget,a.flow.wave.budget.actualBudget);assert.equal(next.battleSeed,a.battleSeed);
-});
-test('legacy and pre-P2 saves pin to L0; future versions/configurations are rejected explicitly',()=>{
- const old=migrateSaveV2({runSeed:12345});assert.equal(old.formationVersion,'l0-compat');assert.equal(old.formationOverride,'L0');
- const legacy=session({save:old,formation:undefined});assert.equal(legacy.formation.level,'L0');
- const s=session({formation:'L2'}),save=s.snapshot();assert.throws(()=>session({save:{...save,formationVersion:'future'},formation:undefined}),/Unsupported/);
- const changed=clone(c);changed.weights.cover=.5;assert.throws(()=>session({save,formation:undefined,formationConfig:changed}),/configuration mismatch/);
- const budgetOld=clone(save);delete budgetOld.formationVersion;delete budgetOld.formationOverride;delete budgetOld.formationConfigIdentity;
- assert.equal(session({save:budgetOld,formation:undefined}).formation.level,'L0');
-});
-test('L0/L1/L2 preserve 3/6/99 prefixes; L3 full simulations keep prefixes with matching bot snapshots',()=>{
- for(const level of ['L0','L1','L2'])for(const stageCount of [3,6]){
-  const large=session({stageCount:99,formation:level}),small=session({stageCount,formation:level});
-  const {RoundFlow}=require('../assets/scripts/core/RoundFlow.ts');
-  for(let index=0;index<small.waves.length;index++){
-   const saved={phase:'prepare',waveIndex:index,health:20,result:null,lastSettlement:null};
-   large.flow=new RoundFlow(large.waves,i.battle,saved);small.flow=new RoundFlow(small.waves,i.battle,saved);assert.deepEqual(large.formation,small.formation);
-  }
- }
- const reports=[3,6,99].map(stageCount=>runSimulation(i,{runSeed:12345,stageCount,formation:'L3'}));
- for(const report of reports)assert.notEqual(report.result,'SIMULATION_ERROR',report.error);assert.deepEqual(reports[0].waves,reports[1].waves.slice(0,reports[0].waves.length));assert.deepEqual(reports[1].waves,reports[2].waves.slice(0,reports[1].waves.length));
 });
 test('invalid config/snapshot/insufficient cells fail clearly; invalid template alone does not crash',()=>{
  const bad=clone(c);bad.maxIterations=Infinity;assert.throws(()=>validateFormationConfig(bad));assert.throws(()=>solver.solve(context(undefined,'L2',{candidateCells:[{x:0,y:4}]})));

@@ -36,6 +36,22 @@ const {Node,UITransform}=h,root=new Node('root'),settings=new SettingsPanel(root
 const sound=settings.content.getChildByName('settingSoundVolume').getChildByName('volumeTrack');
 const music=settings.content.getChildByName('settingMusicVolume').getChildByName('volumeTrack');
 const fire=(n,type,x)=>n.events.get(Node.EventType[type])(event(x));
+const preferences=new Map();h.cc.sys.localStorage={getItem:k=>preferences.get(k)??null,setItem:(k,v)=>preferences.set(k,v)};
+const {loadBattlePreferences}=h.load(path.resolve('assets/scripts/ui/SettingsPanel.ts'));
+assert.equal(loadBattlePreferences().frameRate,60);assert.equal(loadBattlePreferences().cameraZoom,.84);
+preferences.set('autochess.battleSettings',JSON.stringify({speed:2,frameRate:55,cameraZoom:99}));
+assert.equal(loadBattlePreferences().frameRate,60);assert.equal(loadBattlePreferences().cameraZoom,1.344);
+preferences.clear();
+for(const rate of [30,60,90,120]){
+  settings.content.getChildByName(`settingFrameRate${rate}`).events.get(Node.EventType.TOUCH_END)();
+  assert.equal(h.cc.game.frameRate,rate);assert.equal(loadBattlePreferences().frameRate,rate);
+}
+const zoom=settings.content.getChildByName('settingCameraZoom').getChildByName('volumeTrack');
+fire(zoom,'TOUCH_START',-1000);assert.equal(loadBattlePreferences().cameraZoom,.64);
+fire(zoom,'TOUCH_END',1000);assert.equal(loadBattlePreferences().cameraZoom,1.344);
+assert.equal(settings.content.getChildByName('settingCameraZoom').children.filter(n=>n.getComponent(h.Label)).some(n=>n.getComponent(h.Label).string==='134%'),true);
+new SettingsPanel(new Node('reopened'));assert.equal(h.cc.game.frameRate,120,'saved frame target applies on scene entry');
+console.log('PASS display settings: legacy defaults, valid frame targets, immediate application, zoom bounds and persistence');
 GameAudio.setVolume(.6);GameAudio.setMusicVolume(.3);settings.show();
 fire(sound,'TOUCH_START',-176);assert.equal(GameAudio.volume,0);
 fire(sound,'TOUCH_MOVE',0);assert.equal(GameAudio.volume,.5);assert.equal(GameAudio.musicVolume,.3);

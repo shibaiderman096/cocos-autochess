@@ -16,7 +16,7 @@ function fixture(star=1,side=0,changes={}){
 }
 function settle(sim){sim.resolveDamage();sim.resolveStuns();sim.pendingDamage.length=sim.pendingStuns.length=0;}
 function clock(f,t){f.sim.tick=t;for(const u of f.sim.units)u.combatTick=t;f.sim.bloodReign.update();}
-const authored=roster.find(u=>u.id==='crimson_demon_knight');assert.deepEqual([authored.name,authored.cost,authored.role,authored.damageType,authored.startMana,authored.maxMana],['蚀血魔君',5,'warrior','physical',0,30]);
+const authored=roster.find(u=>u.id==='crimson_demon_knight');assert.deepEqual([authored.name,authored.cost,authored.role,authored.damageType,authored.startMana,authored.maxMana],['蚀血魔君',5,'warrior','physical',0,50]);
 assert.equal(resolveTraits(battle.traits,[authored.id],roster).find(t=>t.config.id==='bloodfiend').count,1);
 for(const side of [0,1])for(const star of [1,2,3])for(const atk of [40,800]){
  const f=fixture(star,side,{physicalPower:50,spellPower:900,atk,damageAmp:.25}),{sim,src,enemy,skill}=f;
@@ -97,11 +97,13 @@ for(const key of ['healthGains','attackWindupSeconds','length','width','rebirthT
  clock(f,18);f.sim.updateUnit(f.src);settle(f.sim);assert.equal(f.src.bloodCleaveReady,false,'fear does not block basics');
  assert.equal(f.sim.events.filter(e=>e.t==='attack').length,1);assert.ok(target>0);
 }
-// A lost target starts a fresh full windup; rebirth/end clear its preparation state.
+// A lost target waits for reacquisition, then starts a fresh full windup; rebirth/end clear it.
 {
  const f=fixture();f.sim.cast(f.src,f.skill,f.enemy);f.src.atkCd=0;f.sim.updateUnit(f.src);
  const target=f.sim.units.find(u=>u.id===f.src.bloodCleaveWindup.targetId);target.alive=false;target.hp=0;
- clock(f,4);f.sim.updateUnit(f.src);assert.notEqual(f.src.bloodCleaveWindup.targetId,target.id);assert.equal(f.src.bloodCleaveWindup.endTick,14);
+ clock(f,4);f.sim.updateUnit(f.src);assert.equal(f.src.bloodCleaveWindup,null);
+ const ready=f.src.retargetAtTick;clock(f,ready-1);f.sim.updateUnit(f.src);assert.equal(f.src.bloodCleaveWindup,null);
+ clock(f,ready);f.sim.updateUnit(f.src);assert.notEqual(f.src.bloodCleaveWindup.targetId,target.id);assert.equal(f.src.bloodCleaveWindup.endTick,ready+10);
  f.src.hp=1;f.sim.damage(f.enemy,f.src,1,'true');settle(f.sim);assert.equal(f.src.bloodCleaveWindup,null);assert.equal(f.src.bloodCleaveReady,true);
  f.sim.end(0);assert.equal(f.src.bloodCleaveWindup,null);assert.equal(f.src.bloodCleaveReady,false);
 }

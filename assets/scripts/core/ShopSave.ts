@@ -1,9 +1,4 @@
-/**
- * 存档 v2：在 v1 基础上加入商店/备战席/卡池字段。
- * migrateSave 兼容 v1 旧档（缺失字段补默认值）。
- */
-
-import { SaveData, migrateSave as migrateV1 } from './SaveData';
+/** Current run persistence. Starting a new save is required after rule changes. */
 import { ShopSlot } from './ShopSystem';
 import { MAX_EQUIPMENT, BackpackItem } from '../battle/types';
 import { OwnedUnit } from './OwnedUnits';
@@ -19,18 +14,108 @@ import { FORMATION_VERSION } from './EnemyFormationTypes';
 import type { FormationOverride } from './EnemyFormationTypes';
 import type { EquipmentProgress,EquipmentRewardEvent } from './EquipmentPolicyTypes';
 import type { StageProgressState } from './StageProgression';
-import { OPENING_ENCOUNTER_IDS } from './OpeningEncounter';
+import { DEFAULT_ECONOMY_CONFIG } from './EconomySystem';
+import { MAX_LEVEL } from './LevelSystem';
+import { freshMerchantServices } from './MerchantServices';
+import { freshExplorerProgress } from './ExplorerProgress';
+import { freshStageProgress } from './StageProgression';
 
-export const SAVE_VERSION = 2;
-export const SAVE_KEY = 'autochess_save_v2';
+export const SAVE_VERSION = 3;
+export const SAVE_KEY = 'autochess_save_v3';
 
-const safeInt = (value: unknown, fallback: number, min: number, max: number): number => {
-  const n = Number(value);
-  return Number.isFinite(n) ? Math.max(min, Math.min(max, Math.floor(n))) : fallback;
-};
+export interface RunSaveData {
+  version: number;
+  floor: number;
+  gold: number;
+  level: number;
+  exp: number;
+  winStreak: number;
+  loseStreak: number;
+  merchantServices: import('./MerchantServices').MerchantServicesState;
+  /** Stage-entry subsidies already handled; retained across reloads and debug revisits. */
+  earlyGoldStages: number[];
+  explorerProgress: import('./ExplorerProgress').ExplorerProgress;
+  unlockedUnits?: string[];
+  traitChoiceRoll?: number;
+  pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
+  openingEncounter?: import('./OpeningEncounter').OpeningEncounterState;
+  stageProgress: StageProgressState;
+  balanceVersion?:string;
+  enemyEquipmentVersion:string;
+  equipmentRewardVersion:string;
+  equipmentConfigIdentity?:string;
+  equipmentProgress:EquipmentProgress;
+  lastEquipmentReward?:EquipmentRewardEvent;
+  formationVersion:string;
+  formationOverride:FormationOverride;
+  formationConfigIdentity?:string;
+  enemyGenerationVersion: EnemyGenerationMode;
+  powerModelVersion: string;
+  powerModelCalibrationHash: string;
+  difficultyConfigVersion: string;
+  /** Bound on the first session construction, before any wave has been played. */
+  difficultyConfigIdentity?: string;
+  runSeed: number;
+  rulesVersion: number;
+  /** Successful manual shop rolls in the current wave; automatic roll is index zero. */
+  shopRollIndex: number;
+  nextOwnedUid: number;
+  stageCount: number;
+  /** 商店 5 格内容 */
+  shop: ShopSlot[];
+  /** 商店商品是否已经从卡池预留。 */
+  shopReserved: boolean;
+  /** 玩家持有棋子（备战席 + 棋盘） */
+  owned: OwnedUnit[];
+  equipmentReserve: string[];
+  backpackItems: BackpackItem[];
+  /** 卡池剩余 unitId → 数量 */
+  pool: Record<string, number>;
+  /** 备战席格子数 */
+  benchSlots: number;
+  round: RoundSnapshot | null;
+  shopLocked: boolean;
+  lastReward?: { breakdown: SettlementBreakdown; expGained: number; levelUps: number };
+}
+
+/** Current saves are validated and copied, never repaired or upgraded. */
+export function readRunSave(raw: unknown): RunSaveData {
+  const d = raw as RunSaveData;
+  const integer = (n: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): n is number => Number.isSafeInteger(n) && Number(n) >= min && Number(n) <= max;
+  const invalid = () => { throw new Error('Invalid current run save'); };
+  if (!d || d.version !== SAVE_VERSION || d.rulesVersion !== RUN_RULES_VERSION
+    || !isRunSeed(d.runSeed) || d.enemyGenerationVersion !== 'budget-v1'
+    || !integer(d.stageCount, 3) || !integer(d.floor, 1) || !integer(d.gold, 0, 999999)
+    || !integer(d.level, 1, MAX_LEVEL) || !integer(d.exp) || !integer(d.winStreak) || !integer(d.loseStreak)
+    || !integer(d.benchSlots, 1, 12) || !integer(d.shopRollIndex) || !integer(d.nextOwnedUid, 1)
+    || typeof d.shopReserved !== 'boolean' || typeof d.shopLocked !== 'boolean'
+    || !Array.isArray(d.shop) || d.shop.length !== 5 || d.shop.some(slot => !slot || (slot.unitId !== null && typeof slot.unitId !== 'string'))
+    || !Array.isArray(d.owned) || !d.pool || typeof d.pool !== 'object' || Array.isArray(d.pool)
+    || Object.values(d.pool).some(n => !integer(n)) || !Array.isArray(d.equipmentReserve) || d.equipmentReserve.some(id => typeof id !== 'string')
+    || !Array.isArray(d.backpackItems) || d.backpackItems.some(item => !item || item.kind !== 'consumable' || !['id','name','icon'].every(k => typeof item[k] === 'string'))
+    || !Array.isArray(d.earlyGoldStages) || d.earlyGoldStages.some(stage => stage !== 2 && stage !== 3)
+    || new Set(d.earlyGoldStages).size !== d.earlyGoldStages.length || !d.merchantServices || !d.explorerProgress || !d.stageProgress || !d.equipmentProgress) invalid();
+  const ids = new Set<number>();
+  for (const u of d.owned) {
+    if (!u || !integer(u.uid, 1, d.nextOwnedUid - 1) || ids.has(u.uid) || typeof u.unitId !== 'string'
+      || !integer(u.star, 1, 3) || !['board','bench'].includes(u.location) || !integer(u.x, -1) || !integer(u.y)
+      || !Array.isArray(u.equipment) || u.equipment.length > MAX_EQUIPMENT || u.equipment.some(id => typeof id !== 'string')) invalid();
+    for (const [source,total] of [['itemHealth','permanentMaxHp'],['itemPhysicalPower','permanentPhysicalPower'],['itemSpellPower','permanentSpellPower']])
+      if ((u[source] ?? 0) > (u[total] ?? 0)) invalid();
+    ids.add(u.uid);
+    for (const key of ['soulLampHealth','permanentPhysicalPower','permanentSpellPower','permanentMaxHp','itemHealth','itemPhysicalPower','itemSpellPower'])
+      if (u[key] !== undefined && !integer(u[key])) invalid();
+  }
+  const r = d.round;
+  if (r !== null && (!r || !['prepare','battle','settlement','ended'].includes(r.phase) || !integer(r.waveIndex)
+    || !integer(r.health) || ![null,'victory','defeat'].includes(r.result))) invalid();
+  if (d.lastReward && (!['winBonus','interest','streakBonus','extraIncome','total','goldBefore','goldAfter','winStreak','loseStreak']
+    .every(key => integer(d.lastReward!.breakdown?.[key])) || !integer(d.lastReward.expGained) || !integer(d.lastReward.levelUps))) invalid();
+  return JSON.parse(JSON.stringify(d));
+}
 
 /** Configuration-aware repair: owned cards take priority over shop reservations. */
-export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], boardWidth: number, ownRows: number): void {
+export function restoreRunInventory(save: RunSaveData, configs: UnitConfigData[], boardWidth: number, ownRows: number): void {
   const remaining: Record<string, number> = {};
   for (const cfg of configs) remaining[cfg.id] = POOL_STOCK[validCost(cfg.cost ?? 1)];
   const occupied = new Set<string>();
@@ -73,194 +158,28 @@ export function restoreShopState(save: SaveDataV2, configs: UnitConfigData[], bo
   save.shopReserved = true;
 }
 
-export interface SaveDataV2 extends SaveData {
-  merchantServices?: import('./MerchantServices').MerchantServicesState;
-  /** Stage-entry subsidies already handled; retained across reloads and debug revisits. */
-  earlyGoldStages?: number[];
-  explorerProgress?: import('./ExplorerProgress').ExplorerProgress;
-  unlockedUnits?: string[];
-  traitChoiceRoll?: number;
-  pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
-  equipmentTierVersion?: 'all-basic-v1';
-  openingEncounter?: import('./OpeningEncounter').OpeningEncounterState;
-  stageProgress?: StageProgressState;
-  balanceVersion?:string;
-  enemyEquipmentVersion:string;
-  equipmentRewardVersion:string;
-  equipmentConfigIdentity?:string;
-  equipmentProgress:EquipmentProgress;
-  lastEquipmentReward?:EquipmentRewardEvent;
-  formationVersion:string;
-  formationOverride:FormationOverride;
-  formationConfigIdentity?:string;
-  enemyGenerationVersion: EnemyGenerationMode;
-  powerModelVersion: string;
-  powerModelCalibrationHash: string;
-  difficultyConfigVersion: string;
-  /** Bound on the first session construction, before any wave has been played. */
-  difficultyConfigIdentity?: string;
-  /** Session/RNG rules are independent of the legacy stage-index migration version below. */
-  runSeed: number;
-  rulesVersion: number;
-  runSeedSource: 'explicit' | 'legacy-default';
-  /** Missing on older saves: retain their existing early-stage encounter sequence. */
-  earlyEncounterLayout?: 'random-rounds-v1';
-  /** Successful manual shop rolls in the current wave; automatic roll is index zero. */
-  shopRollIndex: number;
-  nextOwnedUid: number;
-  /** Progression rule version: 1 had ten rounds in every stage after the intro. */
-  runRulesVersion: number;
-  stageCount: number;
-  /** 商店 5 格内容 */
-  shop: ShopSlot[];
-  /** true 表示商店商品已从 pool 预留；缺省为旧版未预留存档。 */
-  shopReserved: boolean;
-  /** 玩家持有棋子（备战席 + 棋盘） */
-  owned: OwnedUnit[];
-  equipmentReserve?: string[];
-  backpackItems?: BackpackItem[];
-  /** 卡池剩余 unitId → 数量 */
-  pool: Record<string, number>;
-  /** 备战席格子数 */
-  benchSlots: number;
-  round: RoundSnapshot | null;
-  shopLocked: boolean;
-  lastReward?: { breakdown: SettlementBreakdown; expGained: number; levelUps: number };
-}
-
-export function migrateSaveV2(raw: unknown): SaveDataV2 {
-  const v1 = migrateV1(raw); // 先走 v1 钳位
-  const d = (raw ?? {}) as Partial<SaveDataV2>;
-
-  // shop：必须恰好 5 格，每格 unitId 必须是 string | null
-  let shop: ShopSlot[] = [];
-  if (Array.isArray(d.shop) && d.shop.length === 5) {
-    shop = d.shop.map(s => ({ unitId: (s && typeof s.unitId === 'string') ? s.unitId : null }));
-  } else {
-    shop = [0, 1, 2, 3, 4].map(() => ({ unitId: null }));
-  }
-
-  // owned：数组 + 字段钳位
-  const owned: OwnedUnit[] = [];
-  if (Array.isArray(d.owned)) {
-    let nextUid = 1;
-    const used = new Set<number>();
-    for (const u of d.owned) {
-      if (!u || typeof u.unitId !== 'string') continue;
-      const star = safeInt(u.star, 1, 1, 3);
-      const loc = u.location === 'board' ? 'board' : 'bench';
-      const x = safeInt(u.x, 0, -1, Number.MAX_SAFE_INTEGER);
-      const y = safeInt(u.y, 0, 0, Number.MAX_SAFE_INTEGER);
-      while (used.has(nextUid)) nextUid++;
-      const uid = Number.isSafeInteger(u.uid) && u.uid > 0 && u.uid < Number.MAX_SAFE_INTEGER && !used.has(u.uid) ? u.uid : nextUid;
-      used.add(uid);
-      owned.push({ uid, unitId: u.unitId, star, location: loc, x, y, ...(u.soulLampHealth === undefined ? {} : { soulLampHealth: safeInt(u.soulLampHealth, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentPhysicalPower === undefined ? {} : { permanentPhysicalPower: safeInt(u.permanentPhysicalPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentSpellPower === undefined ? {} : { permanentSpellPower: safeInt(u.permanentSpellPower, 0, 0, Number.MAX_SAFE_INTEGER) }), ...(u.permanentMaxHp === undefined ? {} : { permanentMaxHp: safeInt(u.permanentMaxHp, 0, 0, Number.MAX_SAFE_INTEGER) }), equipment: Array.isArray(u.equipment) ? u.equipment.filter(id => typeof id === 'string').slice(0, MAX_EQUIPMENT) : [] });
-      const restored = owned[owned.length - 1];
-      for (const [source, total] of [['itemHealth','permanentMaxHp'], ['itemPhysicalPower','permanentPhysicalPower'], ['itemSpellPower','permanentSpellPower']] as const) {
-        if (u[source] !== undefined) restored[source] = safeInt(u[source], 0, 0, restored[total] ?? 0);
-      }
-    }
-  }
-
-  // pool：Record<string, number>，负值钳 0
-  const pool: Record<string, number> = {};
-  if (d.pool && typeof d.pool === 'object') {
-    for (const [k, v] of Object.entries(d.pool)) {
-      const n = Math.floor(Number(v));
-      pool[k] = Number.isFinite(n) ? Math.max(0, n) : 0;
-    }
-  }
-
-  const benchSlots = safeInt(d.benchSlots, DEFAULT_BENCH_SLOTS, 1, 12);
-  const r = d.round;
-  const round: RoundSnapshot | null = r && Number.isFinite(r.health) && Number.isInteger(r.waveIndex)
-    && ['prepare', 'battle', 'settlement', 'ended'].includes(r.phase) ? {
-      phase:r.phase, waveIndex:safeInt(r.waveIndex, 0, 0, 9999), health:safeInt(r.health, 20, 0, 999999),
-      result:r.result === 'victory' || r.result === 'defeat' ? r.result : null,
-      lastSettlement:r.lastSettlement && ['waveId', 'enemySurvivors', 'healthLost', 'healthRemaining'].every(k => Number.isSafeInteger(r.lastSettlement[k]) && r.lastSettlement[k] >= 0)
-        && [-1, 0, 1].includes(r.lastSettlement.winner)
-        && [null, 'victory', 'defeat'].includes(r.lastSettlement.runResult)
-        && ['stage', 'round'].every(k => r.lastSettlement[k] === undefined || (Number.isSafeInteger(r.lastSettlement[k]) && r.lastSettlement[k] > 0))
-        ? { ...r.lastSettlement } : null,
-    } : null;
-
-  return {
-    ...v1,
-    version: SAVE_VERSION,
-    ...(d.earlyGoldStages === undefined ? {} : { earlyGoldStages: Array.isArray(d.earlyGoldStages)
-      ? [...new Set(d.earlyGoldStages.filter(stage => stage === 2 || stage === 3))] : [] }),
-    ...(d.explorerProgress === undefined ? {} : { explorerProgress: JSON.parse(JSON.stringify(d.explorerProgress)) }),
-    ...(d.unlockedUnits === undefined ? {} : { unlockedUnits: JSON.parse(JSON.stringify(d.unlockedUnits)) }),
-    traitChoiceRoll: safeInt(d.traitChoiceRoll, 0, 0, Number.MAX_SAFE_INTEGER),
-    ...(d.pendingTraitChoice === undefined ? {} : { pendingTraitChoice: JSON.parse(JSON.stringify(d.pendingTraitChoice)) }),
-    ...(d.equipmentTierVersion === 'all-basic-v1' ? { equipmentTierVersion: d.equipmentTierVersion } : {}),
-    ...(d.openingEncounter === undefined ? {} : { openingEncounter: {
-      selected: OPENING_ENCOUNTER_IDS.includes(d.openingEncounter?.selected) ? d.openingEncounter.selected : undefined,
-      ...(d.openingEncounter?.offered === undefined ? {} : { offered: JSON.parse(JSON.stringify(d.openingEncounter.offered)) }),
-      freeRefreshes: safeInt(d.openingEncounter?.freeRefreshes, 0, 0, Number.MAX_SAFE_INTEGER),
-      lastIncomeStage: safeInt(d.openingEncounter?.lastIncomeStage, 1, 1, 99),
-    } }),
-    ...(d.stageProgress === undefined ? {} : { stageProgress: JSON.parse(JSON.stringify(d.stageProgress)) }),
-    ...(d.merchantServices === undefined ? {} : { merchantServices: JSON.parse(JSON.stringify(d.merchantServices)) }),
-    ...(typeof d.balanceVersion==='string'?{balanceVersion:d.balanceVersion}:{}),
-    enemyEquipmentVersion:d.enemyEquipmentVersion??'none',
-    equipmentRewardVersion:d.equipmentRewardVersion??'none',
-    equipmentConfigIdentity:d.equipmentConfigIdentity,
-    equipmentProgress:d.equipmentProgress===undefined?{lastClaimedWaveId:0,lastEvaluatedWaveId:0,guaranteeSatisfied:{}}:JSON.parse(JSON.stringify(d.equipmentProgress)),
-    lastEquipmentReward:d.lastEquipmentReward===undefined?undefined:JSON.parse(JSON.stringify(d.lastEquipmentReward)),
-    formationVersion:d.formationVersion??'l0-compat',
-    formationOverride:d.formationOverride??'L0',
-    formationConfigIdentity:d.formationConfigIdentity,
-    enemyGenerationVersion: (d.enemyGenerationVersion ?? 'legacy') as EnemyGenerationMode,
-    powerModelVersion: d.powerModelVersion ?? (d.enemyGenerationVersion === 'budget-v1' ? '' : 'none'),
-    powerModelCalibrationHash: d.powerModelCalibrationHash ?? (d.enemyGenerationVersion === 'budget-v1' ? '' : 'none'),
-    difficultyConfigVersion: d.difficultyConfigVersion ?? (d.enemyGenerationVersion === 'budget-v1' ? '' : 'none'),
-    difficultyConfigIdentity: d.difficultyConfigIdentity,
-    runSeed: isRunSeed(d.runSeed) ? d.runSeed : DEFAULT_RUN_SEED,
-    rulesVersion: safeInt(d.rulesVersion, RUN_RULES_VERSION, 1, Number.MAX_SAFE_INTEGER),
-    runSeedSource: !isRunSeed(d.runSeed) || d.runSeedSource === 'legacy-default' ? 'legacy-default' : 'explicit',
-    ...(d.earlyEncounterLayout === undefined ? {} : { earlyEncounterLayout: d.earlyEncounterLayout }),
-    shopRollIndex: safeInt(d.shopRollIndex, 0, 0, Number.MAX_SAFE_INTEGER - 1),
-    nextOwnedUid: Math.max(owned.reduce((max, u) => Math.max(max, u.uid + 1), 1), safeInt(d.nextOwnedUid, 1, 1, Number.MAX_SAFE_INTEGER)),
-    runRulesVersion: d.runRulesVersion === 2 ? 2 : 1,
-    stageCount: normalizeStageCount(d.stageCount ?? DEFAULT_STAGE_COUNT),
-    backpackItems: Array.isArray(d.backpackItems) ? d.backpackItems.filter(item => item && item.kind === 'consumable' && typeof item.id === 'string' && typeof item.name === 'string' && typeof item.icon === 'string').map(item => ({ ...item })) : [],
-    equipmentReserve: Array.isArray(d.equipmentReserve) ? d.equipmentReserve.filter(id => typeof id === 'string') : [],
-    shop, owned, pool, benchSlots, shopReserved: d.shopReserved === true,
-    round, shopLocked: d.shopLocked === true,
-    lastReward: d.lastReward && ['floorIncome', 'winBonus', 'interest', 'streakBonus', 'total', 'goldBefore', 'goldAfter', 'winStreak', 'loseStreak']
-      .every(k => Number.isFinite(d.lastReward.breakdown?.[k]) && d.lastReward.breakdown[k] >= 0 && d.lastReward.breakdown[k] <= Number.MAX_SAFE_INTEGER)
-      && ['expGained', 'levelUps'].every(k => Number.isSafeInteger(d.lastReward[k]) && d.lastReward[k] >= 0)
-      ? { ...d.lastReward, breakdown: { ...d.lastReward.breakdown, extraIncome: safeInt(d.lastReward.breakdown.extraIncome, 0, 0, Number.MAX_SAFE_INTEGER) } } : undefined,
-  };
-}
-
-export function loadSaveV2(): SaveDataV2 | null {
+export function loadRunSave(): RunSaveData | null {
   try {
-    const s = typeof localStorage !== 'undefined'
-      ? localStorage.getItem(SAVE_KEY) ?? localStorage.getItem('autochess_save_v1')
-      : null;
-    if (!s) return null;
-    return migrateSaveV2(JSON.parse(s));
-  } catch {
-    return null;
-  }
+    const text = typeof localStorage !== 'undefined' ? localStorage.getItem(SAVE_KEY) : null;
+    return text ? readRunSave(JSON.parse(text)) : null;
+  } catch { return null; }
 }
-
-export function writeSaveV2(data: SaveDataV2): void {
-  try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    }
-  } catch {}
+export function writeRunSave(data: RunSaveData): void {
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch {}
 }
-
-export function freshSaveV2(stageCount = DEFAULT_STAGE_COUNT, runSeed = DEFAULT_RUN_SEED, mode: EnemyGenerationMode = 'budget-v1',equipmentEnabled=false): SaveDataV2 {
+export function freshRunSave(stageCount = DEFAULT_STAGE_COUNT, runSeed = DEFAULT_RUN_SEED, mode: EnemyGenerationMode = 'budget-v1', equipmentEnabled = false): RunSaveData {
   if (!isRunSeed(runSeed)) throw new Error('runSeed must be a uint32 integer');
-  if (!['legacy','budget-v1'].includes(mode)) throw new Error('Unsupported enemy generation version');
-  return migrateSaveV2({ stageCount, runRulesVersion: 2, runSeed, rulesVersion: RUN_RULES_VERSION, earlyEncounterLayout:'random-rounds-v1', enemyGenerationVersion:mode,
-    enemyEquipmentVersion:equipmentEnabled&&mode==='budget-v1'?'equipment-policy-v1':'none',equipmentRewardVersion:equipmentEnabled?'equipment-reward-v1':'none',
-    formationVersion:mode==='budget-v1'?FORMATION_VERSION:'l0-compat',formationOverride:mode==='budget-v1'?'auto':'L0',
-    powerModelVersion:mode==='budget-v1'?DEFAULT_POWER_MODEL_VERSION:'none',
-    powerModelCalibrationHash:mode==='budget-v1'?DEFAULT_CALIBRATION_HASH:'none',difficultyConfigVersion:mode==='budget-v1'?'budget-v1':'none' });
+  if (mode !== 'budget-v1') throw new Error('Unsupported enemy generation version');
+  return {
+    version: SAVE_VERSION, floor: 1, gold: DEFAULT_ECONOMY_CONFIG.initialGold, level: 1, exp: 0, winStreak: 0, loseStreak: 0,
+    stageCount: normalizeStageCount(stageCount), runSeed, rulesVersion: RUN_RULES_VERSION,
+    enemyGenerationVersion: mode, enemyEquipmentVersion: equipmentEnabled ? 'equipment-policy-v1' : 'none',
+    equipmentRewardVersion: equipmentEnabled ? 'equipment-reward-v1' : 'none',
+    powerModelVersion: DEFAULT_POWER_MODEL_VERSION, powerModelCalibrationHash: DEFAULT_CALIBRATION_HASH, difficultyConfigVersion: 'budget-v1',
+    formationVersion: FORMATION_VERSION, formationOverride: 'auto',
+    traitChoiceRoll: 0, unlockedUnits: [], merchantServices: freshMerchantServices(), explorerProgress: freshExplorerProgress(), stageProgress: freshStageProgress(), earlyGoldStages: [],
+    equipmentProgress: { lastClaimedWaveId: 0, lastEvaluatedWaveId: 0, guaranteeSatisfied: {} },
+    shopRollIndex: 0, nextOwnedUid: 1, shop: Array.from({ length: 5 }, () => ({ unitId: null })), shopReserved: false,
+    owned: [], pool: {}, equipmentReserve: [], backpackItems: [], benchSlots: DEFAULT_BENCH_SLOTS, round: null, shopLocked: false,
+  };
 }

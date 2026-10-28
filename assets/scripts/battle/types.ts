@@ -2,6 +2,12 @@
 
 export interface BackpackItem { id: string; name: string; icon: string; description?: string; kind: 'equipment' | 'consumable'; }
 export const MAX_EQUIPMENT = 3;
+export interface BattleTargetingConfig {
+  /** Distance discount for tanks when choosing a new ordinary attack target. */
+  tankDistanceBias: number;
+  /** Fixed delay before finding another ordinary attack target. */
+  retargetSeconds?: number;
+}
 export interface BattleOvertimeConfig {
   seconds: number;
   /** Absolute attacks/second at the end of overtime: 1 means +100% displayed speed. */
@@ -235,6 +241,8 @@ export interface TraitConfigData {
   breakpoints: TraitBreakpoint[];
 }
 export interface EquipmentConfigData {
+  /** One-time completed-item upgrade; points to its original green item. */
+  radiantBaseId?: string;
   /** Short display-only item introduction, separate from passive effects. */
   introduction?: string;
   /** Optional item-specific shop price; tier pricing remains the default. */
@@ -346,7 +354,7 @@ export type BattleEvent =
   | { t: 'sun_pulse'; tick: number; id: number; effect: SunlightPulse; center: Pos; from?: Pos; radius: number; duration: number;
       kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean }
   | { t: 'battle_start'; tick: number }
-  | { t: 'move';   tick: number; id: number; from: Pos; to: Pos }
+  | { t: 'move';   tick: number; id: number; from: Pos; to: Pos; durationTicks?: number }
   | { t: 'teleport'; tick: number; id: number; from: Pos; to: Pos }
   | { t: 'attack'; tick: number; id: number; target: number; area?: boolean; shadow?: boolean }
   | { t: 'shadow_mark'; tick: number; id: number; source: number }

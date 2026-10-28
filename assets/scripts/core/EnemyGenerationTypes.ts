@@ -1,7 +1,7 @@
 import type { PowerReliability } from './EnemyPowerTypes';
 import type { EnemyEquipmentDiagnostics } from './EquipmentPolicyTypes';
 
-export type EnemyGenerationMode = 'legacy' | 'budget-v1';
+export type EnemyGenerationMode = 'budget-v1';
 export type WaveKind = 'intro' | 'normal' | 'elite' | 'boss';
 // Pins identify the already published P1-B artifact, not invented power weights.
 export const DEFAULT_POWER_MODEL_VERSION = 'enemy-power-v1';
@@ -67,58 +67,6 @@ export function combatEquipmentIdentity(items: unknown): unknown {
   });
 }
 
-/** Adding items preserves existing saved inventories; existing mechanical fields still compare normally. */
-export function adoptEquipmentCatalogueAdditions(previous: unknown, next: unknown): unknown {
-  if (!Array.isArray(previous) || !Array.isArray(next) || !previous.length || next.length <= previous.length) return previous;
-  const valid = (items: any[]) => items.every(item => item && typeof item.id === 'string')
-    && new Set(items.map(item => item.id)).size === items.length;
-  if (!valid(previous) || !valid(next)) return previous;
-  const old = new Map(previous.map(item => [item.id, item]));
-  if (previous.some(item => !next.some(candidate => candidate.id === item.id))) return previous;
-  return next.map(item => old.get(item.id) ?? item);
-}
-
-/** Adopt this specific balance change without accepting any other mechanical drift. */
-export function adoptEquipmentBalanceChanges(previous: unknown, next: unknown): unknown {
-  if (!Array.isArray(previous) || !Array.isArray(next)) return previous;
-  return previous.map(item => {
-    const current = next.find(candidate => candidate?.id === item?.id);
-    if (item?.id === 'replicator_firmament' && item.shopPrice === 6 && current?.shopPrice === 8)
-      return { ...item, shopPrice: 8 };
-    if (item?.id !== 'spell_overdrive_armor') return item;
-    if (item.castAttackSpeed?.bonus !== 1.5 || item.castAttackSpeed.seconds !== 3
-      || current?.castAttackSpeed?.bonus !== .5 || current.castAttackSpeed.seconds !== 3) return item;
-    return { ...item, castAttackSpeed: { ...item.castAttackSpeed, bonus: .5 } };
-  });
-}
-
-/** One-way adoption of the authored three-star legendary rebalance, preserving other rules. */
-export function adoptLegendarySkillBalanceChanges(previous: any, next: any): any {
-  if (!previous || !next || typeof previous !== 'object' || typeof next !== 'object') return previous;
-  const result = JSON.parse(JSON.stringify(previous));
-  const changes: Array<[string, string[], number[], number]> = [
-    ['rope_shadow_hunt', ['starDamage'], [3000,2000], 400],
-    ['sky_annihilation', ['starDamage'], [5000], 2800],
-    ['blackstar_annihilation', ['starDamage'], [3000,2000], 400],
-    ['blackstar_annihilation', ['shadow','collapseDamage'], [6000,2500], 500],
-    ['voidscar_transit', ['starDamage'], [1500,2000], 400],
-    ['voidscar_transit', ['shadow','markDamage'], [4000,2500], 500],
-    ['celestial_judgment', ['starDamage'], [4500], 2500],
-    ['celestial_judgment', ['sunlight','trueDamage'], [1500], 2000],
-    ['corona_transit', ['starDamage'], [1600,2000], 400],
-    ['corona_transit', ['sunlight','finalDamage'], [8000,3000], 600],
-    ['blood_sovereignty', ['starDamage'], [7500], 2500],
-    ['blood_sovereignty', ['bloodReign','healthGains'], [9000], 3000],
-  ];
-  for (const [id, path, oldValues, value] of changes) {
-    const before = path.reduce((o, key) => o?.[key], result[id]);
-    const after = path.reduce((o, key) => o?.[key], next[id]);
-    if (Array.isArray(before) && Array.isArray(after) && before.length === 3 && after.length === 3
-      && before[0] === after[0] && before[1] === after[1] && oldValues.includes(before[2]) && after[2] === value) before[2] = value;
-  }
-  return result;
-}
-
 /** Display copy and table templates do not change difficulty or formation rules. */
 export function combatConfigurationIdentity(value: Record<string, unknown>): string {
   if (!value || typeof value !== 'object' || !value.skills || typeof value.skills !== 'object' || Array.isArray(value.skills)) {
@@ -155,34 +103,6 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
   }
   return stableEnemyJson({ ...value, ...(value.run === undefined ? {} : { run }), ...(battle === undefined ? {} : { battle: battleIdentity }), skills,
     ...(value.equipment === undefined ? {} : { equipment: combatEquipmentIdentity(value.equipment) }) });
-}
-
-/** Legacy saves may contain presentation fields; all combat fields must still match. */
-export function sameCombatConfigurationIdentity(saved: string, current: string): boolean {
-  try {
-    const previous=JSON.parse(saved),next=JSON.parse(current);
-    previous.skills = adoptLegendarySkillBalanceChanges(previous.skills, next.skills);
-    // Shop prices do not change generated enemies and must not invalidate existing campaigns.
-    if (previous.run?.stageEncounters?.shop && next.run?.stageEncounters?.shop)
-      previous.run.stageEncounters.shop.equipmentPrices = next.run.stageEncounters.shop.equipmentPrices;
-    if(previous.run?.enemyGoldBudget&&previous.run.enemyGoldBudget.earlyGrowth===undefined
-      &&next.run?.enemyGoldBudget?.earlyGrowth?.beforeStage===4&&next.run.enemyGoldBudget.earlyGrowth.roundsPerGold===2)
-      previous.run.enemyGoldBudget.earlyGrowth=next.run.enemyGoldBudget.earlyGrowth;
-    if (previous.equipment && next.equipment) previous.equipment = adoptEquipmentCatalogueAdditions(previous.equipment, next.equipment);
-    if (previous.equipment && next.equipment) previous.equipment = adoptEquipmentBalanceChanges(previous.equipment, next.equipment);
-      // Existing campaigns may adopt the newly introduced post-campaign portal rules.
-      // Every pre-existing combat field still participates in identity validation.
-      if (previous.run && next.run?.endlessProgression && previous.run.endlessProgression === undefined)
-        previous.run.endlessProgression = next.run.endlessProgression;
-    const before=previous.run?.stageEncounters?.basicEquipmentIds,after=next.run?.stageEncounters?.basicEquipmentIds;
-    const catalogue=Array.isArray(next.equipment)?next.equipment.filter(item=>!item.specialShopOnly).map(item=>item.id):[];
-    if(Array.isArray(before)&&Array.isArray(after)&&catalogue.length>0
-      &&after.length===catalogue.length&&new Set(after).size===catalogue.length&&catalogue.every(id=>after.includes(id))
-      &&before.every(id=>catalogue.includes(id))) previous.run.stageEncounters.basicEquipmentIds=after;
-    return combatConfigurationIdentity(previous) === combatConfigurationIdentity(next);
-  } catch {
-    return false;
-  }
 }
 
 export function validateEnemyDifficulty(c: EnemyDifficultyConfig): void {

@@ -2,15 +2,16 @@ require('tsx/cjs');
 const assert=require('node:assert/strict');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts');
 const {ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
-const {freshSaveV2}=require('../assets/scripts/core/ShopSave.ts');
+const {freshRunSave}=require('../assets/scripts/core/ShopSave.ts');
 const {loadRunInputs}=require('../tools/run-simulation.ts');
 const inputs=loadRunInputs();
 function make(full=false){
  const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);
- const save=freshSaveV2(3,45,'legacy');save.gold=100;save.shopReserved=true;save.benchSlots=full?1:3;
+ const save=freshRunSave(3,45,'budget-v1');save.gold=100;save.shopReserved=true;save.benchSlots=full?1:3;
  save.owned=[{uid:1,unitId:'ghostflame_blade',star:1,location:'board',x:3,y:3},{uid:2,unitId:'ghostflame_blade',star:1,location:'bench',x:-1,y:0}];
  save.shop=[{unitId:'ghostflame_blade'},...Array.from({length:4},()=>({unitId:null}))];
- return new RunSession(cfg,inputs.run,inputs.waves,{save,enemyGenerationMode:'legacy'});
+ save.nextOwnedUid=Math.max(save.nextOwnedUid,...save.owned.map(u=>u.uid+1));save.owned.forEach(u=>u.equipment??=[]);
+ return new RunSession(cfg,inputs.run,inputs.waves,{save,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
 }
 for(const kind of ['monster','normal','boss']){
  const s=make();s.flow.wave.encounterKind=kind;assert.ok(s.startBattle());
@@ -18,7 +19,7 @@ for(const kind of ['monster','normal','boss']){
  const before=s.owned.snapshot();s.owned.tryMerge('ghostflame_blade');assert.deepEqual(s.owned.snapshot(),before);
  assert.equal(s.moveUnit(2,{location:'bench',x:-1,y:2}).ok,true);assert.equal(s.owned.all().length,3);
  const saved=s.snapshot();assert.equal(saved.owned.length,3,'saving during battle cannot consume copies');
- const restored=new RunSession(s.cfg,inputs.run,inputs.waves,{save:saved,enemyGenerationMode:'legacy'});
+ const restored=new RunSession(s.cfg,inputs.run,inputs.waves,{save:saved,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  assert.equal(restored.flow.phase,'prepare');assert.equal(restored.owned.get(1).star,2,'interrupted battle merges only after returning to prepare');
  s.battle.finished=true;s.battle.winner=0;assert.ok(s.settleBattle());
  assert.notEqual(s.flow.phase,'battle');assert.equal(s.owned.get(1).star,2);assert.equal(s.owned.get(2),undefined);assert.equal(s.owned.get(3),undefined,'merge materials are consumed only after combat');

@@ -94,12 +94,12 @@ for(const value of [0,-.5,NaN]) {
   assert.throws(()=>new ConfigManager().setBattle({traits:[invalid]}),/Invalid shadow board/);
 }
 const cfg=new ConfigManager();assert.throws(()=>cfg.setBattle({traits:[{...shadow,members:[],pendingMembers:false}]}),/Invalid trait/);
-const {combatConfigurationIdentity,sameCombatConfigurationIdentity}=require('../assets/scripts/core/EnemyGenerationTypes.ts');
+const {combatConfigurationIdentity}=require('../assets/scripts/core/EnemyGenerationTypes.ts');
 const original={skills:require('../assets/resources/config/skills.json'),battle:{...battle,traits:battle.traits.filter(t=>t.id!=='shadow')}};
 const dormant={...original,battle:{...battle,traits:battle.traits.map(t=>t.id==='shadow'?{...t,members:[],pendingMembers:true}:t)}};
 assert.equal(combatConfigurationIdentity(original),combatConfigurationIdentity(dormant),'memberless reserved trait keeps existing combat save identity');
 const assigned=clone(dormant);assigned.battle.traits.find(t=>t.id==='shadow').members=['scout'];
-assert.equal(sameCombatConfigurationIdentity(combatConfigurationIdentity(original),combatConfigurationIdentity(assigned)),false,'assigning a member still rejects older combat rules');
+assert.equal(combatConfigurationIdentity(original)===combatConfigurationIdentity(assigned),false,'assigning a member still rejects older combat rules');
 for(const bad of [{resistanceReduction:1.1},{resistanceReduction:NaN},{resistanceReduction:.3,damageAmpLossPerSecond:.02},{resistanceReduction:.3,damageAmpLossCap:-1},{resistanceReduction:.3,board:{intervalSeconds:0,attackSpeedPerPulse:.2,attackSpeedCap:2,fixedDamage:100}}]) {
   const t=clone(shadow);t.breakpoints[0].shadow=bad;assert.throws(()=>new ConfigManager().setBattle({traits:[t]}),/Invalid shadow/);
 }

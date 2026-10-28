@@ -48,7 +48,7 @@ for(const unit of units){
 {
  const f=fixture(),{sim,src,enemies}=f;enemies.forEach((u,i)=>{u.x=6;u.y=i;});src.fearUntilTick=20;src.moveCd=src.atkCd=0;
  sim.updateUnit(src);assert.ok(sim.events.some(e=>e.t==='move'&&e.id===src.id),'fear follows normal approach movement');
- const target=enemies[0];src.x=5;src.y=target.y;src.mana=src.cfg.maxMana;src.atkCd=0;sim.tick=20;
+ const target=sim.units.find(u=>u.id===src.attackTargetId);src.x=target.x-1;src.y=target.y;src.mana=src.cfg.maxMana;src.atkCd=0;sim.tick=20;
  sim.updateUnit(src);assert.ok(src.pendingCast,'casts resume exactly at fear expiry');
 }
 for(const key of ['length','width','fearSeconds']){const cfg=config(),copy=structuredClone(skills);copy.frostblood_roar.lineFear[key]=key==='fearSeconds'?[1,0,2]:0;assert.throws(()=>cfg.setSkills(copy),/Invalid/);}

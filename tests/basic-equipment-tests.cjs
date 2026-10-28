@@ -51,10 +51,4 @@ for(let seed=1;seed<=20;seed++){
  const restored=make({seed,save:s.snapshot()});assert.deepEqual(restored.pendingStageReward,s.pendingStageReward,'three-gold prices survive reload');
 }
 assert.equal(seen.size,8,'all eight basic items appear in actual special shops');assert.ok(purchases>0);
-const oldItems=input.equipment.filter(e=>!e.id.startsWith('basic_')),oldPolicy=clone(deps.equipmentPolicy),oldRun=clone(input.run);
-for(const e of basics){delete oldPolicy.tiers[e.id];delete oldPolicy.enemy.itemTags[e.id];}
-oldRun.stageEncounters.basicEquipmentIds=oldRun.stageEncounters.basicEquipmentIds.filter(id=>!id.startsWith('basic_'));
-const old=make({equipment:oldItems,run:oldRun,policy:oldPolicy});old.economy.add(10);const oldShop=old.waves.find(w=>w.stage===2&&w.encounterKind==='specialShop');old.debugJump(2,oldShop.round);
-const saved=old.snapshot(),adopted=make({save:saved});assert.deepEqual(adopted.pendingStageReward,old.pendingStageReward,'old catalogue saves retain their pending purchases');
-assert.equal(adopted.economy.gold,old.economy.gold);assert.equal(adopted.cfg.allEquipment().length,25);
-console.log('PASS basic equipment: eight supplied icons, final stats, no passives, real stacking/mana/lifesteal, 3-gold purchase/reload, all shop entries, old-save adoption and matching enemy gold costs');
+console.log('PASS basic equipment: eight supplied icons, final stats, no passives, real stacking/mana/lifesteal, 3-gold purchase/reload, all shop entries, current save/load and matching enemy gold costs');

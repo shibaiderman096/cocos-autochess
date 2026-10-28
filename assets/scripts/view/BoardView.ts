@@ -38,16 +38,8 @@ export class BoardView extends Component {
     this.highlight = highlight.getComponent(Graphics) ?? highlight.addComponent(Graphics);
     const ut = this.getComponent(UITransform) ?? this.node.addComponent(UITransform);
     ut.setContentSize(this.boardPixelW + 80, this.boardPixelH + 80);
-    this.setVisualMode('3d');
   }
 
-  /** Legacy callers cannot enable a retired 2D background. Units and effects remain active. */
-  setVisualMode(_mode: '2d' | '3d'): void {
-    for (const name of ['arenaArt', 'boardGrid']) {
-      const background = this.node.getChildByName(name);
-      if (background) background.active = false;
-    }
-  }
 
   benchPosition(slot: number): Vec3 {
     const p = projectGroundPoint(benchGroundPoint(slot, this.benchSlots, this.boardPixelH));

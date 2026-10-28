@@ -4,6 +4,8 @@
   "ownRows": 4,
   "maxTicks": 900,
   "tickMs": 50,
+  "movementCellsPerSecond": 2,
+  "targeting": { "tankDistanceBias": 1, "retargetSeconds": 0.5 },
   "combatSeconds": 30,
   "overtime": {
     "seconds": 15,

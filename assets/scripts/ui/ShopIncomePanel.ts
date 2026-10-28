@@ -1,4 +1,4 @@
-import {Node,UITransform,Label,Graphics,Color,Sprite,view} from 'cc';
+import {Node,UITransform,Label,Graphics,Color,Sprite,view,sys} from 'cc';
 import type {IncomePreview} from '../core/EconomySystem';
 import {panel,label,button} from './UIPrimitives';
 import {loadArtSprite} from '../view/ArtSpriteLoader';
@@ -42,6 +42,7 @@ export class ShopIncomePanel {
     const root=this.popup=new Node('incomePopup');this.parent.addChild(root);const screen=view.getVisibleSize();root.addComponent(UITransform).setContentSize(screen.width,screen.height);
     root.on(Node.EventType.TOUCH_END,()=>this.hide());
     const body=panel(root,'incomePopupBody',-12,this.y+188,320,330,new Color(8,17,24,250),new Color(129,111,73),null);
+    if(sys.isMobile)body.setScale(1.45,1.45,1);
     for(const event of [Node.EventType.TOUCH_START,Node.EventType.TOUCH_END])body.on(event,(e:any)=>{if(e)e.propagationStopped=true;});
     const d=this.data,projection=d[outcome],streak=d.winStreak?`${d.winStreak}连胜`:d.loseStreak?`${d.loseStreak}连败`:'暂无连胜／败';
     label(body,'预计收入',-70,126,18,TEXT,140).isBold=true;
@@ -49,12 +50,12 @@ export class ShopIncomePanel {
     const coin=new Node('incomeGoldIcon');body.addChild(coin);coin.setPosition(71,119,0);coin.addComponent(UITransform).setContentSize(20,20);const sprite=coin.addComponent(Sprite);sprite.sizeMode=Sprite.SizeMode.CUSTOM;
     loadArtSprite(UI_SPRITE.iconGold,(error,frame)=>{if(!error&&sprite.isValid)sprite.spriteFrame=frame;});
     const total=label(body,`+${projection.total}`,112,119,30,GOLD,76);total.isBold=true;total.node.name='incomeTotal';
-    button(body,'×',140,147,20,20,()=>this.hide()).name='closeIncomePopup';
+    button(body,'×',140,147,sys.isMobile ? 36 : 20,sys.isMobile ? 36 : 20,()=>this.hide()).name='closeIncomePopup';
     for(const [key,x,title]of [['win',-73,'本场获胜'],['loss',73,'本场失利']] as const){
       const tab=button(body,title,x,65,136,28,()=>this.show(key),key===outcome);tab.name=`incomeOutcome_${key}`;tab.getChildByName('text')!.getComponent(Label)!.fontSize=13;
     }
     const lines=new Node('incomeDividers');body.addChild(lines);const g=lines.addComponent(Graphics);g.lineWidth=1;g.strokeColor=new Color(79,91,92);for(const y of [42,-126]){g.moveTo(-140,y);g.lineTo(140,y);g.stroke();}
-    const rows:[string,string,number][]=[['base','基础收入',projection.floorIncome],['victory','胜利奖励',projection.winBonus],['interest','利息',projection.interest],['streak',outcome==='win'?'连胜奖励':'连败奖励',projection.streakBonus],['encounter','奇遇奖励',projection.extraIncome]];
+    const rows:[string,string,number][]=[['victory','胜利奖励',projection.winBonus],['interest','利息',projection.interest],['streak',outcome==='win'?'连胜奖励':'连败奖励',projection.streakBonus],['encounter','奇遇奖励',projection.extraIncome]];
     rows.forEach(([key,name,value],n)=>{const y=22-n*32;const title=label(body,name,-68,y,15,TEXT,140);title.horizontalAlign=Label.HorizontalAlign.LEFT;title.node.name=`incomeLabel_${key}`;const amount=label(body,`+${value}`,117,y,16,value?GOLD:MUTED,54);amount.node.name=`incomeValue_${key}`;});
     for(let n=0;n<5;n++){const pip=new Node(`interestPip_${n}`);body.addChild(pip);pip.setPosition(3+n*12,-42,0);const p=pip.addComponent(Graphics);p.fillColor=n<projection.interest?GOLD:new Color(39,59,66);p.rect(-3,-3,6,6);p.fill();}
     label(body,d.entrySubsidy?`本关基础补贴 +${d.entrySubsidy} 已到账 · 上方为战后预计`:'按当前余额预计，不含宝箱和出售收益',0,-144,11,d.entrySubsidy?GOLD:MUTED,294);

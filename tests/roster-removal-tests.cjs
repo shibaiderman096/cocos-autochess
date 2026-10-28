@@ -28,7 +28,7 @@ for(const file of ['susanoo_blue','susanoo_slash','young_sasuke_ninja_bolt','ras
  for(const ext of ['.png','.png.meta'])assert.ok(!fs.existsSync(path.join(root,'assets/resources/art/fx',file+ext)));
 for(const folder of ['assets/resources/art/units/placeholders','assets/resources/art/units/professions','art-source/characters','art-source/unit-placeholders','art-source/unit-professions'])assert.ok(!fs.existsSync(path.join(root,folder)));
 assert.ok(!Object.keys(FX_SPRITE).some(key=>/susanoo|rasengan|itachi|ninjaBolt|blackFlame/i.test(key)));
-function session(seed,save){const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);return new RunSession(cfg,inputs.run,inputs.waves,{runSeed:seed,stageCount:3,enemyGenerationMode:'legacy',...(save?{save}:{})});}
+function session(seed,save){const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setBattle(inputs.battle);cfg.setEquipment(inputs.equipment);return new RunSession(cfg,inputs.run,inputs.waves,{runSeed:seed,stageCount:3,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),...(save?{save}:{})});}
 for(const seed of [19,1019,20261019]){
  const run=session(seed),bot=new MinimalBaselineBot();
  assert.ok(run.owned.all().every(u=>retained.has(u.unitId)));

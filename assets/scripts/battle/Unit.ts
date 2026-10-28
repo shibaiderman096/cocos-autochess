@@ -110,6 +110,10 @@ export class Unit {
     if (this.mana === this.cfg.maxMana) this.manaFraction = 0;
   }
   atkCd = 0;
+  attackTargetId: number | null = null;
+  /** Absolute tick; losing a lock waits one current basic-attack interval. */
+  retargetAtTick = 0;
+  blockedTargetSinceTick: number | null = null;
   moveCd = 0;
   alive = true;
   star = 1;

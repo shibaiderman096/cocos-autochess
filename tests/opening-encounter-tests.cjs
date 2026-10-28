@@ -14,7 +14,7 @@ function seedFor(choice) {
 function make(save, choice='inspiration') {
   const cfg = new ConfigManager(); cfg.setUnits(inputs.units); cfg.setSkills(inputs.skills);
   cfg.setBattle(inputs.battle); cfg.setEquipment(inputs.equipment);
-  return new RunSession(cfg, inputs.run, inputs.waves, {runSeed: save?.runSeed ?? seedFor(choice), stageCount: 6, enemyGenerationMode: 'legacy', openingEncounter: true, ...(save ? {save} : {})});
+  return new RunSession(cfg, inputs.run, inputs.waves, {runSeed: save?.runSeed ?? seedFor(choice), stageCount: 6, ...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(), openingEncounter: true, ...(save ? {save} : {})});
 }
 function finish(s, winner=0, extra=0) {
   if (!s.owned.onBoard().length) assert.ok(s.moveUnit(s.owned.all()[0].uid,{location:'board',x:3,y:3}).ok);
@@ -86,13 +86,10 @@ assert.deepEqual(make(pending.snapshot()).save.openingEncounter.offered,offered)
 const unselected=make(),absent=OPENING_ENCOUNTER_IDS.find(id=>!unselected.save.openingEncounter.offered.includes(id));
 const untouched=JSON.stringify(unselected.snapshot());assert.equal(unselected.chooseOpeningEncounter(absent).ok,false);
 assert.equal(JSON.stringify(unselected.snapshot()),untouched,'valid but unoffered choices cannot be selected');
-const legacy=make().snapshot();delete legacy.openingEncounter.offered;
-assert.deepEqual(make(legacy).openingEncounterOptions.map(c=>c.id),['inspiration','stipend','tempered'],'old pending save retains original visible choices');
-legacy.openingEncounter.selected='tempered';assert.equal(make(legacy).save.openingEncounter.selected,'tempered');
 for(const ids of [['inspiration','inspiration','study'],['inspiration','study'],['inspiration','study','invalid']]){
   const bad=make().snapshot();bad.openingEncounter.offered=ids;assert.throws(()=>make(bad),/Invalid saved opening encounter/);
 }
-console.log('PASS six-choice seeded pool: unique random three, all combinations, stable save/order, unoffered rejection and legacy pending/selected saves');
+console.log('PASS six-choice seeded pool: unique random three, all combinations, stable save/order, unoffered rejection and invalid choices');
 
 for(const winner of [0,1,-1]){
   const bounty=make(undefined,'bounty');assert.ok(bounty.chooseOpeningEncounter('bounty').ok);bounty.economy.add(9);

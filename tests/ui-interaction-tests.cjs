@@ -49,7 +49,7 @@ function textLines(text,width,size) {
   return text.replace(/<br\s*\/>/g,'\n').replace(/<img[^>]*\/>/g,'图').replace(/<[^>]+>/g,'').split('\n')
     .reduce((sum,line)=>sum+Math.max(1,Math.ceil([...line].reduce((n,c)=>n+(c.charCodeAt(0)>255?1:.55),0)*size/width)),0);
 }
-class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,RESIZE_HEIGHT:3}; updateRenderData() {
+class Label { static HorizontalAlign={LEFT:0,CENTER:1,RIGHT:2}; static VerticalAlign={TOP:0}; static Overflow={CLAMP:1,SHRINK:2,RESIZE_HEIGHT:3}; updateRenderData() {
   if(this.overflow===3){const t=this.node.getComponent(UITransform);t.setContentSize(t.contentSize.width,textLines(this.string,t.contentSize.width,this.fontSize)*this.lineHeight);}
 } }
 class RichText {
@@ -82,10 +82,10 @@ const input={on:(type,callback,target)=>inputListeners.push({type,callback,targe
 }};
 let sceneAccepted=true, sceneError=null; const sceneLoads=[];
 const screenSetup={};
-const cc={Node,UITransform,Sprite,Label,RichText,LabelOutline:class{},Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
+const cc={game:{frameRate:60},Node,UITransform,Sprite,Label,RichText,LabelOutline:class{},Color,Graphics,Mask,ScrollView,Vec2,Rect,Size,UIOpacity:class{},BlockInputEvents:class{},Tween:class{static stopAllByTarget(){}},SpriteFrame:class{},SpriteAtlas:class{spriteFrames={};},JsonAsset:class{},Component:class{isValid=true},
   tween:target=>({to(_seconds,props,options){this.props=props;this.options=options;return this;},start(){Object.assign(target,this.props);this.options?.onUpdate?.();return this;}}),
   input,Input,sys:{isNative:false,os:'web',OS:{ANDROID:'android'}},isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
-  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
+  ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{getVisibleSize:()=>({width:1280,height:720}),setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
   resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:name.includes('trait_badges')?2172:1536,height:name.includes('trait_badges')?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{}}};
 const cache=new Map();
@@ -169,6 +169,8 @@ assert.deepEqual(['physical','magic','true'].map(type=>{const c=FloatText.colorF
 const warriorDetail={name:'战士',star:1,cost:1,artId:'helion',side:0,hp:350,maxHp:700,mana:20,maxMana:100,atk:55,armor:30,mr:20,atkSpeed:1,range:1,spellPower:150,critChance:.25,lifesteal:.1,damageAmp:.2,damageReduction:.3,skillName:'斩击',skillDescription:'造成伤害'};
 ui.showUnitDetail({...warriorDetail,physicalPower:20});
 assert.equal(ui.unitStats[0].string,'66','attack panel includes physical bonus exactly once');
+ui.showUnitDetail({...warriorDetail,atk:91.8,armor:53.49,mr:35.5});
+assert.deepEqual(ui.unitStats.slice(0,3).map(l=>l.string),['92','53','36'],'computed attributes round for display');
 ui.showUnitDetail(warriorDetail);
 const firstStatRow=[0,5,6,1,2].map(i=>ui.unitStats[i].node.position);
 const secondStatRow=[3,7,8,9,10].map(i=>ui.unitStats[i].node.position);
@@ -329,7 +331,7 @@ assert.equal(ui.detailPopupRows.active,true,'rich body must keep the bottom stat
 assert.match(ui.detailPopupStatLabels[0].current.string,/attr_phys_bonus.*attr_spell_bonus/);
 assert.equal(ui.detailPopupStatLabels[0].stars.string,'118/157/232');
 assert.equal(ui.detailPopupStatLabels[0].stars.horizontalAlign,Label.HorizontalAlign.RIGHT);
-assert.equal(ui.detailPopupStatLabels[0].stars.overflow,Label.Overflow.CLAMP,'base column retains its full width when values change');
+assert.equal(ui.detailPopupStatLabels[0].stars.overflow,Label.Overflow.SHRINK,'long star values fit their own column');
 assert.equal(ui.detailPopupStatLabels[0].current.imageAtlas,ui.unitDetail.imageAtlas,'body and row images share loaded frames');
 assert.ok(ui.detailPopupStatLabels[0].root.position.y===0,'first stat follows the body divider without column headers');
 ui.attackSpeedIconNode.events.get(Node.EventType.TOUCH_END)();assert.equal(ui.detailPopupRows.active,false);
@@ -488,7 +490,7 @@ unitView.animateStellar(true,null,7,50);assert.notEqual(stellarSprite.spriteFram
 unitView.animateStellar(false,null,7,50);assert.equal(unitView.stellarAura.active,false,'broken/expired shield hides the animation');
 
 const {MainMenu}=load(path.join(__dirname,'../assets/scripts/ui/MainMenu.ts'));
-const {SAVE_KEY,freshSaveV2,writeSaveV2,loadSaveV2}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
+const {SAVE_KEY,freshRunSave,writeRunSave,loadRunSave}=load(path.join(__dirname,'../assets/scripts/core/ShopSave.ts'));
 const storage=new Map(); global.localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
 const createMenu=()=>{const menu=new MainMenu();menu.node=new Node('MainMenu');new Node('Canvas').addChild(menu.node);menu.start();return menu;};
 let menu=createMenu(); menu.startNewRun(); assert.equal(sceneLoads.length,0,'configuration must finish before starting');
@@ -503,14 +505,14 @@ const setup=menu.node;
 assert.equal(menu.stageCount,10);assert.equal(setup.getChildByName('runSetup'),undefined);
 assert.ok(setup.getChildByName('startGame').position.x>0&&setup.getChildByName('startGame').position.y<0);
 setup.getChildByName('startGame').events.get('end')();
-assert.deepEqual(sceneLoads,['floating-ruins']); assert.equal(loadSaveV2().stageCount,10); assert.equal(loadSaveV2().round,null);
+assert.deepEqual(sceneLoads,['floating-ruins']); assert.equal(loadRunSave().stageCount,10); assert.equal(loadRunSave().round,null);
 setup.getChildByName('startGame').events.get('end')(); assert.equal(sceneLoads.length,1,'double start is blocked');
-const saved=freshSaveV2(5);saved.gold=77;saved.round={phase:'prepare',waveIndex:3,health:18,result:null,lastSettlement:null};writeSaveV2(saved);
+const saved=freshRunSave(5);saved.gold=77;saved.round={phase:'prepare',waveIndex:3,health:18,result:null,lastSettlement:null};writeRunSave(saved);
 menu=createMenu();flush(); assert.ok(menu.node.getChildByName('continueGame'));const before=storage.get(SAVE_KEY);
 menu.node.getChildByName('continueGame').events.get('end')();assert.equal(storage.get(SAVE_KEY),before,'continue preserves exact saved run');
 menu=createMenu();flush();sceneAccepted=false;menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before,'scene failure restores previous run');assert.equal(menu.loading,false);
 sceneAccepted=true;sceneError=new Error('launch error');menu.startNewRun();assert.equal(storage.get(SAVE_KEY),before);assert.match(menu.status.string,/加载失败/);
-sceneError=null;menu.startNewRun();assert.equal(loadSaveV2().stageCount,10);assert.equal(loadSaveV2().gold,0);assert.equal(loadSaveV2().round,null);
+sceneError=null;menu.startNewRun();assert.equal(loadRunSave().stageCount,10);assert.equal(loadRunSave().gold,0);assert.equal(loadRunSave().round,null);
 const main=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/main.scene'),'utf8'));
 assert.equal(main[0]._name,'main');assert.ok(main.some(o=>o.__type__==='3d5ecIKFJdMUocoPL3jTL8c'));
 assert.ok(!main.some(o=>o.__type__==='8f9eevK0PpKTosJ1ucemD33'),'menu contains no battle stage');
@@ -642,9 +644,25 @@ assert.equal(ui.traitPanel.detail,null,'removing the last owner also closes hove
 console.log('PASS trait UI: deployed owners only, inactive at 1/2, five badge regions, glyph, tiers, owners, switching and last-owner detail cleanup');
 
 cc.sys.isMobile=true;cc.view.getVisibleSize=()=>({width:1600,height:720});
+cc.sys.getSafeAreaRect=()=>({x:69.3333333333,y:0,width:1461.3333333334,height:720});
 const mobileUI=new BattleUI();mobileUI.node=new Node('mobileUI');new Node('Canvas').addChild(mobileUI.node);mobileUI.init();flush();
 assert.equal(screenSetup.policy,2,'mobile uses the full landscape screen');
 const toggle=mobileUI.node.getChildByName('mobileShopToggle');
+const safeLeft=-800+69.3333333333,safeRight=800-69.3333333333;
+for(const node of [mobileUI.backpackRoot,mobileUI.traitPanel.root,mobileUI.node.getChildByName('healthPanel'),mobileUI.node.getChildByName('command')]){
+ const bounds=screenRect(node);assert.ok(bounds.left>=safeLeft&&bounds.right<=safeRight,'mobile controls clear the cutout safe area');
+}
+assert.ok(mobileUI.sideTabs.every(n=>n.getComponent(UITransform).contentSize.height>=44),'side tabs have larger touch targets');
+mobileUI.traitPanel.rows.setPosition(0,mobileUI.traitPanel.viewportHeight/2+36.5,0);
+mobileUI.refreshTraits(resolveTraits([trait],trait.members.slice(0,1)),traitRoster);flush();
+assert.equal(mobileUI.traitPanel.scrollView.getScrollOffset().y,0,'initial native resize offset must not clip the first trait');
+const {battleUILayout}=load(path.join(__dirname,'../assets/scripts/ui/BattleUILayout.ts'));
+for(const [width,left,right] of [[1600,69.3333,69.3333],[1600,104,0],[1280,60,0],[1280,0,60]]){
+ const layout=battleUILayout(width,true,{left,right});
+ assert.ok(layout.left-96>=-width/2+left&&layout.commandX+120<=width/2-right,'symmetric and one-sided cutouts keep controls inside');
+ const scale=Math.min(1.25,(layout.shop.width-12)/884),center=layout.shop.x+48*scale;
+ assert.ok(center-490*scale>=layout.shop.x-layout.shop.width/2&&center+394*scale<=layout.shop.x+layout.shop.width/2,'merchant tabs and five offers fit the dock together');
+}
 assert.equal(mobileUI.shopDock.active,false,'ordinary mobile shop starts collapsed');
 toggle.events.get('end')();assert.equal(mobileUI.shopDock.active,true);
 assert.equal(toggle.active,false,'opening the shop hides its entry icon');
@@ -676,11 +694,55 @@ mobileUI.refreshCombatStats([{id:1,name:'战士',side:0,star:1,damage:50,taken:3
  damageByType:{physical:50,magic:0,true:0},takenByType:{physical:30,magic:0,true:0}}]);
 assert.ok(screenRect(mobileUI.combatStatBars[0].name.node).top<screenRect(mobileUI.combatMetricButtons[0]).bottom,'statistics rows leave the metric buttons clear');
 const preferences=new Map();cc.sys.localStorage={getItem:k=>preferences.get(k)??null,setItem:(k,v)=>preferences.set(k,v)};
+assert.equal(mobileUI.unitPanel.position.x,mobileUI.combatStatsPanel.position.x,'mobile inspector uses the statistics dock');
+assert.equal(mobileUI.unitPanel.position.y,mobileUI.combatStatsPanel.position.y);
+const equipmentColumn=mobileUI.unitPanel.getChildByName('equipment');
+assert.ok(equipmentColumn.position.x+38<-140,'equipment clears the left edge of the detail card');
+assert.equal(new Set(mobileUI.equipmentSlots.map(slot=>slot.node.position.x)).size,1);
+assert.equal(new Set(mobileUI.equipmentSlots.map(slot=>slot.node.position.y)).size,3);
+mobileUI.mainMenuContent.getChildByName('settingFrameRate90').events.get('end')();
+assert.equal(mobileUI.getBattleSettings().frameRate,90);assert.equal(cc.game.frameRate,90);
+mobileUI.setCameraZoom(1.1);assert.equal(JSON.parse(preferences.get('autochess.battleSettings')).cameraZoom,1.1);
 const mode=mobileUI.mainMenuContent.getChildByName('settingUIMode');
 mode.events.get('end')();assert.equal(mobileUI.getBattleSettings().uiMode,'desktop');assert.equal(mobileUI.shopDock.active,true);assert.equal(toggle.active,false);
 assert.equal(mobileUI.isInSellArea(mobileUI.layout.shop.x,mobileUI.layout.shop.y),true);
 mode.events.get('end')();assert.equal(mobileUI.getBattleSettings().uiMode,'mobile');assert.equal(mobileUI.shopDock.active,false);assert.equal(toggle.active,true);
 assert.equal(JSON.parse(preferences.get('autochess.battleSettings')).uiMode,'mobile','interface choice persists');
+mobileUI.setShopContentOccupied(true);mobileUI.shopExpanded=false;mobileUI.syncShopVisibility();
+mobileUI.revealShopContent();assert.equal(mobileUI.shopDock.active,true,'a new trait choice reopens an already occupied mobile dock');
+mobileUI.showUnitDetail(warriorDetail);mobileUI.skillIconNode.events.get('end')();
+assert.equal(mobileUI.attackSpeedIconNode.name,'attr_aspd','only the attack speed icon opens its explanation');
+assert.ok(mobileUI.detailPopup.getChildByName('skin'),'skill explanation has an opaque textured background');
+const blankEvent={getUILocation:()=>({x:500,y:400})};
+mobileUI.inspectorDismiss.events.get('start')(blankEvent);mobileUI.inspectorDismiss.events.get('end')(blankEvent);
+assert.equal(mobileUI.detailPopup.active,false);assert.equal(mobileUI.unitDetailVisible,true,'first blank tap returns from skill details');
+mobileUI.inspectorDismiss.events.get('start')(blankEvent);mobileUI.inspectorDismiss.events.get('end')(blankEvent);
+assert.equal(mobileUI.unitDetailVisible,false,'next blank tap closes unit details');
+let opened=0;const rates=[35,30,20,10,5];
+mobileUI.showExplorerChest(320,rates,true,()=>opened++);
+let inspector=mobileUI.explorerInspector,body=inspector.root.getChildByName('explorerChestInspectorBody');
+assert.equal(body.getChildByName('explorerInspectorLayers').getComponent(Label).string,'320');
+assert.deepEqual(body.children.filter(n=>n.name.startsWith('explorerOdds')).map(n=>n.getComponent(Label).string),rates.map(n=>`${n}%`));
+mobileUI.update(3.9);assert.equal(inspector.visible,true);body.events.get('start')(blankEvent);
+mobileUI.update(3.9);assert.equal(inspector.visible,true,'interaction resets idle dismissal');
+mobileUI.update(.1);assert.equal(inspector.visible,false);assert.equal(opened,0,'inspection never claims a reward');
+mobileUI.showExplorerChest(320,rates,false,()=>opened++);
+inspector.root.getChildByName('explorerChestInspectorBody').getChildByName('openExplorerChest').events.get('end')();
+assert.equal(opened,0,'combat/unavailable opening is blocked');
+mobileUI.hideExplorerChest();mobileUI.showExplorerChest(320,rates,true,()=>opened++);
+const open=inspector.root.getChildByName('explorerChestInspectorBody').getChildByName('openExplorerChest');
+open.events.get('end')();open.events.get('end')();assert.equal(opened,1,'button is consumed once');
+mobileUI.showExplorerChest(320,rates,true,()=>opened++);
+mobileUI.shopDismiss.events.get('start')(blankEvent);mobileUI.shopDismiss.events.get('end')(blankEvent);
+assert.equal(inspector.visible,false);assert.equal(opened,1,'outside tap only returns');
+const {ShopVisitor}=load(path.join(__dirname,'../assets/scripts/view/ShopVisitor.ts'));
+let inspected=0;const chest=new ShopVisitor(new Node('board'),{x:0,y:0,z:0},()=>inspected++,'chest',{inspectOnClick:true});
+chest.setLootCaption(320,1.7);assert.equal(chest.caption.string,'320');
+assert.equal(chest.root.getChildByName('explorerChestLayers').children.length,1,'idle chest only shows its numeric layer count');
+assert.equal(chest.root.getChildByName('explorerChestLayers').getComponent(Graphics),undefined,'numeric chest caption has no background frame');
+assert.equal(chest.caption.fontSize,18,'idle layer number stays compact');
+chest.root.events.get('end')({});assert.equal(inspected,1);assert.equal(chest.opened,false,'chest tap only inspects');
+chest.openChest(()=>opened++);chest.openChest(()=>opened++);assert.equal(opened,2,'explicit chest opening cannot grant twice');
 mobileUI.onDestroy();cc.sys.isMobile=false;delete cc.view.getVisibleSize;
 delete cc.sys.localStorage;
 console.log('PASS mobile shop: icon, blank dismissal, reopen rewards, circular sale target, mode switching and persistence');

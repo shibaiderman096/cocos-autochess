@@ -8,12 +8,9 @@ $srcs = @(
   'assets/scripts/battle/Grid.ts',
   'assets/scripts/battle/Pathfinding.ts',
   'assets/scripts/battle/types.ts',
-  'assets/scripts/battle/index.ts',
   'assets/scripts/core/ConfigManager.ts',
   'assets/scripts/core/Rng.ts',
-  'assets/scripts/core/EventBus.ts',
-  'assets/scripts/core/TickDriver.ts',
-  'assets/scripts/core/index.ts'
+  'assets/scripts/core/TickDriver.ts'
 )
 npx tsc --target ES2020 --module CommonJS --moduleResolution Node --esModuleInterop --skipLibCheck --strict false --outDir .test-build @srcs
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

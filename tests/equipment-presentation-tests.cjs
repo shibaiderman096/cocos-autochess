@@ -4,8 +4,8 @@ const {BattleUI}=load(path.join(__dirname,'../assets/scripts/ui/BattleUI.ts'));
 const {UnitView}=load(path.join(__dirname,'../assets/scripts/view/UnitView.ts'));
 const {Unit}=load(path.join(__dirname,'../assets/scripts/battle/Unit.ts'));
 const {resolveTraits}=load(path.join(__dirname,'../assets/scripts/battle/Traits.ts'));
-const {combatEquipmentIdentity,sameCombatConfigurationIdentity,stableEnemyJson}=load(path.join(__dirname,'../assets/scripts/core/EnemyGenerationTypes.ts'));
-const {equipmentIdentity,sameEquipmentIdentity}=load(path.join(__dirname,'../assets/scripts/core/EquipmentPolicy.ts'));
+const {combatEquipmentIdentity,combatConfigurationIdentity,stableEnemyJson}=load(path.join(__dirname,'../assets/scripts/core/EnemyGenerationTypes.ts'));
+const {equipmentIdentity}=load(path.join(__dirname,'../assets/scripts/core/EquipmentPolicy.ts'));
 const before=require('../art-source/original-equipment/equipment-before.json');
 const items=require('../assets/resources/config/equipment.json');
 const roster=require('../assets/resources/config/units.json'),battle=require('../assets/resources/config/battle.json');
@@ -15,13 +15,7 @@ for(const item of items) {
   assert.equal(png.readUInt32BE(16),128);assert.equal(png.readUInt32BE(20),128);
   assert.equal(png.readUInt8(25),6,'equipment PNG uses RGBA');
 }
-const oldIdentity=stableEnemyJson({skills:{},equipment:before}),currentIdentity=stableEnemyJson({skills:{},equipment:items});
-assert.ok(sameCombatConfigurationIdentity(oldIdentity,currentIdentity));
-const oldPolicy=stableEnemyJson({policy:{},roles:null,items:before.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
-assert.ok(sameEquipmentIdentity(oldPolicy,equipmentIdentity({},items)));
-const changed=JSON.parse(JSON.stringify(items));changed[0].attackSpeedPerAttack+=.01;
-assert.ok(!sameEquipmentIdentity(oldPolicy,equipmentIdentity({},changed)));
-assert.ok(!sameCombatConfigurationIdentity(oldIdentity,stableEnemyJson({skills:{},equipment:changed})));
+
 const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.node);ui.init();
 const flush=()=>{while(pending.length)pending.shift()();};
 const rgb=c=>[c.r,c.g,c.b];
@@ -30,7 +24,7 @@ for(const item of items){
  ui.showEquipmentDetail(item);flush();assert.deepEqual(rgb(ui.equipmentDetail.getChildByName('equipmentDetailName').getComponent(Label).color),expected,'detail names share equipment quality colors');
  if(item.introduction){
   const content=ui.equipmentDetail.getChildByName('equipmentDetailViewport').getChildByName('equipmentDetailContent');
-  assert.equal(content.getChildByName('equipmentDetailEffect').getComponent(RichText).string.replace(/<img[^>]*\/>/g,'').replace(/<[^>]+>/g,''),item.introduction,'basic items show their introduction without inventing a passive');
+  assert.equal(content.getChildByName('equipmentDetailEffect').getComponent(RichText).string.replace(/<img[^>]*\/>/g,'').replace(/<[^>]+>/g,''),[item.introduction,item.effectDescription].filter(Boolean).join('\n\n'),'introductions and authored effects both remain visible');
  }
  ui.showEquipment([item],false,0);ui.equipmentSlots[0].node.events.get('enter')();flush();
  assert.deepEqual(rgb(ui.equipmentTooltipTitle.color),expected,'backpack/equipped tooltip names use the same colors');
@@ -38,7 +32,7 @@ for(const item of items){
 const overdrive=items.find(i=>i.id==='spell_overdrive_armor');
 assert.equal(overdrive.castAttackSpeed.bonus,.5);
 assert.ok(items.filter(i=>!i.id.startsWith('basic_')&&!i.specialShopOnly&&!i.consumable).every(i=>i.quality===2),'all completed equipment is green');
-assert.deepEqual(items.filter(i=>i.specialShopOnly&&i.consumable?.kind!=='permanentStat').map(i=>i.quality),[5,1,3,5,5],'special items use authored quality, including orange firmament replicator');
+assert.deepEqual(items.filter(i=>i.specialShopOnly&&!i.radiantBaseId&&i.consumable?.kind!=='permanentStat').map(i=>i.quality),[5,1,3,5,5],'special items use authored quality, including orange firmament replicator');
 for(const stat of ['hp','physicalPower','spellPower']) assert.deepEqual(items.filter(i=>i.consumable?.kind==='permanentStat'&&i.consumable.stat===stat).map(i=>i.quality),[1,2,3,4],'permanent boosts progress through white, green, blue and purple');
 ui.showEquipmentTooltip(items.find(i=>i.id==='totem_of_undying'),0);
 ui.showEquipmentTooltip(overdrive,0);flush();
@@ -83,4 +77,4 @@ ui.showEquipment([items[0],forged],false,7,30);flush();
 assert.equal(ui.equipmentSlots[0].stacks.string,'7');assert.equal(ui.equipmentSlots[1].stacks.string,'30');assert.ok(ui.equipmentSlots[1].stacks.node.parent.active);
 view.setEquipment([forged,items[0]]);flush();unit.equipment=[forged,items[0]];unit.equipmentAttackStacks=7;unit.equipmentDamageStacks=30;
 view.sync(unit.snapshot(),64);assert.deepEqual(view.equipmentStackLabels.map(l=>l.string),['30','7'],'board counters follow their own equipment slot');
-console.log('PASS equipment presentation: existing configuration fields, all 128px RGBA assets, fixed detail slots, memberships, per-item stacks/reset, tooltip, unload/lock, and legacy identity checks');
+console.log('PASS equipment presentation: existing configuration fields, all 128px RGBA assets, fixed detail slots, memberships, per-item stacks/reset, tooltip, unload/lock');

@@ -12,6 +12,8 @@ const clone=x=>JSON.parse(JSON.stringify(x)),roster=new Map(i.units.map(u=>[u.id
 const build=(stages=99,seed=17)=>buildRunWaves(stages,i.run,i.waves,i.units,{mode:'budget-v1',runSeed:seed,earlyEncounterLayout:'random-rounds-v1',
  difficulty:g.enemyDifficulty,power:g.enemyPower,equipmentPolicy:e.equipmentPolicy,equipmentRoles:f.enemyRoles,traits:i.battle.traits});
 const waves=build();
+const missingGoldRules=clone(i.run);delete missingGoldRules.enemyGoldBudget;
+assert.throws(()=>buildRunWaves(3,missingGoldRules,i.waves,i.units,{mode:'budget-v1',runSeed:17}),/requires enemyGoldBudget/,'retired power-budget generation cannot be selected implicitly');
 // An investment pattern can support only one distinct member of every faction
 // (e.g. ten 3-cost 3-stars). Check the best feasible matching, not an impossible two-member floor.
 function feasibleThemeMembers(w,theme){

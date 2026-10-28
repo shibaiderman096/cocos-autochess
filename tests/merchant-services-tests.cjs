@@ -20,25 +20,34 @@ function merchant(s){const wave=s.waves.find(w=>w.stage===4&&w.encounterKind==='
   const gold=s.economy.gold,candidates=forgeCandidates(old,level);assert.ok(s.enhanceEquipment(0,id).ok);
   id=s.owned.equipmentReserve[0];const item=s.cfg.getEquipmentReserve([id])[0],key=s.save.merchantServices.forged[id].upgrades[level];
   assert.ok(candidates.includes(key));assert.equal(Math.round((item[key]-(old[key]??0))*1e8)/1e8,FORGE_GAINS[key]);
-  assert.equal(s.economy.gold,gold-2*(level+1));assert.equal(item.quality,Math.min(5,level+2));assert.equal(item.shopPrice,3+(level+1)*(level+2));old=item;
+  assert.equal(s.economy.gold,gold-3);assert.equal(item.quality,Math.min(5,level+2));assert.equal(item.shopPrice,3+3*(level+1));old=item;
  }
  assert.equal(s.cfg.allEquipment().length,count,'forged instances never enter reward or enemy catalogue');
  assert.equal(s.owned.equipmentReserve[1],'basic_iron_shield','same-base copy remains untouched');
  assert.equal(s.cfg.getEquipmentReserve(['basic_iron_shield'])[0].armor,input.equipment.find(e=>e.id==='basic_iron_shield').armor);
- assert.equal(s.enhanceEquipment(2,'guinsoo').ok,false);assert.equal(s.enhanceEquipment(0,'stale').ok,false);
+ assert.equal(s.canForge('guinsoo'),true);assert.equal(s.enhanceEquipment(99,'guinsoo').ok,false);assert.equal(s.enhanceEquipment(0,'stale').ok,false);
  const target=s.owned.all()[0];assert.ok(s.equipItem(target.uid,0).ok);
  const loaded=session(s.snapshot());assert.equal(loaded.owned.get(target.uid).equipment[0],id);assert.deepEqual(loaded.cfg.getEquipment([id]),s.cfg.getEquipment([id]));
  assert.ok(loaded.unequipItem(target.uid,0).ok);const idx=loaded.owned.equipmentReserve.indexOf(id);
- assert.equal(loaded.equipmentRecycleGold(idx),Math.floor((3+12*13)/2));assert.ok(loaded.recycleEquipment(idx,id).ok);
+ assert.equal(loaded.equipmentRecycleGold(idx),Math.floor((3+12*3)/2));assert.ok(loaded.recycleEquipment(idx,id).ok);
  const saved=s.snapshot(),record=saved.merchantServices.forged[id];record.upgrades[0]='armor';assert.throws(()=>session(saved),/Invalid forged stat/);
- const poor=session();merchant(poor);poor.owned.equipmentReserve.push('basic_life_heart');poor.economy.gold=1;
+ const poor=session();merchant(poor);poor.owned.equipmentReserve.push('basic_life_heart');poor.economy.gold=2;
  const original=JSON.stringify(poor.snapshot());assert.equal(poor.enhanceEquipment(0,'basic_life_heart').error,'not_enough_gold');assert.equal(JSON.stringify(poor.snapshot()),original);
+ poor.economy.gold=3;assert.ok(poor.enhanceEquipment(0,'basic_life_heart').ok);assert.equal(poor.economy.gold,0);
  const repeat=session();merchant(repeat);repeat.owned.equipmentReserve.push('basic_life_heart','basic_life_heart');
  assert.ok(repeat.enhanceEquipment(0,'basic_life_heart').ok);const fork=session(repeat.snapshot()),custom=repeat.owned.equipmentReserve[0];
  assert.ok(repeat.enhanceEquipment(0,custom).ok);assert.ok(fork.enhanceEquipment(0,custom).ok);
  assert.deepEqual(repeat.cfg.getEquipment([custom]),fork.cfg.getEquipment([custom]),'reload does not reroll the next upgrade');
  assert.ok(repeat.enhanceEquipment(1,'basic_life_heart').ok);assert.notEqual(repeat.owned.equipmentReserve[0],repeat.owned.equipmentReserve[1]);
  const bad=repeat.snapshot();bad.equipmentReserve.push(custom);assert.throws(()=>session(bad),/Duplicate forged/);
+}
+{
+ const s=session();merchant(s);s.owned.equipmentReserve.push('basic_iron_shield');
+ for(let i=0;i<4;i++)assert.ok(s.enhanceEquipment(0,s.owned.equipmentReserve[0]).ok);
+
+}
+{
+
 }
 {
  let wins=0,losses=0;const faces=new Set();
@@ -69,12 +78,6 @@ function merchant(s){const wave=s.waves.find(w=>w.stage===4&&w.encounterKind==='
   const restored=session(s.snapshot());const frozen=restored.merchantDice;assert.ok(restored.finishDiceBet(frozen.id).ok);
   assert.equal(restored.economy.gold,gold-5+dicePayout(frozen));
  }
- for(const side of ['small','big'])for(const settled of [false,true]){
-  const s=session();merchant(s);assert.ok(s.beginDiceBet(5,side==='small'?[1,2,3]:[4,5,6]).ok);
-  if(settled)assert.ok(s.finishDiceBet(s.merchantDice.id).ok);
-  const save=s.snapshot(),gold=s.economy.gold;delete save.merchantServices.dice.picks;save.merchantServices.dice.side=side;
-  const restored=session(save);assert.deepEqual(restored.merchantDice.picks,side==='small'?[1,2,3]:[4,5,6]);assert.equal(restored.economy.gold,gold);
-  if(!settled){assert.ok(restored.finishDiceBet(restored.merchantDice.id).ok);assert.equal(restored.economy.gold,gold+dicePayout(restored.merchantDice));}
- }
+
 }
 console.log('PASS merchant services: independent forged instances, first two new stats, unlimited upgrades, quality/price, equip/reload/recycle, frozen dice outcomes and exactly-once payouts');

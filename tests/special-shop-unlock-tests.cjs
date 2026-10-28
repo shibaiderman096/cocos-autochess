@@ -11,7 +11,7 @@ const {RunRandomContext}=require('../assets/scripts/core/RunRandomContext.ts');
 const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs}=require('../tools/run-simulation.ts');
 const input=loadRunInputs(),deps={...loadEnemyGenerationInputs(),...loadFormationInputs(),...loadEquipmentInputs()};
 const locked=['blackstar_warlock','oris','voidscar_reaver'],removed=['bronda','leon','shadow_seam_assassin','soulcleaver_general'];
-function make(save,seed=23){const cfg=new ConfigManager();cfg.setUnits(structuredClone(input.units));cfg.setSkills(structuredClone(input.skills));cfg.setBattle(structuredClone(input.battle));cfg.setEquipment(structuredClone(input.equipment));return new RunSession(cfg,input.run,input.waves,{...deps,enemyGenerationMode:'legacy',runSeed:seed,...(save?{save}:{})});}
+function make(save,seed=23){const cfg=new ConfigManager();cfg.setUnits(structuredClone(input.units));cfg.setSkills(structuredClone(input.skills));cfg.setBattle(structuredClone(input.battle));cfg.setEquipment(structuredClone(input.equipment));return new RunSession(cfg,input.run,input.waves,{...deps,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),runSeed:seed,...(save?{save}:{})});}
 function shop(s){s.level.level=10;const w=s.waves.find(w=>w.stage===2&&w.encounterKind==='specialShop');assert.ok(s.debugJump(2,w.round));return s.save.stageProgress.pending;}
 for(const id of removed){assert.ok(!input.units.some(u=>u.id===id));assert.ok(!input.battle.traits.some(t=>t.members.includes(id)));for(const faction of ['sunlight','shadow'])assert.ok(!fs.existsSync(path.resolve('assets/resources/art/units',faction,id+'.png')));}
 assert.equal(input.units.length,33);

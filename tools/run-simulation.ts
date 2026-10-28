@@ -79,16 +79,12 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
     }
     if (inputs.battle.ownRows >= inputs.battle.boardHeight || !Number.isFinite(inputs.battle.tickMs) || inputs.battle.tickMs <= 0) throw new Error('Invalid battle geometry/tickMs');
     const mode=options.enemyGenerationMode??'budget-v1';
-    if(!['legacy','budget-v1'].includes(mode))throw new Error('Unsupported enemy mode');
-    const override=options.formation??(mode==='legacy'?'L0':'auto');
-    const advanced=override!=='L0';
-    const formation=advanced?{...loadFormationInputs(),...(options.formationConfig?{formationConfig:options.formationConfig}:{}),...(options.enemyRoles?{enemyRoles:options.enemyRoles}:{})}
-      :mode==='budget-v1'&&options.equipmentPolicy!==false?{enemyRoles:options.enemyRoles??loadFormationInputs().enemyRoles}:{};
-    const generation=mode==='budget-v1'||advanced?{
-      ...(options.enemyDifficulty&&options.enemyPower?{}:loadEnemyGenerationInputs()),
-      ...(options.enemyDifficulty?{enemyDifficulty:options.enemyDifficulty}:{}),...(options.enemyPower?{enemyPower:options.enemyPower}:{})}:{};
-    const equipment=options.equipmentPolicy===false||mode==='legacy'?{}:options.equipmentPolicy?{equipmentPolicy:options.equipmentPolicy}:loadEquipmentInputs();
-    const simulationConfig = mode==='legacy'&&!advanced?inputs:{inputs,...generation,...formation,...equipment,override};
+    if(mode!=='budget-v1')throw new Error('Unsupported enemy mode');
+    const override=options.formation??'auto';
+    const formation={...loadFormationInputs(),...(options.formationConfig?{formationConfig:options.formationConfig}:{}),...(options.enemyRoles?{enemyRoles:options.enemyRoles}:{})};
+    const generation={...loadEnemyGenerationInputs(),...(options.enemyDifficulty?{enemyDifficulty:options.enemyDifficulty}:{}),...(options.enemyPower?{enemyPower:options.enemyPower}:{})};
+    const equipment=options.equipmentPolicy===false?{}:options.equipmentPolicy?{equipmentPolicy:options.equipmentPolicy}:loadEquipmentInputs();
+    const simulationConfig = {inputs,...generation,...formation,...equipment,override};
     report.configHash = createHash('sha256').update(JSON.stringify({config:simulationConfig,shopPricing:{buy:COST_PRICE,sell:COST_SELL}})).digest('hex');
     const cfg = new ConfigManager(); cfg.setUnits(inputs.units); cfg.setSkills(inputs.skills);
     cfg.setBattle(inputs.battle); cfg.setEquipment(inputs.equipment);
@@ -118,9 +114,9 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
         if(result.ok&&discarded){economyAudit.ignoredUsefulOffers+=discarded.offers.length;economyAudit.missedImmediate2Star+=discarded.offers.filter(s=>s.completes2).length;}
         if(result.ok&&boughtId==='iron_golem')economyAudit.ironGolemPurchases++;
         if(!result.ok&&result.error==='bench_full')economyAudit.benchFullEvents++;}
-      const stageEquipment = action.type==='stageChoice' && ((stageBefore?.kind==='equipmentChoice'&&action.choice==='claim') || (stageBefore?.kind==='specialShop'&&action.choice==='buy'&&stageBefore.offers[action.index!]?.kind==='equipment'));
+      const stageEquipment = action.type==='stageChoice' && (stageBefore?.kind==='specialShop'&&action.choice==='buy'&&stageBefore.offers[action.index!]?.kind==='equipment');
       const grant=result.stageReward;
-      const grantedEquipment=result.ok?(grant?.kind==='mixed'||grant?.kind==='equipment'?grant.equipmentIds.length:action.type==='claimEquipmentReward'||stageEquipment?1:0):0;
+      const grantedEquipment=result.ok?(grant?.kind==='mixed'?grant.equipmentIds.length:action.type==='claimEquipmentReward'||stageEquipment?1:0):0;
       const consumedEquipment=result.ok&&(result.copiedUnitId||action.type==='recycleEquipment')?1:0;
       if(options.audit!==false){assertLegalSession(session!);if(equipmentCount(session!)!==equipmentBefore+grantedEquipment-consumedEquipment)throw Error('BOT_LEGALITY: equipment conservation');}
       return result;
@@ -172,7 +168,6 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
       const after = session.state;
       const finalized=session.formation,fd=finalized.diagnostics;
       const record: RunWaveReport & {botEconomy?:BotEconomyDiagnostics} = {
-        ...(session.save.stageProgress?.lastUnitDrop?.waveId === wave.id ? { unitDrop: JSON.parse(JSON.stringify(session.save.stageProgress.lastUnitDrop)) } : {}),
         ...(stageReward ? { stageReward } : {}),
         ...(economyAudit?{botEconomy:economyAudit}:{}),
         ...(formal?{botMetrics:{...spending,formationChanges:session.owned.onBoard().filter(u=>positions.has(u.uid)&&positions.get(u.uid)!==u.x+','+u.y).length,

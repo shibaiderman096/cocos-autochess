@@ -41,15 +41,13 @@ export class ShopSystem {
     private getLevel: () => number,
     private benchSlots: number,
     initialState?: ShopSlot[],
-    initialStateReserved = true,
   ) {
     if (initialState && initialState.length === SHOP_SLOTS) {
       this.slots = initialState.map(s => {
         const id = s.unitId;
         if (!id || !this.unitConfigs.has(id)) return { unitId: null };
-        if (!this.pool.canDraw(id)) { if (initialStateReserved) this.pool.give(id); return { unitId: null }; }
-        // 旧版商品未预留库存；只在首次恢复时扣一次。
-        return { unitId: (initialStateReserved || this.pool.take(id)) ? id : null };
+        if (!this.pool.canDraw(id)) { this.pool.give(id); return { unitId: null }; }
+        return { unitId: id };
       });
     } else {
       this.reroll(); // 初始免费生成

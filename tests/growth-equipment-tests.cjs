@@ -47,24 +47,10 @@ cfg.battle.traits=[];
  const replay=()=>{const battle=sim([FIRE,STONE]);return battle.run();};assert.deepEqual(replay(),replay());
 }
 // Resume an actual pre-extension campaign with inventory, a pending reward and the old catalogue identities.
-const oldItems=input.equipment.filter(item=>!added.includes(item.id)),oldPolicy=structuredClone(deps.equipmentPolicy),oldRun=structuredClone(input.run);
-for(const id of added)delete oldPolicy.tiers[id];oldRun.stageEncounters.basicEquipmentIds=oldRun.stageEncounters.basicEquipmentIds.filter(id=>!added.includes(id));
-function campaign(items,run,policy,save){const c=new ConfigManager();c.setUnits(input.units);c.setSkills(input.skills);c.setBattle(input.battle);c.setEquipment(items);
- return new RunSession(c,run,input.waves,{...deps,equipmentPolicy:policy,stageCount:10,runSeed:123,...(save?{save}:{})});}
-const old=campaign(oldItems,oldRun,oldPolicy);old.owned.equipmentReserve.push('forest_sanctuary');
-const boss=old.waves.find(w=>w.stage===4&&w.encounterKind==='boss');assert.ok(old.debugJump(4,boss.round));
-const carry=old.owned.all()[0];old.moveUnit(carry.uid,{location:'board',x:3,y:3});const battle=old.startBattle();battle.end(0);old.settleBattle();
-assert.equal(old.pendingStageReward.kind,'bossChoice');
-assert.ok(old.claimStageReward({type:'stageChoice',rewardId:old.pendingStageReward.id,choice:'equipment'}).ok);
-const saved=old.snapshot(),resumed=campaign(input.equipment,input.run,deps.equipmentPolicy,saved);
-assert.deepEqual(resumed.owned.equipmentReserve,old.owned.equipmentReserve);assert.equal(resumed.economy.gold,old.economy.gold);
-assert.deepEqual(resumed.pendingStageReward,old.pendingStageReward);assert.deepEqual(resumed.waves,old.waves);
-const changed=structuredClone(input.equipment);changed.find(item=>item.id==='guinsoo').attackSpeedPerAttack+=.01;
-assert.throws(()=>campaign(changed,input.run,deps.equipmentPolicy,saved),/configuration mismatch/,'existing mechanical changes remain rejected');
 for(const [id,file] of [[STONE,'翡翠绿晶石岩铠徽章.png'],[FIRE,'赤焰羽翼魔刃徽章.png'],[CODEX,'星辉魔典与幻彩能量.png']]){
  const target=path.resolve('assets/resources/art/equipment',id+'.png'),png=fs.readFileSync(target),meta=JSON.parse(fs.readFileSync(target+'.meta'));
  assert.equal(png.readUInt32BE(16),128);assert.equal(png.readUInt32BE(20),128);assert.equal(png[25],6);assert.equal(meta.userData.hasAlpha,true);
  assert.ok(fs.existsSync(path.resolve('art-source/equipment',file)),'supplied full-resolution source remains archived');
  assert.equal(deps.equipmentPolicy.tiers[id],'basic');assert.ok(input.run.stageEncounters.basicEquipmentIds.includes(id));
 }
-console.log('PASS growth equipment: final HP/rounding/stars/traits/permanent HP/stacking, plate synergy, per-basic-attack physical growth, damage types, stun/reset/replay, legacy campaign resume and authored transparent artwork');
+console.log('PASS growth equipment: final HP/rounding/stars/traits/permanent HP/stacking, plate synergy, per-basic-attack physical growth, damage types, stun/reset/replay, authored transparent artwork');

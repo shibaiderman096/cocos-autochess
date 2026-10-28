@@ -84,7 +84,7 @@ for(const side of [0,1]) {
   const make=(runSeed=1025,save)=>{
     const cfg=new ConfigManager();cfg.setUnits(roster);cfg.setSkills(require('../assets/resources/config/skills.json'));
     cfg.setEquipment(require('../assets/resources/config/equipment.json'));cfg.setBattle(battle);
-    return new RunSession(cfg,run,templates,{runSeed,stageCount:6,enemyGenerationMode:'legacy',...(save?{save}:{})});
+    return new RunSession(cfg,run,templates,{runSeed,stageCount:6,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),...(save?{save}:{})});
   };
   const initial=make(),saved=initial.snapshot();saved.level=10;saved.exp=0;
   saved.owned=original.members.map((unitId,i)=>({uid:i+1,unitId,star:1,equipment:[],location:i<3?'board':'bench',x:i<3?i:-1,y:i<3?2:i-3}));

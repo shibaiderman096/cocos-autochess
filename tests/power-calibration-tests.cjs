@@ -12,7 +12,7 @@ const tempRoot=path.join(root,'temp');fs.mkdirSync(tempRoot,{recursive:true});co
 let passed=0;function test(name,fn){fn();passed++;console.log('PASS '+name);}
 try{
  test('bounded plan contains exact matrix counts and all fixture cells are legal odd-r half-boards',()=>{
-  const {archivedInputs}=require('./advanced-equipment-compatibility.cjs');
+  const archivedInputs=require('../docs/p0-enemy-difficulty/baseline/input-configs.json');
   const original=buildCalibrationCases(archivedInputs.units,archivedInputs.equipment.map(item=>item.id));
   assert.equal(original.length,971,'the published four-item experiment retains its original matrix');
   const counts=Object.fromEntries(['mirror','unit','star','single','combo','team'].map(k=>[k,cases.filter(c=>c.category===k).length]));
@@ -65,7 +65,7 @@ try{
   const records=JSON.parse(fs.readFileSync(file,'utf8')),changed=JSON.parse(JSON.stringify(records));
   for(const row of changed){row.validation.score=1-row.validation.score;row.validation.target+=100;for(const s of row.validationEnvironments){s.score=1-s.score;s.target+=100;}}
   // The archived observations measured only the original four items, so fit those exact inputs.
-  const {archivedInputs}=require('./advanced-equipment-compatibility.cjs');
+  const archivedInputs=require('../docs/p0-enemy-difficulty/baseline/input-configs.json');
   const a=fitPowerModel(records,archivedInputs,prov),b=fitPowerModel(changed,archivedInputs,prov);
   assert.deepEqual(a.model.units,b.model.units);assert.deepEqual(a.model.costBaseline,b.model.costBaseline);assert.equal(a.model.winProbabilitySlope,b.model.winProbabilitySlope);
  });

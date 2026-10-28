@@ -2,7 +2,7 @@ import type { EquipmentConfigData } from '../battle/types';
 import type { EnemyPowerData } from './EnemyPowerTypes';
 import type { EquipmentPolicyConfig, EquipmentQuota, EquipmentTier } from './EquipmentPolicyTypes';
 import type { WaveKind } from './EnemyGenerationTypes';
-import { stableEnemyJson, combatEquipmentIdentity, adoptEquipmentCatalogueAdditions, adoptEquipmentBalanceChanges } from './EnemyGenerationTypes';
+import { stableEnemyJson, combatEquipmentIdentity } from './EnemyGenerationTypes';
 import type { EnemyRoleConfig } from './EnemyFormationTypes';
 import { FORMATION_ROLES } from './EnemyFormationTypes';
 
@@ -60,37 +60,6 @@ export function equipmentQuota(c:EquipmentPolicyConfig,stage:number,kind:WaveKin
 }
 export function equipmentIdentity(c:EquipmentPolicyConfig,items:EquipmentConfigData[],roles?:EnemyRoleConfig):string {
   return stableEnemyJson({policy:c,roles:roles??null,items:combatEquipmentIdentity(items.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0))});
-}
-export function sameEquipmentIdentity(saved:string,current:string):boolean {
-  try {
-    const normalize=(text:string)=>{const value=JSON.parse(text);return stableEnemyJson({...value,items:combatEquipmentIdentity(value.items)});};
-    const previous=JSON.parse(saved),next=JSON.parse(current);
-    // Adopt the new optional AI tags and bonus account once; later edits still fail identity checks.
-    if (previous.policy?.enemy && next.policy?.enemy?.equipmentEconomy && next.policy.enemy.itemTags
-      && previous.policy.enemy.equipmentEconomy === undefined && previous.policy.enemy.itemTags === undefined) {
-      previous.policy.enemy.equipmentEconomy = next.policy.enemy.equipmentEconomy;
-      previous.policy.enemy.itemTags = next.policy.enemy.itemTags;
-    }
-    previous.items = adoptEquipmentCatalogueAdditions(previous.items, next.items);
-    previous.items = adoptEquipmentBalanceChanges(previous.items, next.items);
-    const tiers=next.policy?.tiers,oldTiers=previous.policy?.tiers;
-    if (tiers && oldTiers && Object.keys(oldTiers).every(id => id in tiers)) {
-      const added = Object.keys(tiers).filter(id => !(id in oldTiers));
-      if (added.every(id => next.items.some((item: {id:string;specialShopOnly?:boolean}) => item.id === id && (tiers[id] === 'basic' || item.specialShopOnly)))) {
-        for (const id of added) oldTiers[id] = tiers[id];
-        const oldTags = previous.policy.enemy.itemTags, nextTags = next.policy.enemy.itemTags;
-        if (oldTags && nextTags) for (const id of added) if (nextTags[id]) oldTags[id] = nextTags[id];
-        const oldExcluded = previous.policy.reward.excludedIds ?? [], nextExcluded = next.policy.reward.excludedIds ?? [];
-        if (next.policy.reward.excludedIds !== undefined && oldExcluded.every((id: string) => nextExcluded.includes(id))
-          && nextExcluded.every((id: string) => oldExcluded.includes(id) || added.includes(id))) previous.policy.reward.excludedIds = nextExcluded;
-      }
-    }
-    // One-way migration to the current ordinary-only catalogue; other rule changes still reject the save.
-    if(tiers&&oldTiers&&Object.keys(tiers).length>0&&Object.keys(tiers).every(id=>tiers[id]==='basic'||tiers[id]===oldTiers[id])
-      &&stableEnemyJson(Object.keys(tiers).sort())===stableEnemyJson(Object.keys(oldTiers).sort())
-      &&Object.values(oldTiers).every(t=>['basic','advanced','special'].includes(t as string))) previous.policy.tiers=tiers;
-    return normalize(JSON.stringify(previous))===normalize(current);
-  } catch { return false; }
 }
 export function unlockedEquipment(c:EquipmentPolicyConfig,stage:number,unlock:Record<EquipmentTier,number>):string[] {
   return Object.keys(c.tiers).filter(id=>stage>=unlock[c.tiers[id]]).sort();

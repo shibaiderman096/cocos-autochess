@@ -17,15 +17,6 @@ function card(s,cost=1,star=1){const c=i.units.find(u=>u.cost===cost&&!u.special
 function use(s,id,u){s.owned.equipmentReserve.push(id);return s.equipItem(u.uid,s.owned.equipmentReserve.length-1);}
 for(let n=0;n<4;n++){const item=i.equipment.find(e=>e.id===ids[n]);assert.equal(item.shopPrice,[2,4,8,16][n]);assert.equal(item.chestDrop,true);assert.equal(deps.equipmentPolicy.tiers[item.id],'special');assert.equal(deps.equipmentPolicy.enemy.itemTags[item.id].enabled,false);}
 assert.equal(i.equipment.find(e=>e.id==='replicator_firmament').quality,5);
-{
- const oldItems=clone(i.equipment);Object.assign(oldItems.find(e=>e.id==='replicator_firmament'),{shopPrice:6,quality:4});
- const old=make(undefined,oldItems),wave=old.waves.find(w=>w.stage===4&&w.encounterKind==='specialShop');assert.ok(old.debugJump(4,wave.round));
- const saved=old.snapshot();saved.stageProgress.pending.offers[0]={kind:'equipment',id:'replicator_firmament',price:6,bought:false};
- const updated=make(saved);assert.equal(updated.pendingStageReward.offers[0].price,8);assert.equal(updated.economy.gold,saved.gold);assert.deepEqual(updated.owned.snapshot(),saved.owned);
- const bought=clone(saved);bought.stageProgress.pending.offers[0].bought=true;assert.equal(make(bought).economy.gold,saved.gold,'completed purchases are never charged again');
- const altered=clone(oldItems);altered.find(e=>e.id==='replicator_firmament').consumable.maxCost=3;
- assert.throws(()=>make(saved,altered),/configuration mismatch/,'unrelated copy-rule changes still reject saves');
-}
 for(const [id,max]of ids.slice(0,3).map((id,n)=>[id,[1,3,5][n]])){
  for(let cost=1;cost<=5;cost++){
   const s=make(),target=card(s,cost);target.equipment=['basic_iron_shield','basic_mystic_cloak','basic_life_heart'];target.permanentMaxHp=123;target.permanentSpellPower=45;
@@ -63,9 +54,7 @@ for(let seed=1;seed<=2048&&found.size<4;seed++){
  assert.equal(value,30);for(const id of g.equipmentIds)if(ids.includes(id))found.add(id);
 }
 assert.deepEqual([...found].sort(),ids.slice().sort(),'all four special items can be drawn without exceeding chest value');
-const oldItems=i.equipment.filter(e=>!ids.includes(e.id)),oldPolicy=clone(deps.equipmentPolicy);for(const id of ids){delete oldPolicy.tiers[id];delete oldPolicy.enemy.itemTags[id];}oldPolicy.reward.excludedIds=oldPolicy.reward.excludedIds.filter(id=>!ids.includes(id));
-const old=make(undefined,oldItems,{equipmentPolicy:oldPolicy}),oldSave=old.snapshot(),restored=make(oldSave);assert.equal(restored.economy.gold,oldSave.gold);assert.equal(restored.flow.health,oldSave.round.health);assert.deepEqual(restored.owned.snapshot(),oldSave.owned);assertLegalSession(restored);
-console.log('PASS drops and catalogue migration: all special items obtainable by exact chest prices, no enemy assignment, existing saves retain ownership/gold/health');
+console.log('PASS drops and all special items obtainable by exact chest prices, no enemy assignment, existing saves retain ownership/gold/health');
 const merchantFound=new Set();
 for(let seed=1;seed<=256&&merchantFound.size<4;seed++){
  const shop=new RunSession(cfg(),i.run,i.waves,{...deps,stageCount:6,runSeed:seed,enemyGenerationMode:'budget-v1'}),w=shop.waves.find(w=>w.stage===4&&w.encounterKind==='specialShop');

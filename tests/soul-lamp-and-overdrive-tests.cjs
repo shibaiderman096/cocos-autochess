@@ -66,11 +66,11 @@ for(const mode of ['expired','shieldOnly','dead','noContribution']){
  assert.throws(()=>c.setEquipment([{...item,castAttackSpeed:{bonus:1.5,seconds:0}}]),/cast attack speed/);
 }
 {
- const cfg=config(),s=new RunSession(cfg,input.run,input.waves,{runSeed:83,enemyGenerationMode:'legacy'});
+ const cfg=config(),s=new RunSession(cfg,input.run,input.waves,{runSeed:83,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});
  const lamp=s.owned.forceAdd('nightmare_lamplighter');lamp.location='board';lamp.x=3;lamp.y=3;
  const sim=s.startBattle();assert.ok(sim);const src=sim.units.find(u=>u.id===s.activeBattleIds.get(lamp.uid)),enemy=sim.units.find(u=>u.side===1);
  hit(sim,src,enemy,enemy.hp);sim.end(0);assert.ok(s.settleBattle());assert.equal(lamp.permanentMaxHp,10);assert.equal(lamp.soulLampHealth,10);assert.equal(s.settleBattle(),null);assert.equal(lamp.permanentMaxHp,10);
- const restored=new RunSession(cfg,input.run,input.waves,{save:s.snapshot(),enemyGenerationMode:'legacy'});assert.equal(restored.owned.get(lamp.uid).permanentMaxHp,10);assert.equal(restored.owned.get(lamp.uid).soulLampHealth,10);
+ const restored=new RunSession(cfg,input.run,input.waves,{save:s.snapshot(),...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs()});assert.equal(restored.owned.get(lamp.uid).permanentMaxHp,10);assert.equal(restored.owned.get(lamp.uid).soulLampHealth,10);
  assert.equal(restored.createPreview().sim.units.find(u=>u.side===0&&u.cfg.id===lamp.unitId).soulLampHealth,10);
  const merged=new OwnedUnits([1,2,3].map((uid,i)=>({uid,unitId:lamp.unitId,star:1,location:'bench',x:-1,y:i,permanentMaxHp:(i+1)*10+50,soulLampHealth:(i+1)*10})));
  merged.mergeAll();assert.equal(merged.all()[0].permanentMaxHp,210);assert.equal(merged.all()[0].soulLampHealth,60,'survivor growth is excluded from passive record');assert.equal(merged.all()[0].star,2);
@@ -79,7 +79,7 @@ for(const mode of ['expired','shieldOnly','dead','noContribution']){
  const cfg=config(input.battle.traits),saiph=cfg.getUnit('saiph'),states=resolveTraits(input.battle.traits,[saiph],cfg.allUnits());
  assert.equal(saiph.damageType,'physical');assert.equal(cfg.getSkill(saiph.skillId).dmgType,'physical');
  assert.equal(states.find(t=>t.config.id==='swift_marksman').count,1);assert.equal(states.find(t=>t.config.id==='sharpshooter').count,0);assert.equal(states.find(t=>t.config.id==='sunlight').count,1);
- const s=new RunSession(cfg,input.run,input.waves,{runSeed:42,enemyGenerationMode:'legacy',equipmentPolicy:loadEquipmentInputs().equipmentPolicy});
+ const s=new RunSession(cfg,input.run,input.waves,{runSeed:42,...require('../tools/run-simulation.ts').loadEnemyGenerationInputs(),...require('../tools/run-simulation.ts').loadFormationInputs(),equipmentPolicy:loadEquipmentInputs().equipmentPolicy});
  for(const stage of [2,4,8]){const wave=s.waves.find(w=>w.stage===stage&&w.encounterKind==='specialShop');assert.ok(s.debugJump(stage,wave.round));
   const pending=s.pendingStageReward;assert.equal(pending.offers.length,5);assert.ok(pending.offers.every(o=>o.kind==='equipment'||cfg.getUnit(o.id).specialShopUnlock),'special shop never offers ordinary units');
   s.claimStageReward({type:'stageChoice',rewardId:pending.id,choice:'continue'});

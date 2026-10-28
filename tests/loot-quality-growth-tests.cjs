@@ -63,7 +63,5 @@ for(const points of [0,500,1000,2000]){
  const expected=explorerLootQualityRates(points,lootRules.chestReward);
  for(let q=0;q<5;q++)assert.ok(Math.abs(totals[q]/90-expected[q])<2,'actual explorer loot follows layer odds');
 }
-const oldRun=clone(input.run);delete oldRun.stageEncounters.shop.refreshQuality;delete oldRun.stageEncounters.chestReward.explorerQuality;
-const old=session(oldRun).snapshot(),adopted=session(input.run,old);assert.equal(adopted.economy.gold,old.gold);assert.deepEqual(adopted.owned.snapshot(),old.owned);
 for(const invalid of [0,-1,.5]){const bad=clone(input.run);bad.stageEncounters.shop.refreshQuality.maxSteps=invalid;assert.throws(()=>session(bad),/quality growth/);}
-console.log('PASS loot quality growth: monotone curves, exact totals, 1000-layer cap, real merchant/explorer draw distributions, deterministic reload, per-shop reset and old-save adoption');
+console.log('PASS loot quality growth: monotone curves, exact totals, 1000-layer cap, real merchant/explorer draw distributions, deterministic reload, per-shop reset and current save/load');

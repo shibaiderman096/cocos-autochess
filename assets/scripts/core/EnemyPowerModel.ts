@@ -44,7 +44,7 @@ export class EnemyPowerModel {
     if (exact) {
       const meta = support(exact);
       return { power: value(exact), confidence: meta?.reliability ?? 'low', sampleCount: meta?.sampleCount ?? 0,
-        diagnostics: meta ? meta.reasons.slice() : ['environment confidence metadata missing; legacy model coverage is not assumed'], method: 'measured' };
+        diagnostics: meta ? meta.reasons.slice() : ['environment confidence metadata missing; model coverage is not assumed'], method: 'measured' };
     }
     if (unit) {
       const naked = points?.[''];

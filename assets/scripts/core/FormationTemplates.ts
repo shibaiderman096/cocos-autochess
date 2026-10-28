@@ -3,7 +3,7 @@ import type { FormationTemplate } from './EnemyFormationTypes';
 
 /** Deliberately reads coordinates only: old heroes, stars, scaling and gear never enter a template. */
 export function extractFormationTemplates(waves:readonly WaveConfig[]):FormationTemplate[] {
-  return waves.map((wave,index)=>({id:'legacy-shape-'+(index+1),slots:wave.enemies.map(e=>({x:e.x,y:e.y}))}));
+  return waves.map((wave,index)=>({id:'template-shape-'+(index+1),slots:wave.enemies.map(e=>({x:e.x,y:e.y}))}));
 }
 export function templateProblem(template:FormationTemplate,cells:readonly {x:number;y:number}[]):string|null {
   if(!template||typeof template.id!=='string'||!Array.isArray(template.slots)||!template.slots.length)return 'EMPTY_OR_MALFORMED_TEMPLATE';

@@ -7,7 +7,7 @@ import { OwnedUnits } from '../assets/scripts/core/OwnedUnits';
 import { ShopSystem } from '../assets/scripts/core/ShopSystem';
 import { EconomySystem } from '../assets/scripts/core/EconomySystem';
 import { SHOP_RATES, POOL_STOCK, validateRates, COST_PRICE, Cost } from '../assets/scripts/core/ShopConfig';
-import { migrateSaveV2, SAVE_VERSION as V2 } from '../assets/scripts/core/ShopSave';
+import { readRunSave, freshRunSave, SAVE_VERSION as V2 } from '../assets/scripts/core/ShopSave';
 import { UnitConfigData } from '../assets/scripts/core/ConfigManager';
 
 let pass = 0, fail = 0;
@@ -239,7 +239,7 @@ console.log('[9] 存档一致');
     winStreak: 1, loseStreak: 0,
     benchSlots: 9,
   };
-  const loaded = migrateSaveV2(snapshot);
+  const loaded = readRunSave({...freshRunSave(),...snapshot,nextOwnedUid: owned.nextUnitUid});
   assert(loaded.version === V2, `版本应为 ${V2}，得 ${loaded.version}`);
   assert(loaded.gold === snapshot.gold, '金币应一致');
   assert(loaded.level === 4 && loaded.exp === 3, '等级经验应一致');
@@ -248,9 +248,7 @@ console.log('[9] 存档一致');
   assert(loadedBoard.length === 1 && loadedBoard[0].x === 3 && loadedBoard[0].y === 2, '棋盘位置应一致');
   assert(loaded.pool['w1'] === snapshot.pool['w1'], '卡池 w1 应一致');
   assert(loaded.shop.length === 5, '商店应 5 格');
-  // v1 旧档（无 shop/owned/pool 字段）
-  const old = migrateSaveV2({ floor: 3, gold: 25, level: 2, exp: 1 });
-  assert(old.shop.length === 5 && old.owned.length === 0 && typeof old.pool === 'object', 'v1 旧档应补默认值');
+
 }
 
 // ─── 10. 同名合并 ───
@@ -277,8 +275,9 @@ for (const [unitId, cost] of [['k1', 4], ['d1', 5]] as const) {
     const economy = new EconomySystem(undefined, { gold: cost * copies, winStreak: 0, loseStreak: 0 });
     const pool = new CardPool(UNITS);
     const owned = new OwnedUnits();
+    pool.take(unitId);
     const shop = new ShopSystem(pool, owned, economy, UNIT_MAP, new Rng(42), () => 10, 9,
-      [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }], false);
+      [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }]);
     for (let n = 0; n < copies; n++) {
       if (n > 0) {
         assert(pool.take(unitId), `${cost}费：为商店预留第${n + 1}张卡`);
@@ -298,8 +297,9 @@ for (const [unitId, cost] of [['k1', 4], ['d1', 5]] as const) {
   }
   const economy = new EconomySystem(undefined, { gold: cost - 1, winStreak: 0, loseStreak: 0 });
   const pool = new CardPool(UNITS), owned = new OwnedUnits();
+  pool.take(unitId);
   const shop = new ShopSystem(pool, owned, economy, UNIT_MAP, new Rng(42), () => 10, 9,
-    [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }], false);
+    [{ unitId }, { unitId: null }, { unitId: null }, { unitId: null }, { unitId: null }]);
   assert(shop.buy(0).error === 'not_enough_gold', `${cost}费：少1金应拒绝购买`);
   assert(economy.gold === cost - 1 && owned.all().length === 0 && shop.slots[0].unitId === unitId
     && pool.count(unitId) === POOL_STOCK[cost] - 1, `${cost}费：拒绝购买保留金币和预留卡`);
