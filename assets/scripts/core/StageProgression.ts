@@ -63,7 +63,7 @@ export const isChestlessBoss = (wave: WaveConfig): boolean => wave.stage === 10 
 export class StageProgression {
   constructor(readonly rules: StageEncounterRules, readonly state: StageProgressState, private cfg: ConfigManager,
     private pool: CardPool, private owned: OwnedUnits, private economy: EconomySystem, private random: RunRandomContext,
-    private benchSlots: number, private tiers: Record<string, EquipmentTier>, private shopLevel: () => number = () => 1) {
+    private benchSlots: number, private tiers: Record<string, EquipmentTier>, private shopLevel: () => number = () => 1, private monsterMultiplier: () => number = () => 1) {
     if (rules.version !== 'stage-encounters-v1' || !Number.isSafeInteger(rules.startStage) || rules.startStage < 4 || !Number.isFinite(rules.monsterStatGrowth) || rules.monsterStatGrowth < 0
       || (rules.bossReward && (!Number.isSafeInteger(rules.bossReward.healAmount) || rules.bossReward.healAmount <= 0))
       || rules.shop.slots !== 5 || rules.basicEquipmentIds.length < 4 || new Set(rules.basicEquipmentIds).size !== rules.basicEquipmentIds.length
@@ -97,7 +97,7 @@ export class StageProgression {
   /** Save data crosses a runtime boundary: reject malformed entries before a UI or purchase consumes them. */
   private validateSavedRewards(): void {
     const positive = (n: number) => Number.isSafeInteger(n) && n > 0;
-    const value = (n: number) => positive(n) && n <= this.rules.monsterReward.maxValue;
+    const value = (n: number) => positive(n) && n <= Math.floor(this.rules.monsterReward.maxValue * this.monsterMultiplier());
     const roster = new Map(this.cfg.allUnits().map(u => [u.id, u]));
     const equipment = new Set(this.cfg.allEquipment().map(e => e.id));
     const bad = () => { throw new Error('Invalid stage reward save'); };
@@ -117,7 +117,7 @@ export class StageProgression {
     }
   }
   value(stage: number): number { const r = this.rules.monsterReward; return Math.min(r.maxValue, r.initialValue + (stage - 1) * r.valuePerStage); }
-  chestValue(wave: WaveConfig): number { return wave.encounterKind==='elite'?Math.ceil(this.value(wave.stage!)*(this.rules.chestReward?.eliteValueMultiplier??.5)):this.value(wave.stage!); }
+  chestValue(wave: WaveConfig): number { return wave.encounterKind==='monster'?Math.floor(this.value(wave.stage!)*this.monsterMultiplier()):wave.encounterKind==='elite'?Math.ceil(this.value(wave.stage!)*(this.rules.chestReward?.eliteValueMultiplier??.5)):this.value(wave.stage!); }
   private id(wave: WaveConfig, kind: string): string { return `${this.rules.version}:${this.random.runSeed}:${wave.id}:${kind}`; }
   private rollShop(wave: WaveConfig, refreshes = 0): Extract<StagePending,{kind:'specialShop'}> {
     const rng = this.random.stream('encounter', wave.id, 4201+refreshes*2), offers: StageOffer[] = [];

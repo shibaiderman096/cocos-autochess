@@ -116,6 +116,7 @@ export function buildMonsterUnits(config: RunConfig, roster: UnitConfigData[]): 
 /** Current seeded enemy generation options. */
 export interface EnemyGenerationOptions { mode:EnemyGenerationMode; runSeed?:number; difficulty?:EnemyDifficultyConfig; power?:EnemyPowerData;
   traits?: TraitConfigData[];
+  replaceElitesWithBosses?: boolean;
   equipmentPolicy?:EquipmentPolicyConfig;
   equipmentRoles?:EnemyRoleConfig;
   /** Optional offline timing observer. Timing is never read by the generator or serialized into waves. */
@@ -133,11 +134,13 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     || strong.unitIds.some(id => !config.monsters.some(m => m.id === id && m.monsterTier === 'strong'))))
     throw new Error('Invalid strong monster encounter configuration');
   const encounterRandom = new RunRandomContext(generation?.runSeed ?? 1);
+  const encounterPlan=(stage:number,rounds:number,startStage:number)=>planStageEncounters(stage,rounds,encounterRandom,startStage)
+    .map(kind=>generation?.replaceElitesWithBosses&&kind==='elite'?'boss' as const:kind);
   const encounterPlans=new Map<number,ReturnType<typeof planStageEncounters>>();
   const stagePlan=(stage:number)=>{
     if(!config.stageEncounters||stage===1)return undefined;
     let plan=encounterPlans.get(stage);
-    if(!plan){plan=planStageEncounters(stage,stageRoundCount(stage,config),encounterRandom,config.stageEncounters.startStage);encounterPlans.set(stage,plan);}
+    if(!plan){plan=encounterPlan(stage,stageRoundCount(stage,config),config.stageEncounters.startStage);encounterPlans.set(stage,plan);}
     return plan;
   };
   const progressionRounds=(stage:number,through:number)=>stagePlan(stage)?.slice(0,through).filter(kind=>kind!=='specialShop').length??through;
@@ -159,7 +162,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   }
   const decorateEncounter = (wave: WaveConfig): WaveConfig => {
     const rules = config.stageEncounters; if (!rules) return wave;
-    const kind = planStageEncounters(wave.stage!, wave.roundsInStage!, encounterRandom, rules.startStage)[wave.round! - 1];
+    const kind = encounterPlan(wave.stage!, wave.roundsInStage!, rules.startStage)[wave.round! - 1];
     const result = { ...wave, encounterKind: kind, waveKind: wave.stage === 1 ? 'intro' as const : kind === 'elite' || kind === 'boss' ? kind : 'normal' as const };
     if (kind === 'specialShop') return { ...result, name: '秘境行商', enemies: [], budget: undefined };
     if (kind === 'monster' && wave.stage! > 1) {
@@ -214,7 +217,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
     let completed=0;
     for(let stage=2;stage<=normalizeStageCount(stageCount);stage++){
       const rounds=stageRoundCount(stage,config);
-      const encounters=config.stageEncounters?planStageEncounters(stage,rounds,encounterRandom,config.stageEncounters.startStage):undefined;
+      const encounters=config.stageEncounters?encounterPlan(stage,rounds,config.stageEncounters.startStage):undefined;
       for(let round=1;round<=rounds;round++){
         const encounter=encounters?.[round-1],kind=encounter==='elite'||encounter==='boss'?encounter:'normal';
         generation?.onWave?.(waves.length+1,'start');

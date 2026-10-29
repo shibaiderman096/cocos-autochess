@@ -393,6 +393,7 @@ export type BattleEvent =
   | { t: 'dash_stop'; tick: number; id: number; at: Pos }
   | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'inspiration'; tick: number; id: number; targets: number[]; durationTicks: number; bonus: number }
+  | { t: 'revive'; tick: number; id: number; hp: number; x: number; y: number }
   | { t: 'death';  tick: number; id: number }
   | { t: 'end';    tick: number; winner: Side | -1 };
 

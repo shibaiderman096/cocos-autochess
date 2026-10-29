@@ -41,6 +41,8 @@ export interface Placement {
 }
 
 export interface BattleOptions {
+  bonusTraitId?: string;
+  firstAllyRevive?: {seconds: number; healthFraction: number};
   seed?: number;
   /** Session-fixed field layout, independent of each wave's combat random seed. */
   astralSeed?: number;
@@ -51,6 +53,9 @@ export interface BattleOptions {
 
 export class BattleSim {
   units: Unit[] = [];
+  readonly resolvedTraits: import('./Traits').TraitState[][] = [[],[]];
+  private reviveUsed=false;
+  private pendingRevive?: {unit:Unit;tick:number};
   events: BattleEvent[] = [];
   /** Credited lethal hits, including trait damage; previews have their own detached counters. */
   readonly alliedKillCounts: [number,number] = [0,0];
@@ -135,7 +140,8 @@ export class BattleSim {
     for (const side of [0, 1] as Side[]) {
       const army = this.units.filter(unit => unit.side === side);
       const startingHpResistance = army.map(unit => equipmentMaxHpResistance(unit.cfg.hp, unit.equipment));
-      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg), [...configs.allUnits(), ...army.map(unit => unit.cfg)]);
+      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg), [...configs.allUnits(), ...army.map(unit => unit.cfg)], side===0?opts.bonusTraitId:undefined);
+      this.resolvedTraits[side]=traits;
       for (const trait of traits) {
         const board = trait.active?.shadow?.board;
         const source = army.find(unit => isTraitMember(trait, unit.cfg));
@@ -259,6 +265,7 @@ export class BattleSim {
       while (unit.bloodfiendStackExpiries.length && unit.bloodfiendStackExpiries[0]<=this.tick) unit.bloodfiendStackExpiries.shift();
       if (!unit.bloodfiendStackExpiries.length) unit.bloodfiendUntilTick=0;
     }
+    this.updateEncounterRevive();
     if (this.checkEnd()) return;
     this.pendingDamage.length = 0;
     this.pendingStuns.length = 0;
@@ -1414,6 +1421,10 @@ export class BattleSim {
         u.overclockHealTick = 0;
         u.overclockNextTick = 0;
         this.events.push({ t: 'death', tick: this.tick, id: u.id });
+        if(u.side===0&&!this.reviveUsed&&this.opts.firstAllyRevive){
+          this.reviveUsed=true;
+          this.pendingRevive={unit:u,tick:this.tick+Math.max(1,Math.ceil(this.opts.firstAllyRevive.seconds*1000/this.configs.battle.tickMs))};
+        }
         const contributors = this.spellchanterContributors.get(u);
         for (const member of this.units) {
           const lastHit = contributors?.get(member);
@@ -1627,15 +1638,29 @@ export class BattleSim {
     });
   }
 
+  private updateEncounterRevive(): void {
+    const pending=this.pendingRevive;
+    if(!pending||this.tick<pending.tick||this.tick>=this.maxTicks)return;
+    const u=pending.unit, occupied=new Set(this.units.filter(v=>v.alive&&v.hp>0).map(v=>`${v.x},${v.y}`));
+    const cells=Array.from({length:this.w*this.h},(_,i)=>({x:i%this.w,y:Math.floor(i/this.w)}))
+      .filter(p=>!occupied.has(`${p.x},${p.y}`)).sort((a,b)=>hexDist(a,u)-hexDist(b,u)||a.y-b.y||a.x-b.x);
+    // A full board delays revival until a cell opens; timeout still ends the battle.
+    if(!cells.length)return;
+    this.pendingRevive=undefined;
+    u.reviveAt(cells[0],this.opts.firstAllyRevive!.healthFraction);
+    this.events.push({t:'revive',tick:this.tick,id:u.id,hp:u.hp,x:u.x,y:u.y});
+  }
+
   private checkEnd(): boolean {
     const ownAlive = this.units.some(u => u.alive && u.side === 0);
     const enemyAlive = this.units.some(u => u.alive && u.side === 1);
-    if (ownAlive && enemyAlive) return false;
+    if (this.pendingRevive || (ownAlive && enemyAlive)) return false;
     this.end(ownAlive ? 0 : enemyAlive ? 1 : -1);
     return true;
   }
 
   private end(w: Side | -1) {
+    this.pendingRevive=undefined;
     this.finished = true;
     this.winner = w;
     this.bloodAid.clear();

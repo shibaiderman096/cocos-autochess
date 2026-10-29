@@ -1,7 +1,7 @@
 import { BattleSim } from '../battle/BattleSim';
 import { restoreMerchantServices, forgedItem, forgeCandidates, forgePrice, dicePayout, validDicePicks, diceMultiplier } from './MerchantServices';
 import type { DiceBet } from './MerchantServices';
-import { resolveTraits } from '../battle/Traits';
+import { resolveTraits, highestActiveTraits } from '../battle/Traits';
 import { validateExplorerProgress, settleExplorerProgress, isExplorerBattle } from './ExplorerProgress';
 import type { Placement } from '../battle/BattleSim';
 import { MAX_EQUIPMENT } from '../battle/types';
@@ -38,7 +38,7 @@ import { StageProgression, isChestlessBoss, explorerLootQualityRates } from './S
 import type { StageChoice, StagePending } from './StageProgression';
 import { traitEmblemChoices } from './TraitEmblem';
 import type { PendingTraitChoice } from './TraitEmblem';
-import { drawOpeningEncounters, OPENING_ENCOUNTER_IDS, openingEncounterChoices } from './OpeningEncounter';
+import { drawOpeningEncounters, OPENING_ENCOUNTER_IDS, openingEncounterChoices, validateEncounterEffects } from './OpeningEncounter';
 
 const ok = (): ActionResult => ({ ok: true });
 const fail = (error: string): ActionResult => ({ ok: false, error });
@@ -55,6 +55,7 @@ export class RunSession {
   flow: RoundFlow;
   waves: WaveConfig[];
   private activeBattle: BattleSim | null = null;
+  private battleEntryGold = 0;
   private activeExplorer?: ExplorerTraitEffect;
   private activeBattleIds = new Map<number, number>();
   private generation: EnemyGenerationOptions;
@@ -68,6 +69,7 @@ export class RunSession {
     const encounterRules = runConfig.openingEncounter;
     if (encounterRules && (!encounterRules.name || ![encounterRules.refreshesPerLevel, encounterRules.incomeStartStage, encounterRules.incomePerStage, encounterRules.survivorMaxHp,
       encounterRules.victoryGold, encounterRules.battleExp, encounterRules.victoryHeal].every(n => Number.isSafeInteger(n) && n > 0))) throw new Error('Invalid opening encounter rules');
+    if (encounterRules?.effects) validateEncounterEffects(encounterRules.effects);
     const loaded = options.save !== undefined;
     this.save = loaded ? readRunSave(options.save) : freshRunSave(options.stageCount ?? DEFAULT_STAGE_COUNT, options.runSeed ?? DEFAULT_RUN_SEED, options.enemyGenerationMode ?? 'budget-v1');
     restoreMerchantServices(cfg, this.save.merchantServices);
@@ -93,7 +95,7 @@ export class RunSession {
       if(loaded&&this.save.difficultyConfigIdentity===undefined&&(this.save.round?.waveIndex??0)>0)throw new Error('Saved enemy difficulty identity missing');
       this.save.difficultyConfigIdentity=identity;
     }
-    this.generation={mode,runSeed:this.save.runSeed,difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
+    this.generation={mode,runSeed:this.save.runSeed,replaceElitesWithBosses:this.save.openingEncounter?.selected==='bossHunt',difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
       traits: JSON.parse(JSON.stringify(cfg.battle.traits??[])),
       power:options.enemyPower&&JSON.parse(JSON.stringify(options.enemyPower))};
     this.configureEquipment(options,loaded);
@@ -105,17 +107,20 @@ export class RunSession {
     this.extendEndlessWaves();
     if (options.openingEncounter && runConfig.openingEncounter && !this.save.openingEncounter
       && this.flow.wave.stage === 1 && this.flow.wave.round === 1 && this.flow.phase === 'prepare') {
-      this.save.openingEncounter = { freeRefreshes: 0, lastIncomeStage: 1, offered: drawOpeningEncounters(this.random.stream('encounter', 1, 4100)) };
+      this.save.openingEncounter = { freeRefreshes: 0, lastIncomeStage: 1, offered: drawOpeningEncounters(this.random.stream('encounter', 1, 4100),!!encounterRules?.effects) };
     }
     const opening = this.save.openingEncounter;
     if (opening) {
+      if (![opening.freeRefreshes,opening.lastIncomeStage,opening.lastGiftStage??1].every(n=>Number.isSafeInteger(n)&&n>=0)) throw new Error('Invalid saved opening encounter counters');
+      if (opening.selected && OPENING_ENCOUNTER_IDS.indexOf(opening.selected)>=6 && !encounterRules?.effects) throw new Error('Missing encounter effects');
       if (!encounterRules || !Array.isArray(opening.offered) || opening.offered.length !== 3 || new Set(opening.offered).size !== 3
-        || opening.offered.some(id => !OPENING_ENCOUNTER_IDS.includes(id))
+        || opening.offered.some(id => !OPENING_ENCOUNTER_IDS.includes(id) || (!encounterRules?.effects && OPENING_ENCOUNTER_IDS.indexOf(id)>=6))
         || (opening.selected !== undefined && !opening.offered.includes(opening.selected))) throw new Error('Invalid saved opening encounter choices');
     }
     this.validateEquipmentProgress();
     this.save.floor = this.flow.wave.stage!;
     this.economy = new EconomySystem(undefined, this.save);
+    this.economy.unlimitedInterest=this.save.openingEncounter?.selected==='compound';
     this.grantStageSubsidy();
     this.level = new LevelSystem(this.save);
     const restoreShop = loaded && (this.save.shopReserved || this.save.shop.some(s => s.unitId));
@@ -150,7 +155,7 @@ export class RunSession {
     this.shop.locked = this.save.shopLocked;
     if (runConfig.stageEncounters) {
       this.stageProgression = new StageProgression(runConfig.stageEncounters, this.save.stageProgress!, cfg,
-        this.pool, this.owned, this.economy, this.random, this.save.benchSlots, this.stageEquipmentTiers, () => this.level.level);
+        this.pool, this.owned, this.economy, this.random, this.save.benchSlots, this.stageEquipmentTiers, () => this.level.level, () => this.save.openingEncounter?.selected==='abundance'?this.runConfig.openingEncounter!.effects!.monsterRewardMultiplier:1);
       this.validateStageReward();
       if (this.flow.phase === 'prepare') this.stageProgression.enter(this.flow.wave);
     }
@@ -323,7 +328,7 @@ export class RunSession {
     return Math.ceil(this.explorerPoints*(effect?.rewardValuePerPoint??0));
   }
   get explorerChestVisible(): boolean {
-    const active=resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits())
+    const active=this.playerTraits
       .some(t=>!!t.active?.explorer);
     return this.explorerPoints>0||active;
   }
@@ -404,7 +409,7 @@ export class RunSession {
       xp: this.level.exp, phase: this.flow.phase, result: this.flow.result };
   }
   get incomePreview() {
-    const preview = this.economy.preview(this.flow.wave.stage!,this.save.openingEncounter?.selected==='bounty'?this.runConfig.openingEncounter!.victoryGold:0,this.flow.wave.encounterKind!=='monster');
+    const preview = this.economy.preview(this.flow.wave.stage!,this.save.openingEncounter?.selected==='bounty'?this.runConfig.openingEncounter!.victoryGold:0,this.flow.wave.encounterKind!=='monster',this.flow.phase==='battle'&&this.economy.unlimitedInterest?this.battleEntryGold:undefined);
     if (this.flow.wave.round === 1 && this.save.earlyGoldStages!.includes(this.flow.wave.stage!))
       preview.entrySubsidy = EARLY_STAGE_GOLD[this.flow.wave.stage!];
     return preview;
@@ -424,7 +429,15 @@ export class RunSession {
   chooseOpeningEncounter(id: import('./OpeningEncounter').OpeningEncounterId): ActionResult {
     if (!this.pendingOpeningEncounter || this.flow.phase !== 'prepare' || this.flow.wave.stage !== 1 || this.flow.wave.round !== 1
       || !this.save.openingEncounter!.offered!.includes(id)) return fail('invalid_encounter_choice');
-    this.save.openingEncounter!.selected = id; this.snapshot(); return ok();
+    this.save.openingEncounter!.selected = id;
+    this.economy.unlimitedInterest=id==='compound';
+    if(id==='bossHunt'){
+      this.generation.replaceElitesWithBosses=true;
+      this.waves=buildRunWaves(this.save.stageCount,this.runConfig,this.templates,this.cfg.allUnits(),this.generation);
+      this.flow=new RoundFlow(this.waves,this.roundRules,this.flow.snapshot());
+      this.previewFormation=undefined;
+    }
+    this.snapshot(); return ok();
   }
   private rewardLevelUps(count: number): void {
     if (this.save.openingEncounter?.selected === 'inspiration')
@@ -438,10 +451,39 @@ export class RunSession {
   }
   private enterEncounterStage(): void {
     this.grantStageSubsidy();
+    this.grantKindred();
     const state = this.save.openingEncounter, rules = this.runConfig.openingEncounter;
     if (state?.selected !== 'stipend' || !rules || this.flow.wave.stage! <= state.lastIncomeStage) return;
     if (this.flow.wave.stage! >= rules.incomeStartStage) this.economy.add(rules.incomePerStage);
     state.lastIncomeStage = this.flow.wave.stage!;
+  }
+  private rawPlayerTraits() {
+    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits());
+  }
+  private get bonusTraitId(): string | undefined {
+    if(this.save.openingEncounter?.selected!=='resonance')return undefined;
+    const ties=highestActiveTraits(this.rawPlayerTraits());
+    return ties.length?ties[this.random.stream('encounter',this.flow.wave.id,4800).int(0,ties.length-1)].config.id:undefined;
+  }
+  get playerTraits() {
+    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits(),this.bonusTraitId);
+  }
+  private rewardShopRoll(index: number): void {
+    const state=this.save.openingEncounter;
+    if(state?.selected==='luckyRoll'&&this.random.stream('encounter',this.flow.wave.id,4900+index).next()<this.runConfig.openingEncounter!.effects!.freeRefreshChance)
+      state.freeRefreshes++;
+  }
+  private grantKindred(): void {
+    const state=this.save.openingEncounter,stage=this.flow.wave.stage!;
+    if(state?.selected!=='kindred'||stage<this.runConfig.openingEncounter!.effects!.giftStartStage||stage<=(state.lastGiftStage??1))return;
+    const ties=highestActiveTraits(this.rawPlayerTraits()),rng=this.random.stream('encounter',stage,4801);
+    const trait=ties.length?ties[rng.int(0,ties.length-1)]:undefined;
+    const candidates=trait?this.cfg.allUnits().filter(u=>trait.config.members.includes(u.id)&&this.pool.canDraw(u.id)&&this.pool.count(u.id)>0).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0):[];
+    if(candidates.length){
+      const id=candidates[rng.int(0,candidates.length-1)].id;
+      if(this.pool.take(id))this.save.stageProgress!.unitReserve.push(id);
+    }
+    state.lastGiftStage=stage;
   }
   get battleSeed(): number { return this.random.seed('battle', this.flow.wave.id); }
   private get canTrade(): boolean { return !this.save.pendingTraitChoice && (this.flow.phase === 'prepare' || this.flow.phase === 'battle'); }
@@ -485,6 +527,7 @@ export class RunSession {
     if (error) return fail(error);
     if (free) this.save.openingEncounter!.freeRefreshes--;
     this.save.shopRollIndex = index;
+    this.rewardShopRoll(index);
     return ok();
   }
   toggleShopLock(): ActionResult {
@@ -672,12 +715,15 @@ export class RunSession {
     const placements: Placement[] = this.currentFormation().placements.map(e => ({ cfg: this.cfg.getUnit(e.unitId), side: 1,
       x: e.x, y: e.y, star: e.star, statMultiplier: e.statMultiplier, healthMultiplier: e.healthMultiplier, damageAmp: e.damageAmp, damageReduction: e.damageReduction, equipment:e.equipment }));
     const battleIds = new Map<number, number>();
+    const selected=this.save.openingEncounter?.selected,e=this.runConfig.openingEncounter?.effects;
+    const vacancy=selected==='vacancy'?Math.min(e!.vacancyMaxStacks,Math.max(0,this.level.unitCap-this.owned.onBoard().length))*e!.vacancyPerSlot:0;
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       battleIds.set(u.uid, placements.length + 1);
-      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower, permanentPhysicalPower:u.permanentPhysicalPower });
+      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, damageAmp:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageAmp:0), damageReduction:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageReduction:0), equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower, permanentPhysicalPower:u.permanentPhysicalPower });
     }
     return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, astralSeed: this.save.runSeed, w: this.cfg.battle.boardWidth,
-      h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks }), battleIds };
+      h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks, bonusTraitId:this.bonusTraitId,
+      firstAllyRevive:selected==='secondLife'?{seconds:e!.reviveSeconds,healthFraction:e!.reviveHealthFraction}:undefined }), battleIds };
   }
   startBattle(): BattleSim | null {
     if (this.pendingOpeningEncounter) return null;
@@ -685,8 +731,9 @@ export class RunSession {
     this.lockedFormation={waveId:this.flow.wave.id,result:this.solveFormation(true)};
     const { sim, battleIds } = this.createPreview();
     if (!this.flow.startBattle()) return null;
+    this.battleEntryGold=this.economy.gold;
     this.activeExplorer=isExplorerBattle(this.flow.wave,this.cfg.allUnits())
-      ? resolveTraits(this.cfg.battle.traits??[],sim.units.filter(u=>u.side===0).map(u=>u.cfg),this.cfg.allUnits())
+      ? sim.resolvedTraits[0]
         .find(t=>!!t.active?.explorer)?.active?.explorer : undefined;
     if(this.activeExplorer)this.activeExplorer={...this.activeExplorer};
     this.activeBattleIds = battleIds; this.activeBattle = sim; sim.start(); return sim;
@@ -721,7 +768,7 @@ export class RunSession {
     const encounterGold = selected === 'bounty' && sim.winner === 0 ? rules!.victoryGold : 0;
     const expGained = EXP_PER_BATTLE + (selected === 'study' ? rules!.battleExp : 0);
     if (selected === 'renewal' && sim.winner === 0) this.flow.restoreHealth(rules!.victoryHeal);
-    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome: extraIncome + encounterGold, countsForStreak:this.flow.wave.encounterKind!=='monster' });
+    const breakdown = this.economy.settleBattle(this.flow.wave.stage!, { winner: sim.winner, extraIncome: extraIncome + encounterGold, interestGold:selected==='compound'?this.battleEntryGold:undefined, countsForStreak:this.flow.wave.encounterKind!=='monster' });
     const ups = this.level.addExp(expGained);
     this.rewardLevelUps(ups.length);
     this.save.lastReward = { breakdown, expGained, levelUps: ups.length };
@@ -745,7 +792,7 @@ export class RunSession {
     this.save.floor = this.flow.wave.stage!; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
     this.save.lastEquipmentReward=undefined;
     this.shop.setRollRng(this.random.stream('shop', this.flow.wave.id));
-    this.shop.nextRound(); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    const rerolled=!this.shop.locked; this.shop.nextRound(); if(rerolled)this.rewardShopRoll(0); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
   }
   /** Existing debug jump only; deliberately absent from the player/bot port. */
   debugJump(stage: number, round: number): boolean {
