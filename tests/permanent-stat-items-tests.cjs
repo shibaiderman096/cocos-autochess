@@ -89,8 +89,8 @@ const chestSeen=new Set(),merchantSeen=new Set(),c=config();
 for(let seed=1;seed<=2048&&(chestSeen.size<12||merchantSeen.size<12);seed++){
   if(chestSeen.size<12){
     const p=new StageProgression(input.run.stageEncounters,freshStageProgress(),c,new CardPool(input.units),new OwnedUnits(),new EconomySystem(),new RunRandomContext(seed),9,deps.equipmentPolicy.tiers,()=>10);
-    const reward=p.mixedReward(30,1,100);
-    const value=reward.units.reduce((n,id)=>n+c.getUnit(id).cost,0)+reward.equipmentIds.reduce((n,id)=>n+c.equipmentPrice(id,input.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+reward.health*2+reward.gold;
+    const reward=p.mixedReward(30,1,100,'boss');
+    const value=reward.units.reduce((n,u)=>n+c.getUnit(u.unitId).cost*3**(u.star-1)*u.star,0)+reward.equipmentIds.reduce((n,id)=>n+c.equipmentPrice(id,input.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+reward.health*2+reward.gold;
     assert.equal(value,30);for(const id of reward.equipmentIds)if(boosts.some(e=>e.id===id))chestSeen.add(id);
   }
   if(merchantSeen.size<12){

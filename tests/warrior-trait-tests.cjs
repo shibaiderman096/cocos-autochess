@@ -23,7 +23,7 @@ function strike(sim, src, dst, amount, type='true', basic=false) {
   sim.damage(src,dst,amount,type,basic);sim.resolveDamage();sim.pendingDamage.length=0;
 }
 const all = resolveTraits(traits,roster.map(u=>u.id),roster);
-assert.deepEqual(all.find(t=>t.config.id==='conqueror').memberIds,['crimson_demon_knight','seraphiel','turbo_fist_tiger']);
+assert.deepEqual(all.find(t=>t.config.id==='conqueror').memberIds,['crimson_demon_knight','turbo_fist_tiger']);
 assert.deepEqual(all.find(t=>t.config.id==='spellblade').memberIds,['bloodline_earl','furnace_executioner','ghostflame_blade','phinia']);
 for (const trait of traits) for(let n=1;n<=8;n++) for(const side of [0,1]) {
   const sim=create(trait.id,n,side),tier=trait.breakpoints.filter(t=>t.count<=n).at(-1),u=sim.units[0];

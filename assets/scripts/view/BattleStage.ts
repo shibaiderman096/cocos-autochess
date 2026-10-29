@@ -1,7 +1,6 @@
 import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, director, sys } from 'cc';
 import { ConfigManager, BattleConfigData } from '../core/ConfigManager';
 import { BattleSim } from '../battle/BattleSim';
-import { resolveTraits } from '../battle/Traits';
 import { EquipmentConfigData } from '../battle/types';
 import { TickDriver } from '../core/TickDriver';
 import { CombatStatistics } from '../battle/CombatStatistics';
@@ -25,7 +24,7 @@ import { freshRunSeed } from '../core/RunRandomContext';
 import type { StageChoice, StageRewardGrant } from '../core/StageProgression';
 import { loadRunSave, writeRunSave } from '../core/ShopSave';
 import { RunSession } from '../core/RunSession';
-import { COST_PRICE, Cost, sellPrice } from '../core/ShopConfig';
+import { unitPrice, Cost, sellPrice } from '../core/ShopConfig';
 import { WaveConfig } from '../core/RoundFlow';
 import { UnitConfigData } from '../core/ConfigManager';
 import { RunConfig, stageRoundCount, MAX_STAGE_COUNT, DEFAULT_STAGE_COUNT } from '../core/RunSetup';
@@ -136,8 +135,8 @@ export class BattleStage extends Component {
     },this.runConfig.stageEncounters?.shop.refresh,()=>this.ui.showIncomeDetails(),this.runConfig.stageEncounters?.shop.qualityRates,{
       read:()=>({gold:this.economy.gold,items:this.owned.equipmentReserve,dice:this.session.merchantDice}),
       level:id=>this.session.forgeLevel(id),eligible:id=>this.session.canForge(id),
-      enhance:(index,id)=>{
-        const result=this.session.enhanceEquipment(index,id);
+      enhance:(index,id,count)=>{
+        const result=this.session.enhanceEquipment(index,id,count);
         if(!result.ok){this.ui.showWarn(result.error==='not_enough_gold'?'金币不足':'无法强化该装备');return undefined;}
         GameAudio.play('equip');this.persistShopState();this.refreshBackpack();this.refreshOwnedViews();this.refreshEconomyUI();
         return this.owned.equipmentReserve[index];
@@ -321,9 +320,11 @@ export class BattleStage extends Component {
 
     // 棋盘上的双方视图严格使用 sim id，回放事件不会与 owned uid 混用。
     for (const u of this.sim.units) {
+      if(u.cfg.summonOnly&&u.side!==0&&this.flow.phase!=='battle')continue;
       const uv = this.makeUnitView(root, u.cfg.id, u.side, u.id, bv.cellToWorld(u.x, u.y));
       this.views.set(u.id, uv);
       uv.setStar(u.star); uv.setEquipment(u.equipment);
+      uv.sync(u.snapshot(this.sim.tick), this.cellSize);
     }
     for (const ou of this.owned.onBoard()) {
       const uv = this.views.get(this.battleIds.get(ou.uid)!)!;
@@ -354,6 +355,9 @@ export class BattleStage extends Component {
       const uv = this.makeUnitView(bench, ou.unitId, 0, ou.uid, this.benchSlotWorld(ou.y), 0.82 * 1.3);
       uv.setVitalsVisible(false);
       uv.setStar(ou.star); uv.setEquipment(this.cfg.getEquipment(ou.equipment)); this.ownedViews.set(ou.uid, uv); this.benchViews.add(ou.uid);
+      const base = this.cfg.scaleUnit(this.cfg.getUnit(ou.unitId), ou.star);
+      const grown = this.cfg.equipmentStats({...base, hp: base.hp + (ou.permanentMaxHp ?? 0)}, ou.equipment);
+      uv.setMaxHealthAppearance(base.role, base.hp, grown.hp);
     }
   }
 
@@ -401,7 +405,7 @@ export class BattleStage extends Component {
     this.createSim(battle);
     this.createViews();
     this.ui.refreshFormation(this.owned.all(), this.cfgUnits());
-    this.ui.refreshTraits(resolveTraits(this.cfg.battle.traits ?? [], this.sim.units.filter(u => u.side === 0).map(u => u.cfg), this.cfgUnits()), this.cfgUnits());
+    this.ui.refreshTraits(this.sim.resolvedTraits[0], this.cfgUnits());
     const bv = this.boardNode.getComponent(BoardView)!;
     bv.showAstralFields(this.sim.astralFields);
     this.replayer.bind(this.sim, this.views, this.cellSize, bv, this.cfg.battle.tickMs);
@@ -421,8 +425,16 @@ export class BattleStage extends Component {
     for (const [uid, uv] of this.ownedViews) {
       this.bindOwnedTouch(uid, uv);
     }
-    for (const u of this.sim.units.filter(u => u.side === 1)) {
-      this.views.get(u.id)!.node.on(Node.EventType.TOUCH_END, () => {
+    for (const u of this.sim.units.filter(u => u.side === 1 || u.cfg.summonOnly)) {
+      if(u.side===0&&u.cfg.summonOnly&&this.flow.phase==='prepare'){
+        const node=this.views.get(u.id)?.node;
+        node?.on(Node.EventType.TOUCH_START,this.onTouchStart,this);
+        node?.on(Node.EventType.TOUCH_MOVE,this.onTouchMove,this);
+        node?.on(Node.EventType.TOUCH_END,this.onTouchEnd,this);
+        node?.on(Node.EventType.TOUCH_CANCEL,this.onTouchEnd,this);
+        continue;
+      }
+      this.views.get(u.id)?.node.on(Node.EventType.TOUCH_END, () => {
         if(!this.boardGestureActive)this.showBattleDetail(u.id);
       });
     }
@@ -461,9 +473,14 @@ export class BattleStage extends Component {
       const d = (boardPos.x - c.x) ** 2 + (boardPos.y - c.y) ** 2;
       if (d < bestDist) { bestDist = d; bestId = uid; }
     }
+    if(this.flow.phase==='prepare')for(const u of this.sim.units.filter(u=>u.side===0&&u.cfg.summonOnly)){
+      const view=this.views.get(u.id);if(!view)continue;
+      const c=view.node.position,d=(boardPos.x-c.x)**2+(boardPos.y-c.y)**2;
+      if(d<bestDist){bestDist=d;bestId=-u.id;}
+    }
     if (!bestId || bestDist > (this.cellSize * 0.6) ** 2) return;
 
-    const uv = this.ownedViews.get(bestId);
+    const uv = bestId<0?this.views.get(-bestId):this.ownedViews.get(bestId);
     if (!uv) return;
     this.boardNode.getComponent(BoardView)!.interactionActive = true;
     this.draggingId = bestId;
@@ -480,6 +497,10 @@ export class BattleStage extends Component {
     if (!this.dragMoved) return;
     this.selectedDetail = null;
     this.dragging.node.setPosition(boardPos.x - this.touchOffset.x, boardPos.y - this.touchOffset.y, 0);
+    if(this.draggingId<0){
+      const bv=this.boardNode.getComponent(BoardView)!,pos=this.dragging.node.position,cell=bv.worldToCell(pos.x,pos.y);
+      bv.highlightTarget(cell,!!cell&&bv.isOwnCell(cell.y));return;
+    }
     const u = this.owned.get(this.draggingId)!;
     const selling = this.overSell(event) && !this.session.unitSellingLocked;
     const pos = this.dragging.node.position;
@@ -506,6 +527,16 @@ export class BattleStage extends Component {
 
     const curPos = uv.node.position;
     const cell = bv.worldToCell(curPos.x, curPos.y);
+
+    if(this.draggingId<0){
+      const id=-this.draggingId,unit=this.sim.units.find(u=>u.id===id)!;
+      if(event.type!==Node.EventType.TOUCH_CANCEL&&!this.dragMoved){
+        uv.node.setPosition(bv.cellToWorld(unit.x,unit.y));this.resetDrag();this.showBattleDetail(id);return;
+      }
+      const result=event.type!==Node.EventType.TOUCH_CANCEL&&cell?this.session.moveSummon(cell):null;
+      if(result?.ok)GameAudio.play('place');
+      this.resetDrag();this.refreshOwnedViews(false);this.persistShopState();return;
+    }
 
     const ou = this.owned.get(this.draggingId);
     if (!ou) { this.resetDrag(); return; }
@@ -584,6 +615,10 @@ export class BattleStage extends Component {
     return this.node.parent?.getComponent(FloatingRuinsBoard)?.touchGestureActive ?? false;
   }
   private cancelBoardDrag(): void {
+    if(this.draggingId<0&&this.dragging){
+      const unit=this.sim.units.find(u=>u.id===-this.draggingId);
+      if(unit)this.dragging.node.setPosition(this.boardNode.getComponent(BoardView)!.cellToWorld(unit.x,unit.y));
+    }
     const owned=this.draggingId?this.owned.get(this.draggingId):undefined;
     if(owned&&this.dragging){
       const board=this.boardNode.getComponent(BoardView)!;
@@ -1089,7 +1124,7 @@ export class BattleStage extends Component {
       return {
         unitId: s.unitId,
         name: cfg.name,
-        cost, price: COST_PRICE[cost],
+        cost, price: unitPrice(cost),
         poolLeft: this.pool.count(s.unitId),
         deployed: deployed.has(s.unitId),
         upgradeStar: this.owned.purchaseUpgradeStar(s.unitId),

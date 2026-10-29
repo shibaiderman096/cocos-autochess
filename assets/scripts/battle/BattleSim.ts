@@ -4,13 +4,17 @@ import { BloodAid } from './BloodAid';
 import { BloodReign } from './BloodReign';
 import { SandCompass } from './SandCompass';
 import { RopeHunt } from './RopeHunt';
+import { DemonCombat } from './DemonCombat';
+import { DemonSkills } from './DemonSkills';
+import { RavenFlight } from './RavenFlight';
+import { DemonGunfire } from './DemonGunfire';
 import { Rng } from '../core/Rng';
 import { BattleEvent, BattleResult, Side, BattleClockState, ShadowTraitEffect, AstralField } from './types';
 import { Unit } from './Unit';
 import { hydraulicBulwarkValues, equipmentMaxHpResistance } from '../core/ConfigManager';
 import { ShadowSkills } from './ShadowSkills';
 import { SunlightCombat } from './SunlightCombat';
-import { resolveTraits, isTraitMember, isTraitFrontRow } from './Traits';
+import { resolveTraitCarriers, resolveTraits, isTraitMember, isTraitFrontRow } from './Traits';
 import { astralCells, densestAstralCenter } from './Astral';
 import { dist, nextStep } from './Pathfinding';
 import { hexNeighbors, offsetToWorld, worldToOffset, hexDist } from './HexMath';
@@ -41,6 +45,10 @@ export interface Placement {
 }
 
 export interface BattleOptions {
+  /** Preparation positions for summoned units, separate from owned population. */
+  summonPositions?: Partial<Record<Side,{x:number;y:number}>>;
+  bonusTraitId?: string;
+  firstAllyRevive?: {seconds: number; healthFraction: number};
   seed?: number;
   /** Session-fixed field layout, independent of each wave's combat random seed. */
   astralSeed?: number;
@@ -51,6 +59,9 @@ export interface BattleOptions {
 
 export class BattleSim {
   units: Unit[] = [];
+  readonly resolvedTraits: import('./Traits').TraitState[][] = [[],[]];
+  private reviveUsed=false;
+  private pendingRevive?: {unit:Unit;tick:number};
   events: BattleEvent[] = [];
   /** Credited lethal hits, including trait damage; previews have their own detached counters. */
   readonly alliedKillCounts: [number,number] = [0,0];
@@ -68,12 +79,16 @@ export class BattleSim {
   private bloodReign: BloodReign;
   private sandCompass: SandCompass;
   private ropeHunt: RopeHunt;
+  private demon: DemonCombat;
+  private demonSkills: DemonSkills;
+  private raven: RavenFlight;
+  private gunfire: DemonGunfire;
   private nebulas: Array<{ source: Unit; skill: SkillConfigData; center: {x:number;y:number}; end: number; next: number }> = [];
   private gravityFields: Array<{ source: Unit; skill: SkillConfigData; end: number; next: number }> = [];
   private hasGravityState = false;
-  private pendingStuns: Array<{ src: Unit; dst: Unit; seconds: number; knockup?: boolean; fearOrigin?: { x: number; y: number } }> = [];
+  private pendingStuns: Array<{ src: Unit; dst: Unit; seconds: number; knockup?: boolean; pullSeconds?:number; fearOrigin?: { x: number; y: number } }> = [];
   private pendingDamage: Array<{ src: Unit; dst: Unit; raw: number; damageAmp: number; resistance: number; reduction: number;
-    type: 'physical' | 'magic' | 'true'; critical: boolean; targeted: boolean; basicAttack?: boolean; fixed?: boolean; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; skillId?: string; missingHealthFraction?: number }> = [];
+    type: 'physical' | 'magic' | 'true'; critical: boolean; targeted: boolean; basicAttack?: boolean; fixed?: boolean; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; skillId?: string; missingHealthFraction?: number; missingTrueFraction?:number }> = [];
 
   constructor(
     private configs: ConfigManager,
@@ -81,6 +96,26 @@ export class BattleSim {
     private opts: BattleOptions = {},
   ) {
     this.rng = new Rng(opts.seed ?? 1);
+    this.gunfire=new DemonGunfire({units:this.units,events:this.events,now:()=>this.tick,
+      valid:(source,target)=>target.side!==source.side&&target.hp>0&&this.targetable(target)&&source.canSelectEnemy(target)&&dist(source.pos,target.pos)<=source.cfg.range,
+      target:u=>this.selectAttackTarget(u,null),releaseTarget:u=>this.releaseAttackTarget(u),cooldown:u=>this.attackCooldown(u),
+      damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'physical',false,false,true,skillId)},configs);
+    this.raven=new RavenFlight({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
+      targetable:u=>this.targetable(u),damage:(source,target,skill)=>this.damage(source,target,skill.starDamage![source.star-1],'magic',false,false,true,skill.id),
+      cooldown:u=>this.attackCooldown(u)},configs);
+    this.demonSkills=new DemonSkills({units:this.units,events:this.events,now:()=>this.tick,targetable:u=>this.targetable(u),
+      damage:(source,target,raw,skillId)=>this.damage(source,target,raw,this.configs.getSkill(skillId).dmgType,false,false,!!this.configs.getSkill(skillId).thornPull,skillId),
+      pull:(src,dst,skill)=>this.pendingStuns.push({src,dst,seconds:skill.thornPull!.stunSeconds,pullSeconds:skill.thornPull!.pullSeconds}),
+      verdict:(source,target,skill)=>{
+        this.damage(source,target,skill.starDamage![source.star-1],'physical',false,false,true,skill.id);
+        this.pendingDamage[this.pendingDamage.length-1].missingTrueFraction=skill.abyssVerdict!.missingHealthFractions[source.star-1];
+      },cooldown:u=>this.attackCooldown(u)},configs);
+    this.demon = new DemonCombat({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
+      summonPosition:side=>this.opts.summonPositions?.[side],
+      targetable:u=>this.targetable(u),damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'magic',false,false,false,skillId),
+      knockup:(src,dst,seconds)=>this.pendingStuns.push({src,dst,seconds,knockup:true}),
+      cast:(u,skill)=>this.emitCast({t:'cast',tick:this.tick,id:u.id,target:u.id,skillId:skill.id,duration:skill.castSeconds}),
+      cooldown:u=>this.attackCooldown(u)},configs);
     this.ropeHunt = new RopeHunt({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
       targetable:u=>this.targetable(u),damage:(source,target,raw,skillId)=>this.damage(source,target,raw,'physical',false,false,true,skillId)},configs.battle.tickMs);
     this.sandCompass = new SandCompass({units:this.units,events:this.events,now:()=>this.tick,width:()=>this.w,height:()=>this.h,
@@ -111,6 +146,7 @@ export class BattleSim {
       const healthMultiplier = p.healthMultiplier ?? 1;
       if (!Number.isFinite(healthMultiplier) || healthMultiplier <= 0) throw new Error('Invalid health multiplier');
       if (healthMultiplier !== 1) base.hp = Math.round(base.hp * healthMultiplier);
+      const baseMaxHp = base.hp;
       base.hp += p.permanentMaxHp ?? 0;
       if (!Number.isFinite(p.permanentSpellPower ?? 0) || (p.permanentSpellPower ?? 0) < 0) throw new Error('Invalid permanent spell power');
       base.spellPower = (base.spellPower ?? 0) + (p.permanentSpellPower ?? 0);
@@ -119,6 +155,7 @@ export class BattleSim {
       const scaled = configs.equipmentStats(base, p.equipment);
       Object.assign(scaled, combatAttributes({ ...scaled, damageAmp: scaled.damageAmp! + (p.damageAmp ?? 0), damageReduction: scaled.damageReduction! + (p.damageReduction ?? 0) }));
       const unit = new Unit(i + 1, p.side, scaled, p.x, p.y);
+      unit.baseMaxHp = baseMaxHp;
       unit.permanentSpellPower = p.permanentSpellPower ?? 0;
       unit.permanentPhysicalPower = p.permanentPhysicalPower ?? 0;
       unit.soulLampHealth = p.soulLampHealth ?? 0;
@@ -134,8 +171,18 @@ export class BattleSim {
     });
     for (const side of [0, 1] as Side[]) {
       const army = this.units.filter(unit => unit.side === side);
+      const carriers=resolveTraitCarriers(configs.battle.traits??[],army.map(u=>u.cfg),configs.allUnits());
+      army.forEach((unit,index)=>{
+        const inherited=configs.battle.traits?.find(trait=>trait.id===carriers[index].inheritedTraitId);
+        if(inherited&&!inherited.members.includes(unit.cfg.id)&&!unit.cfg.grantedTraitIds?.includes(inherited.id))
+          unit.cfg.lifesteal=Math.min(1,(unit.cfg.lifesteal??0)+(inherited.innateLifesteal??0));
+        unit.cfg.grantedTraitIds=[...(carriers[index].grantedTraitIds??[])];
+        unit.cfg.inheritedTraitId=carriers[index].inheritedTraitId;
+        unit.cfg.copyDominantTrait=false;
+      });
       const startingHpResistance = army.map(unit => equipmentMaxHpResistance(unit.cfg.hp, unit.equipment));
-      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg), [...configs.allUnits(), ...army.map(unit => unit.cfg)]);
+      const traits = resolveTraits(configs.battle.traits ?? [], army.map(unit => unit.cfg), [...configs.allUnits(), ...army.map(unit => unit.cfg)], side===0?opts.bonusTraitId:undefined);
+      this.resolvedTraits[side]=traits;
       for (const trait of traits) {
         const board = trait.active?.shadow?.board;
         const source = army.find(unit => isTraitMember(trait, unit.cfg));
@@ -222,6 +269,8 @@ export class BattleSim {
           return sum + (effect && previousArmor <= effect.threshold && unit.cfg.armor > effect.threshold ? effect.bonus : 0);
         }, 0));
       });
+      for(const trait of traits)if(trait.active?.demon)
+        this.demon.register(side,army.filter(unit=>isTraitMember(trait,unit.cfg)),trait.active.demon);
     }
   }
 
@@ -245,6 +294,7 @@ export class BattleSim {
     this.started = true;
     this.events.push({ t: 'battle_start', tick: 0 });
     this.sunlight.start();
+    this.demon.start();
     for (const board of this.shadowBoards) this.events.push({ t: 'shadow_board', tick: 0, side: board.side });
   }
 
@@ -259,6 +309,7 @@ export class BattleSim {
       while (unit.bloodfiendStackExpiries.length && unit.bloodfiendStackExpiries[0]<=this.tick) unit.bloodfiendStackExpiries.shift();
       if (!unit.bloodfiendStackExpiries.length) unit.bloodfiendUntilTick=0;
     }
+    this.updateEncounterRevive();
     if (this.checkEnd()) return;
     this.pendingDamage.length = 0;
     this.pendingStuns.length = 0;
@@ -276,6 +327,10 @@ export class BattleSim {
     this.shadowSkills.update();
     this.sandCompass.update();
     this.ropeHunt.update();
+    this.demon.update();
+    this.demonSkills.update();
+    this.raven.update();
+    this.gunfire.update();
     this.updateNebulas();
     this.updateGravityFields();
     this.updateBurns();
@@ -423,7 +478,7 @@ export class BattleSim {
       for (const unit of this.units) {
         if (!unit.alive) continue;
         if (unit.side === side) {
-          if (speedPulse) unit.shadowAttackSpeedBonus = Math.min(effect.attackSpeedCap, unit.shadowAttackSpeedBonus + effect.attackSpeedPerPulse);
+          if (speedPulse&&!unit.cfg.summonOnly) unit.shadowAttackSpeedBonus = Math.min(effect.attackSpeedCap, unit.shadowAttackSpeedBonus + effect.attackSpeedPerPulse);
         } else if (damagePulse && effect.fixedDamage > 0) this.pendingDamage.push({ src: source, dst: unit, raw: effect.fixedDamage,
           damageAmp: 0, resistance: 0, reduction: 0, type: 'true', critical: false, targeted: true, fixed: true, shadowBoardSide: side });
       }
@@ -598,6 +653,7 @@ export class BattleSim {
   }
 
   private updateUnit(u: Unit) {
+    if (this.demon.busy(u)||this.demonSkills.busy(u)||u.ravenFlight||u.demonGunfire) return;
     if(u.attackTargetId!==null&&!this.attackTarget(u,u.attackTargetId))this.releaseAttackTarget(u);
     if (this.ropeHunt.busy(u)) return;
     if (this.bloodReign.busy(u)) return;
@@ -606,7 +662,7 @@ export class BattleSim {
     if (u.spiderLeap || u.furnaceDash || u.stellarCharge || u.starLeap) return;
     if (this.tick < u.stunnedUntilTick) {
       u.bloodCleaveWindup = null;
-      if(u.pendingCast&&['windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??''))u.pendingCast=null;
+      if(u.pendingCast&&['windHunt','stackingCorrosion','sandCompass','ropeHunt','runicArcana','demonSkill'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??''))u.pendingCast=null;
       return;
     }
     const canCast = this.tick >= u.fearUntilTick && !this.bloodAid.busy(u) && !u.bloodCleaveReady;
@@ -627,6 +683,18 @@ export class BattleSim {
       if (--u.pendingCast.remainingTicks <= 0) {
         const skill = this.configs.getSkill(u.pendingCast.skillId);
         const targetId = u.pendingCast.targetId;
+        if(skill.demonGunfire){u.pendingCast=null;this.gunfire.start(u,skill);return;}
+        if(skill.ravenTheft){u.pendingCast=null;this.raven.start(u,skill,targetId);u.atkCd=this.attackCooldown(u);return;}
+        if(this.demonSkills.handles(skill)){
+          const direction=u.pendingCast.direction;u.pendingCast=null;
+          this.demonSkills.release(u,skill,targetId,direction);u.atkCd=this.attackCooldown(u);return;
+        }
+        if (skill.runicArcana) {
+          const toward=u.pendingCast.direction!, wave=u.pendingCast.runicWave!;
+          u.pendingCast=null;
+          this.releaseRunicArcana(u,skill,targetId!,toward,wave);
+          u.atkCd=this.attackCooldown(u);return;
+        }
         if (skill.ropeHunt) {
           u.pendingCast = null;
           this.ropeHunt.start(u,skill);
@@ -821,6 +889,14 @@ export class BattleSim {
     }
 
     const teleportSkill = u.cfg.skillId ? this.configs.getSkill(u.cfg.skillId) : null;
+    if(canCast&&teleportSkill?.ravenTheft&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0){
+      const target=this.raven.target(u,teleportSkill);if(target){this.beginDemonCast(u,teleportSkill,target);return;}
+    }
+    if(canCast&&teleportSkill?.redhornFervor&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0){
+      this.beginDemonCast(u,teleportSkill,u);return;
+    }
+    if(canCast&&teleportSkill?.demonLeap&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0)
+      if(this.demon.begin(u,teleportSkill))return;
     if (canCast && teleportSkill?.ropeHunt && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0) {
       const target=this.nearestEnemy(u);
       if(target){
@@ -982,6 +1058,23 @@ export class BattleSim {
 
     const d = dist(u.pos, target.pos);
     if(d<=u.cfg.range)u.blockedTargetSinceTick=null;
+    if(canCast&&teleportSkill?.demonGunfire&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0&&d<=u.cfg.range){
+      this.gunfire.prepare(u);
+      u.expeditionCastTicks=Math.max(1,Math.round(teleportSkill.castSeconds!*1000/this.configs.battle.tickMs));
+      u.pendingCast={skillId:teleportSkill.id,targetId:target.id,remainingTicks:u.expeditionCastTicks};
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration:teleportSkill.castSeconds});return;
+    }
+    if(canCast&&teleportSkill&&this.demonSkills.handles(teleportSkill)&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0&&d<=u.cfg.range){
+      this.beginDemonCast(u,teleportSkill,target);return;
+    }
+
+    if(canCast&&teleportSkill?.runicArcana&&u.cfg.maxMana>0&&u.mana>=u.cfg.maxMana&&u.atkCd===0&&d<=u.cfg.range){
+      const wave=u.runicRunes>=teleportSkill.runicArcana.maxRunes;
+      const duration=wave?teleportSkill.runicArcana.chargeSeconds:teleportSkill.castSeconds!;
+      u.expeditionCastTicks=Math.max(1,Math.round(duration*1000/this.configs.battle.tickMs));
+      u.mana=0;u.pendingCast={skillId:teleportSkill.id,targetId:target.id,direction:target.pos,runicWave:wave,remainingTicks:u.expeditionCastTicks};
+      this.emitCast({t:'cast',tick:this.tick,id:u.id,target:target.id,skillId:teleportSkill.id,duration});return;
+    }
 
     if (canCast && teleportSkill?.effect === 'sandCompass' && u.cfg.maxMana>0 && u.mana>=u.cfg.maxMana && u.atkCd===0 && d<=u.cfg.range) {
       const duration = teleportSkill.castSeconds!;
@@ -1026,7 +1119,7 @@ export class BattleSim {
     }
 
     // 1. 蓝满施法（需在射程内）
-    if (canCast && u.cfg.skillId && !['railShot','spiderLeap','furnaceDash','stellarBulwark','starLeap','windHunt','inspiration','lanternGuard','stackingCorrosion','sandCompass','ropeHunt'].includes(teleportSkill?.effect ?? '') && teleportSkill?.effect !== 'bloodAid' && teleportSkill?.effect !== 'lowestHealthHeal' && teleportSkill?.effect !== 'hydraulicBulwark' && teleportSkill?.effect !== 'sunlight' && teleportSkill?.effect !== 'shadow' && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
+    if (canCast && u.cfg.skillId && !['railShot','spiderLeap','furnaceDash','stellarBulwark','starLeap','windHunt','inspiration','lanternGuard','stackingCorrosion','sandCompass','ropeHunt','runicArcana','demonLeap','demonSkill'].includes(teleportSkill?.effect ?? '') && teleportSkill?.effect !== 'bloodAid' && teleportSkill?.effect !== 'lowestHealthHeal' && teleportSkill?.effect !== 'hydraulicBulwark' && teleportSkill?.effect !== 'sunlight' && teleportSkill?.effect !== 'shadow' && teleportSkill?.effect !== 'susanoo' && teleportSkill?.effect !== 'teleportEmpower' && teleportSkill?.effect !== 'healAlly' && u.cfg.maxMana > 0 && u.mana >= u.cfg.maxMana && u.atkCd === 0 && d <= u.cfg.range) {
       const skill = this.configs.getSkill(u.cfg.skillId);
       const castTarget = skill.targeting === 'lowestHp'
         ? this.units.filter(e => this.targetable(e) && u.canSelectEnemy(e) && e.side !== u.side && dist(u.pos, e.pos) <= u.cfg.range)
@@ -1095,6 +1188,12 @@ export class BattleSim {
         this.releaseAttackTarget(u);
       }
     }
+  }
+
+  private beginDemonCast(unit:Unit,skill:SkillConfigData,target:Unit):void {
+    unit.mana=0;unit.expeditionCastTicks=Math.max(1,Math.round(skill.castSeconds!*1000/this.configs.battle.tickMs));
+    unit.pendingCast={skillId:skill.id,targetId:target.id,direction:target.pos,remainingTicks:unit.expeditionCastTicks};
+    this.emitCast({t:'cast',tick:this.tick,id:unit.id,target:target.id,skillId:skill.id,duration:skill.castSeconds});
   }
 
   private cast(u: Unit, sk: SkillConfigData, mainTarget: Unit) {
@@ -1183,7 +1282,8 @@ export class BattleSim {
   }
 
   private resolveStuns(): void {
-    for (const { src, dst, seconds, knockup, fearOrigin } of this.pendingStuns) {
+    for (const { src, dst, seconds, knockup, fearOrigin, pullSeconds } of this.pendingStuns) {
+      if(dst.hp<=0||!dst.alive)continue;
       if (dst.crowdControlImmune) continue;
       if (this.tick < dst.susanooUntilTick) continue;
       if (!this.targetable(dst)) continue;
@@ -1191,6 +1291,9 @@ export class BattleSim {
       if (fearOrigin) { dst.fearUntilTick = Math.max(dst.fearUntilTick, this.tick + ticks + 1); dst.fearOrigin = { ...fearOrigin }; }
       else dst.stunnedUntilTick = Math.max(dst.stunnedUntilTick, this.tick + ticks + 1);
       dst.pendingCast = null;
+      this.demonSkills.interrupt(dst);
+      this.raven.interrupt(dst);
+      this.gunfire.interrupt(dst);
       this.bloodAid.interrupt(dst);
       this.stopStarLeap(dst);
       if(dst.stellarCharge)this.settleStellarCharge(dst,true);
@@ -1205,6 +1308,17 @@ export class BattleSim {
       }
       this.shadowSkills.interrupt(dst);
       this.sunlight.interrupt(dst);
+      if(pullSeconds){
+        this.ropeHunt.stop(dst);
+        const from=dst.pos;
+        const to=hexNeighbors(src.x,src.y)
+          .filter(p=>p.x>=0&&p.y>=0&&p.x<this.w&&p.y<this.h&&(p.x!==from.x||p.y!==from.y)&&!this.occupied(p.x,p.y))
+          .sort((a,b)=>dist(a,from)-dist(b,from)||a.y-b.y||a.x-b.x)[0];
+        if(to){
+          dst.x=to.x;dst.y=to.y;
+          this.events.push({t:'thorn_pull',tick:this.tick,id:dst.id,source:src.id,from,to,durationTicks:Math.max(1,Math.round(pullSeconds*1000/this.configs.battle.tickMs))});
+        }
+      }
       if (!dst.permanentEmpower && dst.empoweredAttacks === 0) {
         dst.attackSpeedBonus = 0;
         dst.manaLocked = false;
@@ -1275,12 +1389,19 @@ export class BattleSim {
   private resolveDamage(): void {
     const healing = new Map<Unit, number>();
     const alliedKills: Side[] = [];
-    for (const { src, dst, raw, damageAmp, resistance, reduction, type, critical, targeted, basicAttack, fixed, shadowBoardSide, sunlightJudgmentSide, sunlightJudgmentStar, astralMeteorSide, skillId, missingHealthFraction } of this.pendingDamage) {
+    for (let hitIndex=0;hitIndex<this.pendingDamage.length;hitIndex++) {
+      const hit=this.pendingDamage[hitIndex];
+      const { src, dst, raw, damageAmp, resistance, reduction, type, critical, targeted, basicAttack, fixed, shadowBoardSide, sunlightJudgmentSide, sunlightJudgmentStar, astralMeteorSide, skillId, missingHealthFraction }=hit;
       if(this.gravityFields.length)this.refreshGravityState();
       const astral = astralMeteorSide !== undefined;
       if (targeted && !this.targetable(dst)) {
         this.sunlight.onHitResolved(src, dst, skillId, false);
         continue;
+      }
+      if(hit.missingTrueFraction!==undefined&&dst.hp>0){
+        // Capture missing health before the physical strike; the true component never gains physical/AP scaling.
+        const bonus=Math.max(0,dst.cfg.hp-dst.hp)*hit.missingTrueFraction*(critical?(this.configs.battle.criticalMultiplier??1.5):1);
+        if(bonus>0)this.pendingDamage.splice(hitIndex+1,0,{...hit,raw:bonus,type:'true',resistance:0,missingTrueFraction:undefined});
       }
       // Evaluate execute bonuses against HP immediately before each hit, including queued hits.
       const extraAmp = astral ? 0 : src.equipment.reduce((sum, item) => {
@@ -1306,8 +1427,27 @@ export class BattleSim {
       if (previousHp > 0) this.bloodReign.trigger(dst);
       const triggered = this.triggerLowHealthProtection(dst);
       const dealt = Math.max(0, previousHp - dst.hp);
+      if(skillId&&previousHp>0&&!fixed&&!astral){
+        const skill=this.configs.getSkill(skillId);if(skill.ravenTheft)this.raven.steal(src,dst,skill);
+      }
+      if(skillId&&previousHp>0&&!fixed&&!astral){
+        const spin=this.configs.getSkill(skillId).infernalSpin;
+        if(spin){
+          healing.set(src,(healing.get(src)??0)+Math.round(spin.healPerTarget[src.star-1]*(1+(src.cfg.spellPower??0)/100)));
+          if(src.hp>0)this.events.push({t:'infernal_spin_heal',tick:this.tick,id:src.id,from:dst.pos,to:src.pos});
+        }
+      }
+      if(previousHp>0&&!fixed&&!astral&&shadowBoardSide===undefined&&sunlightJudgmentSide===undefined)
+        this.demon.recordDamage(src,dst,dealt+absorbed);
       const killerSide = astralMeteorSide ?? sunlightJudgmentSide ?? shadowBoardSide ?? src.side;
       if (previousHp > 0 && dst.hp === 0 && killerSide !== dst.side) alliedKills.push(killerSide);
+      if(skillId&&previousHp>0&&dst.hp===0&&src.side!==dst.side&&!fixed&&!astral){
+        const verdict=this.configs.getSkill(skillId).abyssVerdict;
+        if(verdict){
+          healing.set(src,(healing.get(src)??0)+Math.round(verdict.healAmounts[src.star-1]*(1+(src.cfg.spellPower??0)/100)));
+          if(src.hp>0)this.events.push({t:'abyss_siphon',tick:this.tick,id:src.id,target:dst.id,from:dst.pos,to:src.pos});
+        }
+      }
       // Active healing uses the pre-kill spell power; personal kills then grow future casts.
       if (skillId && previousHp > 0 && !fixed && !astral) {
         const drain = this.configs.getSkill(skillId).bloodDrain;
@@ -1360,7 +1500,7 @@ export class BattleSim {
         dst.stellarShield.remaining-=used;untrackedAbsorption-=used;
         if(dst.stellarShield.remaining===0)dst.stellarShield=null;
       }
-      this.sandCompass.absorb(dst,untrackedAbsorption);
+      this.demon.absorb(dst,this.sandCompass.absorb(dst,untrackedAbsorption));
       if (!astral && absorbed > 0 && dst.shield === 0) this.sunlight.onEnemyShieldBroken(src, skillId);
       this.sunlight.onHitResolved(src, dst, skillId, previousHp > 0 && dst.hp === 0);
       if (skillId && dst.hp > 0 && this.configs.getSkill(skillId).effect === 'atlasMissiles') this.applyAtlasBurn(src,dst,this.configs.getSkill(skillId));
@@ -1388,6 +1528,11 @@ export class BattleSim {
     for (const u of this.units) {
       if (u.alive && u.hp === 0) {
         u.alive = false;
+        u.demonFervor=null;
+        this.demonSkills.interrupt(u);
+        this.raven.interrupt(u);
+        this.gunfire.interrupt(u);
+        this.demon.onDeath(u);
         this.bloodReign.onDeath(u);
         this.bloodAid.onDeath(u);
         this.sandCompass.onDeath(u);
@@ -1402,7 +1547,8 @@ export class BattleSim {
         u.bloodfiendStackExpiries.length = 0;
         u.inspirations.clear();
         u.windHuntUntilTick=0;u.windHuntSpeedBonus=0;
-        if (u.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??'')) u.pendingCast = null;
+        u.cfg.spellPower=(u.cfg.spellPower??0)-u.runicPower;u.runicRunes=0;u.runicPower=0;
+        if (u.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt','runicArcana','demonSkill'].includes(this.configs.getSkill(u.pendingCast.skillId).effect??'')) u.pendingCast = null;
         u.spellbladeAttacks = 0;
         u.spellchanterPendingMana = 0;
         u.swiftmartialistStacks = 0;
@@ -1414,6 +1560,10 @@ export class BattleSim {
         u.overclockHealTick = 0;
         u.overclockNextTick = 0;
         this.events.push({ t: 'death', tick: this.tick, id: u.id });
+        if(u.side===0&&!this.reviveUsed&&this.opts.firstAllyRevive){
+          this.reviveUsed=true;
+          this.pendingRevive={unit:u,tick:this.tick+Math.max(1,Math.ceil(this.opts.firstAllyRevive.seconds*1000/this.configs.battle.tickMs))};
+        }
         const contributors = this.spellchanterContributors.get(u);
         for (const member of this.units) {
           const lastHit = contributors?.get(member);
@@ -1467,6 +1617,28 @@ export class BattleSim {
       &&this.targetable(enemy)&&source.canSelectEnemy(enemy))??null;
   }
 
+  private releaseRunicArcana(source: Unit, skill: SkillConfigData, targetId: number, toward: {x:number;y:number}, wave: boolean): void {
+    const spec=skill.runicArcana!;
+    if(wave){
+      this.events.push({t:'runic_wave',tick:this.tick,id:source.id,from:source.pos,toward,length:spec.length,width:spec.width});
+      for(const victim of this.units)if(victim.side!==source.side&&victim.hp>0&&this.targetable(victim)
+        &&inFearLine(source.pos,toward,victim.pos,spec.length,spec.width))
+        this.damage(source,victim,spec.waveDamage[source.star-1],'magic',false,false,false,skill.id);
+      source.cfg.spellPower=(source.cfg.spellPower??0)-source.runicPower;
+      source.runicRunes=0;source.runicPower=0;
+    }else{
+      const target=this.attackTarget(source,targetId);
+      if(target){
+        this.events.push({t:'runic_missiles',tick:this.tick,id:source.id,target:target.id,from:source.pos,to:target.pos,count:spec.missileCount});
+        for(let shot=0;shot<spec.missileCount;shot++)this.damage(source,target,skill.starDamage![source.star-1],'magic',false,false,true,skill.id);
+      }
+      source.runicRunes=Math.min(spec.maxRunes,source.runicRunes+1);
+      const power=source.runicRunes*spec.spellPowerPerRune[source.star-1];
+      source.cfg.spellPower=(source.cfg.spellPower??0)+power-source.runicPower;source.runicPower=power;
+    }
+    this.events.push({t:'runic_runes',tick:this.tick,id:source.id,count:source.runicRunes});
+  }
+
   private get retargetCooldown(): number {
     return Math.max(1, Math.round((this.configs.battle.targeting?.retargetSeconds ?? 0.5) * 1000 / this.configs.battle.tickMs));
   }
@@ -1489,10 +1661,8 @@ export class BattleSim {
     if(locked)return locked;
     if(this.tick<unit.retargetAtTick)return null;
     const tank=(enemy:Unit)=>['tank','magicTank','frontline'].includes(enemy.cfg.role??'');
-    const bias=this.configs.battle.targeting?.tankDistanceBias??0;
     const candidates=this.units.filter(enemy=>enemy.side!==unit.side&&enemy.hp>0&&this.targetable(enemy)&&unit.canSelectEnemy(enemy))
-      .sort((a,b)=>Number(dist(unit.pos,a.pos)>unit.cfg.range)-Number(dist(unit.pos,b.pos)>unit.cfg.range)
-        ||(dist(unit.pos,a.pos)-Number(tank(a))*bias)-(dist(unit.pos,b.pos)-Number(tank(b))*bias)
+      .sort((a,b)=>dist(unit.pos,a.pos)-dist(unit.pos,b.pos)
         ||Number(tank(b))-Number(tank(a))||a.id-b.id);
     for(const enemy of candidates){
       if(dist(unit.pos,enemy.pos)>unit.cfg.range&&!nextStep(unit.pos,this.w,this.h,
@@ -1516,7 +1686,7 @@ export class BattleSim {
   }
 
   private occupied(x: number, y: number): boolean {
-    return this.units.some(o => o.alive && ((o.x === x && o.y === y) || (o.starLeap?.to.x === x && o.starLeap?.to.y === y)));
+    return this.units.some(o => o.alive && ((o.x === x && o.y === y) || (o.starLeap?.to.x === x && o.starLeap?.to.y === y) || (o.ravenFlight?.to.x === x && o.ravenFlight?.to.y === y)));
   }
 
   private targetable(u: Unit): boolean {
@@ -1627,32 +1797,52 @@ export class BattleSim {
     });
   }
 
+  private updateEncounterRevive(): void {
+    const pending=this.pendingRevive;
+    if(!pending||this.tick<pending.tick||this.tick>=this.maxTicks)return;
+    const u=pending.unit, occupied=new Set(this.units.filter(v=>v.alive&&v.hp>0).map(v=>`${v.x},${v.y}`));
+    const cells=Array.from({length:this.w*this.h},(_,i)=>({x:i%this.w,y:Math.floor(i/this.w)}))
+      .filter(p=>!occupied.has(`${p.x},${p.y}`)).sort((a,b)=>hexDist(a,u)-hexDist(b,u)||a.y-b.y||a.x-b.x);
+    // A full board delays revival until a cell opens; timeout still ends the battle.
+    if(!cells.length)return;
+    this.pendingRevive=undefined;
+    u.reviveAt(cells[0],this.opts.firstAllyRevive!.healthFraction);
+    this.events.push({t:'revive',tick:this.tick,id:u.id,hp:u.hp,x:u.x,y:u.y});
+  }
+
   private checkEnd(): boolean {
     const ownAlive = this.units.some(u => u.alive && u.side === 0);
     const enemyAlive = this.units.some(u => u.alive && u.side === 1);
-    if (ownAlive && enemyAlive) return false;
+    if (this.pendingRevive || (ownAlive && enemyAlive)) return false;
     this.end(ownAlive ? 0 : enemyAlive ? 1 : -1);
     return true;
   }
 
   private end(w: Side | -1) {
+    this.pendingRevive=undefined;
     this.finished = true;
     this.winner = w;
     this.bloodAid.clear();
     this.bloodReign.clear();
     this.sandCompass.clear();
     this.ropeHunt.clear();
+    this.demon.clear();
+    this.demonSkills.clear();
+    this.raven.clear();
+    this.gunfire.clear();
     this.nebulas.length=0;
     this.gravityFields.length=0;
     this.hasGravityState=false;
     for (const unit of this.units) {
       unit.overclockUntilTick = 0;
+      unit.demonFervor=null;
       unit.bloodfiendUntilTick = 0;
       unit.bloodfiendStackExpiries.length = 0;
       unit.inspirations.clear();
       unit.corrosionTargets.clear();
       unit.windHuntUntilTick=0;unit.windHuntSpeedBonus=0;
-      if (unit.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt'].includes(this.configs.getSkill(unit.pendingCast.skillId).effect??'')) unit.pendingCast = null;
+      unit.cfg.spellPower=(unit.cfg.spellPower??0)-unit.runicPower;unit.runicRunes=0;unit.runicPower=0;
+      if (unit.pendingCast && ['chargedKnockup','lineFear','windHunt','stackingCorrosion','sandCompass','ropeHunt','runicArcana','demonSkill'].includes(this.configs.getSkill(unit.pendingCast.skillId).effect??'')) unit.pendingCast = null;
       unit.hydraulicBulwark = null;
       unit.spiderLeap = null;
       unit.nebulaAttackSpeedPenalty=0;

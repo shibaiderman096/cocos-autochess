@@ -21,7 +21,7 @@ interface DetailContext {
 /** Shared by the live unit inspector and the unequipped collection preview. */
 export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData, star: number, context: DetailContext = {}): UnitDetailData {
   const { side = 0, hp = unit.hp, mana = unit.startMana, shield = 0, passiveHealth = 0 } = context;
-  const skillScale = context.skillScale ?? configs.battle.starScaling[star - 1].skill;
+  const skillScale = context.skillScale ?? (unit.summonOnly?1:configs.battle.starScaling[star - 1].skill);
   const skill = unit.skillId ? configs.getSkill(unit.skillId) : null;
   if(skill?.lanternGuard&&!context.runtimeStats){
     const e=skill.lanternGuard,missing=Math.max(0,Math.min(1,1-hp/unit.hp));
@@ -38,7 +38,7 @@ export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData
   if (growth?.itemPhysicalPower) rows.push({ label: '道具永久物理', current: `+${growth.itemPhysicalPower}%`, stars: '本局累计', tone: 'physical' });
   if (growth?.itemSpellPower) rows.push({ label: '道具永久法术', current: `+${growth.itemSpellPower}%`, stars: '本局累计', tone: 'magic' });
   return {
-    name: unit.name, star, cost: unit.cost, artId: unit.artId ?? unit.id, side, tint: unit.tint, role: unit.role, damageType: unit.damageType,
+    name: unit.name, star, cost: unit.cost, artId: unit.artId ?? unit.id, side, tint: unit.tint, role: unit.role, damageType: unit.damageType, summonOnly:unit.summonOnly,
     detailKey: context.detailKey ?? `${unit.id}:${side}:${star}`,
     skillDisplayName: skill?.name ?? '普通攻击',
     traits: resolveTraits(configs.battle.traits ?? [], [], configs.allUnits())
@@ -52,7 +52,7 @@ export function buildUnitDetailData(configs: ConfigManager, unit: UnitConfigData
     manaPerSecond: (unit.manaPerSecond ?? 0) + (unit.role === 'caster' ? configs.battle.roleMana?.casterPerSecond ?? 0 : 0),
     physicalPower: unit.physicalPower, spellPower: unit.spellPower, critChance: unit.critChance, lifesteal: unit.lifesteal, damageAmp: unit.damageAmp, damageReduction: unit.damageReduction,
     skillName: skill ? skill.effect === 'healAlly' ? `${skill.name} · ${healing}治疗` : skill.effect === 'selfShield' || skill.effect === 'stellarBulwark' ? `${skill.name} · ${shielding}护盾`
-      : ['shadow','susanoo','teleportEmpower','healChannel','inspiration','lanternGuard','windHunt','sandCompass'].includes(skill.effect) ? skill.name ?? unit.skillId : `${skill.name ?? unit.skillId} · ${damage}${damageType}伤害` : '普通攻击',
+      : ['shadow','susanoo','teleportEmpower','healChannel','inspiration','lanternGuard','windHunt','sandCompass','demonSkill'].includes(skill.effect) ? skill.name ?? unit.skillId : `${skill.name ?? unit.skillId} · ${damage}${damageType}伤害` : '普通攻击',
     skillDescription: buildSkillDescription(configs, unit, star, skillScale, false, passiveHealth),
   };
 }

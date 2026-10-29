@@ -1,5 +1,5 @@
 {
-  "author": "Kenney",
+  "author": "Multiple authors; see sounds[].author",
   "license": "CC0-1.0",
   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
   "retrieved": "2026-10-24",
@@ -13,7 +13,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
-      "sha256": "7e4dc5bd28ecc65ab5ef12855ef492f19c8afadf790d62e084737a7cedf53e6c"
+      "sha256": "7e4dc5bd28ecc65ab5ef12855ef492f19c8afadf790d62e084737a7cedf53e6c",
+      "author": "Kenney"
     },
     {
       "id": "confirm",
@@ -23,7 +24,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "063564703b6094d70718a3e787a55cc9141611e4ecd6b6637f8828f79b4a8c3a",
-      "sha256": "be0a47699e901e0dd78d90ae9ac97c531239428ca89fed484df7ef7fcf148804"
+      "sha256": "be0a47699e901e0dd78d90ae9ac97c531239428ca89fed484df7ef7fcf148804",
+      "author": "Kenney"
     },
     {
       "id": "refresh",
@@ -33,7 +35,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "320c6aafb2c7a503eae508dc443b72d7f7c0a317bfd16813157ed400cd04cf16",
-      "sha256": "14ed562abc802eed947c3c1c4489eec580e5b74681f51986a2bde21aca128e6f"
+      "sha256": "14ed562abc802eed947c3c1c4489eec580e5b74681f51986a2bde21aca128e6f",
+      "author": "Kenney"
     },
     {
       "id": "place",
@@ -43,7 +46,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
-      "sha256": "123f8f873c3dd6ab8948227c77e6ea2767a6a1ab5dfccee9d04075992c2f69a9"
+      "sha256": "123f8f873c3dd6ab8948227c77e6ea2767a6a1ab5dfccee9d04075992c2f69a9",
+      "author": "Kenney"
     },
     {
       "id": "upgrade",
@@ -53,7 +57,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "568967a3d9f8a8f6af54ea01729c4882284308f2a27d78c07ffd7ee0d6951661",
-      "sha256": "94bf597989877bdd9dd5e3e77264139161e163f2e50c1798ebde7b2efa49de7e"
+      "sha256": "94bf597989877bdd9dd5e3e77264139161e163f2e50c1798ebde7b2efa49de7e",
+      "author": "Kenney"
     },
     {
       "id": "error",
@@ -63,7 +68,8 @@
       "source": "https://kenney.nl/assets/interface-sounds",
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "sourceSha256": "0b574cea597d96507e782ae9764f88482ce49f46e931e57054bf7150047f2d69",
-      "sha256": "b27c2b84904960c6b470ef992d04e56692c4057f45dc31ae0324a6d4a2f3295b"
+      "sha256": "b27c2b84904960c6b470ef992d04e56692c4057f45dc31ae0324a6d4a2f3295b",
+      "author": "Kenney"
     },
     {
       "id": "buy",
@@ -73,7 +79,8 @@
       "source": "https://kenney.nl/assets/rpg-audio",
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "sourceSha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab",
-      "sha256": "58751663fb44a86db15b570ccfa65dc1137b830c2d1dd0385591ef1328a5de3b"
+      "sha256": "58751663fb44a86db15b570ccfa65dc1137b830c2d1dd0385591ef1328a5de3b",
+      "author": "Kenney"
     },
     {
       "id": "sell",
@@ -83,7 +90,8 @@
       "source": "https://kenney.nl/assets/rpg-audio",
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "sourceSha256": "4b857968d64f9ac9336a10ffac6694d7547e1f01566ad6857b30bc8db3ee6c32",
-      "sha256": "bcd164040533481180d7345237af87739e27c2d4d164df96c322aceb1916f4cd"
+      "sha256": "bcd164040533481180d7345237af87739e27c2d4d164df96c322aceb1916f4cd",
+      "author": "Kenney"
     },
     {
       "id": "equip",
@@ -93,7 +101,8 @@
       "source": "https://kenney.nl/assets/rpg-audio",
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "sourceSha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3",
-      "sha256": "b62cb8cc845c7f45415e0fa7fcaedd8cc9231a58e38101c95ed93448c362171e"
+      "sha256": "b62cb8cc845c7f45415e0fa7fcaedd8cc9231a58e38101c95ed93448c362171e",
+      "author": "Kenney"
     },
     {
       "id": "melee",
@@ -103,7 +112,8 @@
       "source": "https://kenney.nl/assets/rpg-audio",
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "sourceSha256": "4cd96dc630bed9840c15f1dd2306da2cc56a4da26a5d3f1a03c5a7265ac5e54f",
-      "sha256": "c5d768153d4cd653bb6dc8ecb4c36f617d5852b4fbb47ac231b234496e5e7cf6"
+      "sha256": "c5d768153d4cd653bb6dc8ecb4c36f617d5852b4fbb47ac231b234496e5e7cf6",
+      "author": "Kenney"
     },
     {
       "id": "hit",
@@ -113,7 +123,8 @@
       "source": "https://kenney.nl/assets/rpg-audio",
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "sourceSha256": "d00c2b3c9fff07e376145c8c8c45c90e5084ec192f6ce0387db233f7b86f1486",
-      "sha256": "2f9dc3462c0d88fa95d14893f80dd1f2f18312a7ea97428af8e7e27e44b27a9a"
+      "sha256": "2f9dc3462c0d88fa95d14893f80dd1f2f18312a7ea97428af8e7e27e44b27a9a",
+      "author": "Kenney"
     },
     {
       "id": "ranged",
@@ -123,7 +134,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "8d7b30b35112bedf4dd6f03796a5f33af85414b02947187e4063819fd80cf3e2",
-      "sha256": "f0f92d248a925bfcb382f63fc43293b78d6c5fc723fa48668cd3860f9ae77055"
+      "sha256": "f0f92d248a925bfcb382f63fc43293b78d6c5fc723fa48668cd3860f9ae77055",
+      "author": "Kenney"
     },
     {
       "id": "cast",
@@ -133,7 +145,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "d6edcbde2c7190e275ef3eba08a8886129153a361cd0e16dc0fb58206deb5e53",
-      "sha256": "f2498ad09833c622eb57ad3e440d1aee5cf506db333ab8a0a84d9158ab876610"
+      "sha256": "f2498ad09833c622eb57ad3e440d1aee5cf506db333ab8a0a84d9158ab876610",
+      "author": "Kenney"
     },
     {
       "id": "heal",
@@ -143,7 +156,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "528e7245a1b61c6fd94bcb8df1d747e6e9b76dce58a36e44be992cf9e09884f8",
-      "sha256": "a5b50eabf7f2cbcc42706c3cb5d3e663f4023aab49d280844d7106637902b1d9"
+      "sha256": "a5b50eabf7f2cbcc42706c3cb5d3e663f4023aab49d280844d7106637902b1d9",
+      "author": "Kenney"
     },
     {
       "id": "battle_start",
@@ -153,7 +167,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "bdf21eb12e65507f091d074886fdac820e1ccae51d060caa168e5567acadb84b",
-      "sha256": "4b9189b9c5be28ae7e9da96b0b1bf1bb3320f053540199ded08a487be4d37b0a"
+      "sha256": "4b9189b9c5be28ae7e9da96b0b1bf1bb3320f053540199ded08a487be4d37b0a",
+      "author": "Kenney"
     },
     {
       "id": "victory",
@@ -163,7 +178,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "cbc1c3c7ccf5d7903818144a4c3f5b2ed2385095792f29d8d7c76360ba4fa559",
-      "sha256": "8a0aea79037b0677d88fa126642270d355566abe3b79bc27cee5d7ad4d5be3b7"
+      "sha256": "8a0aea79037b0677d88fa126642270d355566abe3b79bc27cee5d7ad4d5be3b7",
+      "author": "Kenney"
     },
     {
       "id": "defeat",
@@ -173,7 +189,8 @@
       "source": "https://kenney.nl/assets/digital-audio",
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "sourceSha256": "e0215fcfd8b9d7877f74d5c46b239a13d7db0d25998da97b80404931ef9eef5d",
-      "sha256": "d00d2f209ca441df7ae137656bdef823c432fb6b40f14426a229bde09868df75"
+      "sha256": "d00d2f209ca441df7ae137656bdef823c432fb6b40f14426a229bde09868df75",
+      "author": "Kenney"
     },
     {
       "id": "click_2",
@@ -184,7 +201,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP; padded to 160ms and encoded as CBR 128kbps without Xing/ID3 for Android MP3 frame resync",
       "sourceSha256": "adcd1f4adc35f1b41bc1b5bbefeff7aa44f2f3f0d96d3199b544140c7c1e761c",
-      "sha256": "97d87661fc5f0cb6643e76cd63febcfeadef81cba638cd8a9c9f0c411496197d"
+      "sha256": "97d87661fc5f0cb6643e76cd63febcfeadef81cba638cd8a9c9f0c411496197d",
+      "author": "Kenney"
     },
     {
       "id": "click_3",
@@ -195,7 +213,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP; padded to 160ms and encoded as CBR 128kbps without Xing/ID3 for Android MP3 frame resync",
       "sourceSha256": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292",
-      "sha256": "68808f2b7744e1cb93fefdc37e7b2431e61e1bd6988e2c95b85593206609f88e"
+      "sha256": "68808f2b7744e1cb93fefdc37e7b2431e61e1bd6988e2c95b85593206609f88e",
+      "author": "Kenney"
     },
     {
       "id": "lock",
@@ -206,7 +225,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "6fc395be2ad1f99ce318a5d28f98fb76dbeb676d83a0b28239d8c1fb90736180",
-      "sha256": "0e891f9927894cde31c3e29f39c582e0c997f23297a5632aa7ada44233752ff3"
+      "sha256": "0e891f9927894cde31c3e29f39c582e0c997f23297a5632aa7ada44233752ff3",
+      "author": "Kenney"
     },
     {
       "id": "unlock",
@@ -217,7 +237,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "ca12dd32103f401481d5aff56d5e9831174e99bb577139c09b07d046eb8b837e",
-      "sha256": "3a9092da0efb2ac7df5bff14f13bd7ffea9f18a78e3176fe4a5e203b0af21039"
+      "sha256": "3a9092da0efb2ac7df5bff14f13bd7ffea9f18a78e3176fe4a5e203b0af21039",
+      "author": "Kenney"
     },
     {
       "id": "stun",
@@ -228,7 +249,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "9a6f16e3c2eff6fe5d017a4755a28306b14555728831cd00d70308e8f9689566",
-      "sha256": "32c781c40bd077748b7b696a177d0eecbdd1f21dbb97845428ac2ba30961d164"
+      "sha256": "32c781c40bd077748b7b696a177d0eecbdd1f21dbb97845428ac2ba30961d164",
+      "author": "Kenney"
     },
     {
       "id": "reward",
@@ -239,7 +261,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "33b17a9a9a2397c62b285c52c33a907fdffb476909c99e42dde603f6a7a8b12c",
-      "sha256": "5ab486af819f8c59d4e212747f5bbf3562ad56b4eca0d5d2a30281b6c7df9665"
+      "sha256": "5ab486af819f8c59d4e212747f5bbf3562ad56b4eca0d5d2a30281b6c7df9665",
+      "author": "Kenney"
     },
     {
       "id": "wave",
@@ -250,7 +273,8 @@
       "download": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "24ff224fe2c09c6aed1b41249825382dc74cf324b887ff279d8494912ce2beee",
-      "sha256": "b1f4ae29c33fabca9f427cf965b1ae63fd659520e9e9e671523f07b0e5821651"
+      "sha256": "b1f4ae29c33fabca9f427cf965b1ae63fd659520e9e9e671523f07b0e5821651",
+      "author": "Kenney"
     },
     {
       "id": "melee_2",
@@ -261,7 +285,8 @@
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "6c2064d0ef988d1ec3d56868e823ea8823a5cac00f2742560052633529407def",
-      "sha256": "1c3f66d0b6a5c20891dbb322530f1323610ab51f4913e8fcbb72bc0580420da4"
+      "sha256": "1c3f66d0b6a5c20891dbb322530f1323610ab51f4913e8fcbb72bc0580420da4",
+      "author": "Kenney"
     },
     {
       "id": "melee_3",
@@ -272,18 +297,8 @@
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "d5df6a4130cbb016f97b4883769a418917b9629cb4c21717030b186e0c73281a",
-      "sha256": "78f160259009dd71c6d19cd40bbefa9499dd732f4dd7b1cd335b20efdd391bb3"
-    },
-    {
-      "id": "ranged_arrow",
-      "file": "audio/sfx/ranged_arrow.mp3",
-      "pack": "rpg-audio",
-      "original": "Audio/drawKnife1.ogg",
-      "source": "https://kenney.nl/assets/rpg-audio",
-      "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
-      "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
-      "sourceSha256": "276403e72c3b71c47bc24db3083970c23f8e5551ffa78f436f83483c56f3f0bb",
-      "sha256": "ada76ef99f128b39a12298b1d4b93ded5595f5829c1816499233ba86e45dfb53"
+      "sha256": "78f160259009dd71c6d19cd40bbefa9499dd732f4dd7b1cd335b20efdd391bb3",
+      "author": "Kenney"
     },
     {
       "id": "dash",
@@ -294,7 +309,8 @@
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d",
-      "sha256": "9ea538233e215d4da8cdff0f883efff0f0c2644f9ddc2b0199d7b9b05baa6c2b"
+      "sha256": "9ea538233e215d4da8cdff0f883efff0f0c2644f9ddc2b0199d7b9b05baa6c2b",
+      "author": "Kenney"
     },
     {
       "id": "chest",
@@ -305,7 +321,8 @@
       "download": "https://kenney.nl/media/pages/assets/rpg-audio/8e99002d76-1677590336/kenney_rpg-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "68962fb0458c9bac59dec3adefa9849703c7c89d34712de03dd0075d095e79e9",
-      "sha256": "795e69a7b3dc9c0867bb8e8c92daa9f3a319e27b553aab70da0c7ea66aa99e02"
+      "sha256": "795e69a7b3dc9c0867bb8e8c92daa9f3a319e27b553aab70da0c7ea66aa99e02",
+      "author": "Kenney"
     },
     {
       "id": "ranged_2",
@@ -316,7 +333,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "cec018b67fdd9a857e692be0596cec070617346853e5341c3e2df3aae950473d",
-      "sha256": "1d72bd51ae5cecdf37a3bb4082b778d5ac1f94964d215f777cd7b14f7b5aa92a"
+      "sha256": "1d72bd51ae5cecdf37a3bb4082b778d5ac1f94964d215f777cd7b14f7b5aa92a",
+      "author": "Kenney"
     },
     {
       "id": "ranged_magic",
@@ -327,7 +345,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "4e4bf11c671a4be0723022a7177f8e122329fa32a0c59555581f4193ed111585",
-      "sha256": "fb5b71d74a5588b6b4333696786db95290f92ef34100168176015a78bf8d92f0"
+      "sha256": "fb5b71d74a5588b6b4333696786db95290f92ef34100168176015a78bf8d92f0",
+      "author": "Kenney"
     },
     {
       "id": "cast_shadow",
@@ -338,7 +357,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "19fd2f5bb8448e022381f1a72c36117d4adcb521ebeb697e888bfaf7945cfa56",
-      "sha256": "30a8c261ef09849a097d7d76ce1def2a075db126f6afd35b911773fec82d6d97"
+      "sha256": "30a8c261ef09849a097d7d76ce1def2a075db126f6afd35b911773fec82d6d97",
+      "author": "Kenney"
     },
     {
       "id": "cast_sunlight",
@@ -349,7 +369,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "9048d651b51f528099c384566b0d4c6c597bee8b56c48f3adab7a901feba0fa5",
-      "sha256": "2d8819d6da4dfa03f648afa835f65cd84149b242ff5f3485cd803bd198ae2739"
+      "sha256": "2d8819d6da4dfa03f648afa835f65cd84149b242ff5f3485cd803bd198ae2739",
+      "author": "Kenney"
     },
     {
       "id": "cast_astral",
@@ -360,7 +381,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "5d85717cfca231f7da7887cef5f44b2131bbe3308eb0c1fee0b4f9e61d59b571",
-      "sha256": "a3ed21eb29848b39025c03f749caf989cf6aa5ae18adc058b5f7edb4d14bb0f5"
+      "sha256": "a3ed21eb29848b39025c03f749caf989cf6aa5ae18adc058b5f7edb4d14bb0f5",
+      "author": "Kenney"
     },
     {
       "id": "teleport",
@@ -371,7 +393,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "c60069ed7108678dd6a1306404d168a93cc2575cda37b06add9dd6c4d46352a3",
-      "sha256": "99747539c392a4c389c60d24f305e7a82a897aac00be758426f4770ee4807953"
+      "sha256": "99747539c392a4c389c60d24f305e7a82a897aac00be758426f4770ee4807953",
+      "author": "Kenney"
     },
     {
       "id": "portal",
@@ -382,7 +405,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "90e1c90b9da3d0be66b54f4daa926f0fde79eba867dec7e9d1eef10524756e19",
-      "sha256": "5a9ef07c066e89213dfa72b0cd2dd6bdfe4c34a6b4ab7d4b65e472c73f6e75c7"
+      "sha256": "5a9ef07c066e89213dfa72b0cd2dd6bdfe4c34a6b4ab7d4b65e472c73f6e75c7",
+      "author": "Kenney"
     },
     {
       "id": "level_up",
@@ -393,7 +417,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "e4d2c7707655361678ccd358048b7956753e4f333e99545b4ae25e07a9b2ef9b",
-      "sha256": "e5b5942fb4b917e8659d2ccbf8bb3c2c2cd4c5e3583918b36be48e643eb03f42"
+      "sha256": "e5b5942fb4b917e8659d2ccbf8bb3c2c2cd4c5e3583918b36be48e643eb03f42",
+      "author": "Kenney"
     },
     {
       "id": "boss_start",
@@ -404,7 +429,8 @@
       "download": "https://kenney.nl/media/pages/assets/digital-audio/216eac4753-1677590265/kenney_digital-audio.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "124198c80ff2e1826230be606aa3dcdd90262272bb545f621a9eb91dccfd5c9d",
-      "sha256": "506950b1cecd4c38c9cbd231f2c52ea39c648136b2658df3d5c3bf6b4d3bf418"
+      "sha256": "506950b1cecd4c38c9cbd231f2c52ea39c648136b2658df3d5c3bf6b4d3bf418",
+      "author": "Kenney"
     },
     {
       "id": "death",
@@ -415,7 +441,8 @@
       "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1",
-      "sha256": "edaad9ffc048ad75a92cffa4c9099f836f5743a1a28804ba4d50b1ec38dfac3e"
+      "sha256": "edaad9ffc048ad75a92cffa4c9099f836f5743a1a28804ba4d50b1ec38dfac3e",
+      "author": "Kenney"
     },
     {
       "id": "ranged_mechanical",
@@ -426,7 +453,8 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "72b589eadd41781257ac859e4f4d030222e623390e4a1a83f6d05329a6e026f1",
-      "sha256": "263184579009ec29d43f9f517125eba443006c0ed0a8f9e6903722a76d944dc4"
+      "sha256": "263184579009ec29d43f9f517125eba443006c0ed0a8f9e6903722a76d944dc4",
+      "author": "Kenney"
     },
     {
       "id": "cast_mechanical",
@@ -437,7 +465,8 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "1527944e16eb14b48ee03fe3e7ce6aae94262833a4e1f83928d451a7414fe4e1",
-      "sha256": "69157aefd47f0b0861cca26b4a2ef4dc43600e6efd3bbaabe001002498870047"
+      "sha256": "69157aefd47f0b0861cca26b4a2ef4dc43600e6efd3bbaabe001002498870047",
+      "author": "Kenney"
     },
     {
       "id": "shield",
@@ -448,7 +477,8 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "5574e69dd04e5f59322c5ddffde5978f077b09170ae5e29cec0bd9901828cd90",
-      "sha256": "4c8a8b7265d90fc82a941f0bea47e0d6f5a7891d231f85d517dbdcfbcdc959d7"
+      "sha256": "4c8a8b7265d90fc82a941f0bea47e0d6f5a7891d231f85d517dbdcfbcdc959d7",
+      "author": "Kenney"
     },
     {
       "id": "meteor",
@@ -459,7 +489,8 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "fdd04d6f0032d4d57c134ad37f3587d2d00e58c9572715275bd8cf4f43593576",
-      "sha256": "1c35c23624ef4c3e47c77fbb76d166f83a8a2446e235445bde42161ee0bbc0cd"
+      "sha256": "1c35c23624ef4c3e47c77fbb76d166f83a8a2446e235445bde42161ee0bbc0cd",
+      "author": "Kenney"
     },
     {
       "id": "explosion",
@@ -470,7 +501,8 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "3cb48d86dab63140cfb9aaeea4d4a6846abaca5831d157d8adbec0490da26343",
-      "sha256": "f7d6e031fd3345db7c6eec5b38a2c04eaa6010f28ac9417dced5e529e72615bf"
+      "sha256": "f7d6e031fd3345db7c6eec5b38a2c04eaa6010f28ac9417dced5e529e72615bf",
+      "author": "Kenney"
     },
     {
       "id": "rail",
@@ -481,7 +513,261 @@
       "download": "https://kenney.nl/media/pages/assets/sci-fi-sounds/6b296f9ecf-1677589334/kenney_sci-fi-sounds.zip",
       "processing": "Mono 44.1kHz MP3, loudnorm target -22 LUFS / -4 dBTP",
       "sourceSha256": "a56d95794cd732d6c2d66ce488c14cf557fe526c282897c9a77675c2bd9b77e6",
-      "sha256": "144e8bbbba9a04455f431126105c97bbec857345356d09bafe8d06f25518d6a8"
+      "sha256": "144e8bbbba9a04455f431126105c97bbec857345356d09bafe8d06f25518d6a8",
+      "author": "Kenney"
+    },
+    {
+      "id": "sword",
+      "file": "audio/sfx/sword.mp3",
+      "pack": "sword-starninjas",
+      "author": "StarNinjas",
+      "original": "swords/sword - StarNinjas/sword.1.ogg",
+      "source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+      "download": "https://opengameart.org/sites/default/files/sword_-_starninjas_1.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "4a3e80705619cbd7500682ab51004011ddf67e14ccf1818ceb9e5b539fe42b75",
+      "sha256": "6828460903f8ffe90ab1a8916608958eabee70772bc3c2280f5359c3f9cb64e2"
+    },
+    {
+      "id": "sword_2",
+      "file": "audio/sfx/sword_2.mp3",
+      "pack": "sword-starninjas",
+      "author": "StarNinjas",
+      "original": "swords/sword - StarNinjas/sword.2.ogg",
+      "source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+      "download": "https://opengameart.org/sites/default/files/sword_-_starninjas_1.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "e74221f6cec0acaa7c19095618c683c3cdc1741f02193b61cb28a2ec56cbfce2",
+      "sha256": "b22138e0c415382998357f99d71dbf55af253793b0bbe2d91958d142d8b8c2ea"
+    },
+    {
+      "id": "sword_3",
+      "file": "audio/sfx/sword_3.mp3",
+      "pack": "sword-starninjas",
+      "author": "StarNinjas",
+      "original": "swords/sword - StarNinjas/sword.3.ogg",
+      "source": "https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes",
+      "download": "https://opengameart.org/sites/default/files/sword_-_starninjas_1.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "ce09eb2987531d1323415065d7811a9cf0ea8639766d9fa77655d602e7e14989",
+      "sha256": "dd4886145e9416a6aa1fcfc1ddf821e50d7da4c0354f192a90d170183a4c1263"
+    },
+    {
+      "id": "ranged_arrow",
+      "file": "audio/sfx/ranged_arrow.mp3",
+      "pack": "battle-artisticdude",
+      "author": "artisticdude (uploaded by Ogrebane)",
+      "original": "bow/battle_sound_effects/Bow.wav",
+      "source": "https://opengameart.org/content/battle-sound-effects",
+      "download": "https://opengameart.org/sites/default/files/battle_sound_effects_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "0dc8cf132cf583563936ac3a4d776e196210d5f6703b4ebdd7c68e8f35b9f3e3",
+      "sha256": "d9b46edce5900ed7c57d3e9f76b530749cf4769e21e05a88271d27baffb3d644"
+    },
+    {
+      "id": "cast_ice",
+      "file": "audio/sfx/cast_ice.mp3",
+      "pack": "ice-bart",
+      "author": "bart / Stephan (pdsounds source)",
+      "original": "ice/ice.wav",
+      "source": "https://opengameart.org/content/ice-spells",
+      "download": "https://opengameart.org/sites/default/files/icespells.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "c3039c864d056d0e4951b84b96a7bb0044ca8cb58aeae514fc256145872b6a94",
+      "sha256": "d7e7c4b81b9510e1b4fc41548869fa5ad1564ded00946519a957767b7228637a"
+    },
+    {
+      "id": "claw",
+      "file": "audio/sfx/claw.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/blade_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "caf7a7cb9b25cda4bd487c1d12d18b74a34bb18c816fd67277cf3c8d7ef32a3a",
+      "sha256": "7977f29884001366825ac85bdf29334b68bcb4808488a39e248a5ee60286b839"
+    },
+    {
+      "id": "claw_2",
+      "file": "audio/sfx/claw_2.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/blade_02.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "c770afec8f62f14d3d082d5437c5cec28e2751d393df645ddd938eabc2588abd",
+      "sha256": "7748a2a18e02902418280b0ecfe79f47ea9f6fe499df7d6af354a95793b14a33"
+    },
+    {
+      "id": "heavy",
+      "file": "audio/sfx/heavy.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/stones_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "d11ce95031c2c36ae2a00979620fa95a7a3f5c6d6f2ac86962ed292aa556be8d",
+      "sha256": "9295a53b94a20eb512aec9c652febb2131cc3280dc406a80a6a1cc00cf4bf6e5"
+    },
+    {
+      "id": "mechanical_melee",
+      "file": "audio/sfx/mechanical_melee.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/metal_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "433d7adf123f9de425047f6dec3f7b4da510c0fd0208d4893a22be8bd22d9e34",
+      "sha256": "65093ba3c88dfaf4f03f512996a1f6264ca5d6a84b11de8c33dfcd348b8bd00e"
+    },
+    {
+      "id": "chain",
+      "file": "audio/sfx/chain.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/chain_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "d376caf0f61384b1d2e0b447f64f06be56d0ee0622ba70dd01cfdd78b3a10687",
+      "sha256": "c752071647eb6b1cd9b4ada5b6947c44895adeabe63276533ba928098ddafdbe"
+    },
+    {
+      "id": "bite",
+      "file": "audio/sfx/bite.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/creature_monster_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "28d047e95058cecc3513eb831d14072318526fcb9207d8a50aad0f666e17893a",
+      "sha256": "cf433eca920e0902938f9fb494fb16899799315bf05633a739bb87d535e9ab6a"
+    },
+    {
+      "id": "roar",
+      "file": "audio/sfx/roar.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/creature_roar_02.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "4da0cf77a3506e1b573ec40e3688dc66400d1734853510db357fb3f843cde242",
+      "sha256": "6303956feced6b8b1589a7680b5a7a0af7857e14128cfe0b3c8e3e6d8c9fd08e"
+    },
+    {
+      "id": "cast_fire",
+      "file": "audio/sfx/cast_fire.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/spell_fire_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "02fa3a2c6e79e868e546802f45127c5cdda69aba6d5a24ac997ea66f81a816cb",
+      "sha256": "3f0f4af837d123ece7ecc5625a49cd938e8b4bbce785c73a07ce23cbc60b87c0"
+    },
+    {
+      "id": "cast_fire_2",
+      "file": "audio/sfx/cast_fire_2.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/spell_fire_02.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "bf1eef4993f0adb4bd3a1c1ec91f8f6e4ddeb32d922671a14561846d5b7cab98",
+      "sha256": "fcc3188438cf3e1597b1d504c03596b52eadc623095e633a3402e24fb4bccbdd"
+    },
+    {
+      "id": "cast_corrosion",
+      "file": "audio/sfx/cast_corrosion.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/creature_slime_02.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "8c26b66076752b712dad7be704a3e4e11d3a49847fbd804ba7f858024ff33c8d",
+      "sha256": "a24e01fe40820460da8ca0ef56877805942dca664d25d886c1d6a8f06b2ca106"
+    },
+    {
+      "id": "cast_drain",
+      "file": "audio/sfx/cast_drain.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/spell_02.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "bf9c48b76921e56aa266172d969a2c08215d6ce0ffae7c3584f23fa05d3f8bd4",
+      "sha256": "7e52cf5b7799abcee93147a252a67d2e30f77e248af56a7f20525ebeaf74ee18"
+    },
+    {
+      "id": "cast_rune",
+      "file": "audio/sfx/cast_rune.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/spell_01.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "09821a53c418c5eeeac4fa25bada9d245e822fed302eeeae9ae4151522a45ae5",
+      "sha256": "78b33681df8966bee5cd491adb93070bf8c51c3e83929109ec5633c0b807048d"
+    },
+    {
+      "id": "cast_smash",
+      "file": "audio/sfx/cast_smash.mp3",
+      "pack": "rpg-rubberduck",
+      "author": "rubberduck",
+      "original": "rpg/stones_03.ogg",
+      "source": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "download": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "b86d143d7ef4974c2b97fda9e5d1861482646eec754e15935eeb3680ea0d71da",
+      "sha256": "d83f926cb17950272edf727f0a613af2c974b60a67d08e4f796e23aa90c35fd3"
+    },
+    {
+      "id": "cast_stars",
+      "file": "audio/sfx/cast_stars.mp3",
+      "pack": "magic-jaggedstone",
+      "author": "JaggedStone",
+      "original": "magical_1_0.ogg",
+      "source": "https://opengameart.org/content/magic-spell-sfx",
+      "download": "https://opengameart.org/sites/default/files/magical_1_0.ogg",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "119f9061a566c72c1c58444b03f8685b833079ef268dda02fe742eb34d3bc68f",
+      "sha256": "560fe40c77fbee0871577ec3b81f36e7dd321c30f3ad903851e07f4926ef8036"
+    },
+    {
+      "id": "cast_blessing",
+      "file": "audio/sfx/cast_blessing.mp3",
+      "pack": "magic-jaggedstone",
+      "author": "JaggedStone",
+      "original": "magical_2.ogg",
+      "source": "https://opengameart.org/content/magic-spell-sfx",
+      "download": "https://opengameart.org/sites/default/files/magical_2.ogg",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "84a70f63f3f21e5ba4a48285b760a663d422ad3feddba2f3cbadd94b76cdc52e",
+      "sha256": "1ba99982a0b89f2188d45c54d2bbe8a66679f0ef669fbd107187e3de7d40d295"
+    },
+    {
+      "id": "cast_gravity",
+      "file": "audio/sfx/cast_gravity.mp3",
+      "pack": "magic-jaggedstone",
+      "author": "JaggedStone",
+      "original": "magical_3.ogg",
+      "source": "https://opengameart.org/content/magic-spell-sfx",
+      "download": "https://opengameart.org/sites/default/files/magical_3.ogg",
+      "processing": "Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.",
+      "sourceSha256": "9fac648a1de869cf9ca2f4b3f1cd47f1766a3ee9d2fdec45831234401d7b2392",
+      "sha256": "aec47aff787e70bfbaccfd6a662c747062db66f75923db4916e31c3dd3c18508"
     }
-  ]
+  ],
+  "updated": "2026-10-29"
 }

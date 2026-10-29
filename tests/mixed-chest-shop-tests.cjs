@@ -2,7 +2,7 @@ require('tsx/cjs');
 const assert=require('node:assert/strict');
 const {ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts');
-const {stageShopRefreshPrice}=require('../assets/scripts/core/StageProgression.ts');
+const {stageShopRefreshPrice,chestUnitValue}=require('../assets/scripts/core/StageProgression.ts');
 const {COST_PRICE,validCost}=require('../assets/scripts/core/ShopConfig.ts');
 const {assertLegalSession}=require('../tools/bots/legality.ts');
 const {loadRunInputs,loadEnemyGenerationInputs,loadFormationInputs,loadEquipmentInputs}=require('../tools/run-simulation.ts');
@@ -12,7 +12,7 @@ function make(seed=17,save,mode='budget-v1',run=i.run){const cfg=new ConfigManag
 function win(s,kind='boss',stage=4){const wave=s.waves.find(w=>w.stage===stage&&w.encounterKind===kind);assert.ok(s.debugJump(stage,wave.round));if(!s.owned.onBoard().length)assert.ok(s.moveUnit(s.owned.all()[0].uid,{location:'board',x:3,y:3}).ok);const sim=s.startBattle();sim.end(0);assert.ok(s.settleBattle());return wave;}
 const claim=s=>s.claimStageReward({type:'stageChoice',rewardId:s.pendingStageReward.id,choice:'claim'});
 const price=(s,id)=>s.cfg.equipmentPrice(id,i.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]);
-const value=(s,g)=>g.units.reduce((n,id)=>n+COST_PRICE[validCost(s.cfg.getUnit(id).cost)],0)+g.equipmentIds.reduce((n,id)=>n+price(s,id),0)+g.health*2+g.gold;
+const value=(s,g)=>g.units.reduce((n,u)=>n+chestUnitValue(s.cfg.getUnit(u.unitId).cost,u.star),0)+g.equipmentIds.reduce((n,id)=>n+price(s,id),0)+g.health*2+g.gold;
 const cleared=s=>{assert.deepEqual(s.save.stageProgress.unitReserve,[]);assert.equal(s.pendingStageReward,undefined);};
 const budgets=make().stageProgression;
 for(const [stage,total,elite] of [[1,3,2],[2,4,2],[3,5,3],[4,6,3],[5,7,4],[27,29,15],[28,30,15],[29,30,15],[99,30,15]]){

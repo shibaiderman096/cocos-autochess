@@ -12,7 +12,7 @@ import { Rng } from './Rng';
 import { CardPool } from './CardPool';
 import { OwnedUnits } from './OwnedUnits';
 import { EconomySystem } from './EconomySystem';
-import { shopCostRates, rollShopCost, SHOP_SLOTS, COST_PRICE, Cost, sellPrice } from './ShopConfig';
+import { shopCostRates, rollShopCost, SHOP_SLOTS, Cost, sellPrice, unitPrice } from './ShopConfig';
 import { UnitConfigData } from './ConfigManager';
 
 export const REFRESH_COST = 2;
@@ -122,7 +122,7 @@ export class ShopSystem {
     const s = this.slots[slotIndex];
     if (!s || !s.unitId) return { error: 'slot_empty' };
     const unitId = s.unitId;
-    const price = COST_PRICE[this.pool.costOfUnit(unitId)];
+    const price = unitPrice(this.unitConfigs.get(unitId)?.cost);
 
     if (!Number.isSafeInteger(this.economy.gold) || this.economy.gold < price) return { error: 'not_enough_gold' };
 
@@ -169,7 +169,7 @@ export class ShopSystem {
   sell(uid: number): { gold: number } | null {
     const u = this.owned.get(uid);
     if (!u) return null;
-    const cost = this.pool.costOfUnit(u.unitId);
+    const cost = this.unitConfigs.get(u.unitId)?.cost ?? 1;
     const gold = sellPrice(cost, u.star);
     this.owned.remove(uid);
     for (let i = 0; i < 3 ** (u.star - 1); i++) this.pool.give(u.unitId);

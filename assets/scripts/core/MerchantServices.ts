@@ -8,6 +8,7 @@ export interface DiceBet { id: number; waveId: number; stake: number; picks: num
 export interface MerchantServicesState { nextUid: number; forgeRoll: number; diceRoll: number; forged: Record<string, ForgedEquipment>; dice?: DiceBet; }
 export const freshMerchantServices = (): MerchantServicesState => ({ nextUid: 1, forgeRoll: 0, diceRoll: 0, forged: {} });
 export const FORGE_PRICE = 3;
+export const FORGE_ATTACK_SPEED_CAP = 5;
 export const RADIANT_FORGE_PRICE = 18;
 export const forgePrice = (_level: number, radiant = false): number => radiant ? RADIANT_FORGE_PRICE : FORGE_PRICE;
 export const validDicePicks = (picks: unknown): picks is number[] => Array.isArray(picks) && picks.length >= 1 && picks.length <= 3
@@ -15,7 +16,9 @@ export const validDicePicks = (picks: unknown): picks is number[] => Array.isArr
 export const diceMultiplier = (count: number): number => count >= 1 && count <= 3 ? 6 / count : 0;
 export const dicePayout = (bet: DiceBet): number => bet.picks.includes(bet.face) ? bet.stake * diceMultiplier(bet.picks.length) : 0;
 export function forgeCandidates(item: EquipmentConfigData, level: number): ForgeStat[] {
-  return (Object.keys(FORGE_GAINS) as ForgeStat[]).filter(key => level < 2 ? !(item[key] ?? 0) : (item[key] ?? 0) > 0);
+  return (Object.keys(FORGE_GAINS) as ForgeStat[]).filter(key =>
+    (key !== 'attackSpeedBonus' || (item[key] ?? 0) < FORGE_ATTACK_SPEED_CAP)
+    && (level < 2 ? !(item[key] ?? 0) : (item[key] ?? 0) > 0));
 }
 export function forgedItem(cfg: ConfigManager, id: string, record: ForgedEquipment): EquipmentConfigData {
   const base = cfg.allEquipment().find(e => e.id === record.baseId);
@@ -28,6 +31,7 @@ export function forgedItem(cfg: ConfigManager, id: string, record: ForgedEquipme
   record.upgrades.forEach((key, index) => {
     if (!(key in FORGE_GAINS) || !forgeCandidates(item, index).includes(key)) throw new Error('Invalid forged stat');
     item[key] = Math.round(((item[key] ?? 0) + FORGE_GAINS[key]) * 1e8) / 1e8;
+    if(key==='attackSpeedBonus')item[key]=Math.min(FORGE_ATTACK_SPEED_CAP,item[key]);
     if (!Number.isFinite(item[key])) throw new Error('Invalid forged value');
   });
   item.effectDescription = [base.effectDescription, `铁匠强化 +${level} · 累计投入 ${spent} 金币`].filter(Boolean).join('\n');

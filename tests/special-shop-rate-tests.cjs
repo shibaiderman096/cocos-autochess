@@ -8,6 +8,7 @@ const {RunRandomContext}=require('../assets/scripts/core/RunRandomContext.ts');
 const {StageProgression,freshStageProgress}=require('../assets/scripts/core/StageProgression.ts');
 const {ShopSystem}=require('../assets/scripts/core/ShopSystem.ts');
 const {equipmentQuality}=require('../assets/scripts/core/EquipmentQuality.ts');
+const {validCost,unitPrice}=require('../assets/scripts/core/ShopConfig.ts');
 const rules=require('../assets/resources/config/run.json').stageEncounters,tiers=require('../assets/resources/config/equipment-policy.json').tiers;
 const cfg=new ConfigManager();cfg.setUnits(require('../assets/resources/config/units.json'));cfg.setEquipment(require('../assets/resources/config/equipment.json'));
 const wave={id:10,name:'merchant',stage:2,round:2,encounterKind:'specialShop',enemies:[]};
@@ -24,8 +25,8 @@ for(let level=1;level<=10;level++) {
  for(let seed=1;seed<=2000;seed++) {
   const s=sample(seed,level),offers=s.state.pending.offers;
   offers.forEach(o=>{
-   counts[(o.kind==='unit'?cfg.getUnit(o.id).cost:equipmentQuality(cfg.getEquipment([o.id])[0]))-1]++;
-   if(o.kind==='unit'){assert.ok(cfg.getUnit(o.id).specialShopUnlock);assert.equal(cfg.getUnit(o.id).cost,5);units++;}
+   counts[(o.kind==='unit'?validCost(cfg.getUnit(o.id).cost):equipmentQuality(cfg.getEquipment([o.id])[0]))-1]++;
+   if(o.kind==='unit'){assert.ok(cfg.getUnit(o.id).specialShopUnlock);assert.equal(validCost(cfg.getUnit(o.id).cost),5);assert.equal(o.price,unitPrice(cfg.getUnit(o.id).cost));units++;}
    total++;
   });
   const eq=offers.filter(o=>o.kind==='equipment').map(o=>o.id);assert.equal(new Set(eq).size,eq.length);

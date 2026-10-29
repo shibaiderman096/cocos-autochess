@@ -11,7 +11,7 @@ const configs=()=>{const cfg=new ConfigManager();cfg.setUnits(i.units);cfg.setSk
 function fixture({gold=300,hp=8,level=7,xp=54,bench=true,kind='boss',star=2}={}){
  const s=new RunSession(configs(),i.run,i.waves,{runSeed:2001,stageCount:12,...extra});
  const save=s.snapshot();save.gold=gold;save.level=level;save.exp=xp;save.owned=[];
- const ids=star===3&&level===10?['atlas','blackstar_warlock','voidscar_reaver','oris','seraphiel','eclipse_crossbow','nether_lantern_witch','aurelia','celine','ghostflame_blade']:['bao_zero','seraphiel','ghostflame_blade','phinia','aurelia','saiph','arc_repairer','ghostflame_blade','celine','helion'];
+ const ids=star===3&&level===10?['atlas','blackstar_warlock','voidscar_reaver','oris','crimson_demon_knight','eclipse_crossbow','nether_lantern_witch','aurelia','celine','ghostflame_blade']:['bao_zero','crimson_demon_knight','ghostflame_blade','phinia','aurelia','saiph','arc_repairer','ghostflame_blade','celine','helion'];
  for(let n=0;n<level+(bench?1:0);n++)save.owned.push({uid:n+1,unitId:ids[n%ids.length],star,location:n<level?'board':'bench',x:n<level?n%7:-1,y:n<level?Math.floor(n/7):0,equipment:[]});
  save.nextOwnedUid=save.owned.length+1;save.round.health=hp;
  const session=new RunSession(configs(),i.run,i.waves,{runSeed:2001,stageCount:12,save,...extra}),base=session.botPort();
@@ -48,12 +48,12 @@ test('no purchasable upgrade target means no paid refresh even when relative wea
 });
 test('Boss carry pair is bought through real shop before rolling',()=>{
  const {session,port}=fixture({star:1}),save=session.snapshot();
- save.owned.push({uid:99,unitId:'seraphiel',star:1,location:'bench',x:-1,y:1,equipment:[]});save.nextOwnedUid=100;
- save.shop=[{unitId:'seraphiel'},...Array.from({length:4},()=>({unitId:null}))];
+ save.owned.push({uid:99,unitId:'crimson_demon_knight',star:1,location:'bench',x:-1,y:1,equipment:[]});save.nextOwnedUid=100;
+ save.shop=[{unitId:'crimson_demon_knight'},...Array.from({length:4},()=>({unitId:null}))];
  const s=new RunSession(configs(),i.run,i.waves,{runSeed:2001,stageCount:12,save,...extra}),p=s.botPort();
  const publicPort={act:a=>p.act(a),observe:()=>{const o=p.observe();o.waveKind='boss';o.state.stage=6;return o;}};
  const a=createBot('medium').prepare(publicPort),buy=a.findIndex(v=>v.action.type==='buy'),roll=a.findIndex(v=>v.action.type==='refresh');
- assert.ok(buy>=0&&(roll<0||buy<roll));assert.ok(s.owned.all().some(u=>u.unitId==='seraphiel'&&u.star>=2));assertLegalSession(s);
+ assert.ok(buy>=0&&(roll<0||buy<roll));assert.ok(s.owned.all().some(u=>u.unitId==='crimson_demon_knight'&&u.star>=2));assertLegalSession(s);
 });
 test('excess gold promotes development, core readiness distinguishes 1-star carry/tank and diagnostics name limits',()=>{
  const {port}=fixture({gold:300,hp:20,kind:'normal'}),o=port.observe();assert.equal(economyPlan(o,c).mode,'develop');

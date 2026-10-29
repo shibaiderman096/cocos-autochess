@@ -2,7 +2,7 @@ require('tsx/cjs');
 const assert=require('node:assert/strict');
 const {ConfigManager}=require('../assets/scripts/core/ConfigManager.ts');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts');
-const {FORGE_GAINS,forgeCandidates,dicePayout,diceMultiplier}=require('../assets/scripts/core/MerchantServices.ts');
+const {FORGE_GAINS,FORGE_ATTACK_SPEED_CAP,forgeCandidates,forgedItem,dicePayout,diceMultiplier}=require('../assets/scripts/core/MerchantServices.ts');
 const t=require('../tools/run-simulation.ts'),input=t.loadRunInputs();
 const deps={...t.loadEnemyGenerationInputs(),...t.loadFormationInputs(),...t.loadEquipmentInputs()};
 function session(save,seed=10627){
@@ -47,7 +47,47 @@ function merchant(s){const wave=s.waves.find(w=>w.stage===4&&w.encounterKind==='
 
 }
 {
-
+ const batch=session(),single=session();merchant(batch);merchant(single);
+ for(const s of [batch,single])s.owned.equipmentReserve.push('basic_iron_shield');
+ assert.ok(batch.enhanceEquipment(0,'basic_iron_shield',10).ok);
+ for(let n=0;n<10;n++)assert.ok(single.enhanceEquipment(0,single.owned.equipmentReserve[0]).ok);
+ assert.deepEqual(batch.snapshot(),single.snapshot(),'ten-roll transaction matches ten single upgrades including RNG, ID, quality, value and wallet');
+ assert.equal(batch.forgeLevel(batch.owned.equipmentReserve[0]),10);assert.equal(batch.economy.gold,9970);
+ const loaded=session(batch.snapshot());assert.deepEqual(loaded.cfg.getEquipment([loaded.owned.equipmentReserve[0]]),batch.cfg.getEquipment([batch.owned.equipmentReserve[0]]));
+ for(const s of [batch,single])s.economy.gold=30;
+ assert.ok(batch.enhanceEquipment(0,batch.owned.equipmentReserve[0],10).ok);
+ for(let n=0;n<10;n++)assert.ok(single.enhanceEquipment(0,single.owned.equipmentReserve[0]).ok);
+ assert.deepEqual(batch.snapshot(),single.snapshot(),'existing forged instances can also receive ten upgrades');
+ batch.economy.gold=29;const before=JSON.stringify(batch.snapshot());
+ assert.equal(batch.enhanceEquipment(0,batch.owned.equipmentReserve[0],10).error,'not_enough_gold');assert.equal(JSON.stringify(batch.snapshot()),before);
+ for(const count of [0,2,9,11,1.5,NaN]){assert.equal(batch.enhanceEquipment(0,batch.owned.equipmentReserve[0],count).ok,false);assert.equal(JSON.stringify(batch.snapshot()),before);}
+ batch.owned.equipmentReserve.push('guinsoo');const radiantBefore=JSON.stringify(batch.snapshot());
+ assert.equal(batch.enhanceEquipment(1,'guinsoo',10).ok,false);assert.equal(JSON.stringify(batch.snapshot()),radiantBefore,'completed equipment cannot be batch upgraded');
+ const outside=session();outside.owned.equipmentReserve.push('basic_iron_shield');const locked=JSON.stringify(outside.snapshot());
+ assert.equal(outside.enhanceEquipment(0,'basic_iron_shield',10).ok,false);assert.equal(JSON.stringify(outside.snapshot()),locked);
+ console.log('PASS ten upgrades: same results as individual rolls, 30-gold cost, exact funds, existing instances, current-save reload and atomic rejection');
+}
+{
+ const s=session(),base=input.equipment.find(item=>item.id.startsWith('basic_')&&item.attackSpeedBonus>0);assert.ok(base);
+ const cfg=new ConfigManager();cfg.setEquipment(input.equipment.map(item=>item.id===base.id?{...item,attackSpeedBonus:4.95}:item));
+ const record={baseId:base.id,upgrades:['hp','armor','attackSpeedBonus'],spentGold:9};
+ const capped=forgedItem(cfg,'forged_1',record);assert.equal(capped.attackSpeedBonus,FORGE_ATTACK_SPEED_CAP);
+ assert.equal(forgeCandidates(capped,3).includes('attackSpeedBonus'),false);
+ assert.ok(forgeCandidates(capped,3).includes('hp'));assert.ok(forgeCandidates(capped,3).includes('armor'));
+ assert.throws(()=>forgedItem(cfg,'forged_1',{...record,upgrades:[...record.upgrades,'attackSpeedBonus'],spentGold:12}),/Invalid forged stat/);
+ const actualBase=s.cfg.allEquipment().find(item=>item.id===base.id);
+ const speedSteps=Math.ceil((FORGE_ATTACK_SPEED_CAP-(actualBase.attackSpeedBonus??0))/.1);
+ const upgrades=['hp','armor',...Array(speedSteps).fill('attackSpeedBonus')];
+ merchant(s);s.save.merchantServices.forged.forged_1={baseId:base.id,upgrades,spentGold:upgrades.length*3};s.save.merchantServices.nextUid=2;s.save.merchantServices.forgeRoll=upgrades.length;
+ s.owned.equipmentReserve.push('forged_1');
+ const restored=session(s.snapshot()),before=restored.forgeLevel('forged_1');
+ assert.equal(restored.cfg.getEquipmentReserve(['forged_1'])[0].attackSpeedBonus,5);
+ assert.ok(restored.enhanceEquipment(0,'forged_1',10).ok);
+ assert.equal(restored.cfg.getEquipmentReserve(['forged_1'])[0].attackSpeedBonus,5);
+ assert.equal(restored.save.merchantServices.forged.forged_1.upgrades.slice(before).includes('attackSpeedBonus'),false);
+ assert.ok(restored.enhanceEquipment(0,'forged_1').ok,'single upgrade also continues improving other stats');
+ assert.equal(restored.cfg.getEquipmentReserve(['forged_1'])[0].attackSpeedBonus,5);
+ console.log('PASS forge attack speed: clamps final partial gain to 500%, removes capped stat, continues other stats in single/batch rolls and reload');
 }
 {
  let wins=0,losses=0;const faces=new Set();

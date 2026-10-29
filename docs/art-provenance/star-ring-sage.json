@@ -1,0 +1,470 @@
+{
+  "route": "Built-in image_gen",
+  "art_source": "host_image",
+  "model": "Tool-managed, not exposed",
+  "estimateUsd": null,
+  "sourceSha256": "676a87e6606a8ae1876886da256301d183ed0980d837772f585f1510100d3a3c",
+  "prompts": "tools/star-ring-sage-vfx-prompt.json",
+  "grid": [
+    4,
+    4
+  ],
+  "cell": [
+    256,
+    256
+  ],
+  "padding": 40,
+  "alphaFloor": 4,
+  "geometryAlphaThreshold": 16,
+  "hygiene": {
+    "floorPixels": 5795,
+    "detachedPixels": 3,
+    "maxRemovedAlpha": 5
+  },
+  "asset": {
+    "file": "assets/resources/art/fx/star_ring_sage.png",
+    "width": 1024,
+    "height": 1024,
+    "transparentFraction": 0.8795204162597656,
+    "sha256": "d075b3bf54c930d8fdb3472cc33d175b7e82fb5328d55a8310e3c6579e1c3817"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "sourceRect": [
+        0,
+        0,
+        314,
+        400
+      ],
+      "paintedBounds": [
+        108,
+        136,
+        286,
+        308
+      ],
+      "runtimeSize": [
+        145,
+        140
+      ],
+      "runtimeOffset": [
+        55,
+        58
+      ]
+    },
+    {
+      "index": 1,
+      "sourceRect": [
+        314,
+        0,
+        627,
+        400
+      ],
+      "paintedBounds": [
+        80,
+        130,
+        264,
+        320
+      ],
+      "runtimeSize": [
+        150,
+        155
+      ],
+      "runtimeOffset": [
+        53,
+        50
+      ]
+    },
+    {
+      "index": 2,
+      "sourceRect": [
+        627,
+        0,
+        940,
+        400
+      ],
+      "paintedBounds": [
+        53,
+        125,
+        256,
+        324
+      ],
+      "runtimeSize": [
+        165,
+        162
+      ],
+      "runtimeOffset": [
+        45,
+        47
+      ]
+    },
+    {
+      "index": 3,
+      "sourceRect": [
+        940,
+        0,
+        1254,
+        400
+      ],
+      "paintedBounds": [
+        29,
+        119,
+        242,
+        335
+      ],
+      "runtimeSize": [
+        174,
+        176
+      ],
+      "runtimeOffset": [
+        41,
+        40
+      ]
+    },
+    {
+      "index": 4,
+      "sourceRect": [
+        0,
+        400,
+        314,
+        700
+      ],
+      "paintedBounds": [
+        114,
+        53,
+        271,
+        220
+      ],
+      "runtimeSize": [
+        149,
+        158
+      ],
+      "runtimeOffset": [
+        53,
+        49
+      ]
+    },
+    {
+      "index": 5,
+      "sourceRect": [
+        314,
+        400,
+        627,
+        700
+      ],
+      "paintedBounds": [
+        86,
+        48,
+        251,
+        227
+      ],
+      "runtimeSize": [
+        156,
+        169
+      ],
+      "runtimeOffset": [
+        50,
+        43
+      ]
+    },
+    {
+      "index": 6,
+      "sourceRect": [
+        627,
+        400,
+        940,
+        700
+      ],
+      "paintedBounds": [
+        78,
+        44,
+        222,
+        229
+      ],
+      "runtimeSize": [
+        136,
+        175
+      ],
+      "runtimeOffset": [
+        60,
+        40
+      ]
+    },
+    {
+      "index": 7,
+      "sourceRect": [
+        940,
+        400,
+        1254,
+        700
+      ],
+      "paintedBounds": [
+        55,
+        42,
+        204,
+        228
+      ],
+      "runtimeSize": [
+        141,
+        176
+      ],
+      "runtimeOffset": [
+        57,
+        40
+      ]
+    },
+    {
+      "index": 8,
+      "sourceRect": [
+        0,
+        700,
+        314,
+        950
+      ],
+      "paintedBounds": [
+        99,
+        99,
+        258,
+        159
+      ],
+      "runtimeSize": [
+        130,
+        49
+      ],
+      "runtimeOffset": [
+        86,
+        103
+      ]
+    },
+    {
+      "index": 9,
+      "sourceRect": [
+        314,
+        700,
+        627,
+        950
+      ],
+      "paintedBounds": [
+        75,
+        93,
+        257,
+        166
+      ],
+      "runtimeSize": [
+        149,
+        60
+      ],
+      "runtimeOffset": [
+        67,
+        98
+      ]
+    },
+    {
+      "index": 10,
+      "sourceRect": [
+        627,
+        700,
+        940,
+        950
+      ],
+      "paintedBounds": [
+        46,
+        90,
+        245,
+        172
+      ],
+      "runtimeSize": [
+        163,
+        67
+      ],
+      "runtimeOffset": [
+        53,
+        94
+      ]
+    },
+    {
+      "index": 11,
+      "sourceRect": [
+        940,
+        700,
+        1254,
+        950
+      ],
+      "paintedBounds": [
+        32,
+        90,
+        247,
+        172
+      ],
+      "runtimeSize": [
+        176,
+        67
+      ],
+      "runtimeOffset": [
+        40,
+        94
+      ]
+    },
+    {
+      "index": 12,
+      "sourceRect": [
+        0,
+        950,
+        314,
+        1254
+      ],
+      "paintedBounds": [
+        78,
+        83,
+        280,
+        198
+      ],
+      "runtimeSize": [
+        176,
+        86
+      ],
+      "runtimeOffset": [
+        40,
+        85
+      ]
+    },
+    {
+      "index": 13,
+      "sourceRect": [
+        314,
+        950,
+        627,
+        1254
+      ],
+      "paintedBounds": [
+        51,
+        79,
+        277,
+        200
+      ],
+      "runtimeSize": [
+        176,
+        91
+      ],
+      "runtimeOffset": [
+        40,
+        82
+      ]
+    },
+    {
+      "index": 14,
+      "sourceRect": [
+        627,
+        950,
+        940,
+        1254
+      ],
+      "paintedBounds": [
+        31,
+        80,
+        259,
+        204
+      ],
+      "runtimeSize": [
+        176,
+        93
+      ],
+      "runtimeOffset": [
+        40,
+        81
+      ]
+    },
+    {
+      "index": 15,
+      "sourceRect": [
+        940,
+        950,
+        1254,
+        1254
+      ],
+      "paintedBounds": [
+        9,
+        80,
+        243,
+        204
+      ],
+      "runtimeSize": [
+        176,
+        93
+      ],
+      "runtimeOffset": [
+        40,
+        81
+      ]
+    }
+  ],
+  "qa": {
+    "status": "pass",
+    "checks": [
+      {
+        "id": "cross_cell_components",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "cells": [],
+        "note": "solid parts crossing a cell line are cut or misassigned when the sheet is sliced"
+      },
+      {
+        "id": "cross_cell_visible",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "the same test on the visible edge (alpha > 16)"
+      },
+      {
+        "id": "sheet_edge",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "art touching the sheet border was cut by the image edge"
+      },
+      {
+        "id": "empty_cells",
+        "status": "pass",
+        "value": [],
+        "threshold": [],
+        "note": "the first 16 cells must each hold a subject"
+      },
+      {
+        "id": "boundary_band",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "solid pixels within 5 px of a cell line; a different crop or rounding can cut them"
+      },
+      {
+        "id": "safe_frame",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "cells": [],
+        "note": "owned art closer than 15% of the cell to its edge; ask for more margin next time"
+      },
+      {
+        "id": "faint_specks",
+        "status": "pass",
+        "value": {
+          "floor_px": 0,
+          "detached_components": 0
+        },
+        "threshold": 0,
+        "note": "alpha haze and detached specks; process removes them with --alpha-hygiene both"
+      }
+    ]
+  },
+  "preview": {
+    "path": "docs/evidence/star-ring-sage-animation/preview.gif",
+    "frames": 59,
+    "fps": 10,
+    "viewports": [
+      "1280x720",
+      "844x390"
+    ],
+    "deviceTested": false
+  }
+}

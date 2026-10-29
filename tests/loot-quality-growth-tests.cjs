@@ -8,6 +8,7 @@ const {RunRandomContext}=require('../assets/scripts/core/RunRandomContext.ts');
 const {StageProgression,freshStageProgress,stageShopQualityRates,explorerLootQualityRates}=require('../assets/scripts/core/StageProgression.ts');
 const {RunSession}=require('../assets/scripts/core/RunSession.ts');
 const {equipmentQuality}=require('../assets/scripts/core/EquipmentQuality.ts');
+const {validCost}=require('../assets/scripts/core/ShopConfig.ts');
 const t=require('../tools/run-simulation.ts'),input=t.loadRunInputs();
 const deps={...t.loadEnemyGenerationInputs(),...t.loadFormationInputs(),...t.loadEquipmentInputs()};
 const rules=input.run.stageEncounters,clone=x=>structuredClone(x);
@@ -34,7 +35,7 @@ for(let seed=1;seed<=1000;seed++){
  p.enter(wave);
  for(let refresh=0;refresh<=20;refresh++){
   if(refresh===0||refresh===20)for(const offer of state.pending.offers){
-   const quality=offer.kind==='unit'?cfg.getUnit(offer.id).cost:equipmentQuality(cfg.getEquipment([offer.id])[0]);counts[refresh===0?0:1][quality-1]++;
+   const quality=offer.kind==='unit'?validCost(cfg.getUnit(offer.id).cost):equipmentQuality(cfg.getEquipment([offer.id])[0]);counts[refresh===0?0:1][quality-1]++;
   }
   if(refresh<20)assert.ok(p.act({type:'stageChoice',rewardId:state.pending.id,choice:'refresh'},wave).ok);
  }

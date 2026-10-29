@@ -115,7 +115,7 @@ const run = new RoundFlow(waves, rules);
 for (let i = 0; i < waves.length; i++) {
   run.startBattle();
   const placements = run.wave.enemies.map(e => ({ cfg:cfg.getUnit(e.unitId), side:1, ...e }));
-  const formation=['helion','bao_zero','atlas','oris','seraphiel','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map(id=>cfg.getUnit(id));
+  const formation=['helion','bao_zero','atlas','oris','crimson_demon_knight','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map(id=>cfg.getUnit(id));
   assert.equal(formation.length,10);
   formation.forEach((u,j) => placements.push({ cfg:u, side:0, star:3, x:j%7, y:Math.floor(j/7)+2 }));
   const sim = new BattleSim(cfg, placements, {seed:42, w:7, h:8, maxTicks:rules.maxTicks}); sim.start(); sim.run();

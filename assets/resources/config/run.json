@@ -997,7 +997,17 @@
       "version": "mixed-v1",
       "healthGoldValue": 2,
       "eliteValueMultiplier": 0.5,
+        "encounterLoot": {
+          "monster": { "qualityRates": [60, 25, 10, 4, 1], "starRates": [95, 5, 0] },
+          "elite": { "qualityRates": [25, 35, 25, 12, 3], "starRates": [80, 18, 2] },
+          "boss": { "qualityRates": [10, 20, 30, 25, 15], "starRates": [60, 30, 10] }
+        },
       "explorerGoldThreshold": 30,
+        "explorerStars": {
+          "maxSteps": 1000,
+          "initialRates": [95, 5, 0],
+          "maxRates": [30, 40, 30]
+        },
       "explorerQuality": {
         "maxSteps": 1000,
         "initialRates": [55, 30, 10, 4, 1],
@@ -1138,7 +1148,14 @@
     "survivorMaxHp": 50,
     "victoryGold": 2,
     "battleExp": 1,
-    "victoryHeal": 3
+    "victoryHeal": 3,
+    "effects": {
+      "vacancyPerSlot": 0.1, "vacancyMaxStacks": 8,
+      "starDamageAmp": 0.4, "starDamageReduction": 0.2,
+      "monsterRewardMultiplier": 1.5,
+      "reviveSeconds": 3, "reviveHealthFraction": 0.3,
+      "giftStartStage": 2, "freeRefreshChance": 0.5
+    }
   },
   "enemyGoldBudget": {
     "version": "gold-v1",

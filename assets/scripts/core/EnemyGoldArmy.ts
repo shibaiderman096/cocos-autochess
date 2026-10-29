@@ -2,7 +2,7 @@ import type { UnitConfigData } from './ConfigManager';
 import type { TraitConfigData } from '../battle/types';
 import type { WaveEnemy } from './RoundFlow';
 import type { WaveKind } from './EnemyGenerationTypes';
-import { COST_PRICE, rollShopCost, shopCostRates, validCost } from './ShopConfig';
+import { unitPrice, rollShopCost, shopCostRates, validCost } from './ShopConfig';
 import { RunRandomContext } from './RunRandomContext';
 
 export interface EnemyGoldRules {
@@ -12,7 +12,9 @@ export interface EnemyGoldRules {
 }
 export interface EnemyGoldDiagnostics {
   version: 'gold-v1'; baseGold: number; bonusGold: number; totalGold: number; spentGold: number; remainingGold: number;
-  population: number; shopLevel: number; shopRates: number[]; costDraws: number[]; themeTrait?: string;
+  population: number; shopLevel: number; shopRates: number[];
+  /** One accepted shop-tier draw per deployed slot; rank upgrades never change these fees. */
+  costDraws: number[]; themeTrait?: string;
   themeMembers: number; distinctUnits: number;
 }
 
@@ -25,7 +27,7 @@ export function validateEnemyGoldRules(r: EnemyGoldRules): void {
     ||!Number.isSafeInteger(r.earlyGrowth.roundsPerGold)||r.earlyGrowth.roundsPerGold<1))throw new Error('Invalid early enemy gold growth');
 }
 
-export const enemyUnitGold = (unit: Pick<UnitConfigData,'cost'>, star: number): number => COST_PRICE[validCost(unit.cost)] * 3 ** (star - 1);
+export const enemyUnitGold = (unit: Pick<UnitConfigData,'cost'>, star: number): number => unitPrice(unit.cost) * 3 ** (star - 1);
 
 /** Range determines depth. Each occupied row is centered and uses legal unique odd-r cells. */
 export function tidyEnemyRows(enemies: WaveEnemy[], roster: UnitConfigData[]): WaveEnemy[] {
@@ -50,7 +52,7 @@ export function tidyEnemyRows(enemies: WaveEnemy[], roster: UnitConfigData[]): W
   return result;
 }
 
-/** Shop cost rolls share the player's table. Affordability, uniqueness and a common faction guide purchases. */
+/** Draw deployed fees from the player's shop table before spending the remaining gold on ranks. */
 export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completedRounds: number, waveId: number, kind: WaveKind,
   population: number, roster: UnitConfigData[], traits: readonly TraitConfigData[], random: RunRandomContext): {enemies:WaveEnemy[];diagnostics:EnemyGoldDiagnostics} {
   validateEnemyGoldRules(rules);
@@ -75,26 +77,38 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
     const themed=pool.filter(u=>theme?.members.has(u.id)),cohort=themed.length?themed:pool;
     return cohort[rng.int(0,cohort.length-1)];
   };
-  // Sample the same shop table as the player. Only rolled costs can enter the army,
-  // except the cheapest supported tier needed to guarantee a complete starting lineup.
-  for(let roll=0;roll<rules.maxShopRolls;roll++){
-    const cost=rollShopCost(shopRates,()=>rng.next());if(cost)costDraws[cost-1]++;
+  if(!affordable.length)throw new Error('Enemy gold budget cannot fund supported shop costs');
+  const cheapest=Math.min(...affordable.map(u=>u.cost??1));
+  if(cheapest*population>totalGold)throw new Error('Enemy gold budget cannot fund supported shop costs');
+  const drawnCosts:number[]=[];
+  for(let slot=0;slot<population;slot++){
+    const allowance=remaining-(population-slot-1)*cheapest;
+    const available=affordable.filter(u=>unitPrice(u.cost)<=allowance);
+    let tier:ReturnType<typeof rollShopCost>=null;
+    // Unaffordable rolls cannot consume the gold reserved for the remaining slots.
+    for(let roll=0;roll<rules.maxShopRolls;roll++){
+      const drawn=rollShopCost(shopRates,()=>rng.next());
+      if(drawn&&available.some(u=>validCost(u.cost)===drawn)){tier=drawn;break;}
+    }
+    const pool=available.filter(u=>tier?validCost(u.cost)===tier:(u.cost??1)===cheapest);
+    const cost=pool[rng.int(0,pool.length-1)].cost??1;
+    drawnCosts.push(cost);costDraws[validCost(cost)-1]++;remaining-=unitPrice(cost);
   }
-  const cheapest=Math.min(...affordable.map(u=>validCost(u.cost)));
-  const costs=[...new Set(affordable.map(u=>validCost(u.cost)))].filter(cost=>costDraws[cost-1]>0||cost===cheapest).sort((a,b)=>a-b);
-  const options=costs.flatMap(cost=>[1,2,3].map(star=>({cost,star,gold:COST_PRICE[cost]*3**(star-1)})));
-  type Purchase = typeof options[number];
-  type Allocation = {purchases:Purchase[];squares:number;shopWeight:number};
-  let states=new Map<number,Allocation>([[0,{purchases:[],squares:0,shopWeight:0}]]);
+  const costs=[...new Set(drawnCosts)].sort((a,b)=>a-b);
+  type Purchase = {cost:number;star:number;gold:number};
+  type Allocation = {purchases:Purchase[];squares:number};
+  let states=new Map<number,Allocation>([[0,{purchases:[],squares:0}]]);
   for(let slot=0;slot<population;slot++){
     const next=new Map<number,Allocation>();
+    const options=[1,2,3].map(star=>({cost:drawnCosts[slot],star,gold:unitPrice(drawnCosts[slot])*3**(star-1)}));
+    const reserved=drawnCosts.slice(slot+1).reduce((sum,cost)=>sum+unitPrice(cost),0);
     for(const [sum,state] of states)for(const option of options){
       const value=sum+option.gold;
-      if(value+(population-slot-1)*cheapest>totalGold)continue;
+      if(value+reserved>totalGold)continue;
       // At the same total spend, minimum squared gold is exactly minimum variance.
-      const squares=state.squares+option.gold**2,shopWeight=state.shopWeight+costDraws[option.cost-1],previous=next.get(value);
-      if(!previous||squares<previous.squares||(squares===previous.squares&&shopWeight>previous.shopWeight))
-        next.set(value,{purchases:[...state.purchases,option],squares,shopWeight});
+      const squares=state.squares+option.gold**2,previous=next.get(value);
+      if(!previous||squares<previous.squares)
+        next.set(value,{purchases:[...state.purchases,option],squares});
     }
     states=next;
   }
@@ -102,23 +116,21 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
   const spent=Math.max(...states.keys()),allocation=states.get(spent)!;
   const slotsByCost=costs.map(cost=>({cost,count:allocation.purchases.filter(p=>p.cost===cost).length}));
   const themeCoverage=(candidate:typeof theme)=>slotsByCost.reduce((n,{cost,count})=>n+Math.min(count,
-    sorted.filter(u=>validCost(u.cost)===cost&&candidate?.members.has(u.id)).length),0);
-  // An even allocation can change the usable fees. Keep a coherent faction supported by that lineup.
+    sorted.filter(u=>(u.cost??1)===cost&&candidate?.members.has(u.id)).length),0);
+  // Pick a faction supported by the fees that were actually rolled.
   if(themeCoverage(theme)<Math.min(2,population))
     theme=themes.slice().sort((a,b)=>themeCoverage(b)-themeCoverage(a)||a.id.localeCompare(b.id))[0];
   for(const purchase of allocation.purchases){
-    const unit=choose(sorted.filter(u=>validCost(u.cost)===purchase.cost));
+    const unit=choose(sorted.filter(u=>(u.cost??1)===purchase.cost));
     team.push({unit,star:purchase.star});
   }
-  // Equal gold can have different fee/rank combinations (for example 1-cost 3-star and 3-cost 2-star).
-  // Use those ties to retain unique units and the common faction without changing the allocation.
+  // Improve diversity within the same fee. Equal-value cards from other fees must not replace a draw.
   for(const member of team){
-    const gold=enemyUnitGold(member.unit,member.star),duplicate=team.filter(u=>u.unit.id===member.unit.id).length>1;
-    const alternatives=sorted.filter(unit=>!team.some(u=>u.unit.id===unit.id)
-      &&options.some(p=>p.cost===validCost(unit.cost)&&p.gold===gold)
+    const duplicate=team.filter(u=>u.unit.id===member.unit.id).length>1;
+    const alternatives=sorted.filter(unit=>(unit.cost??1)===(member.unit.cost??1)&&!team.some(u=>u.unit.id===unit.id)
       &&(duplicate||(!theme?.members.has(member.unit.id)&&theme?.members.has(unit.id))));
     if(alternatives.length){
-      member.unit=choose(alternatives);member.star=options.find(p=>p.cost===validCost(member.unit.cost)&&p.gold===gold)!.star;
+      member.unit=choose(alternatives);
     }
   }
   remaining=totalGold-spent;

@@ -45,6 +45,7 @@ const TIERS = [MUTED,...QUALITY_COLORS.map(rgb=>new Color(...rgb))];
 const UNIT_ROLES: Record<string, string> = { frontline:'前排', ranged:'远程', caster:'法术', assassin:'物理刺客', fighter:'物理战士', tank:'物理坦克', magicTank:'魔法坦克', physicalCaster:'物理术士', physicalArcher:'物理射手', magicArcher:'魔法射手', support:'治疗辅助' };
 interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
 export interface UnitDetailData extends Partial<CombatAttributes> {
+  summonOnly?: boolean;
   name: string; star: number; cost?: number; artId: string; side: 0 | 1; tint?: string;
   hp: number; maxHp: number; mana: number; maxMana: number; shield?: number;
   manaPerSecond?: number;
@@ -1615,8 +1616,9 @@ export class BattleUI extends Component {
       this.skillIconKey = skillIcon;
       setUISkin(this.skillIconNode.getChildByName('icon_swords')!, skillIcon);
     }
-    this.unitTitle.string = data.name; this.unitTitle.color = TIERS[data.cost ?? 1];
-    this.unitCost.string = data.cost ? `${sellPrice(data.cost as Cost, data.star)}金` : '野怪';
+    this.unitTitle.string = data.name; this.unitTitle.color = TIERS[data.summonOnly?5:Math.max(1,Math.min(5,data.cost ?? 1))];
+    this.unitCost.string = data.summonOnly?'0金':data.cost ? `${sellPrice(data.cost as Cost, data.star)}金` : '野怪';
+    this.unitPanel.getChildByName('equipment')!.active=!data.summonOnly;
     if (this.detailStar !== data.star) {
       this.detailStar = data.star;
       setStarBadge(this.unitStars, data.star);

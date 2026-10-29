@@ -2,9 +2,10 @@
 
 export interface BackpackItem { id: string; name: string; icon: string; description?: string; kind: 'equipment' | 'consumable'; }
 export const MAX_EQUIPMENT = 3;
+export interface RunicArcanaConfig {
+  missileCount: number; maxRunes: number; spellPowerPerRune: number[]; waveDamage: number[]; chargeSeconds: number; length: number; width: number;
+}
 export interface BattleTargetingConfig {
-  /** Distance discount for tanks when choosing a new ordinary attack target. */
-  tankDistanceBias: number;
   /** Fixed delay before finding another ordinary attack target. */
   retargetSeconds?: number;
 }
@@ -110,7 +111,23 @@ export interface TraitBreakpoint {
   astral?: AstralTraitEffect;
   bloodfiend?: BloodfiendTraitEffect;
   explorer?: ExplorerTraitEffect;
+  demon?: DemonTraitEffect;
 }
+export interface DemonTraitEffect {
+  unitId: string; star: number; healthPerStar: number;
+  castShieldFraction: number; shieldSeconds: number; takedownPower: number; powerPerSecond: number;
+}
+export interface DemonLeapRuntime { from: Pos; to: Pos; startTick: number; endTick: number; radius: number }
+export interface RedhornFervorConfig { attackSpeedBonuses:number[]; lifestealBonuses:number[]; durationSeconds:number }
+export interface HellhoundBreathConfig { angleDegrees:number }
+export interface AbyssVerdictConfig { missingHealthFractions:number[]; healAmounts:number[] }
+export interface InfernalSpinConfig { healPerTarget:number[]; durationSeconds:number }
+export interface InfernalSpinRuntime { startTick:number;endTick:number;toward:Pos;hitIds:Set<number>;wasManaLocked:boolean }
+export interface RavenTheftConfig { targetRange:number;flightSeconds:number;spellPowerAmounts:number[] }
+export interface RavenFlightRuntime { from:Pos;to:Pos;startTick:number;endTick:number;targetId:number }
+export interface DemonGunfireConfig { manaPerSecond:number;intervalSeconds:number;baseBullets:number }
+export interface DemonGunfireRuntime { nextTick:number;wasManaLocked:boolean }
+export interface ThornPullConfig { stunSeconds:number;pullSeconds:number }
 export interface ExplorerTraitEffect {
   pointsPerBattle: number;
   pointsPerKill: number;
@@ -344,6 +361,25 @@ export interface CombatAttributes {
 }
 
 export type BattleEvent =
+  | { t:'thorn_whip';tick:number;id:number;target:number;from:Pos;to:Pos }
+  | { t:'thorn_pull';tick:number;id:number;source:number;from:Pos;to:Pos;durationTicks:number }
+  | { t:'demon_gunfire';tick:number;id:number;durationTicks:number }
+  | { t:'demon_gunfire_end';tick:number;id:number }
+  | { t:'demon_volley';tick:number;id:number;target:number;from:Pos;to:Pos;count:number }
+  | { t:'raven_flight';tick:number;id:number;from:Pos;to:Pos;durationTicks:number }
+  | { t:'raven_end';tick:number;id:number;to:Pos;interrupted:boolean }
+  | { t:'raven_theft';tick:number;id:number;target:number;from:Pos;to:Pos;amount:number }
+  | { t:'infernal_spin';tick:number;id:number;center:Pos;toward:Pos;radius:number;durationTicks:number }
+  | { t:'infernal_spin_end';tick:number;id:number }
+  | { t:'infernal_spin_heal';tick:number;id:number;from:Pos;to:Pos }
+  | { t:'demon_fervor'; tick:number; id:number; untilTick:number }
+  | { t:'hellhound_breath'; tick:number; id:number; from:Pos; toward:Pos; radius:number; angleDegrees:number }
+  | { t:'demon_burn'; tick:number; id:number; source:number; untilTick:number }
+  | { t:'abyss_verdict'; tick:number; id:number; target:number; from:Pos; to:Pos }
+  | { t:'abyss_siphon'; tick:number; id:number; target:number; from:Pos; to:Pos }
+  | { t:'runic_runes'; tick:number; id:number; count:number }
+  | { t:'runic_missiles'; tick:number; id:number; target:number; from:Pos; to:Pos; count:number }
+  | { t:'runic_wave'; tick:number; id:number; from:Pos; toward:Pos; length:number; width:number }
   | { t: 'rope_swing'; tick: number; id: number; from: Pos; edge: Pos; hookTicks: number; durationTicks: number }
   | { t: 'rope_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'rope_return'; tick: number; id: number; to: Pos }
@@ -354,6 +390,10 @@ export type BattleEvent =
   | { t: 'sun_pulse'; tick: number; id: number; effect: SunlightPulse; center: Pos; from?: Pos; radius: number; duration: number;
       kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean }
   | { t: 'battle_start'; tick: number }
+  | { t: 'demon_summon'; tick: number; id: number; star: number; pos: Pos }
+  | { t: 'demon_leap'; tick: number; id: number; from: Pos; to: Pos; durationTicks: number; radius: number }
+  | { t: 'demon_impact'; tick: number; id: number; center: Pos; radius: number }
+  | { t: 'demon_power'; tick: number; id: number; source: number; amount: number }
   | { t: 'move';   tick: number; id: number; from: Pos; to: Pos; durationTicks?: number }
   | { t: 'teleport'; tick: number; id: number; from: Pos; to: Pos }
   | { t: 'attack'; tick: number; id: number; target: number; area?: boolean; shadow?: boolean }
@@ -393,6 +433,7 @@ export type BattleEvent =
   | { t: 'dash_stop'; tick: number; id: number; at: Pos }
   | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
   | { t: 'inspiration'; tick: number; id: number; targets: number[]; durationTicks: number; bonus: number }
+  | { t: 'revive'; tick: number; id: number; hp: number; x: number; y: number }
   | { t: 'death';  tick: number; id: number }
   | { t: 'end';    tick: number; winner: Side | -1 };
 
@@ -414,6 +455,7 @@ export interface CombatStatRow {
 }
 
 export interface UnitRuntime {
+  demonAirborne?: boolean;
   bloodAidActive?: boolean;
   bloodRebirthActive?: boolean;
   bloodCleaveReady?: boolean;
@@ -431,9 +473,11 @@ export interface UnitRuntime {
   id: number;
   side: Side;
   cfgId: string;
+  role?: string;
   pos: Pos;
   hp: number;
   maxHp: number;
+  baseMaxHp: number;
   mana: number;
   maxMana: number;
   atkCd: number;

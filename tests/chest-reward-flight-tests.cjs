@@ -1,6 +1,7 @@
 require('tsx/cjs');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),ts=require('typescript');
-const {rewardDeliveryPlan}=require('../assets/scripts/view/RewardDeliveryPlan.ts');
+const {rewardDeliveryPlan:plan}=require('../assets/scripts/view/RewardDeliveryPlan.ts');
+const rewardDeliveryPlan=(ids,before,after)=>plan(ids.map(unitId=>({unitId,star:1})),before,after);
 const {OwnedUnits}=require('../assets/scripts/core/OwnedUnits.ts');
 const unit=(uid,id,star=1,location='bench',y=0)=>({uid,unitId:id,star,location,x:location==='board'?3:-1,y});
 const before=[unit(1,'helion')],after=[...before,unit(2,'kaeru',1,'bench',4),unit(3,'bronda',1,'bench',7)];
@@ -17,6 +18,11 @@ const chain=new OwnedUnits([unit(1,'helion',2,'board',2),unit(2,'helion',2,'benc
 const chainOld=chain.snapshot();chain.addToBench('helion',9);
 assert.deepEqual(rewardDeliveryPlan(['helion'],chainOld,chain.snapshot()),[{unitId:'helion',uid:1}]);assert.equal(chain.get(1).star,3);
 assert.deepEqual(rewardDeliveryPlan(['helion','helion','kaeru'],old,[unit(1,'helion',2,'board',2)]),[{unitId:'helion',uid:1},{unitId:'helion'},{unitId:'kaeru'}]);
+assert.deepEqual(plan([{unitId:'helion',star:2},{unitId:'helion',star:1}],[],[unit(1,'helion',2),unit(2,'helion')]),
+ [{unitId:'helion',uid:1},{unitId:'helion',uid:2}],'a two-star reward consumes three copies of landing capacity');
+const ranked=new OwnedUnits([unit(1,'helion',2,'board',2),unit(2,'helion',2,'bench',0)],3),rankedBefore=ranked.snapshot();
+ranked.addToBench('helion',9,-1,2);
+assert.deepEqual(plan([{unitId:'helion',star:2}],rankedBefore,ranked.snapshot()),[{unitId:'helion',uid:1}]);
 
 // Run the real component against a narrow engine boundary. Native rendering is verified separately.
 const pending=[];

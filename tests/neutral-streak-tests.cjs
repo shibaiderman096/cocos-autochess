@@ -22,7 +22,7 @@ for(const [wins,losses]of [[0,0],[3,0],[0,4]])for(const winner of [0,1,-1]){
  assert.equal(s.flow.health,health-result.round.healthLost);
  assert.equal(result.reward.breakdown.interest,2,'neutral interest is unchanged');
  assert.equal(result.reward.breakdown.winBonus,winner===0?1:0,'existing victory gold is unchanged');
- assert.equal(result.reward.breakdown.streakBonus,Math.min(3,Math.floor(Math.max(wins,losses)/2)));
+ assert.equal(result.reward.breakdown.streakBonus,Math.min(6,Math.max(wins,losses)));
  const after=s.snapshot();assert.equal(s.settleBattle(),null);assert.deepEqual(s.snapshot(),after,'one settlement only');
  const restored=make(after);assert.deepEqual([restored.economy.winStreak,restored.economy.loseStreak,restored.flow.health],[wins,losses,s.flow.health],'saved neutral result preserves HP and streaks');
  if(restored.pendingStageReward)assert.ok(restored.claimStageReward({type:'stageChoice',rewardId:restored.pendingStageReward.id,choice:'claim'}).ok);

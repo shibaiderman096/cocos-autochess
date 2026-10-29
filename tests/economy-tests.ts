@@ -19,20 +19,20 @@ console.log('[1] 经济结算');
   assert(e.gold === 0, `初始金币应为 0，得 ${e.gold}`);
 
   const s1 = e.settleBattle(1, { winner: 0 });
-  assert(s1.winBonus === 1 && s1.interest === 0 && s1.streakBonus === 0, '首胜只获得胜利金币');
-  assert(s1.total === 1 && e.gold === 1, '首胜收入1金币');
+  assert(s1.winBonus === 1 && s1.interest === 0 && s1.streakBonus === 1, '首胜获得胜利金币及1连胜金币');
+  assert(s1.total === 2 && e.gold === 2, '首胜收入2金币');
   const s2 = e.settleBattle(2, { winner: 0 });
-  assert(s2.winStreak === 2 && s2.streakBonus === 1, '两连胜奖励1，无阶段金币');
-  assert(s2.total === 2 && e.gold === 3, '第二场收入2金币');
+  assert(s2.winStreak === 2 && s2.streakBonus === 2, '两连胜奖励2，无阶段金币');
+  assert(s2.total === 3 && e.gold === 5, '第二场收入3金币');
   const s3 = e.settleBattle(3, { winner: 1 });
-  assert(s3.winStreak === 0 && s3.loseStreak === 1 && s3.total === 0, '首败没有基础或胜利金币');
+  assert(s3.winStreak === 0 && s3.loseStreak === 1 && s3.total === 1, '首败获得1连败金币');
   for (const stage of [1,2,4,20,99]) {
     const fresh = new EconomySystem();
-    assert(fresh.settleBattle(stage,{winner:1}).total === 0, '零存款首败与阶段无关');
+    assert(fresh.settleBattle(stage,{winner:1}).total === 1, '零存款首败获得1金币，与阶段无关');
   }
   const extra = new EconomySystem(undefined,{gold:9,winStreak:0,loseStreak:0});
   const reward = extra.settleBattle(4,{winner:0,extraIncome:20});
-  assert(reward.extraIncome === 20 && reward.interest === 0 && reward.total === 21 && extra.gold === 30, '额外奖励计入总收入，不计入本场利息');
+  assert(reward.extraIncome === 20 && reward.interest === 0 && reward.total === 22 && extra.gold === 31, '额外奖励计入总收入，不计入本场利息');
   for (const gold of [0,9,10,19,20,49,50,100]) {
     const bank = new EconomySystem(undefined,{gold,winStreak:0,loseStreak:0});
     assert(bank.settleBattle(99,{winner:1}).interest === Math.min(Math.floor(gold/10),5),'利息按结算前整10金币封顶5');
@@ -57,11 +57,11 @@ console.log('[2] 利息上限');
 console.log('[3] 连胜/连败');
 {
   const e = new EconomySystem();
-  // 连胜 6 次后 bonus 应封顶 3
+  // 连胜每场1金币，6次后封顶6。
   let last;
   for (let i = 0; i < 6; i++) last = e.settleBattle(1, { winner: 0 });
   assert(e.winStreak === 6, `连胜 6，得 ${e.winStreak}`);
-  assert(last!.streakBonus === 3, `连胜6 → min(floor(6/2),3)=3，得 ${last!.streakBonus}`);
+  assert(last!.streakBonus === 6, `连胜6 → 6金币，得 ${last!.streakBonus}`);
   // 一次失败清零
   const s = e.settleBattle(1, { winner: 1 });
   assert(s.winStreak === 0 && s.loseStreak === 1, '失败应清零连胜并使连败=1');
@@ -69,7 +69,7 @@ console.log('[3] 连胜/连败');
   for (let i = 0; i < 7; i++) e.settleBattle(1, { winner: 1 });
   assert(e.loseStreak === 8, `连败 8，得 ${e.loseStreak}`);
   const s2 = e.settleBattle(1, { winner: 1 });
-  assert(s2.streakBonus === 3, `连败8 → bonus=3，得 ${s2.streakBonus}`);
+  assert(s2.streakBonus === 6, `连败8 → bonus=6，得 ${s2.streakBonus}`);
 }
 
 // ─── 4. 消费不为负 ───

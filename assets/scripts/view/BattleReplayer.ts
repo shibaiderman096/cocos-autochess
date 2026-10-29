@@ -13,10 +13,14 @@ import { BloodfiendVfx } from './BloodfiendVfx';
 import { AstralVfx } from './AstralVfx';
 import { AstralUnitVfx } from './AstralUnitVfx';
 import { ExplorerUnitVfx } from './ExplorerUnitVfx';
+import { RunicArcanaVfx } from './RunicArcanaVfx';
+import { DemonVfx } from './DemonVfx';
+import { DemonRosterVfx } from './DemonRosterVfx';
 import { ExplorerSkillVfx } from './ExplorerSkillVfx';
 import { ExplorerSpriteVfx } from './ExplorerSpriteVfx';
 import { ropeHuntPoint } from '../battle/RopeHunt';
 import { GameAudio } from './GameAudio';
+import { unitAttackSound, unitCastSound } from './UnitAudio';
 
 const { ccclass } = _decorator;
 interface MoveVisual { from: Vec3; to: Vec3; startTick: number; durationTicks: number }
@@ -47,10 +51,16 @@ export class BattleReplayer extends Component {
   private astralUnitVfx: AstralUnitVfx | null = null;
   private explorerUnitVfx: ExplorerUnitVfx | null = null;
   private explorerSkillVfx: ExplorerSkillVfx | null = null;
+  private runicVfx: RunicArcanaVfx | null = null;
+  private demonVfx: DemonVfx | null = null;
+  private demonRosterVfx: DemonRosterVfx | null = null;
   private explorerSprites: ExplorerSpriteVfx | null = null;
   private stellarKnockups = new Map<number, {tick:number;duration:number}>();
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
+    this.demonRosterVfx?.destroy();this.demonRosterVfx=null;
+    this.demonVfx?.destroy();this.demonVfx=null;
+    this.runicVfx?.destroy();this.runicVfx=null;
     this.explorerSprites?.destroy();this.explorerSprites=null;
     this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null;
     this.explorerUnitVfx?.destroy();this.explorerUnitVfx=null;
@@ -74,6 +84,16 @@ export class BattleReplayer extends Component {
 
   setFxRoot(root: Node): void {
     this.fxRoot = root;
+    const demonAssets=this.sim?.units.flatMap(u=>{const asset=DemonRosterVfx.asset(u.cfg.skillId??'');return asset?[asset]:[];})??[];
+    if(demonAssets.length)this.demonRosterVfx=new DemonRosterVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+      p=>this.boardView.cellToWorld(p.x,p.y),(id,skillId)=>this.sim.units.some(u=>u.id===id&&u.pendingCast?.skillId===skillId),demonAssets);
+    if(this.sim?.units.some(u=>u.cfg.summonOnly))
+      this.demonVfx=new DemonVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+        p=>this.boardView.cellToWorld(p.x,p.y),id=>this.sim.units.some(u=>u.id===id&&u.cfg.summonOnly&&u.hp>0&&u.shield>0));
+    if(this.sim?.units.some(u=>u.cfg.skillId==='runic_arcana'))
+      this.runicVfx=new RunicArcanaVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+        p=>this.boardView.cellToWorld(p.x,p.y),id=>!!this.sim.units.find(u=>u.id===id)?.pendingCast,
+        (from,toward,length)=>this.boardView.lineEndToWorld(from,toward,length));
     if(this.sim?.units.some(u=>u.lanternGuard||['startrail_inspiration','windward_hunt','wayward_corrosion','sand_compass','rope_shadow_hunt'].includes(u.cfg.skillId??'')))
       this.explorerSprites=new ExplorerSpriteVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
         ()=>this.sim.units,p=>this.boardView.logicalPointToWorld(p));
@@ -104,6 +124,11 @@ export class BattleReplayer extends Component {
   }
 
   private play(e: BattleEvent) {
+    this.demonRosterVfx?.play(e);
+    this.demonVfx?.play(e);
+    if(e.t==='demon_leap'||e.t==='demon_impact')this.moves.delete(e.id);
+    if(e.t==='raven_flight'||e.t==='raven_end')this.moves.delete(e.id);
+    this.runicVfx?.play(e);
     this.explorerSprites?.play(e);
     this.explorerSkillVfx?.play(e);
     if(e.t==='rope_swing'||e.t==='rope_return'){
@@ -133,6 +158,7 @@ export class BattleReplayer extends Component {
       case 'battle_start': break;
       case 'rail_shot': GameAudio.play('rail'); break;
       case 'missile': GameAudio.play('ranged_mechanical'); break;
+      case 'thorn_pull':
       case 'move': {
         const unit = this.sim.units.find(u => u.id === e.id);
         if (unit && this.boardView) this.moves.set(e.id, {
@@ -168,8 +194,7 @@ export class BattleReplayer extends Component {
       case 'attack': {
         const attacker = this.sim.units.find(unit => unit.id === e.id);
         const art = attacker && UNIT_ART[attacker.cfg.artId ?? attacker.cfg.id];
-        GameAudio.play((attacker?.cfg.range ?? 1) <= 1 ? 'melee' : art?.includes('/mechanical/') ? 'ranged_mechanical'
-          : attacker?.cfg.basicAttackFx === 'arrow' ? 'ranged_arrow' : attacker?.cfg.damageType === 'magic' ? 'ranged_magic' : 'ranged');
+        GameAudio.play(unitAttackSound(attacker?.cfg, art));
         const uv = this.unitViews.get(e.id);
         const tv = this.unitViews.get(e.target);
         if (uv && tv) {
@@ -236,10 +261,9 @@ export class BattleReplayer extends Component {
       case 'cast': {
         const caster = this.sim.units.find(unit => unit.id === e.id);
         const art = caster && UNIT_ART[caster.cfg.artId ?? caster.cfg.id];
-        GameAudio.play(art?.includes('/shadow/') ? 'cast_shadow' : art?.includes('/sunlight/') ? 'cast_sunlight'
-          : art?.includes('/astral/') ? 'cast_astral' : art?.includes('/mechanical/') ? 'cast_mechanical' : 'cast');
+        GameAudio.play(unitCastSound(e.skillId ?? caster?.cfg.skillId, art));
         if (e.duration !== undefined) {
-          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty','startrail_inspiration','wayward_corrosion','windward_hunt','sand_compass','rope_shadow_hunt'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(e.duration);
+          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty','startrail_inspiration','wayward_corrosion','windward_hunt','sand_compass','rope_shadow_hunt','runic_arcana','redhorn_fervor','hellhound_breath','abyss_verdict','infernal_axe_spin','raven_soul_theft','infernal_gunfire'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(e.duration);
           const source = this.sim.units.find(unit => unit.id === e.id);
           const path = source && UNIT_ART[source.cfg.artId ?? source.cfg.id];
           const view = this.unitViews.get(e.id);
@@ -320,6 +344,10 @@ export class BattleReplayer extends Component {
         }
         break;
       }
+      case 'revive': {
+        this.unitViews.get(e.id)?.playRevive();
+        break;
+      }
       case 'death': {
         GameAudio.play('death');
         this.stellarKnockups.delete(e.id);
@@ -351,14 +379,25 @@ export class BattleReplayer extends Component {
       if (!uv) continue;
       if (u.alive) {
         const target = u.ropeHunt ? this.boardView.logicalPointToWorld(ropeHuntPoint(u.ropeHunt,this.renderTick)) : this.boardView.cellToWorld(u.x, u.y);
+        if(u.demonLeap){
+          const leap=u.demonLeap,p=Math.max(0,Math.min(1,(this.renderTick-leap.startTick)/(leap.endTick-leap.startTick)));
+          Vec3.lerp(target,this.boardView.cellToWorld(leap.from.x,leap.from.y),this.boardView.cellToWorld(leap.to.x,leap.to.y),p);
+          target.y+=Math.sin(p*Math.PI)*this.cellSize*2.4;
+        }
+        if(u.ravenFlight){
+          const flight=u.ravenFlight,p=Math.max(0,Math.min(1,(this.renderTick-flight.startTick)/(flight.endTick-flight.startTick)));
+          Vec3.lerp(target,this.boardView.cellToWorld(flight.from.x,flight.from.y),this.boardView.cellToWorld(flight.to.x,flight.to.y),p);
+          target.y+=Math.sin(p*Math.PI)*this.cellSize*.45;
+        }
         const movement = this.moves.get(u.id);
-        if (movement && !u.ropeHunt) {
+        if (movement && !u.ropeHunt && !u.demonLeap && !u.ravenFlight) {
           const progress = Math.max(0, Math.min(1, (this.renderTick - movement.startTick) / movement.durationTicks));
           Vec3.lerp(target, movement.from, movement.to, progress);
           if (progress === 1) this.moves.delete(u.id);
         }
         uv.node.setPosition(target);
         uv.sync(u.snapshot(this.sim.tick), this.cellSize);
+        if(u.ravenFlight&&this.demonRosterVfx?.ravenReady)uv.hideRavenBody?.();
         const airborne=this.stellarKnockups.get(u.id);
         const progress=airborne?(this.renderTick-airborne.tick)/airborne.duration:1;
         if(progress>=1)this.stellarKnockups.delete(u.id);
@@ -370,8 +409,11 @@ export class BattleReplayer extends Component {
         uv.animateBloodCleave?.(cleave?Math.max(0,Math.min(1,(this.renderTick-cleave.startTick)/(cleave.endTick-cleave.startTick))):null,direction);
         if(u.cfg.skillId==='windward_hunt')uv.animateWindHunt?.(u.pendingCast?.skillId==='windward_hunt'
           ?1-u.pendingCast.remainingTicks/u.windHuntCastTicks:null);
-        if(['sand_compass','rope_shadow_hunt'].includes(u.cfg.skillId??''))
+        if(['sand_compass','rope_shadow_hunt','runic_arcana'].includes(u.cfg.skillId??''))
           uv.animateExpeditionCast?.(u.pendingCast?1-u.pendingCast.remainingTicks/u.expeditionCastTicks:null);
+        if(DemonRosterVfx.asset(u.cfg.skillId??''))uv.animateDemonSpell?.(
+          u.pendingCast?1-u.pendingCast.remainingTicks/u.expeditionCastTicks:null,
+          u.infernalSpin?Math.max(0,Math.min(1,(this.renderTick-u.infernalSpin.startTick)/(u.infernalSpin.endTick-u.infernalSpin.startTick))):null);
         if(u.cfg.skillId==='wayward_corrosion'){
           const charge=this.explorerSprites?.brewProgress(u.id,this.renderTick)??this.explorerUnitVfx?.brewProgress(u.id,this.renderTick)??null;
           uv.animateExpeditionCast?.(charge);
@@ -394,6 +436,9 @@ export class BattleReplayer extends Component {
     this.boardView.animateAstralFields?.(this.renderTick, this.tickMs);
     this.astralVfx?.update(this.renderTick, this.sim);
     this.astralUnitVfx?.update(this.renderTick);
+    this.runicVfx?.update(this.renderTick);
+    this.demonVfx?.update(this.renderTick);
+    this.demonRosterVfx?.update(this.renderTick);
     this.explorerUnitVfx?.update(this.renderTick);
     this.explorerSkillVfx?.update(this.renderTick);
     const painted=this.explorerSprites?.ready??false;
@@ -462,7 +507,7 @@ export class BattleReplayer extends Component {
     this.shadowFog = null;
   }
 
-  onDestroy(): void { this.explorerSprites?.destroy();this.explorerSprites=null; this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null; this.explorerUnitVfx?.destroy(); this.explorerUnitVfx=null; this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
+  onDestroy(): void { this.demonRosterVfx?.destroy();this.demonRosterVfx=null; this.demonVfx?.destroy();this.demonVfx=null; this.runicVfx?.destroy();this.runicVfx=null; this.explorerSprites?.destroy();this.explorerSprites=null; this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null; this.explorerUnitVfx?.destroy(); this.explorerUnitVfx=null; this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
 
   private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
     if (!this.fxRoot?.isValid) return;

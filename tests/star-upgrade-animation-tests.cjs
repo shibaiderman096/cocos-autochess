@@ -1,11 +1,11 @@
 const assert=require('node:assert/strict'),fs=require('fs'),ts=require('typescript');
 function methods(file,names){const source=ts.createSourceFile(file,fs.readFileSync(file,'utf8'),ts.ScriptTarget.ES2020,true);const cls=source.statements.find(ts.isClassDeclaration);return cls.members.filter(n=>names.includes(n.name?.getText(source))).map(n=>n.getText(source)).join('\n');}
 const stageCode=methods('assets/scripts/view/BattleStage.ts',['refreshOwnedViews']);
-const Stage=new Function(ts.transpileModule(`class Stage {${stageCode}}; return Stage;`,{compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText)();
+const Stage=new Function('GameAudio',ts.transpileModule(`class Stage {${stageCode}}; return Stage;`,{compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText)({play(){}});
 for(const phase of ['prepare','battle','settlement']){
  let plays=0;const stage=new Stage();const units=[{uid:1,star:2},{uid:2,star:3}];
  const make=star=>({displayedStar:star,setStar(s){this.displayedStar=s;},playStarUpgrade(){plays++;}});
- Object.assign(stage,{flow:{phase},owned:{all:()=>units,get:uid=>units.find(u=>u.uid===uid)},ownedViews:new Map([[1,make(1)]]),benchViews:new Set([1,2]),boardNode:{getChildByName(){}},bindOwnedTouch(){},cfgUnits(){return[];},ui:{refreshFormation(){}},resetBattle(){this.ownedViews=new Map(units.map(u=>[u.uid,make(u.star)]));},createBenchViews(){this.resetBattle();}});
+ Object.assign(stage,{flow:{phase},owned:{all:()=>units,get:uid=>units.find(u=>u.uid===uid)},ownedViews:new Map([[1,make(1)]]),benchViews:new Set([1,2]),boardNode:{getChildByName(){}},bindOwnedTouch(){},cfgUnits(){return[];},refreshEconomyUI(){},ui:{refreshFormation(){}},resetBattle(){this.ownedViews=new Map(units.map(u=>[u.uid,make(u.star)]));},createBenchViews(){this.resetBattle();}});
  stage.refreshOwnedViews();assert.equal(plays,1,'only existing upgraded UID animates in '+phase);
  stage.refreshOwnedViews();assert.equal(plays,1,'ordinary refresh does not replay');
 }

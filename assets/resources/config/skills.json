@@ -1,4 +1,360 @@
 {
+  "thornchain_pull": {
+    "id":"thornchain_pull","name":"棘链牵引","effect":"demonSkill","dmgType":"magic","power":0,"radius":0,"targeting":"nearest",
+    "castSeconds":0.4,"starDamage":[160,240,360],"thornPull":{"stunSeconds":1,"pullSeconds":0.3},
+    "description":"蓄势0.4秒后以棘链鞭击当前目标，造成{魔法+:whipDamage}魔法伤害，将其拉到自身周围最近的合法空格，并眩晕1秒。",
+    "statRows":[{"label":"鞭击伤害","value":"{魔法+:whipDamage}","stars":"160/240/360"}],
+    "mechanics":["攻击距离2，法力20/60；前摇可被控制打断，释放时目标必须仍在攻击范围内且可选中。",
+      "各星级眩晕固定1秒；拉取表现持续0.3秒，结算按命中时位置选择施法者周围距目标最近的合法空格，距离相同按行、列排序。",
+      "落点不能与目标原位置相同，不能占用存活棋子或其他位移的预定落点；没有空格时仍造成伤害和眩晕。",
+      "免控目标不受眩晕和拉取；位移会中断目标当前的施法与特殊移动。伤害受法术加成影响，击杀目标时不再拉动其尸体。"]
+  },
+  "raven_soul_theft": {
+    "id": "raven_soul_theft",
+    "name": "鸦影掠魂",
+    "effect": "demonSkill",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "lowestHp",
+    "castSeconds": 0.4,
+    "starDamage": [
+      260,
+      390,
+      1300
+    ],
+    "ravenTheft": {
+      "targetRange": 3,
+      "flightSeconds": 0.4,
+      "spellPowerAmounts": [
+        20,
+        30,
+        80
+      ]
+    },
+    "description": "蓄势0.4秒后化为乌鸦，飞向3格内当前生命值最低的敌人身旁，造成{魔法+:ravenDamage}魔法伤害，并窃取其{魔法:ravenPower}法术加成，持续至本场结束。",
+    "statRows": [
+      {
+        "label": "落地伤害",
+        "value": "{魔法+:ravenDamage}",
+        "stars": "260/390/1300"
+      },
+      {
+        "label": "法术窃取上限",
+        "value": "{魔法:ravenPower}",
+        "stars": "20%/30%/80%"
+      }
+    ],
+    "mechanics": [
+      "目标按当前生命绝对值排序，生命相同时优先近目标再按ID；仅选择3格内且有合法相邻空格的敌人。",
+      "化鸦飞行0.4秒，期间仍可被选中，不能移动普攻；控制打断后在当前合法格恢复人形，不造成伤害或窃取。",
+      "使用窃取前的法强结算落地伤害，再转移最多20/30/80个百分点的正法术加成；目标不足时仅窃取现有值，不变为负数。",
+      "多次窃取可叠加，目标死亡也不会提前归还；战斗结束双方归还，绝不写入永久成长。"
+    ]
+  },
+  "infernal_gunfire": {
+    "id": "infernal_gunfire",
+    "name": "狱火连射",
+    "effect": "demonSkill",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.3,
+    "starDamage": [
+      45,
+      65,
+      100
+    ],
+    "demonGunfire": {
+      "manaPerSecond": 20,
+      "intervalSeconds": 1,
+      "baseBullets": 3
+    },
+    "description": "满蓝后蓄势0.3秒，开启连射而不立刻消耗法力。每秒消耗20法力，向当前目标射出一轮{控制:gunBullets}发子弹，每发造成{物理+:gunDamage}物理伤害，子弹数量随攻速提高。",
+    "statRows": [
+      {
+        "label": "单发伤害",
+        "value": "{物理+:gunDamage}",
+        "stars": "45/65/100"
+      },
+      {
+        "label": "每轮子弹",
+        "value": "{控制:gunBullets}",
+        "stars": "3/3/3"
+      }
+    ],
+    "mechanics": [
+      "每轮子弹数=max(1,round(3×当前攻速÷基础攻速))；基础攻速取角色原始配置，每轮实时计算。",
+      "满蓝启动不清空法力；前摇后每整秒扣20法力并射击，法力不足20立即结束，无目标时仍照常耗蓝。",
+      "前摇与连射期间不移动、不普攻、不回蓝，受控制中断并保留剩余法力；目标丢失后使用普通0.5秒重新锁敌规则。",
+      "同一轮所有子弹对当前目标结算，属于技能伤害，不触发普攻回蓝或普攻附加机制。"
+    ]
+  },
+  "infernal_axe_spin": {
+    "id": "infernal_axe_spin",
+    "name": "狱斧回旋",
+    "effect": "demonSkill",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 1,
+    "targeting": "nearest",
+    "castSeconds": 0.4,
+    "starDamage": [
+      240,
+      360,
+      1200
+    ],
+    "infernalSpin": {
+      "healPerTarget": [
+        70,
+        105,
+        360
+      ],
+      "durationSeconds": 0.6
+    },
+    "description": "蓄势0.4秒后原地回旋一周，对周围1格敌人各造成{物理+:spinDamage}物理伤害，每命中一名敌人回复自身{治疗+:spinHeal}生命。",
+    "statRows": [
+      {
+        "label": "回旋伤害",
+        "value": "{物理+:spinDamage}",
+        "stars": "240/360/1200"
+      },
+      {
+        "label": "每目标治疗",
+        "value": "{治疗+:spinHeal}",
+        "stars": "70/105/360"
+      }
+    ],
+    "mechanics": [
+      "旋转持续0.6秒；每名敌人每次施放最多命中一次，按顺时针扫过结算，治疗受法强加成。",
+      "前摇与回旋可被控制打断；旋转期间不能移动、普攻或回蓝。已经命中的伤害和治疗保留，后续扫击停止。",
+      "治疗随有效存活目标的命中结算，包含护盾吸收的命中；未命中不治疗，不能复活同时阵亡的施法者。"
+    ]
+  },
+  "redhorn_fervor": {
+    "id": "redhorn_fervor",
+    "name": "赤角狂热",
+    "effect": "demonSkill",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.4,
+    "redhornFervor": {
+      "attackSpeedBonuses": [
+        0.4,
+        0.6,
+        0.9
+      ],
+      "lifestealBonuses": [
+        0.15,
+        0.2,
+        0.3
+      ],
+      "durationSeconds": 5
+    },
+    "description": "蓄势0.4秒后强化自身，获得{攻速+:impSpeed}攻速与{治疗:impLifesteal}全能吸血，持续5秒。",
+    "statRows": [
+      {
+        "label": "强化攻速",
+        "value": "{攻速+:impSpeed}",
+        "stars": "40%/60%/90%"
+      },
+      {
+        "label": "全能吸血",
+        "value": "{治疗:impLifesteal}",
+        "stars": "15%/20%/30%"
+      }
+    ],
+    "mechanics": [
+      "攻速受法强加成，吸血不受法强加成；按施法完成时的法强快照。再次施放刷新5秒，不叠加。",
+      "强化期间仍正常回蓝；前摇可被硬控或恐惧打断，已有强化保留至原时限。"
+    ]
+  },
+  "hellhound_breath": {
+    "id": "hellhound_breath",
+    "name": "狱焰吐息",
+    "effect": "demonSkill",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 1,
+    "targeting": "nearest",
+    "castSeconds": 0.6,
+    "starDamage": [
+      180,
+      270,
+      405
+    ],
+    "hellhoundBreath": {
+      "angleDegrees": 120
+    },
+    "burn": {
+      "durationSeconds": 5,
+      "intervalSeconds": 1,
+      "maxHpFraction": 0.02,
+      "dmgType": "magic"
+    },
+    "description": "蓄势0.6秒后朝当前目标喷吐狱焰，对前方1格扇形内敌人造成{物理+:houndDamage}物理伤害，并施加持续5秒的灼烧，每秒造成其最大生命值{魔法+:houndBurn}的魔法伤害。",
+    "statRows": [
+      {
+        "label": "吐息伤害",
+        "value": "{物理+:houndDamage}",
+        "stars": "180/270/405"
+      },
+      {
+        "label": "每秒生命伤害",
+        "value": "{魔法+:houndBurn}",
+        "stars": "2%/2%/2%"
+      }
+    ],
+    "mechanics": [
+      "使用六边形距离1和120度扇形，包含扇形边缘相邻格；蓄力期间不能移动普攻。",
+      "同一魔犬重复灼烧刷新5秒，不同魔犬独立；每秒一次共5次，灼烧沿用魔法加成、伤害修正、吸血及参与击杀结算，施法者死亡后仍持续。"
+    ]
+  },
+  "abyss_verdict": {
+    "id": "abyss_verdict",
+    "name": "深渊裁决",
+    "effect": "demonSkill",
+    "dmgType": "physical",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.7,
+    "starDamage": [
+      300,
+      450,
+      2500
+    ],
+    "abyssVerdict": {
+      "missingHealthFractions": [
+        0.25,
+        0.35,
+        0.5
+      ],
+      "healAmounts": [
+        200,
+        300,
+        2000
+      ]
+    },
+    "description": "蓄势0.7秒后重斩当前目标，造成{物理+:verdictDamage}物理伤害，并附加其已损失生命值{真实:verdictMissing}的真实伤害。若本次技能击杀目标，回复自身{治疗+:verdictHeal}生命。",
+    "statRows": [
+      {
+        "label": "重斩伤害",
+        "value": "{物理+:verdictDamage}",
+        "stars": "300/450/2500"
+      },
+      {
+        "label": "已损生命真伤",
+        "value": "{真实:verdictMissing}",
+        "stars": "25%/35%/50%"
+      },
+      {
+        "label": "击杀治疗",
+        "value": "{治疗+:verdictHeal}",
+        "stars": "200/300/2000"
+      }
+    ],
+    "mechanics": [
+      "真实伤害以命中前、物理伤害前的已损失生命快照计算，不受物理或法强加成；仍参与正常增减伤与护盾结算。",
+      "本次物理或真实伤害直接击杀才治疗，合计只触发一次；治疗受法强加成，不能复活同时阵亡的施法者。",
+      "前摇可被控制打断；完成时目标已死亡、不可选中或离开近战射程，则本次施法落空。"
+    ]
+  },
+  "infernal_cataclysm": {
+    "id": "infernal_cataclysm",
+    "name": "炼狱天坠",
+    "effect": "demonLeap",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "castSeconds": 0.6,
+    "starDamage": [
+      250,
+      450,
+      800,
+      2400
+    ],
+    "stunSeconds": [
+      1,
+      1.25,
+      1.5,
+      2
+    ],
+    "demonLeap": {
+      "radii": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "airborneSeconds": 0.65
+    },
+    "description": "蓄势0.6秒后跃向敌军最密集的空格，落地对自身半径{控制:demonRadius}格内敌人造成{魔法+:demonDamage}魔法伤害并击飞{控制:demonKnockup}秒。",
+    "statRows": [
+      {
+        "label": "落地伤害",
+        "value": "{魔法+:demonDamage}",
+        "stars": "250/450/800/2400"
+      },
+      {
+        "label": "击飞持续",
+        "value": "{控制:demonKnockup}秒",
+        "stars": "1/1.25/1.5/2秒"
+      },
+      {
+        "label": "震击半径",
+        "value": "{控制:demonRadius}格",
+        "stars": "1/2/3/4格"
+      }
+    ],
+    "mechanics": [
+      "召唤专用四星，无法携带装备、免疫控制且不计入任何羁绊；起跳前按当前敌军密度选取合法落点。",
+      "阿撒洛斯跃空0.65秒；跳跃期间仍可被选中，落地前死亡不会造成震击。"
+    ]
+  },
+  "runic_arcana": {
+    "id": "runic_arcana",
+    "name": "秘典·星环咏叹",
+    "dmgType": "magic",
+    "power": 0,
+    "radius": 0,
+    "targeting": "nearest",
+    "effect": "runicArcana",
+    "castSeconds": 0.4,
+    "starDamage": [
+      80,
+      120,
+      500
+    ],
+    "runicArcana": {
+      "missileCount": 3,
+      "maxRunes": 3,
+      "spellPowerPerRune": [
+        10,
+        15,
+        25
+      ],
+      "waveDamage": [
+        700,
+        1050,
+        3000
+      ],
+      "chargeSeconds": 1.5,
+      "length": 7,
+      "width": 1
+    },
+    "description": "被动：获得当前人数最多的已激活非职业羁绊，并计入人数，准备阶段更新、开战锁定。\n主动：蓄势 0.4 秒后向当前目标发射 3 枚飞弹，每枚造成 {魔法+:runeMissile} 魔法伤害，获得 1 枚符文，每枚符文提供 {魔法:runePower}% 法术加成。\n满 3 符文后的下次施法改为蓄力 1.5 秒，释放长 7 格、宽 1 格的能量波，造成 {魔法+:runeWave} 魔法伤害，成功后消耗全部符文，受控打断保留符文。",
+    "statRows": [
+      {"label":"单枚飞弹伤害","value":"{魔法+:runeMissile}","stars":"80/120/500"},
+      {"label":"每枚符文法术加成","value":"{魔法:runePower}%","stars":"10%/15%/25%"},
+      {"label":"能量波伤害","value":"{魔法+:runeWave}","stars":"700/1050/3000"}
+    ],
+    "mechanics": ["羁绊排除自身的同名角色；准备阶段更新，开战锁定；并列按羁绊配置顺序。", "符文仅本场保留；成功施法后获取/消耗，控制打断保留符文，已消耗法力不返还。"]
+  },
   "rope_shadow_hunt": {
     "id":"rope_shadow_hunt","name":"索影巡猎","effect":"ropeHunt","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
     "starDamage":[90,135,400],"ropeHunt":{"durationSeconds":3,"intervalSeconds":0.3,"shotCount":10},
@@ -1442,58 +1798,6 @@
       1,
       1.5,
       5
-    ]
-  },
-  "corona_transit": {
-    "id": "corona_transit",
-    "name": "日冕跃迁",
-    "dmgType": "physical",
-    "effect": "sunlight",
-    "power": 0,
-    "radius": 0,
-    "targeting": "nearest",
-    "castSeconds": 0,
-    "starDamage": [
-      90,
-      135,
-      400
-    ],
-    "sunlight": {
-      "kind": "transit",
-      "counts": [
-        2,
-        4,
-        10
-      ],
-      "intervalSeconds": 0.2,
-      "finalDamage": [
-        450,
-        675,
-        600
-      ],
-      "recastDamageLoss": 0.2,
-      "recastDamageLossCap": 0.4
-    },
-    "description": "跃向目标并连续斩击{控制:count}次，每0.2秒造成{物理+:dmg}物理伤害，最后一击造成{物理+:final}物理伤害。\n\n击杀目标后，跃向最近的敌人并再次施放此技能。本次连锁内，每次重放降低{控制:recastLoss}%伤害（至多{控制:recastCap}%）。",
-    "statRows": [
-      {
-        "label": "连击次数",
-        "value": "{控制:count}",
-        "stars": "2/4/10"
-      },
-      {
-        "label": "普通段伤害",
-        "value": "{物理+:dmg}",
-        "stars": "90/135/400"
-      },
-      {
-        "label": "最后一击伤害",
-        "value": "{物理+:final}",
-        "stars": "450/675/600"
-      }
-    ],
-    "mechanics": [
-      "技能按星级基础物理伤害结算，受物理加成影响；普通攻击独立于主动技能。"
     ]
   },
   "monster_blast": {

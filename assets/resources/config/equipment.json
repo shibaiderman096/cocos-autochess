@@ -215,6 +215,7 @@
     "attackSpeedPerAttack": 0,
     "specialShopOnly": true,
     "traitChoice": true,
+    "chestDrop": true,
     "description": "+100最大生命，+1法力值/秒。\n万象共鸣：首次穿戴时，在下方商店区四选一羁绊，优先出现已激活且上阵人数较多的羁绊。\n选定羁绊永久绑定此件装备，当前携带者获得；卸下失去，转移后新携带者获得。",
     "effectDescription": "万象共鸣：首次穿戴时，在下方商店区四选一羁绊，优先出现已激活且上阵人数较多的羁绊。\n选定羁绊绑定此件装备，当前携带者获得；卸下失去，转移后新携带者获得。",
     "icon": "art/equipment/trait_emblem/spriteFrame",

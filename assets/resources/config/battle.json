@@ -1,11 +1,66 @@
 {
+  "summons": [
+    {
+      "id": "azaroth",
+      "name": "炼狱魔君·阿撒洛斯",
+      "cost": 0,
+      "summonOnly": true,
+      "controlImmune": true,
+      "role": "tank",
+      "damageType": "magic",
+      "artId": "azaroth",
+      "hp": 900,
+      "atk": 50,
+      "armor": 40,
+      "mr": 40,
+      "atkSpeed": 0.7,
+      "range": 1,
+      "moveTicks": 6,
+      "startMana": 0,
+      "maxMana": 100,
+      "manaPerHit": 10,
+      "skillId": "infernal_cataclysm",
+      "physicalPower": 0,
+      "spellPower": 0,
+      "critChance": 0.25,
+      "lifesteal": 0,
+      "damageAmp": 0,
+      "damageReduction": 0,
+      "starStats": {
+        "hp": [
+          900,
+          1800,
+          3200,
+          6000
+        ],
+        "atk": [
+          50,
+          90,
+          150,
+          300
+        ],
+        "armor": [
+          40,
+          60,
+          90,
+          150
+        ],
+        "mr": [
+          40,
+          60,
+          90,
+          150
+        ]
+      }
+    }
+  ],
   "boardWidth": 7,
   "boardHeight": 8,
   "ownRows": 4,
   "maxTicks": 900,
   "tickMs": 50,
   "movementCellsPerSecond": 2,
-  "targeting": { "tankDistanceBias": 1, "retargetSeconds": 0.5 },
+  "targeting": { "retargetSeconds": 0.5 },
   "combatSeconds": 30,
   "overtime": {
     "seconds": 15,
@@ -41,6 +96,68 @@
   },
   "legendaryThreeStarBonusHp": 5000,
   "traits": [
+    {
+      "id": "demon",
+      "name": "恶魔",
+      "glyph": "魔",
+      "pendingMembers": false,
+      "description": "恶魔们将从地狱召唤炼狱魔君·阿撒洛斯。场上恶魔每颗星都为魔君提供额外最大生命。阿撒洛斯不占人口、不计入羁绊，无法携带装备、免疫控制。",
+      "members": ["redhorn_imp", "hellflame_hound", "saien", "infernal_axe_guard", "raven_succubus", "crimson_gunslinger", "thornchain_succubus"],
+      "breakpoints": [
+        {
+          "count": 3,
+          "tier": "bronze",
+          "demon": {
+            "unitId": "azaroth",
+            "star": 1,
+            "healthPerStar": 150,
+            "castShieldFraction": 0,
+            "shieldSeconds": 4,
+            "takedownPower": 0,
+            "powerPerSecond": 0
+          }
+        },
+        {
+          "count": 5,
+          "tier": "silver",
+          "demon": {
+            "unitId": "azaroth",
+            "star": 2,
+            "healthPerStar": 220,
+            "castShieldFraction": 0.3,
+            "shieldSeconds": 4,
+            "takedownPower": 0,
+            "powerPerSecond": 0
+          }
+        },
+        {
+          "count": 7,
+          "tier": "gold",
+          "demon": {
+            "unitId": "azaroth",
+            "star": 3,
+            "healthPerStar": 300,
+            "castShieldFraction": 0.3,
+            "shieldSeconds": 4,
+            "takedownPower": 5,
+            "powerPerSecond": 0
+          }
+        },
+        {
+          "count": 10,
+          "tier": "prismatic",
+          "demon": {
+            "unitId": "azaroth",
+            "star": 4,
+            "healthPerStar": 450,
+            "castShieldFraction": 0.3,
+            "shieldSeconds": 4,
+            "takedownPower": 5,
+            "powerPerSecond": 3
+          }
+        }
+      ]
+    },
     {
       "id": "explorer",
       "name": "探险家",
@@ -718,8 +835,7 @@
         "phinia",
         "aurelia",
         "celine",
-        "oris",
-        "seraphiel"
+        "oris"
       ],
       "pendingMembers": false,
       "breakpoints": [

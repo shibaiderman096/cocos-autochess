@@ -51,6 +51,11 @@ def verify(apk, project):
         images += ["art/equipment/stat_boost_" + stat + "_" + tier for stat in ["health", "physical", "spell"]
                    for tier in ["small", "medium", "large", "super"]]
         images += ["art/fx/player_damage/player_damage_energy", "art/ui_m2/streak_win", "art/ui_m2/streak_loss"]
+        images += ["art/units/demon/" + name for name in ["azaroth", "redhorn_imp", "hellflame_hound", "saien",
+                                                            "infernal_axe_guard", "raven_succubus", "crimson_gunslinger", "thornchain_succubus"]]
+        images += ["art/units/astral/star_ring_sage"]
+        images += ["art/fx/" + name for name in ["demon_azaroth", "redhorn_fervor", "hellhound_breath", "abyss_verdict",
+                                               "infernal_axe", "raven_soul_theft", "infernal_gunfire", "thornchain_pull", "star_ring_sage"]]
         for image in images:
             assert image + "/spriteFrame" in paths, "Missing packaged sprite: " + image
             uuid = paths[image]
@@ -58,11 +63,14 @@ def verify(apk, project):
         runtime = archive.read("assets/assets/main/index.js").decode("utf-8")
         for token in ["milu_star_leap", "stellar_bulwark", "milu_skill_sheet", "stellar_skill_sheet", "GameLoadingOverlay",
                       "bloodfiend_revel", "mechanical_overclock", "blood_cleave_charge", "attackWindupSeconds",
-                      "equipmentCredit", "flyChestSupplies", "grantExplorerReward", "openExplorerChest",
+                      "grantExplorerReward", "openExplorerChest",
                       "flyMixedChestRewards", "explorerGoldThreshold", "equipmentDescriptionRichText",
-                      "forgeEnhance", "dicePick_", "validDicePicks", "beginDiceBet", "restoreMerchantServices",
-                      "stageShopQualityRates", "explorerLootQualityRates", "setLootCaption"]:
+                      "forgeEnhance", "forgeEnhanceTen", "FORGE_ATTACK_SPEED_CAP", "dicePick_", "validDicePicks", "beginDiceBet", "restoreMerchantServices",
+                      "stageShopQualityRates", "explorerLootQualityRates", "setLootCaption", "moveSummon", "summonPositions",
+                      "demonPosition", "thornchain_pull", "runic_missiles", "explorerLootStarRates", "chestUnitValue"]:
             assert token in runtime, "Missing packaged behavior: " + token
+        assert "tankDistanceBias" not in runtime, "Obsolete distance-discount targeting was packaged"
+        assert "art/units/sunlight/seraphiel" not in paths, "Removed Seraphiel portrait was packaged"
         main = json.loads(archive.read("assets/assets/main/cc.config.json"))
         scenes = sorted(main["scenes"])
         assert scenes == ["db://assets/floating-ruins.scene", "db://assets/main.scene"], scenes

@@ -1,6 +1,14 @@
 {
   "version": "enemy-roles-v1",
   "units": {
+    "thornchain_succubus":{"role":"melee_dps","tags":["control"],"source":"explicit","confidence":"high","reason":"2费魔法战士，以棘链鞭击并拉取单体至身旁空格，固定眩晕1秒。"},
+    "raven_succubus":{"role":"assassin","tags":["teleport","burst"],"source":"explicit","confidence":"high","reason":"4费魔法刺客，化鸦跃向3格内最低生命目标并窃取法术加成。"},
+    "crimson_gunslinger":{"role":"ranged_dps","tags":["burst"],"source":"explicit","confidence":"high","reason":"2费物理神射手，逐秒耗蓝连射，子弹数量受攻速提升。"},
+    "infernal_axe_guard":{"role":"tank","tags":["aoe","healing","durable"],"source":"explicit","confidence":"high","reason":"4费物理坦克，原地回旋逐目标命中并按法强治疗自身。"},
+    "redhorn_imp":{"role":"melee_dps","tags":["burst"],"source":"explicit","confidence":"high","reason":"1费物理战士，蓄势后获得法强攻速及全能吸血。"},
+    "hellflame_hound":{"role":"tank","tags":["aoe","durable"],"source":"explicit","confidence":"high","reason":"3费物理坦克，前方扇形吐息并施加独立灼烧。"},
+    "saien":{"role":"melee_dps","tags":["burst"],"source":"explicit","confidence":"high","reason":"5费物理战士，单体重斩附加已损生命真实伤害，击杀恢复生命。"},
+    "star_ring_sage":{"role":"mage","tags":["aoe"],"source":"explicit","confidence":"high","reason":"7费魔法术士，飞弹积攒法强符文，长蓄力释放直线能量波。"},
     "hushrope_ranger":{"role":"ranged_dps","tags":["burst","dash"],"source":"explicit","confidence":"high","reason":"5费物理术士，以板边绳索回旋配合连续物理射击，全程可被选中。"},
     "sandsea_navigator":{"role":"support","tags":["shield","aoe"],"source":"explicit","confidence":"high","reason":"4费近战物理术士，范围法强护盾与前方半圆物理爆发。"},
     "wayward_alchemist":{"role":"mage","tags":[],"source":"explicit","confidence":"high","reason":"3费魔法术士，优先未选敌人，持续魔法伤害可独立叠层。"},
@@ -260,16 +268,6 @@
       "source": "explicit",
       "confidence": "high",
       "reason": "Authored sunlight roster: 奥瑞斯"
-    },
-    "seraphiel": {
-      "role": "melee_dps",
-      "tags": [
-        "teleport",
-        "burst"
-      ],
-      "source": "explicit",
-      "confidence": "high",
-      "reason": "塞拉菲尔：物理战士，跃迁连斩与击杀追击。"
     },
     "crimson_riftclaw": {
       "role": "tank",

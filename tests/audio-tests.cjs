@@ -46,7 +46,7 @@ try {
   const manager = persisted[0].components[0], voices = Object.values(manager.voices).flat();
   assert.equal(persisted.length, 1); assert.equal(persisted[0].parent, scene);
   GameAudio.mount(new Node('stage')); assert.equal(persisted.length, 1, 'scene changes reuse the persistent player');
-  assert.equal(voices.length, 10); assert.equal(pending.length, 45);
+  assert.equal(voices.length, 10); assert.equal(pending.length, 65);
   GameAudio.play('buy'); input.emit('touch'); GameAudio.play('buy');
   assert.equal(played.length, 0, 'unloaded sounds are dropped without a playback backlog');
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'licenses/audio/sources.json'), 'utf8'));
@@ -78,6 +78,15 @@ try {
   const variants = [];
   for (let i = 0; i < 4; i++) { now += 200; GameAudio.play('melee'); variants.push(played.at(-1).clip.name); voices.forEach(v => v.stop()); }
   assert.equal(new Set(variants).size, 3, 'repeated attacks rotate through three sounds'); assert.equal(variants[0], variants[3]);
+  const swords = [];
+  for (let i = 0; i < 4; i++) { now += 250; GameAudio.play('sword'); swords.push(played.at(-1).clip.name); voices.forEach(v => v.stop()); }
+  assert.equal(new Set(swords).size, 3, 'sword attacks rotate three distinct recordings');
+  assert.equal(swords[0], swords[3]);
+  now += 1000;
+  const beforeStorm = played.length;
+  for (const id of ['sword', 'claw', 'heavy', 'mechanical_melee', 'bite', 'chain']) GameAudio.play(id);
+  assert.equal(played.length, beforeStorm + 1, 'different weapon identities still share the combat throttle');
+  assert.equal(manager.voices.ui.filter(v => v.playing).length, 0, 'weapon sounds cannot occupy UI voices');
   GameAudio.setVolume(99); assert.equal(GameAudio.volume, 1); GameAudio.setVolume(NaN); assert.equal(GameAudio.volume, 1);
   GameAudio.setVolume(-1); assert.equal(GameAudio.volume, 0);
   // Children may already be queued for destruction when the persistent parent tears down.
@@ -95,7 +104,7 @@ try {
     assert.ok(!uuids.has(meta.uuid)); uuids.add(meta.uuid);
     assert.ok(fs.readFileSync(path.join(root, 'licenses/audio', sound.pack + '.txt'), 'utf8').includes('CC0'));
   }
-  assert.ok(total < 512 * 1024, 'small SFX budget');
+  assert.ok(total < 768 * 1024, 'small SFX budget including weapon and skill identities');
   console.log(`PASS audio: ${manifest.sounds.length} licensed/imported assets (${total} bytes), gesture/load gates, bounded voices, throttling, variants, settlement priority, mute persistence, background and destruction`);
 } finally { Date.now = realNow; }
 
@@ -114,3 +123,33 @@ replayer.damageNumbers = false; replayer.healingNumbers = false;
 replayer.consumeEvents(); replayer.consumeEvents();
 assert.deepEqual(sounds, ['melee', 'ranged', 'cast', 'hit', 'heal']);
 console.log('PASS audio replay: melee/ranged/cast/critical/heal from actual events; consumed once; unaffected by hidden numbers');
+
+const roster = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/units.json'), 'utf8'));
+const skills = JSON.parse(fs.readFileSync(path.join(root, 'assets/resources/config/skills.json'), 'utf8'));
+const { unitAttackSound, unitCastSound } = harness.load(path.join(root, 'assets/scripts/view/UnitAudio.ts'));
+for (const unit of roster) {
+  assert.ok(!['melee', 'ranged'].includes(unitAttackSound(unit)), `weapon identity missing for ${unit.id}`);
+  assert.notEqual(unitCastSound(unit.skillId), 'cast', `skill identity missing for ${unit.id}`);
+}
+for (const skill of Object.keys(skills)) assert.notEqual(unitCastSound(skill), 'cast', `unmapped skill ${skill}`);
+const cases = [
+  ['crimson_gunslinger', 'ranged_mechanical', 'ranged_mechanical'],
+  ['xiya', 'ranged_arrow', 'ranged_arrow'],
+  ['ghostflame_blade', 'sword', 'cast_fire'],
+  ['gravity_executor', 'heavy', 'cast_gravity'],
+  ['crimson_devourer', 'bite', 'cast_ice'],
+  ['thornchain_succubus', 'chain', 'chain'],
+  ['wayward_alchemist', 'ranged_magic', 'cast_corrosion'],
+  ['arc_repairer', 'ranged_mechanical', 'cast_blessing'],
+];
+for (const [id, attack, cast] of cases) {
+  const cfg = roster.find(unit => unit.id === id), replay = new BattleReplayer();
+  replay.sim = { units: [{ id: 1, cfg }], events: [
+    { t: 'attack', id: 1, target: 2 }, { t: 'cast', id: 1, target: 2, skillId: cfg.skillId, duration: 0 },
+  ] };
+  sounds.length = 0; replay.consumeEvents(); replay.consumeEvents();
+  assert.deepEqual(sounds, [attack, cast], `${id}: real replay uses its weapon and skill once`);
+}
+assert.equal(unitAttackSound({ id: 'future', range: 4, basicAttackFx: 'arrow' }), 'ranged_arrow');
+assert.equal(unitCastSound('future', 'art/units/shadow/future'), 'cast_shadow');
+console.log(`PASS unit audio: ${roster.length} roster weapons, ${Object.keys(skills).length} skills, replay identities, gun/arrow distinction and future-unit fallbacks`);

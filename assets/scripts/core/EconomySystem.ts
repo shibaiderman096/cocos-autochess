@@ -5,7 +5,7 @@
  *   2. 阶段固定金币为 0
  *   3. 计算胜利奖励（胜 +1 / 负 +0 / 平 +0）
  *   4. 计算存款利息 = min(floor(结算前余额 × 0.1), 5)
- *   5. 计算连胜/连败奖励 = min(floor(计数 / 2), 3)
+ *   5. 计算连胜/连败奖励 = min(计数, 6)
  *   6. 加入奇遇/其他额外收入后入账
  *
  * 平局处理：按现有项目规则，BattleSim 超时判 winner = -1（平局）。
@@ -30,7 +30,7 @@ export interface EconomyConfig {
 export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
   interestCap: 5,
   interestRate: 0.1,
-  streakCap: 3,
+  streakCap: 6,
   winBonus: 1,
   initialGold: 0,
 };
@@ -39,6 +39,7 @@ export const DEFAULT_ECONOMY_CONFIG: EconomyConfig = {
 export const EARLY_STAGE_GOLD: Readonly<Record<number, number>> = { 2: 5, 3: 5 };
 
 export interface BattleOutcome {
+  interestGold?: number;
   /** 0 = 己方胜，1 = 敌方胜，-1 = 平局 */
   winner: number;
   /** Encounter and other one-time income; excluded from this round's interest. */
@@ -69,6 +70,7 @@ export interface IncomePreview {
 
 export class EconomySystem {
   gold: number;
+  unlimitedInterest = false;
   winStreak = 0;
   loseStreak = 0;
 
@@ -99,7 +101,10 @@ export class EconomySystem {
     if (!Number.isSafeInteger(floor) || floor < 1 || ![-1, 0, 1].includes(outcome.winner)) throw new Error('Invalid settlement input');
     const extraIncome = outcome.extraIncome ?? 0;
     if (!Number.isSafeInteger(extraIncome) || extraIncome < 0) throw new Error('Invalid extra income');
-    const projected = extraIncome + this.config.winBonus + this.config.interestCap + this.config.streakCap;
+    const interestGold = outcome.interestGold ?? this.gold;
+    if (!Number.isSafeInteger(interestGold)||interestGold<0) throw new Error('Invalid interest wallet');
+    const interest = Math.min(this.unlimitedInterest ? Math.floor(interestGold / 10) : Math.floor(interestGold * this.config.interestRate), this.unlimitedInterest ? Number.MAX_SAFE_INTEGER : this.config.interestCap);
+    const projected = extraIncome + this.config.winBonus + interest + this.config.streakCap;
     if (!Number.isFinite(projected) || projected > Number.MAX_SAFE_INTEGER - this.gold) throw new Error('Settlement exceeds safe range');
     // 1. 先更新连胜/连败（在计算奖励之前）
     if (outcome.countsForStreak !== false && outcome.winner === 0) {
@@ -114,12 +119,9 @@ export class EconomySystem {
     // 2~5. 计算各项收入
     const goldBefore = this.gold;
     const winBonus = outcome.winner === 0 ? this.config.winBonus : 0;
-    const interest = Math.min(
-      Math.floor(goldBefore * this.config.interestRate),
-      this.config.interestCap,
-    );
+
     const streakBonus = Math.min(
-      Math.floor(Math.max(this.winStreak, this.loseStreak) / 2),
+      Math.max(this.winStreak, this.loseStreak),
       this.config.streakCap,
     );
     const total = winBonus + interest + streakBonus + extraIncome;
@@ -155,10 +157,14 @@ export class EconomySystem {
     return { gold: this.gold, winStreak: this.winStreak, loseStreak: this.loseStreak };
   }
   /** Use the settlement path on detached wallets so displayed projections cannot pay rewards. */
-  preview(floor:number,winExtra=0,countsForStreak=true):IncomePreview {
+  preview(floor:number,winExtra=0,countsForStreak=true,interestGold?:number):IncomePreview {
     const current=Math.max(this.winStreak,this.loseStreak),state=this.snapshot();
-    return {...state,streakBonus:Math.min(Math.floor(current/2),this.config.streakCap),progress:Math.min(current,this.config.streakCap*2),progressMax:Math.max(1,this.config.streakCap*2),
-      win:new EconomySystem(this.config,state).settleBattle(floor,{winner:0,extraIncome:winExtra,countsForStreak}),
-      loss:new EconomySystem(this.config,state).settleBattle(floor,{winner:1,countsForStreak})};
+    const project=(winner:number,extraIncome=0)=>{
+      const wallet=new EconomySystem(this.config,state);wallet.unlimitedInterest=this.unlimitedInterest;
+      return wallet.settleBattle(floor,{winner,extraIncome,countsForStreak,interestGold});
+    };
+    return {...state,streakBonus:Math.min(current,this.config.streakCap),progress:Math.min(current,this.config.streakCap),progressMax:Math.max(1,this.config.streakCap),
+      win:project(0,winExtra),
+      loss:project(1)};
   }
 }

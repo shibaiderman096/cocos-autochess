@@ -1,0 +1,8 @@
+battle-artisticdude
+Author: artisticdude (uploaded by Ogrebane)
+Source: https://opengameart.org/content/battle-sound-effects
+Download: https://opengameart.org/sites/default/files/battle_sound_effects_0.zip
+License: CC0-1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+Retrieved: 2026-10-29
+Processing: Trim leading silence; mono 44.1kHz MP3, loudnorm -22 LUFS / -4 dBTP; 25ms end fade; pad to 180ms; CBR 128kbps without Xing/ID3 for Android frame resync.

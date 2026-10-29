@@ -130,7 +130,7 @@ export class MainMenu extends Component {
       g.close(); g.fillColor = new Color(20 + row * 5, 54 + row * 3, 65 + row * 4, 235); g.fill();
       g.strokeColor = new Color(89, 145, 152, 160); g.lineWidth = 1; g.stroke();
     }
-    ['helion', 'seraphiel', 'oris'].forEach((id, i) => {
+    ['helion', 'star_ring_sage', 'oris'].forEach((id, i) => {
       const node = new Node(`menuHero_${id}`); arena.addChild(node); node.setPosition((i - 1) * 142, i === 1 ? 48 : 12, 0);
       node.addComponent(UITransform).setContentSize(i === 1 ? 258 : 220, i === 1 ? 258 : 220);
       const sprite = node.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM;

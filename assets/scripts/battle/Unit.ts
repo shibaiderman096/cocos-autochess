@@ -91,6 +91,8 @@ export class Unit {
   lanternGuard?: {maxArmor: number; maxSpeedPenalty: number; physicalPowerPerArmor: number};
   windHuntUntilTick = 0;
   corrosionTargets = new Set<number>();
+  runicRunes = 0;
+  runicPower = 0;
   windHuntCastTicks = 1;
   expeditionCastTicks = 1;
   windHuntSpeedBonus = 0;
@@ -111,14 +113,14 @@ export class Unit {
   }
   atkCd = 0;
   attackTargetId: number | null = null;
-  /** Absolute tick; losing a lock waits one current basic-attack interval. */
+  /** Absolute tick; ordinary target reacquisition uses the configured fixed delay. */
   retargetAtTick = 0;
   blockedTargetSinceTick: number | null = null;
   moveCd = 0;
   alive = true;
   star = 1;
   skillScale = 1;
-  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; direction?: {x:number;y:number}; nextHealTick?: number; shotsRemaining?: number } | null = null;
+  pendingCast: { skillId: string; remainingTicks: number; targetId?: number; direction?: {x:number;y:number}; nextHealTick?: number; shotsRemaining?: number; runicWave?: boolean } | null = null;
   burns: BurnRuntime[] = [];
   empoweredAttacks = 0;
   permanentEmpower = false;
@@ -127,6 +129,11 @@ export class Unit {
   priorityTarget: number | null = null;
   /** Absolute attacks/second added to the base: +5% means +0.05. */
   attackSpeedBonus = 0;
+  demonFervor: {untilTick:number;attackSpeedBonus:number;lifestealBonus:number}|null=null;
+  infernalSpin: import('./types').InfernalSpinRuntime|null=null;
+  ravenFlight: import('./types').RavenFlightRuntime|null=null;
+  demonGunfire: import('./types').DemonGunfireRuntime|null=null;
+  get demonFervorActive():boolean{return this.alive&&this.hp>0&&!!this.demonFervor&&this.combatTick<this.demonFervor.untilTick;}
   inspirations = new Map<number, import('./types').InspirationRuntime>();
   get inspirationAttackSpeedBonus(): number {
     if(!this.alive||this.hp<=0)return 0;
@@ -154,8 +161,11 @@ export class Unit {
   permanentPhysicalPower = 0;
   soulLampHealth = 0;
   maxHpGrowthMultiplier = 1;
+  /** Same-star encounter health before permanent, equipment, trait and skill gains. */
+  baseMaxHp: number;
+  demonLeap: import('./types').DemonLeapRuntime | null = null;
   equipmentCastSpeedUntil = new Map<number, number>();
-  get crowdControlImmune(): boolean { return this.equipment.some(item => item.crowdControlImmune); }
+  get crowdControlImmune(): boolean { return this.cfg.controlImmune===true || this.equipment.some(item => item.crowdControlImmune); }
   get equipmentHealthArmor(): number {
     return this.equipment.reduce((sum, item) => sum + (item.healthStance && this.hp < this.cfg.hp * item.healthStance.threshold ? item.healthStance.armor : 0), 0);
   }
@@ -188,10 +198,19 @@ export class Unit {
 
   get lifesteal(): number {
     const missing = Math.max(0, 1 - this.hp / this.cfg.hp);
-    return Math.min(1, (this.cfg.lifesteal ?? 0) + (this.conqueror?.lifesteal ?? 0) + this.equipment.reduce((sum, item) => {
+    return Math.min(1, (this.cfg.lifesteal ?? 0) + (this.conqueror?.lifesteal ?? 0) + (this.demonFervorActive?this.demonFervor!.lifestealBonus:0) + this.equipment.reduce((sum, item) => {
       const effect = item.missingHpLifesteal;
       return sum + (effect ? Math.floor(missing / effect.step + 1e-9) * effect.bonus : 0);
     }, 0));
+  }
+
+  /** Keep equipment thresholds in sync with temporary gains and theft. */
+  adjustSpellPower(amount:number):void {
+    const before=this.cfg.spellPower??0,after=before+amount;this.cfg.spellPower=after;
+    this.cfg.damageAmp=(this.cfg.damageAmp??0)+this.equipment.reduce((sum,item)=>{
+      const e=item.spellPowerDamageAmp;
+      return sum+(e?Math.min(e.cap,Math.floor(Math.max(0,after)/e.step)*e.bonus)-Math.min(e.cap,Math.floor(Math.max(0,before)/e.step)*e.bonus):0);
+    },0);
   }
 
   get attackSpeed(): number {
@@ -201,7 +220,8 @@ export class Unit {
       + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
       + this.bloodfiendStackCount * (this.bloodfiend?.attackSpeedBonus ?? 0)
       + (this.alive && this.combatTick < this.overclockUntilTick ? this.mechanicalPioneer?.attackSpeedBonus ?? 0 : 0)
-      + (this.windHuntActive ? this.windHuntSpeedBonus : 0);
+      + (this.windHuntActive ? this.windHuntSpeedBonus : 0)
+      + (this.demonFervorActive ? this.demonFervor!.attackSpeedBonus : 0);
     const lanternPenalty=(this.lanternGuard?.maxSpeedPenalty??0)*this.missingHealthFraction;
     return Math.min(this.attackSpeedCap, penalty+lanternPenalty > 0 ? Math.max(.1, speed-lanternPenalty) : speed);
   }
@@ -213,8 +233,26 @@ export class Unit {
     public x: number,
     public y: number,
   ) {
+    this.baseMaxHp = cfg.hp;
     this.hp = cfg.hp;
     this.mana = cfg.startMana;
+  }
+
+  /** Remove temporary combat state without replaying opening effects or resetting one-shot flags. */
+  reviveAt(pos: {x:number;y:number}, healthFraction: number): void {
+    this.x=pos.x;this.y=pos.y;this.alive=true;
+    this.hp=Math.max(1,Math.floor(this.cfg.hp*healthFraction));this.mana=0;this.manaFraction=0;
+    this.pendingCast=null;this.burns=[];this.shield=0;this.sunlightShield=0;
+    this.attackTargetId=null;this.priorityTarget=null;this.blockedTargetSinceTick=null;
+    this.atkCd=0;this.moveCd=0;this.retargetAtTick=0;
+    this.stunnedUntilTick=0;this.fearUntilTick=0;this.untargetableUntilTick=0;this.skillUntargetable=false;
+    this.manaLocked=false;this.domainUntilTick=0;this.domainRadius=0;
+    this.skillArmorBonus=0;this.skillMrBonus=0;this.skillAttackSpeedBonus=0;this.skillAttackSpeedPenalty=0;
+    this.shadowCorruption=undefined;this.shadowAttackSpeedBonus=0;
+    this.nebulaAttackSpeedPenalty=0;this.gravityResistanceBonus=0;this.tauntSourceId=null;
+    this.bloodAidUntilTick=0;this.bloodAidResistances.clear();this.bloodRebirth=null;this.bloodCleaveWindup=null;
+    this.ropeHunt=null;this.starLeap=null;this.spiderLeap=null;this.furnaceDash=null;
+    this.stellarCharge=null;this.stellarShield=null;this.hydraulicBulwark=null;
   }
 
   get pos() { return { x: this.x, y: this.y }; }
@@ -222,6 +260,7 @@ export class Unit {
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */
   snapshot(tick = 0) {
     return {
+      demonAirborne: this.alive && !!this.demonLeap,
       bloodAidActive: this.alive && tick < this.bloodAidUntilTick,
       bloodRebirthActive: this.alive && !!this.bloodRebirth,
       bloodCleaveReady: this.alive && this.bloodCleaveReady,
@@ -235,9 +274,11 @@ export class Unit {
       id: this.id,
       side: this.side,
       cfgId: this.cfg.id,
+      role: this.cfg.role,
       pos: { x: this.x, y: this.y },
       hp: this.hp,
       maxHp: this.cfg.hp,
+      baseMaxHp: this.baseMaxHp,
       mana: this.mana,
       manaPerSecond: this.manaPerSecond,
       maxMana: this.cfg.maxMana,

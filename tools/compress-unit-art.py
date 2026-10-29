@@ -12,7 +12,7 @@ ART = ROOT / 'assets/resources/art/units'
 PATHS = ROOT / 'assets/scripts/view/ArtPaths.ts'
 MANIFEST = ROOT / 'docs/art-provenance/unit-art-compression.json'
 
-def compress(edge, apply):
+def compress(edge, apply, units=None):
     source = PATHS.read_text(encoding='utf-8')
     mappings = dict(re.findall(r"\b(\w+):\s*'(art/units/[^']+)/spriteFrame'", source))
     portraits = re.search(r'(export const UNIT_PORTRAIT:.*?Object\.entries\(\{)(.*?)(\}\)\.map)', source, re.S)
@@ -22,6 +22,8 @@ def compress(edge, apply):
     records = {item['file']: item for item in existing}
     changes = []
     for unit, resource in mappings.items():
+        if units and unit not in units:
+            continue
         file = ROOT / 'assets/resources' / (resource + '.png')
         original = file.read_bytes()
         with Image.open(file) as image:
@@ -69,5 +71,6 @@ def compress(edge, apply):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(); parser.add_argument('--max-edge', type=int, default=1024); parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--unit', action='append', default=[])
     args = parser.parse_args(); assert args.max_edge >= 512
-    compress(args.max_edge, args.apply)
+    compress(args.max_edge, args.apply, args.unit)

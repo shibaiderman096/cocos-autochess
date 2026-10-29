@@ -35,6 +35,8 @@ export interface RunSaveData {
   /** Stage-entry subsidies already handled; retained across reloads and debug revisits. */
   earlyGoldStages: number[];
   explorerProgress: import('./ExplorerProgress').ExplorerProgress;
+  /** An unset position uses the summon's automatic deployment cell. */
+  demonPosition?: {x:number;y:number};
   unlockedUnits?: string[];
   traitChoiceRoll?: number;
   pendingTraitChoice?: import('./TraitEmblem').PendingTraitChoice;
@@ -85,7 +87,7 @@ export function readRunSave(raw: unknown): RunSaveData {
   const invalid = () => { throw new Error('Invalid current run save'); };
   if (!d || d.version !== SAVE_VERSION || d.rulesVersion !== RUN_RULES_VERSION
     || !isRunSeed(d.runSeed) || d.enemyGenerationVersion !== 'budget-v1'
-    || !integer(d.stageCount, 3) || !integer(d.floor, 1) || !integer(d.gold, 0, 999999)
+    || !integer(d.stageCount, 3) || !integer(d.floor, 1) || !integer(d.gold)
     || !integer(d.level, 1, MAX_LEVEL) || !integer(d.exp) || !integer(d.winStreak) || !integer(d.loseStreak)
     || !integer(d.benchSlots, 1, 12) || !integer(d.shopRollIndex) || !integer(d.nextOwnedUid, 1)
     || typeof d.shopReserved !== 'boolean' || typeof d.shopLocked !== 'boolean'
@@ -96,6 +98,7 @@ export function readRunSave(raw: unknown): RunSaveData {
     || !Array.isArray(d.earlyGoldStages) || d.earlyGoldStages.some(stage => stage !== 2 && stage !== 3)
     || new Set(d.earlyGoldStages).size !== d.earlyGoldStages.length || !d.merchantServices || !d.explorerProgress || !d.stageProgress || !d.equipmentProgress) invalid();
   const ids = new Set<number>();
+  if(d.demonPosition!==undefined&&(!d.demonPosition||!integer(d.demonPosition.x)||!integer(d.demonPosition.y)))invalid();
   for (const u of d.owned) {
     if (!u || !integer(u.uid, 1, d.nextOwnedUid - 1) || ids.has(u.uid) || typeof u.unitId !== 'string'
       || !integer(u.star, 1, 3) || !['board','bench'].includes(u.location) || !integer(u.x, -1) || !integer(u.y)

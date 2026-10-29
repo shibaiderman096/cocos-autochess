@@ -55,6 +55,19 @@
       "bytes": 1797441
     },
     {
+      "file": "assets/resources/art/units/astral/star_ring_sage.png",
+      "sourceSha256": "2423fe8acaea4f319e7f81e3abc590a81922247090955322443b68ee15137756",
+      "sha256": "9bf1527352c17694525e791e74ed01323e634c8b8f0dab64efcecd476721bcb0",
+      "sourceSize": [
+        1199,
+        1312
+      ],
+      "width": 936,
+      "height": 1024,
+      "sourceBytes": 2045863,
+      "bytes": 1257504
+    },
+    {
       "file": "assets/resources/art/units/astral/xiya.png",
       "sourceSha256": "2e31e63a40b8915f8f56ace5ae89dc6c1d9e60ff8079757eb1bf499aa4fa7458",
       "sha256": "b68c11035740ecc68fd1a1fe59709c007510632af857dbada03cdeae214f013e",
@@ -131,6 +144,110 @@
       "height": 1024,
       "sourceBytes": 2430748,
       "bytes": 953931
+    },
+    {
+      "file": "assets/resources/art/units/demon/azaroth.png",
+      "sourceSha256": "4f631d42d1221aad29268d87d4b154236c6551dcb80037c4203c4deb08fe8e18",
+      "sha256": "ecb8696703ebbe7ac3499afa971f6d422c838f511fbb1d63c6fc8ce99c2192c5",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 3111352,
+      "bytes": 1624763
+    },
+    {
+      "file": "assets/resources/art/units/demon/crimson_gunslinger.png",
+      "sourceSha256": "4fa66ba68fcacc686e305dbb243baf6d1d89e8335a01e78b7e815426d9d4bbb3",
+      "sha256": "dd68771492febec4ce6f036c4ac455d31c153ab01e2c4e309286fd65a33649f2",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2601790,
+      "bytes": 1041681
+    },
+    {
+      "file": "assets/resources/art/units/demon/hellflame_hound.png",
+      "sourceSha256": "11c122ceb480af29e3f5f81f864c8918c324c31da5f8fea22f8fcfaccf996e4c",
+      "sha256": "cc135c720410438227c859bee84b9de541566d644d64aee55e41ca6d8a35f31f",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2455785,
+      "bytes": 1294341
+    },
+    {
+      "file": "assets/resources/art/units/demon/infernal_axe_guard.png",
+      "sourceSha256": "722ecf86ffd2b5f91c97bf86576b2c79cdef17c0b6ae33ae3bd9e27562d5a46b",
+      "sha256": "9824cbb54d1858aaa07e8198d5162a9b186a1fa9f17ba6b261b619567a823a4e",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2263794,
+      "bytes": 1197853
+    },
+    {
+      "file": "assets/resources/art/units/demon/raven_succubus.png",
+      "sourceSha256": "aafdeb4d0cbad096f814c66c8af7665ce670a6c9cd1e87961bed3b28cab103f4",
+      "sha256": "dfe8ef7d6103ce4b4722bdf13a4cce38c89c313a09f52ecd3081d58f832e922d",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2467921,
+      "bytes": 983712
+    },
+    {
+      "file": "assets/resources/art/units/demon/redhorn_imp.png",
+      "sourceSha256": "c828d9c17f35d8f8fa48af34669246bd746c0aff617a4c45bde0246241a27c28",
+      "sha256": "bfb03a5e2cd9aebd37c0ed5dd034d622880b55ea919912de882ecb77390469d6",
+      "sourceSize": [
+        1086,
+        1448
+      ],
+      "width": 768,
+      "height": 1024,
+      "sourceBytes": 2214901,
+      "bytes": 1176619
+    },
+    {
+      "file": "assets/resources/art/units/demon/saien.png",
+      "sourceSha256": "d2d1b48ab23abcd454d35c991d5ec54f3fa9a90487a1a916df99e48b2f548cb3",
+      "sha256": "1ac78bfddecb3d2df89737af768733edae8b1ac409db07c8b18130869e75f539",
+      "sourceSize": [
+        1141,
+        1378
+      ],
+      "width": 848,
+      "height": 1024,
+      "sourceBytes": 1738248,
+      "bytes": 994006
+    },
+    {
+      "file": "assets/resources/art/units/demon/thornchain_succubus.png",
+      "sourceSha256": "f29e44daf20c2f843862f878b7297b644b31a1ee237809c67c4a1bbbf109c7a4",
+      "sha256": "48252255127c81162b956646c40f00b7857d4262f1090612329d37a3733d24d2",
+      "sourceSize": [
+        1024,
+        1536
+      ],
+      "width": 683,
+      "height": 1024,
+      "sourceBytes": 2213482,
+      "bytes": 760735
     },
     {
       "file": "assets/resources/art/units/explorer/hushrope_ranger.png",
@@ -495,19 +612,6 @@
       "height": 1024,
       "sourceBytes": 2875457,
       "bytes": 1155310
-    },
-    {
-      "file": "assets/resources/art/units/sunlight/seraphiel.png",
-      "sourceSha256": "fbb64838a42257961c99aceac447b290da4119e0fb136da83dbb005208ca0fbe",
-      "sha256": "edf896bbbeeae452d45699a565b0084324641f32a7b630d370c89d69cd92800b",
-      "sourceSize": [
-        1024,
-        1536
-      ],
-      "width": 683,
-      "height": 1024,
-      "sourceBytes": 3127161,
-      "bytes": 1324296
     }
   ]
 }

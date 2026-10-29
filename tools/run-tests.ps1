@@ -39,6 +39,12 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item -Recurse -Force assets\resources .test-build\assets\
 $taskFailures = @()
 $taskTests = @(
+  'tests/demon-roster-tests.cjs'
+  'tests/demon-deployment-tests.cjs'
+  'tests/runic-vfx-tests.cjs'
+  'tests/tank-health-size-tests.cjs'
+  'tests/streak-income-tests.cjs'
+  'tests/runic-arcana-tests.cjs'
   'tests/current-save-tests.cjs'
   'tests/target-lock-tests.cjs'
   'tests/permanent-stat-items-tests.cjs'
@@ -53,6 +59,7 @@ $taskTests = @(
   'tests/merchant-income-endless-tests.cjs'
   'tests/special-items-tests.cjs'
   'tests/mixed-chest-shop-tests.cjs'
+  'tests/stage-chest-odds-tests.cjs'
   'tests/recycle-settings-tests.cjs'
   'tests/enemy-gold-budget-tests.cjs'
   'tests/basic-equipment-tests.cjs'
@@ -79,6 +86,7 @@ $taskTests = @(
   'tests/collection-unit-detail-tests.cjs'
   'tests/floating-ruins-scene-lifecycle-tests.cjs'
   'tests/opening-encounter-tests.cjs'
+  'tests/extended-encounter-tests.cjs'
   'tests/soul-lamp-and-overdrive-tests.cjs'
   'tests/stage-node-ui-tests.cjs'
   'tests/stage-advance-ui-tests.cjs'
@@ -117,7 +125,6 @@ $taskTests = @(
   'tests/shadow-skill-animation-tests.cjs'
   'tests/shadow-roster-tests.cjs'
   'tests/sunlight-tests.cjs'
-  'tests/seraphiel-tests.cjs'
   'tests/shop-upgrade-hint-tests.cjs'
   'tests/sunlight-ui-tests.cjs'
   'tests/sunlight-animation-tests.cjs'

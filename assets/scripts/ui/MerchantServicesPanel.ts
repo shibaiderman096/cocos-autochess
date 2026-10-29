@@ -12,7 +12,7 @@ import { loadArtSprite } from '../view/ArtSpriteLoader';
 export interface MerchantServicesPort {
   read(): { gold: number; items: string[]; dice?: DiceBet };
   level(id: string): number; eligible(id: string): boolean;
-  enhance(index: number, id: string): string | undefined;
+  enhance(index: number, id: string, count?: 1 | 10): string | undefined;
   bet(stake: number, picks: number[]): void; settle(id: number): void;
   refresh(): void; inspect(item: EquipmentConfigData): void;
 }
@@ -81,9 +81,19 @@ export class MerchantServicesPanel {
       label(body,'从左侧背包拖入装备\n装备仍保留在背包中',0,-18,sys.isMobile ? 19 : 15,MUTED,252);
     }
     const cost=forgePrice(this.port.level(this.selected),!!radiant), enabled=!!item&&this.port.eligible(item.id)&&gold>=cost;
-    const control=button(body,item?.radiantBaseId?'已完成沐光强化':item?`${radiant?'沐光强化':'强化'} · ${cost} 金币`:'等待放入装备',280,-13,174,sys.isMobile ? 52 : 44,()=>{if(enabled){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
+    const bulk=!!item&&!radiant&&!item.radiantBaseId&&this.port.eligible(item.id);
+    const control=button(body,item?.radiantBaseId?'已完成沐光强化':item?`${radiant?'沐光强化':'强化'} · ${cost} 金币`:'等待放入装备',280,bulk?12:-13,190,bulk?(sys.isMobile?44:38):(sys.isMobile?52:44),()=>{if(enabled){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
     control.name='forgeEnhance'; if(!enabled)setUISkin(control,'btn_disabled');
-    label(body,item?.radiantBaseId?'每件仅限一次':radiant?'装备价值增加 18 金币':item?`每次固定 ${cost} 金币${sys.isMobile ? '' : ' · 无等级上限'}`:'特殊道具不能强化',280,-53,sys.isMobile ? 17 : 14,MUTED,210);
+    if(bulk){
+      const fit=(node:Node)=>{const text=node.getChildByName('text')!.getComponent(Label)!;text.fontSize=sys.isMobile?20:18;text.enableWrapText=false;text.overflow=Label.Overflow.SHRINK;node.getChildByName('text')!.getComponent(UITransform)!.setContentSize(180,sys.isMobile?44:38);};
+      fit(control);
+      const total=cost*10,canBulk=gold>=total;
+      const ten=button(body,`强化10次 · ${total} 金币`,280,sys.isMobile?-39:-34,190,sys.isMobile?44:38,()=>{
+        if(canBulk){this.selected=this.port.enhance(index,this.selected,10)??this.selected;this.port.refresh();}
+      },true);
+      ten.name='forgeEnhanceTen';fit(ten);if(!canBulk)setUISkin(ten,'btn_disabled');
+    }
+    label(body,item?.radiantBaseId?'每件仅限一次':radiant?'装备价值增加 18 金币':bulk?'攻速强化上限 500%':item?`每次固定 ${cost} 金币`:'特殊道具不能强化',280,bulk?-77:-53,sys.isMobile ? 17 : 14,MUTED,220);
   }
   tryDrop(index: number, event: {getUILocation(): {x: number; y: number}}): boolean {
     if (this.tab !== 'forge' || !this.drop?.isValid || !this.drop.activeInHierarchy) return false;

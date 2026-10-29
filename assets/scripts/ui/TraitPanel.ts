@@ -247,7 +247,8 @@ export class TraitPanel {
     const swift = state.config.breakpoints.some(tier => !!tier.swiftmartialist);
     const bloodfiend = state.config.breakpoints.some(tier => !!tier.bloodfiend);
     const explorer = state.config.breakpoints.some(tier=>!!tier.explorer);
-    const warrior = explorer || bloodfiend || state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
+    const demon = state.config.breakpoints.some(tier=>!!tier.demon);
+    const warrior = demon || explorer || bloodfiend || state.config.breakpoints.some(tier => !!tier.conqueror || !!tier.spellblade);
     const tall = formation || shadow || swift;
     const headerY = shadow || warrior ? 264 : tall ? 232 : 177;
     const card = panel(this.parent, 'traitDetail', shadow || warrior ? -184 : -206, shadow || warrior ? 0 : tall ? 10 : 40, shadow || warrior ? 440 : 390, shadow || warrior ? 610 : tall ? 540 : 430,
@@ -287,7 +288,16 @@ export class TraitPanel {
       const row = panel(card, 'traitBreakpoint', 0, warrior ? [105, 63, 21, -49][index] : shadow ? [123, 58, -10, -94][index] : swift ? 80 - index * 60 : formation ? 80 - index * 72 : 48 - index * 36, shadow || warrior ? 400 : 350, warrior ? (index === 3 ? 88 : 36) : shadow ? (tier.shadow?.board ? 96 : index === 0 ? 56 : 64) : swift ? 56 : formation ? 64 : 32,
         active ? new Color(39, 43, 57) : new Color(15, 23, 34), active ? COLORS[tier.tier] : new Color(30, 42, 52), null);
       left(row, `(${tier.count})`, shadow || warrior ? -188 : -163, 0, shadow || warrior ? 18 : 16, 42, active ? COLORS[tier.tier] : MUTED).isBold = shadow || warrior;
-      if(tier.explorer){
+      if(tier.demon){
+        const e=tier.demon,reached=state.count>=tier.count;
+        const n=(v:string)=>`<color=${reached?'#ffbb68':'#8a99a4'}><b>${v}</b></color>`;
+        const icon=(key:string)=>`<img src='${key}' width=16 height=16 align=center offset=4/>`;
+        let text=`召唤${n(`${e.star}星`)}阿撒洛斯；恶魔每颗星提供 ${icon('stat_hp')} ${n(`+${e.healthPerStar}`)}`;
+        if(e.castShieldFraction)text+=`<br/>施法获得 ${icon('blood_shield')} ${n(`${Math.round(e.castShieldFraction*100)}%`)}最大生命护盾，${e.shieldSeconds}秒`;
+        if(e.takedownPower)text+=`<br/>恶魔参与击杀：魔君 ${icon('attr_phys_bonus')}${icon('attr_spell_bonus')} ${n(`+${e.takedownPower}%`)}`;
+        if(e.powerPerSecond)text+=`<br/>魔君每存活1秒：恶魔 ${icon('attr_phys_bonus')}${icon('attr_spell_bonus')} ${n(`+${e.powerPerSecond}%`)}`;
+        rich(row,'demonEffect',`<color=${reached?'#eae7d7':'#8a99a4'}>${text}</color>`,-140,0,330,14);
+      } else if(tier.explorer){
         const e=tier.explorer,reached=state.count>=tier.count;
         const number=(v:number)=>`<color=${reached?'#e5c978':'#8a99a4'}><b>${v}</b></color>`;
         rich(row,'explorerEffect',`<color=${reached?'#eae7d7':'#8a99a4'}>战斗结束 +${number(e.pointsPerBattle)} 探险值<br/>每次友方击杀 +${number(e.pointsPerKill)}，失败总收益 ×${number(e.lossMultiplier)}</color>`,-140,0,330,14);

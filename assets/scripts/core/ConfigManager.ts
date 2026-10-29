@@ -11,7 +11,14 @@ export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttribut
 }
 
 export interface UnitConfigData extends Partial<CombatAttributes> {
+  summonOnly?: boolean;
+  controlImmune?: boolean;
+  starStats?: { hp: number[]; atk: number[]; armor: number[]; mr: number[] };
   specialShopUnlock?: boolean;
+  /** Adopts the largest active non-profession trait, counted without this identity. */
+  copyDominantTrait?: boolean;
+  /** Runtime binding for the current battle. */
+  inheritedTraitId?: string;
   /** Explicit profession-trait membership without changing attack or skill damage identity. */
   classTraitId?: string;
   /** Per-carrier equipment traits; never written into the authored roster. */
@@ -48,6 +55,14 @@ export interface UnitConfigData extends Partial<CombatAttributes> {
 }
 
 export interface SkillConfigData {
+  redhornFervor?: import('../battle/types').RedhornFervorConfig;
+  hellhoundBreath?: import('../battle/types').HellhoundBreathConfig;
+  abyssVerdict?: import('../battle/types').AbyssVerdictConfig;
+  infernalSpin?: import('../battle/types').InfernalSpinConfig;
+  thornPull?: import('../battle/types').ThornPullConfig;
+  ravenTheft?: import('../battle/types').RavenTheftConfig;
+  demonGunfire?: import('../battle/types').DemonGunfireConfig;
+  demonLeap?: { radii: number[]; airborneSeconds: number };
   id: string;
   dmgType: 'physical' | 'magic' | 'true';
   name?: string;
@@ -61,11 +76,12 @@ export interface SkillConfigData {
   corrosion?: {damagePerPulse:number[];intervalSeconds:number;durationSeconds:number};
   sandCompass?: { shieldSeconds: number };
   ropeHunt?: import('../battle/types').RopeHuntConfig;
+  runicArcana?: import('../battle/types').RunicArcanaConfig;
   lanternGuard?: import('../battle/types').LanternGuardConfig;
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign' | 'inspiration' | 'lanternGuard' | 'windHunt' | 'stackingCorrosion' | 'sandCompass' | 'ropeHunt';
+  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign' | 'inspiration' | 'lanternGuard' | 'windHunt' | 'stackingCorrosion' | 'sandCompass' | 'ropeHunt' | 'runicArcana' | 'demonLeap' | 'demonSkill';
   chargedKnockup?: import('../battle/types').ChargedKnockupConfig;
   bloodDrain?: import('../battle/types').BloodDrainConfig;
   lineFear?: import('../battle/types').LineFearConfig;
@@ -207,6 +223,7 @@ export function hybridSpellDamage(unit: UnitConfigData, skill: SkillConfigData, 
 }
 
 export interface BattleConfigData {
+  summons?: UnitConfigData[];
   traits?: TraitConfigData[];
   targeting?: BattleTargetingConfig;
   movementCellsPerSecond?: number;
@@ -294,6 +311,7 @@ export class ConfigManager {
     return item.shopPrice ?? tierPrice;
   }
   equipmentStats(cfg: UnitConfigData, ids: string[] = []): UnitConfigData {
+    if(cfg.summonOnly&&ids.length)throw new Error('召唤单位无法携带装备');
     const items = this.getEquipment(ids);
     const grantedTraitIds = Array.from(new Set([...(cfg.grantedTraitIds ?? []), ...items.flatMap(item => item.grantedTraitId ? [item.grantedTraitId] : [])]));
     const innateGain = this.innateTraitLifesteal({ ...cfg, grantedTraitIds }) - this.innateTraitLifesteal(cfg);
@@ -330,7 +348,7 @@ export class ConfigManager {
     boardWidth: 7, boardHeight: 8, ownRows: 4,
     maxTicks: 900,
     tickMs: 50,
-    targeting: { tankDistanceBias: 1, retargetSeconds: 0.5 },
+    targeting: { retargetSeconds: 0.5 },
     combatSeconds: 30,
     overtime: { seconds: 15, attackSpeedBonus: 1, damageAmp: 1 },
     preparationSeconds: 1,
@@ -350,12 +368,55 @@ export class ConfigManager {
 
   setSkills(data: Record<string, SkillConfigData>): void {
     for (const skill of Object.values(data)) {
+      if(skill.thornPull){
+        const e=skill.thornPull;
+        if(skill.effect!=='demonSkill'||skill.dmgType!=='magic'||![skill.castSeconds,e.stunSeconds,e.pullSeconds].every(n=>Number.isFinite(n)&&n!>0)
+          ||!skill.starDamage||skill.starDamage.length!==3||skill.starDamage.some(n=>!Number.isFinite(n)||n<0))throw new Error('Invalid thorn pull');
+      }
+      if(skill.demonGunfire){
+        const e=skill.demonGunfire;
+        if(skill.effect!=='demonSkill'||skill.dmgType!=='physical'||![skill.castSeconds,e.manaPerSecond,e.intervalSeconds,e.baseBullets].every(n=>Number.isFinite(n)&&n!>0)
+          ||!Number.isInteger(e.baseBullets)||!skill.starDamage||skill.starDamage.length!==3||skill.starDamage.some(n=>!Number.isFinite(n)||n<0))throw new Error('Invalid demon gunfire');
+      }
+      if(skill.ravenTheft){
+        const e=skill.ravenTheft;
+        if(skill.effect!=='demonSkill'||skill.dmgType!=='magic'||![skill.castSeconds,e.targetRange,e.flightSeconds].every(n=>Number.isFinite(n)&&n!>0)
+          ||![skill.starDamage,e.spellPowerAmounts].every(a=>Array.isArray(a)&&a.length===3&&a.every(n=>Number.isFinite(n)&&n>=0)))throw new Error('Invalid raven theft');
+      }
+      if(skill.redhornFervor||skill.hellhoundBreath||skill.abyssVerdict||skill.infernalSpin){
+        const triple=(a?:number[])=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0);
+        if(!Number.isFinite(skill.castSeconds)||skill.castSeconds!<=0)throw new Error('Invalid demon skill windup');
+        const f=skill.redhornFervor,b=skill.hellhoundBreath,v=skill.abyssVerdict;
+        const spin=skill.infernalSpin;
+        if(spin&&(!triple(skill.starDamage)||skill.dmgType!=='physical'||skill.radius!==1||!triple(spin.healPerTarget)
+          ||!Number.isFinite(spin.durationSeconds)||spin.durationSeconds<=0))throw new Error('Invalid infernal spin');
+        if(f&&(!triple(f.attackSpeedBonuses)||!triple(f.lifestealBonuses)||f.lifestealBonuses.some(n=>n>1)
+          ||!Number.isFinite(f.durationSeconds)||f.durationSeconds<=0))throw new Error('Invalid redhorn fervor');
+        if(b&&(!triple(skill.starDamage)||skill.dmgType!=='physical'||skill.radius!==1||b.angleDegrees!==120||!skill.burn
+          ||![skill.burn.durationSeconds,skill.burn.intervalSeconds,skill.burn.maxHpFraction].every(n=>Number.isFinite(n)&&n>0)
+          ||skill.burn.durationSeconds<skill.burn.intervalSeconds||skill.burn.maxHpFraction>1||skill.burn.dmgType!=='magic'))throw new Error('Invalid hellhound breath');
+        if(v&&(!triple(skill.starDamage)||skill.dmgType!=='physical'||!triple(v.missingHealthFractions)||v.missingHealthFractions.some(n=>n>1)
+          ||!triple(v.healAmounts)))throw new Error('Invalid abyss verdict');
+      }
+      if (skill.effect === 'demonLeap') {
+        const e=skill.demonLeap;
+        if(!e||skill.dmgType!=='magic'||![skill.castSeconds,e.airborneSeconds].every(v=>Number.isFinite(v)&&v!>0)
+          ||![skill.starDamage,skill.stunSeconds,e.radii].every(a=>Array.isArray(a)&&a.length===4&&a.every(v=>Number.isFinite(v)&&v>0)))
+          throw new Error('Invalid demon leap');
+      }
       if (skill.effect === 'bloodReign') {
         const e = skill.bloodReign;
         if (!e || skill.dmgType !== 'physical' || skill.radius !== 0
           || ![skill.starDamage,e.healthGains].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&n>0))
           || ![e.length,e.width,e.attackWindupSeconds,e.rebirthSeconds,e.rebirthHealMaxHpFraction].every(n=>Number.isFinite(n)&&n>0)
           || !Number.isFinite(e.rebirthThreshold) || e.rebirthThreshold<=0 || e.rebirthThreshold>=1) throw new Error('Invalid blood reign skill');
+      }
+      if (skill.effect === 'runicArcana') {
+        const e=skill.runicArcana;
+        if(!e||skill.dmgType!=='magic'||![skill.castSeconds,e.chargeSeconds,e.length,e.width].every(v=>Number.isFinite(v)&&v!>0)
+          ||e.missileCount!==3||e.maxRunes!==3
+          ||![skill.starDamage,e.waveDamage,e.spellPowerPerRune].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0)))
+          throw new Error('Invalid runic arcana skill');
       }
       if (skill.effect === 'ropeHunt') {
         const e=skill.ropeHunt;
@@ -485,8 +546,15 @@ export class ConfigManager {
   }
 
   setBattle(data: Partial<BattleConfigData>): void {
+    const summons=data.summons??this.battle.summons??[];
+    const summonIds=new Set<string>();
+    for(const unit of summons){
+      if(!unit.id||summonIds.has(unit.id)||this.units[unit.id]||this.enemies[unit.id]||unit.cost!==0||!unit.summonOnly||!unit.controlImmune
+        ||!unit.skillId||!unit.starStats||![unit.starStats.hp,unit.starStats.atk,unit.starStats.armor,unit.starStats.mr]
+          .every(a=>a.length===4&&a.every(v=>Number.isFinite(v)&&v>0)))throw new Error('Invalid summon configuration');
+      summonIds.add(unit.id);
+    }
     if(data.movementCellsPerSecond!==undefined&&(!Number.isFinite(data.movementCellsPerSecond)||data.movementCellsPerSecond<=0))throw new Error('Invalid movement speed');
-    if(data.targeting&&(!Number.isFinite(data.targeting.tankDistanceBias)||data.targeting.tankDistanceBias<0))throw new Error('Invalid targeting configuration');
     if(data.targeting?.retargetSeconds!==undefined&&(!Number.isFinite(data.targeting.retargetSeconds)||data.targeting.retargetSeconds<=0))throw new Error('Invalid retarget delay');
     if (data.combatSeconds !== undefined && (!Number.isFinite(data.combatSeconds) || data.combatSeconds <= 0)) throw new Error('Invalid combat duration');
     if (data.overtime && (!Number.isFinite(data.overtime.seconds) || data.overtime.seconds <= 0
@@ -504,9 +572,15 @@ export class ConfigManager {
         let previous = 0;
         for (const tier of trait.breakpoints) {
           if (!Number.isInteger(tier.count) || tier.count <= previous || !['bronze', 'silver', 'gold', 'prismatic'].includes(tier.tier)
-            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral && !tier.bloodfiend && !tier.explorer)
+            || (tier.power === undefined && !tier.formation && !tier.stats && !tier.shadow && !tier.sunlight && !tier.conqueror && !tier.spellblade && !tier.spellchanter && !tier.swiftmartialist && !tier.mechanicalPioneer && !tier.astral && !tier.bloodfiend && !tier.explorer && !tier.demon)
             || !Number.isFinite(tier.power ?? 0) || (tier.power ?? 0) < 0 || !Number.isFinite(tier.regenPerSecond ?? 0)
             || (tier.regenPerSecond ?? 0) < 0 || (tier.regenPerSecond ?? 0) > 1) throw new Error('Invalid trait breakpoint');
+          if(tier.demon){
+            const e=tier.demon;
+            if(!summonIds.has(e.unitId)||!Number.isInteger(e.star)||e.star<1||e.star>4
+              ||![e.healthPerStar,e.castShieldFraction,e.shieldSeconds,e.takedownPower,e.powerPerSecond].every(v=>Number.isFinite(v)&&v>=0)
+              ||e.castShieldFraction>1||e.shieldSeconds<=0)throw new Error('Invalid demon trait');
+          }
           if (tier.formation) {
             const bonus = tier.formation;
             if (![bonus.maxHpBonus, bonus.damageReduction, bonus.attackSpeedBonus, bonus.damageAmp].every(value => Number.isFinite(value) && value >= 0)
@@ -602,21 +676,28 @@ export class ConfigManager {
   }
 
   getUnit(id: string): UnitConfigData {
-    const u = this.units[id] ?? this.enemies[id];
+    const u = this.units[id] ?? this.enemies[id] ?? this.battle.summons?.find(unit=>unit.id===id);
     if (!u) throw new Error(`unit config not found: ${id}`);
     return u;
   }
 
   allUnits(): UnitConfigData[] { return Object.values(this.units); }
+  allSummons(): UnitConfigData[] { return this.battle.summons ?? []; }
 
   private innateTraitLifesteal(cfg: UnitConfigData): number {
+    if(cfg.summonOnly)return 0;
     return (this.battle.traits ?? []).reduce((sum, trait) => sum
       + (trait.members.includes(cfg.id) || cfg.grantedTraitIds?.includes(trait.id) ? trait.innateLifesteal ?? 0 : 0), 0);
   }
 
   scaleUnit(cfg: UnitConfigData, star = 1, multiplier = 1): UnitConfigData {
+    if(cfg.summonOnly&&cfg.starStats){
+      const i=Math.max(0,Math.min(3,Math.floor(star)-1)),s=cfg.starStats;
+      return {...cfg,...combatAttributes(cfg),hp:Math.round(s.hp[i]*multiplier),atk:Math.round(s.atk[i]*multiplier),
+        armor:Math.round(s.armor[i]*multiplier),mr:Math.round(s.mr[i]*multiplier)};
+    }
     const scale = this.battle.starScaling[Math.max(0, Math.min(2, Math.floor(star) - 1))];
-    const bonusHp = cfg.cost === 5 && Math.floor(star) >= 3 ? (this.battle.legendaryThreeStarBonusHp ?? 5000) : 0;
+    const bonusHp = (cfg.cost ?? 1) >= 5 && Math.floor(star) >= 3 ? (this.battle.legendaryThreeStarBonusHp ?? 5000) : 0;
     return { ...cfg, ...combatAttributes(cfg), lifesteal: Math.min(1, combatAttributes(cfg).lifesteal + this.innateTraitLifesteal(cfg)), hp: Math.round(cfg.hp * scale.hp * multiplier) + bonusHp,
       atkSpeed: Math.min(this.battle.attackSpeedCap ?? 5, cfg.atkSpeed),
       atk: Math.round(cfg.atk * scale.atk * multiplier),

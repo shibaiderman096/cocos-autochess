@@ -6,6 +6,7 @@ import { drawFactionRing } from './FactionRing';
 import { setStarBadge } from '../ui/UISkin';
 import { healthBarSegments } from './HealthBar';
 import { createHealthBarClip } from './HealthBarClip';
+import { maxHealthArtworkScale } from './UnitHealthScale';
 
 const { ccclass } = _decorator;
 
@@ -23,6 +24,8 @@ export class UnitView extends Component {
 
   private bodySprite: Sprite;
   private bodyBaseY = 0;
+  private portraitHeight = 0;
+  private healthScale = 1;
   private spiderRaised = false;
   private attackMotion: Node;
   private hpFill: Sprite;
@@ -54,6 +57,7 @@ export class UnitView extends Component {
   private cleaveWinding = false;
   private windPreparing = false;
   private expeditionPreparing = false;
+  private demonPreparing=false;
 
   /** A separate overlay never changes the drag, attack, or replay transforms. */
   playStarUpgrade(): void {
@@ -112,6 +116,7 @@ export class UnitView extends Component {
 
     const size = cellSize * 0.82;
     const portraitSize = cellSize * portraitScale;
+    this.portraitHeight = portraitSize;
     const raised = portraitSize - size;
     this.attackMotion = new Node('attackMotion'); this.node.addChild(this.attackMotion);
     const body = new Node('body');
@@ -204,6 +209,24 @@ export class UnitView extends Component {
     for (const icon of this.equipmentIcons) icon.setPosition(icon.position.x, this.hpBarBg.position.y - (visible ? 17 : 0), 0);
   }
 
+  /** Grow artwork about its feet; keep root movement/hit area and UI dimensions independent. */
+  setMaxHealthAppearance(role: string | undefined, baseMaxHp: number, maxHp: number): void {
+    const scale = maxHealthArtworkScale(role, baseMaxHp, maxHp);
+    if (!this.bodySprite || scale === this.healthScale) return;
+    const rise = this.portraitHeight * (scale - this.healthScale);
+    this.healthScale = scale;
+    const body = this.bodySprite.node;
+    body.setScale(scale, scale, 1);
+    this.bodyBaseY += rise / 2;
+    body.setPosition(body.position.x, body.position.y + rise / 2, body.position.z);
+    for (const node of [this.hpBarBg, this.starBadge, ...this.equipmentIcons])
+      if (node) node.setPosition(node.position.x, node.position.y + rise, node.position.z);
+    if (this.shieldRing) {
+      this.shieldRing.setScale(scale, scale, 1);
+      this.shieldRing.setPosition(0, this.shieldRing.position.y + rise / 2, 0);
+    }
+  }
+
   setEquipment(items: EquipmentConfigData[]): void {
     const key = items.map(item => item.icon).join('|');
     if (key === this.equipmentKey) return; this.equipmentKey = key;
@@ -244,6 +267,7 @@ export class UnitView extends Component {
 
   /** Vitals and effects only; BattleReplayer owns the root's smooth travel position. */
   sync(snap: UnitRuntime, cellSize: number) {
+    this.setMaxHealthAppearance(snap.role, snap.baseMaxHp, snap.maxHp);
     if (snap.sunlightShield && !this.sunlightAura) {
       const node = new Node('sunlightShield'); this.node.addChild(node); this.sunlightAura = node;
       node.addComponent(UITransform).setContentSize(cellSize * 1.3, cellSize * 1.3);
@@ -384,6 +408,12 @@ export class UnitView extends Component {
     });
   }
 
+  playRevive(): void {
+    const opacity=this.node.getComponent(UIOpacity);
+    if(opacity){Tween.stopAllByTarget(opacity);opacity.opacity=255;}
+    this.node.active=true;
+  }
+
   playDeath() {
     if (!this.node.active) return;
     this.animateStellar(false,null,0,50);
@@ -457,6 +487,21 @@ export class UnitView extends Component {
     this.expeditionPreparing=true;
     const p=Math.max(0,Math.min(1,progress));
     this.attackMotion.angle=-10*p;this.attackMotion.setPosition(0,8*Math.sin(p*Math.PI/2),0);
+  }
+  hideRavenBody():void {if(this.bodyOpacity)this.bodyOpacity.opacity=0;}
+  animateDemonSpell(progress:number|null,spin:number|null):void {
+    if(!this.loaded||!this.attackMotion)return;
+    if(progress===null&&spin===null){
+      if(this.demonPreparing){this.attackMotion.angle=0;this.attackMotion.setPosition(0,0,0);this.attackMotion.setScale(1,1,1);this.demonPreparing=false;}
+      return;
+    }
+    if(!this.demonPreparing)Tween.stopAllByTarget(this.attackMotion);this.demonPreparing=true;
+    if(spin!==null){
+      this.attackMotion.angle=Math.sin(spin*Math.PI*2)*12;
+      this.attackMotion.setScale(1-.18*Math.sin(spin*Math.PI*2)**2,1,1);this.attackMotion.setPosition(0,-3,0);
+    }else{
+      const p=Math.max(0,Math.min(1,progress!));this.attackMotion.angle=-12*p;this.attackMotion.setPosition(-4*p,-3*p,0);
+    }
   }
   playCast(seconds: number) {
     if (!this.bodySprite || !this.loaded) return;

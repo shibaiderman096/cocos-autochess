@@ -1,3 +1,4 @@
+import { validCost } from './ShopConfig';
 import { MAX_EQUIPMENT } from '../battle/types';
 import type { EnemyPowerData, PowerEstimate, PowerRequest, PowerReliability, CalibratedPowerPoint } from './EnemyPowerTypes';
 
@@ -54,8 +55,8 @@ export class EnemyPowerModel {
         diagnostics.push('star calibration missing; using unit/cost and global star fallback');
       }
     } else {
-      if (!Number.isInteger(request.cost) || request.cost! < 1 || request.cost! > 5) throw new Error('Unknown unit requires an explicit valid cost for fallback');
-      base = this.data.costBaseline[request.cost!] * this.data.globalStarFactors[request.star];
+      if (!Number.isInteger(request.cost) || ![1,2,3,4,5,7].includes(request.cost!)) throw new Error('Unknown unit requires an explicit valid cost for fallback');
+      base = this.data.costBaseline[validCost(request.cost)] * this.data.globalStarFactors[request.star];
       diagnostics.push('unit calibration missing; using supplied cost baseline and global star factor');
     }
     let total = base;

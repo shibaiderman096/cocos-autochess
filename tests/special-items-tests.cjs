@@ -50,7 +50,7 @@ console.log('PASS special item use: rarity limits, one-star copy without equipme
 const found=new Set(),c=cfg();
 for(let seed=1;seed<=2048&&found.size<4;seed++){
  const pool=new CardPool(i.units),owned=new OwnedUnits(),economy=new EconomySystem(),progress=new StageProgression(i.run.stageEncounters,freshStageProgress(),c,pool,owned,economy,new RunRandomContext(seed),9,deps.equipmentPolicy.tiers,()=>10);
- const g=progress.mixedReward(30,1,100),value=g.units.reduce((n,id)=>n+c.getUnit(id).cost,0)+g.equipmentIds.reduce((n,id)=>n+c.equipmentPrice(id,i.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+g.health*2+g.gold;
+ const g=progress.mixedReward(30,1,100,'boss'),value=g.units.reduce((n,u)=>n+c.getUnit(u.unitId).cost*3**(u.star-1)*u.star,0)+g.equipmentIds.reduce((n,id)=>n+c.equipmentPrice(id,i.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+g.health*2+g.gold;
  assert.equal(value,30);for(const id of g.equipmentIds)if(ids.includes(id))found.add(id);
 }
 assert.deepEqual([...found].sort(),ids.slice().sort(),'all four special items can be drawn without exceeding chest value');

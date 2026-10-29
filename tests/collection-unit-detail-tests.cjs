@@ -84,7 +84,7 @@ for (const base of resolveTraits(cfg.battle.traits, [], roster)) {
   let portraits = panel.detail.children.filter(node => node.name.startsWith('traitOwner_'));
   assert.deepEqual(portraits.map(node => node.name.slice('traitOwner_'.length)), expected.map(unit => unit.id), `${base.config.id}: ascending costs and stable ties`);
   portraits.forEach((node, i) => assert.equal(node.getChildByName('portraitRarityFrame').getComponent(Sprite).spriteFrame.name,
-    TRAIT_PORTRAIT_FRAMES[(expected[i].cost ?? 1) - 1]));
+    TRAIT_PORTRAIT_FRAMES[Math.min(5,expected[i].cost ?? 1) - 1]));
   panel.hideDetail();
   panel.refresh([state], roster); panel.showDetail(state.config.id); flush();
   portraits = panel.detail.children.filter(node => node.name.startsWith('traitOwner_'));

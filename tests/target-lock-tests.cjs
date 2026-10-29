@@ -9,8 +9,25 @@ function make(units,patch={}){const cfg=new ConfigManager();cfg.setBattle({movem
 function quiet(sim){for(const u of sim.units.slice(1))u.atkCd=u.moveCd=100000;}
 const lastAttack=(sim,id=1)=>sim.events.filter(e=>e.t==='attack'&&e.id===id).at(-1);
 for(const side of [0,1]){
+ const assassin={...base,role:'assassin'};
+ const s=make([{cfg:assassin,side,x:3,y:2},{cfg:dummy,side:1-side,x:3,y:3},{cfg:{...dummy,role:'tank'},side:1-side,x:3,y:4}]);quiet(s);s.step();
+ assert.equal(lastAttack(s).target,2,'assassins choose the nearer enemy regardless of tank preference');
+ const tied=make([{cfg:assassin,side,x:0,y:0},{cfg:dummy,side:1-side,x:1,y:0},{cfg:{...dummy,role:'tank'},side:1-side,x:0,y:1}]);quiet(tied);tied.step();
+ assert.equal(lastAttack(tied).target,3,'equal assassin distances prefer tanks');
+ const chasing=make([{cfg:{...assassin,range:1},side,x:0,y:0},{cfg:dummy,side:1-side,x:3,y:0},{cfg:{...dummy,role:'tank'},side:1-side,x:4,y:0}]);quiet(chasing);chasing.step();
+ assert.equal(chasing.units[0].attackTargetId,2,'out-of-range assassins pursue the nearest reachable victim');
+ s.units[2].x=2;s.units[2].y=2;s.units[0].atkCd=0;s.step();assert.equal(lastAttack(s).target,2,'an assassin retains its current valid lock');
+ s.units[1].hp=0;s.units[1].alive=false;s.step();const lost=s.tick;
+ while(s.tick<lost+9)s.step();assert.equal(s.units[0].attackTargetId,null);
+ s.step();assert.equal(s.units[0].attackTargetId,3,'assassins also wait 0.5s after losing their target');
+}
+for(const side of [0,1]){
  const s=make([{cfg:base,side,x:3,y:2},{cfg:dummy,side:1-side,x:3,y:3},{cfg:{...dummy,role:'tank'},side:1-side,x:3,y:4}]);quiet(s);s.step();
- assert.equal(lastAttack(s).target,3,'a tank one cell farther wins a new lock');assert.equal(s.units[0].attackTargetId,3);
+ assert.equal(lastAttack(s).target,2,'a nearby enemy beats a farther tank');assert.equal(s.units[0].attackTargetId,2);
+ const tied=make([{cfg:base,side,x:0,y:0},{cfg:dummy,side:1-side,x:1,y:0},{cfg:{...dummy,role:'tank'},side:1-side,x:0,y:1}]);quiet(tied);tied.step();
+ assert.equal(lastAttack(tied).target,3,'equal distances prefer a tank over a lower enemy identity');
+ const stable=make([{cfg:base,side,x:0,y:0},{cfg:{...dummy,role:'tank'},side:1-side,x:1,y:0},{cfg:{...dummy,role:'tank'},side:1-side,x:0,y:1}]);quiet(stable);stable.step();
+ assert.equal(lastAttack(stable).target,2,'equally close tanks use stable identity');
  const t=make([{cfg:{...base,range:1},side,x:3,y:2},{cfg:dummy,side:1-side,x:3,y:3},{cfg:{...dummy,role:'tank'},side:1-side,x:3,y:4}]);quiet(t);t.step();assert.equal(lastAttack(t).target,2,'available melee victim beats an out-of-range tank');
 }
 {
@@ -55,8 +72,7 @@ for(const tickMs of [25,50])for(const speed of [.5,1,2,5]){
 }
 {
  const cfg=new ConfigManager();for(const speed of [0,-1,NaN,Infinity])assert.throws(()=>cfg.setBattle({movementCellsPerSecond:speed}));
- assert.throws(()=>cfg.setBattle({targeting:{tankDistanceBias:-1}}));
- for(const retargetSeconds of [0,-1,NaN,Infinity])assert.throws(()=>cfg.setBattle({targeting:{tankDistanceBias:1,retargetSeconds}}));
+ for(const retargetSeconds of [0,-1,NaN,Infinity])assert.throws(()=>cfg.setBattle({targeting:{retargetSeconds}}));
 }
 {
  const t=require('../tools/run-simulation.ts'),input=t.loadRunInputs(),deps={...t.loadEnemyGenerationInputs(),...t.loadFormationInputs(),...t.loadEquipmentInputs()};
@@ -65,4 +81,4 @@ for(const tickMs of [25,50])for(const speed of [.5,1,2,5]){
  const original=session(),restored=session(original.snapshot());assert.deepEqual(restored.snapshot(),original.snapshot());
 }
 const replay=()=>{const s=make([{cfg:{...base,range:1},side:0,x:0,y:0},{cfg:dummy,side:1,x:5,y:4},{cfg:{...dummy,role:'tank'},side:1,x:4,y:4}]);return s.run();};assert.deepEqual(replay(),replay());
-console.log('PASS target locks: tank preference/both sides, range guard, sticky pursuit, death/untargetability, fixed 0.5s retarget delay across attack speeds and Tick lengths, taunt/skill overrides, unreachable targets, 2-cell/s movement/events, deterministic replay and current-save continuation');
+console.log('PASS target locks: nearest reachable enemy, tank tie-break/both sides/assassins, stable ties, range guard, sticky pursuit, death/untargetability, fixed 0.5s retarget delay across attack speeds and Tick lengths, taunt/skill overrides, unreachable targets, 2-cell/s movement/events and deterministic replay');

@@ -1,0 +1,1644 @@
+{
+  "portraits": {
+    "redhorn_imp": {
+      "route": "User supplied, unchanged framing",
+      "sourceSha256": "c828d9c17f35d8f8fa48af34669246bd746c0aff617a4c45bde0246241a27c28"
+    },
+    "hellflame_hound": {
+      "route": "User supplied, unchanged framing",
+      "sourceSha256": "11c122ceb480af29e3f5f81f864c8918c324c31da5f8fea22f8fcfaccf996e4c"
+    },
+    "saien": {
+      "route": "User supplied, unchanged framing",
+      "sourceSha256": "d2d1b48ab23abcd454d35c991d5ec54f3fa9a90487a1a916df99e48b2f548cb3"
+    },
+    "infernal_axe_guard": {
+      "route": "User supplied, unchanged framing",
+      "sourceSha256": "722ecf86ffd2b5f91c97bf86576b2c79cdef17c0b6ae33ae3bd9e27562d5a46b"
+    },
+    "raven_succubus": {
+      "route": "Built-in image_gen background removal",
+      "sourceSha256": "aafdeb4d0cbad096f814c66c8af7665ce670a6c9cd1e87961bed3b28cab103f4"
+    },
+    "crimson_gunslinger": {
+      "route": "Built-in image_gen background removal",
+      "sourceSha256": "4fa66ba68fcacc686e305dbb243baf6d1d89e8335a01e78b7e815426d9d4bbb3"
+    },
+    "thornchain_succubus": {
+      "route": "User supplied, unchanged framing",
+      "sourceSha256": "f29e44daf20c2f843862f878b7297b644b31a1ee237809c67c4a1bbbf109c7a4"
+    }
+  },
+  "effects": {
+    "redhorn_fervor": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "836576345f50d5860e89ebd725723a9489cfae33a53f45002311ca1b2e3db33b",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            156,
+            119
+          ],
+          "offset": [
+            50,
+            68
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            163,
+            138
+          ],
+          "offset": [
+            46,
+            59
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            170,
+            153
+          ],
+          "offset": [
+            43,
+            51
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            176,
+            172
+          ],
+          "offset": [
+            40,
+            42
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            137,
+            143
+          ],
+          "offset": [
+            59,
+            56
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            143,
+            149
+          ],
+          "offset": [
+            56,
+            53
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            153,
+            176
+          ],
+          "offset": [
+            51,
+            40
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            147,
+            167
+          ],
+          "offset": [
+            54,
+            44
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            166,
+            137
+          ],
+          "offset": [
+            45,
+            59
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            163,
+            158
+          ],
+          "offset": [
+            46,
+            49
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            169,
+            163
+          ],
+          "offset": [
+            43,
+            46
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            175,
+            176
+          ],
+          "offset": [
+            40,
+            40
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/redhorn_fervor.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.7742258707682291,
+        "sha256": "c28a6b969c9a965a1e1d3051b1706dd0ab3a8d7b5b9288a2460d8af8763cccc2"
+      }
+    },
+    "hellhound_breath": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "f95109fa2684154623418f526cb5ace38c439018018bf97dc45719064ebaa1c5",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            104,
+            106
+          ],
+          "offset": [
+            76,
+            75
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            133,
+            127
+          ],
+          "offset": [
+            61,
+            64
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            144,
+            147
+          ],
+          "offset": [
+            56,
+            54
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            167,
+            176
+          ],
+          "offset": [
+            44,
+            40
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            82,
+            98
+          ],
+          "offset": [
+            40,
+            79
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            130,
+            137
+          ],
+          "offset": [
+            40,
+            59
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            154,
+            176
+          ],
+          "offset": [
+            40,
+            40
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            147,
+            120
+          ],
+          "offset": [
+            40,
+            68
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            133,
+            153
+          ],
+          "offset": [
+            61,
+            51
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            143,
+            167
+          ],
+          "offset": [
+            56,
+            44
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            145,
+            176
+          ],
+          "offset": [
+            55,
+            40
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            138,
+            163
+          ],
+          "offset": [
+            59,
+            46
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/hellhound_breath.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.827490488688151,
+        "sha256": "1a826036fd68b9146a4f5b5ad1bda76149008ab68ad66b8292a11cec1f49e253"
+      }
+    },
+    "abyss_verdict": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "74d1cd2c3dd35f170fac8e81b8b1a8a056b50c438ea7e0e787d143bf3877967f",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            91,
+            127
+          ],
+          "offset": [
+            82,
+            64
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            96,
+            151
+          ],
+          "offset": [
+            80,
+            52
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            114,
+            172
+          ],
+          "offset": [
+            71,
+            42
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            120,
+            176
+          ],
+          "offset": [
+            68,
+            40
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            126,
+            129
+          ],
+          "offset": [
+            65,
+            63
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            134,
+            139
+          ],
+          "offset": [
+            61,
+            58
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            130,
+            161
+          ],
+          "offset": [
+            63,
+            47
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            110,
+            176
+          ],
+          "offset": [
+            73,
+            40
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            167,
+            176
+          ],
+          "offset": [
+            44,
+            40
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            171,
+            160
+          ],
+          "offset": [
+            42,
+            48
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            158,
+            166
+          ],
+          "offset": [
+            49,
+            45
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            128,
+            125
+          ],
+          "offset": [
+            64,
+            65
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/abyss_verdict.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.8558883666992188,
+        "sha256": "e1f87808b837bbc0d2ab8233a682bfe2e5da2df1bfe11f09a5999d64b049ed95"
+      }
+    },
+    "infernal_axe": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "8c1949305fe15e10da19b0abbd8b97eb92fe3463d9fa2a92e81cf2bcebf72db5",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            158,
+            100
+          ],
+          "offset": [
+            49,
+            78
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            165,
+            131
+          ],
+          "offset": [
+            45,
+            62
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            170,
+            159
+          ],
+          "offset": [
+            43,
+            48
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            167,
+            176
+          ],
+          "offset": [
+            44,
+            40
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            120,
+            119
+          ],
+          "offset": [
+            68,
+            68
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            174,
+            126
+          ],
+          "offset": [
+            41,
+            65
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            176,
+            149
+          ],
+          "offset": [
+            40,
+            53
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            166,
+            145
+          ],
+          "offset": [
+            45,
+            55
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            162,
+            145
+          ],
+          "offset": [
+            47,
+            55
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            176,
+            147
+          ],
+          "offset": [
+            40,
+            54
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            154,
+            142
+          ],
+          "offset": [
+            51,
+            57
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            167,
+            123
+          ],
+          "offset": [
+            44,
+            66
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/infernal_axe.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.7850596110026041,
+        "sha256": "d9bd0dd98f400c8b029c5b52e3fdd919e1878b1ced41e45c1f0ed8fd9a011472"
+      }
+    },
+    "raven_soul_theft": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "3518dc69528dc9eed3bdf2b98d527696e6930144adcd208f2aa8e8b43e3f9564",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            156,
+            176
+          ],
+          "offset": [
+            50,
+            40
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            157,
+            171
+          ],
+          "offset": [
+            49,
+            42
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            165,
+            168
+          ],
+          "offset": [
+            45,
+            44
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            164,
+            176
+          ],
+          "offset": [
+            46,
+            40
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            152,
+            172
+          ],
+          "offset": [
+            58,
+            27
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            152,
+            131
+          ],
+          "offset": [
+            57,
+            65
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            148,
+            98
+          ],
+          "offset": [
+            60,
+            119
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            150,
+            176
+          ],
+          "offset": [
+            59,
+            26
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            170,
+            176
+          ],
+          "offset": [
+            43,
+            40
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            167,
+            170
+          ],
+          "offset": [
+            44,
+            43
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            158,
+            156
+          ],
+          "offset": [
+            49,
+            50
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            144,
+            173
+          ],
+          "offset": [
+            56,
+            41
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/raven_soul_theft.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.7956708272298177,
+        "sha256": "b74312c4c91dbe41689eef5f3cc53340766dc239f72b248c38c7b0c61c9b7edb"
+      }
+    },
+    "infernal_gunfire": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "d848cfdddf3d236389f8df5c7af635584768e4b8bd7ed92140c388b117b24cdc",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            314,
+            418
+          ],
+          "size": [
+            128,
+            113
+          ],
+          "offset": [
+            64,
+            71
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            314,
+            0,
+            627,
+            418
+          ],
+          "size": [
+            139,
+            138
+          ],
+          "offset": [
+            58,
+            59
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            627,
+            0,
+            940,
+            418
+          ],
+          "size": [
+            157,
+            168
+          ],
+          "offset": [
+            49,
+            44
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            940,
+            0,
+            1254,
+            418
+          ],
+          "size": [
+            176,
+            175
+          ],
+          "offset": [
+            40,
+            40
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            418,
+            314,
+            836
+          ],
+          "size": [
+            105,
+            97
+          ],
+          "offset": [
+            75,
+            79
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            314,
+            418,
+            627,
+            836
+          ],
+          "size": [
+            152,
+            132
+          ],
+          "offset": [
+            52,
+            62
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            627,
+            418,
+            940,
+            836
+          ],
+          "size": [
+            176,
+            148
+          ],
+          "offset": [
+            40,
+            54
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            940,
+            418,
+            1254,
+            836
+          ],
+          "size": [
+            155,
+            54
+          ],
+          "offset": [
+            50,
+            101
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            836,
+            314,
+            1254
+          ],
+          "size": [
+            152,
+            60
+          ],
+          "offset": [
+            64,
+            98
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            314,
+            836,
+            627,
+            1254
+          ],
+          "size": [
+            171,
+            61
+          ],
+          "offset": [
+            45,
+            97
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            627,
+            836,
+            940,
+            1254
+          ],
+          "size": [
+            176,
+            55
+          ],
+          "offset": [
+            40,
+            100
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            940,
+            836,
+            1254,
+            1254
+          ],
+          "size": [
+            164,
+            63
+          ],
+          "offset": [
+            52,
+            96
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/infernal_gunfire.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.866705576578776,
+        "sha256": "6a895436fc30afb613732f341452b5d09979c2d5c13d529118103637aa4f50b1"
+      }
+    },
+    "thornchain_pull": {
+      "route": "Built-in image_gen",
+      "art_source": "host_image",
+      "model": "Tool-managed",
+      "estimateUsd": null,
+      "sourceSha256": "faf96f7ae6ac13f73554a3388701471915fe7a3a76a4aebc73efa81a34db264f",
+      "prompts": "tools/demon-roster-vfx-prompts.json",
+      "grid": [
+        4,
+        3
+      ],
+      "cell": [
+        256,
+        256
+      ],
+      "padding": 40,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            362,
+            362
+          ],
+          "size": [
+            176,
+            153
+          ],
+          "offset": [
+            40,
+            51
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            362,
+            0,
+            724,
+            362
+          ],
+          "size": [
+            162,
+            159
+          ],
+          "offset": [
+            47,
+            48
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            724,
+            0,
+            1086,
+            362
+          ],
+          "size": [
+            166,
+            170
+          ],
+          "offset": [
+            45,
+            43
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            1086,
+            0,
+            1448,
+            362
+          ],
+          "size": [
+            164,
+            162
+          ],
+          "offset": [
+            46,
+            47
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            362,
+            362,
+            724
+          ],
+          "size": [
+            168,
+            122
+          ],
+          "offset": [
+            40,
+            67
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            362,
+            362,
+            724,
+            724
+          ],
+          "size": [
+            176,
+            130
+          ],
+          "offset": [
+            40,
+            63
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            724,
+            362,
+            1086,
+            724
+          ],
+          "size": [
+            175,
+            128
+          ],
+          "offset": [
+            40,
+            64
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            1086,
+            362,
+            1448,
+            724
+          ],
+          "size": [
+            156,
+            140
+          ],
+          "offset": [
+            40,
+            58
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            724,
+            362,
+            1086
+          ],
+          "size": [
+            144,
+            147
+          ],
+          "offset": [
+            56,
+            54
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            362,
+            724,
+            724,
+            1086
+          ],
+          "size": [
+            159,
+            162
+          ],
+          "offset": [
+            48,
+            47
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            724,
+            724,
+            1086,
+            1086
+          ],
+          "size": [
+            154,
+            175
+          ],
+          "offset": [
+            51,
+            40
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            1086,
+            724,
+            1448,
+            1086
+          ],
+          "size": [
+            149,
+            176
+          ],
+          "offset": [
+            53,
+            40
+          ]
+        }
+      ],
+      "asset": {
+        "file": "assets/resources/art/fx/thornchain_pull.png",
+        "width": 1024,
+        "height": 768,
+        "transparentFraction": 0.7853813171386719,
+        "sha256": "ac4078b96ebe95a25525092ef807fec44fd10c5d49d9d9e0cc3c894cc7542a4e"
+      }
+    }
+  }
+}

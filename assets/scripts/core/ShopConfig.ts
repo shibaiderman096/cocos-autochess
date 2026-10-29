@@ -9,6 +9,7 @@
 export type Cost = 1 | 2 | 3 | 4 | 5;
 
 export function validCost(value: number = 1): Cost {
+  if (value === 7) return 5; // Seven-gold exclusive cards use the orange probability/stock tier.
   if (!Number.isInteger(value) || value < 1 || value > 5) throw new Error('Invalid unit cost');
   return value as Cost;
 }
@@ -49,23 +50,25 @@ export function rollShopCost(weights: readonly number[], random: () => number): 
 }
 
 /** 每个不同棋子的初始存量（按费用） */
-export const POOL_STOCK: Readonly<Record<Cost, number>> = {
-  1: 30, 2: 25, 3: 18, 4: 10, 5: 9,
+export const POOL_STOCK: Readonly<Record<Cost | 7, number>> = {
+  1: 30, 2: 25, 3: 18, 4: 10, 5: 9, 7: 9,
 };
 
 /** 购买价格（按费用） */
-export const COST_PRICE: Readonly<Record<Cost, number>> = {
-  1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
+export const COST_PRICE: Readonly<Record<Cost | 7, number>> = {
+  1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 7: 7,
 };
 
 /** One-cost units keep full combined value; upgraded higher costs lose one gold. */
-export const COST_SELL: Readonly<Record<Cost, number>> = {
-  1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
+export const COST_SELL: Readonly<Record<Cost | 7, number>> = {
+  1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 7: 7,
 };
 
-export function sellPrice(cost: Cost, star: number): number {
+export function unitPrice(cost = 1): number { validCost(cost); return cost; }
+
+export function sellPrice(cost: number, star: number): number {
   const rank = Math.max(1, Math.min(3, Math.floor(Number.isFinite(star) ? star : 1)));
-  return COST_SELL[validCost(cost)] * 3 ** (rank - 1) - (cost > 1 && rank > 1 ? 1 : 0);
+  return unitPrice(cost) * 3 ** (rank - 1) - (cost > 1 && rank > 1 ? 1 : 0);
 }
 
 /** 商店格子数 */

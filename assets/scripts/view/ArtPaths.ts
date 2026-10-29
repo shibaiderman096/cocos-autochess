@@ -8,6 +8,15 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  thornchain_succubus: 'art/units/demon/thornchain_succubus/spriteFrame',
+  raven_succubus: 'art/units/demon/raven_succubus/spriteFrame',
+  crimson_gunslinger: 'art/units/demon/crimson_gunslinger/spriteFrame',
+  redhorn_imp: 'art/units/demon/redhorn_imp/spriteFrame',
+  hellflame_hound: 'art/units/demon/hellflame_hound/spriteFrame',
+  saien: 'art/units/demon/saien/spriteFrame',
+  infernal_axe_guard: 'art/units/demon/infernal_axe_guard/spriteFrame',
+  azaroth: 'art/units/demon/azaroth/spriteFrame',
+  star_ring_sage: 'art/units/astral/star_ring_sage/spriteFrame',
   wayward_alchemist: 'art/units/explorer/wayward_alchemist/spriteFrame',
   sandsea_navigator: 'art/units/explorer/sandsea_navigator/spriteFrame',
   hushrope_ranger: 'art/units/explorer/hushrope_ranger/spriteFrame',
@@ -38,7 +47,6 @@ export const UNIT_ART: Record<string, string> = {
   aurelia: 'art/units/sunlight/aurelia/spriteFrame',
   celine: 'art/units/sunlight/celine/spriteFrame',
   oris: 'art/units/sunlight/oris/spriteFrame',
-  seraphiel: 'art/units/sunlight/seraphiel/spriteFrame',
   abyss_iron_guard: 'art/units/shadow/abyss_iron_guard/spriteFrame',
   blackfeather_hunter: 'art/units/shadow/blackfeather_hunter/spriteFrame',
   nightmare_lamplighter: 'art/units/shadow/nightmare_lamplighter/spriteFrame',
@@ -64,6 +72,15 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
+  thornchain_succubus:'327,87,173,173',
+  raven_succubus:'293,67,200,200',
+  crimson_gunslinger:'293,40,200,200',
+  redhorn_imp:'297,191,297,297',
+  hellflame_hound:'460,410,297,297',
+  saien:'394,0,260,260',
+  infernal_axe_guard:'311,14,248,248',
+  azaroth:'245,65,210,210',
+  star_ring_sage:'375,78,219,219',
   wayward_alchemist:'343,119,261,261',
   sandsea_navigator:'290,0,240,240',
   hushrope_ranger:'304,21,255,255',
@@ -85,7 +102,7 @@ export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.e
   furnace_executioner:'273,20,267,267',
   atlas:'200,293,300,300',
   bao_zero:'240,147,267,267',
-  helion:'193,67,267,267', saiph:'180,140,240,240', kaeru:'320,93,240,240', phinia:'300,47,227,227', aurelia:'173,93,240,240', celine:'233,93,240,240', oris:'240,113,240,240', seraphiel:'227,120,240,240',
+  helion:'193,67,267,267', saiph:'180,140,240,240', kaeru:'320,93,240,240', phinia:'300,47,227,227', aurelia:'173,93,240,240', celine:'233,93,240,240', oris:'240,113,240,240',
   abyss_iron_guard:'255,28,283,283', blackfeather_hunter:'318,113,248,248',
   nightmare_lamplighter:'290,14,283,283', ghostflame_blade:'318,14,297,297',
   eclipse_crossbow:'191,71,248,248', nether_lantern_witch:'262,71,255,255',
@@ -103,6 +120,15 @@ export const UI_SPRITE = {
 };
 
 export const FX_SPRITE = {
+  ravenTheft: 'art/fx/raven_soul_theft/spriteFrame',
+  demonGunfire: 'art/fx/infernal_gunfire/spriteFrame',
+  thornPull: 'art/fx/thornchain_pull/spriteFrame',
+  redhornFervor: 'art/fx/redhorn_fervor/spriteFrame',
+  hellhoundBreath: 'art/fx/hellhound_breath/spriteFrame',
+  abyssVerdict: 'art/fx/abyss_verdict/spriteFrame',
+  infernalAxe: 'art/fx/infernal_axe/spriteFrame',
+  demonAzaroth: 'art/fx/demon_azaroth/spriteFrame',
+  runicArcana: 'art/fx/star_ring_sage/spriteFrame',
   playerDamage: 'art/fx/player_damage/player_damage_energy/spriteFrame',
   explorerInspiration: 'art/fx/explorer/startrail_inspiration/spriteFrame',
   explorerLantern: 'art/fx/explorer/lone_lantern_guard/spriteFrame',

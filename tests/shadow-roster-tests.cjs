@@ -7,8 +7,10 @@ const {buildSkillStatRows,buildSkillDescription}=require('../assets/scripts/ui/S
 const {resolveTraits}=require('../assets/scripts/battle/Traits.ts');
 const retired=require('./fixtures/retired-20261023.json');
 const roster=[...require('../assets/resources/config/units.json'),...retired.units],skills={...require('../assets/resources/config/skills.json'),...retired.skills},battle=structuredClone(require('../assets/resources/config/battle.json'));
+// A synthetic tenth carrier preserves trait-tier coverage without shipping a removed character.
+roster.push({...roster.find(u=>u.id==='helion'),id:'sunlight_fixture',name:'辉光占位'});
 // Historical skill regression fixtures retain their original faction membership.
-for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','seraphiel'];t.members=old;}
+for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','sunlight_fixture'];t.members=old;}
 const shadow=battle.traits.find(t=>t.id==='shadow'),clone=x=>JSON.parse(JSON.stringify(x));
 const expected=[
  ['abyss_iron_guard',1,30,.55,1,40,100,[80,120,180]],['blackfeather_hunter',1,50,.9,4,0,50,[150,225,350]],

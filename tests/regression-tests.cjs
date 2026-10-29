@@ -1010,7 +1010,7 @@ function drag(stage, from, to) {
     stageEncountersEnabled=true;
     try {
       const ticket=createSaveV2(6,1,'budget-v1');ticket.level=10;
-      ticket.owned=['helion','bao_zero','atlas','oris','seraphiel','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:n%7,y:2+Math.floor(n/7),equipment:[]}));ticket.nextOwnedUid=11;
+      ticket.owned=['helion','bao_zero','atlas','oris','crimson_demon_knight','blackstar_warlock','voidscar_reaver','aurelia','celine','eclipse_crossbow'].map((unitId,n)=>({uid:n+1,unitId,star:3,location:'board',x:n%7,y:2+Math.floor(n/7),equipment:[]}));ticket.nextOwnedUid=11;
       const stage=await makeStage(ticket);
       stage.ui.onDebugGold(100);stage.ui.onDebugStage(4,3);
       const shopReward=stage.session.pendingStageReward;assert.equal(shopReward.kind,'specialShop');

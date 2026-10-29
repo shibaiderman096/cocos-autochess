@@ -17,18 +17,46 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   if (!unit.skillId) return [];
   const skill = configs.getSkill(unit.skillId);
   const base = configs.getUnit(unit.id);
-  const ranks = [1, 2, 3].map(rank => configs.scaleUnit(base, rank));
+  const ranks = (base.summonOnly?[1,2,3,4]:[1,2,3]).map(rank => configs.scaleUnit(base, rank));
   const rows: SkillStatRow[] = [];
   const add = (label: string, value: (u: UnitConfigData, rank: number, scale: number) => string, tone: SkillStatRow['tone']) => {
     const display=(text:string)=>/^[+-]?\d+(?:\.\d+)?$/.test(text)?String(Math.round(Number(text))):text;
     rows.push({ label, current: display(value(unit, star - 1, skillScale)),
-      stars: ranks.map((u, i) => display(value(u, i, configs.battle.starScaling[i].skill))).join(' / '), tone });
+      stars: ranks.map((u, i) => display(value(u, i, base.summonOnly?1:configs.battle.starScaling[i].skill))).join(' / '), tone });
   };
   const addFixed: typeof add = (label,value,tone) => { add(label,value,tone); rows[rows.length-1].fixed=true; };
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
   const shadow = skill.shadow;
   const sunlight = skill.sunlight;
-  if (skill.ropeHunt) {
+  if(skill.thornPull){
+    add('鞭击伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
+  } else if(skill.demonGunfire){
+    add('单发伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('每轮子弹',u=>String(Math.max(1,Math.round(skill.demonGunfire!.baseBullets*u.atkSpeed/base.atkSpeed))),'neutral');
+  } else if(skill.ravenTheft){
+    add('落地伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
+    add('法术窃取上限',(_u,i)=>`${number(skill.ravenTheft!.spellPowerAmounts[i])}%`,'magic');
+  } else if(skill.redhornFervor){
+    add('强化攻速',(u,i)=>`+${number(skill.redhornFervor!.attackSpeedBonuses[i]*(1+(u.spellPower??0)/100)*100)}%`,'speed');
+    add('全能吸血',(_u,i)=>`${number(skill.redhornFervor!.lifestealBonuses[i]*100)}%`,'healing');
+  } else if(skill.infernalSpin){
+    add('回旋伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('每目标治疗',(u,i)=>String(Math.round(skill.infernalSpin!.healPerTarget[i]*(1+(u.spellPower??0)/100))),'healing');
+  } else if(skill.abyssVerdict){
+    add('重斩伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+    add('已损生命真伤',(_u,i)=>`${number(skill.abyssVerdict!.missingHealthFractions[i]*100)}%`,'true');
+    add('击杀治疗',(u,i)=>String(Math.round(skill.abyssVerdict!.healAmounts[i]*(1+(u.spellPower??0)/100))),'healing');
+  } else if(skill.hellhoundBreath){
+    add('吐息伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
+  } else if(skill.demonLeap){
+    add('落地伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
+    add('击飞持续',(_u,i)=>`${number(skill.stunSeconds![i])}秒`,'neutral');
+    add('震击半径',(_u,i)=>`${number(skill.demonLeap!.radii[i])}格`,'neutral');
+  } else if(skill.runicArcana){
+    add('单枚飞弹伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
+    add('每枚符文法术加成',(_u,i)=>`${number(skill.runicArcana!.spellPowerPerRune[i])}%`,'magic');
+    add('能量波伤害',(u,i)=>String(Math.round(skill.runicArcana!.waveDamage[i]*power(u)*(1+(u.damageAmp??0)))),'magic');
+  } else if (skill.ropeHunt) {
     add('单发伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
     addFixed('射击次数',()=>String(skill.ropeHunt!.shotCount),'neutral');
     addFixed('回旋持续',()=>`${number(skill.ropeHunt!.durationSeconds)}秒`,'neutral');
@@ -198,7 +226,7 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     add('基础魔法伤害', (_u, i) => number(skill.hybrid!.magicDamage[i]), 'magic');
   }
   if (skill.attackSpeedBonuses && !shadow) add('攻击速度', (_u, i) => `+${number(skill.attackSpeedBonuses![i] * 100)}%`, 'speed');
-  if (skill.stunSeconds) add('眩晕时间', (_u, i) => `${number(skill.stunSeconds![i])}秒`, 'neutral');
+  if (skill.stunSeconds&&!skill.demonLeap) add('眩晕时间', (_u, i) => `${number(skill.stunSeconds![i])}秒`, 'neutral');
   if (skill.chargedKnockup) {
     add('击飞时间', (_u,i) => `${number(skill.chargedKnockup!.durationsSeconds[i])}秒`, 'neutral');
     addFixed('蓄力时间',()=> `${number(skill.castSeconds!)}秒`, 'neutral');
@@ -268,6 +296,14 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
       aspd: skill.attackSpeedBonuses?.[star - 1] ?? 0, stun: skill.stunSeconds?.[star - 1] ?? 0 };
   }
   return {
+    whipDamage:current('鞭击伤害'),whipStun:skill.thornPull?.stunSeconds??0,
+    gunDamage:current('单发伤害'),gunBullets:current('每轮子弹'),ravenDamage:current('落地伤害'),ravenPower:current('法术窃取上限'),
+    impSpeed:current('强化攻速'),impLifesteal:current('全能吸血'),
+    houndDamage:current('吐息伤害'),houndBurn:current('每秒生命伤害'),
+    verdictDamage:current('重斩伤害'),verdictMissing:current('已损生命真伤'),verdictHeal:current('击杀治疗'),
+    spinDamage:current('回旋伤害'),spinHeal:current('每目标治疗'),
+    demonDamage:current('落地伤害'),demonRadius:skill.demonLeap?.radii[star-1]??0,demonKnockup:skill.stunSeconds?.[star-1]??0,
+    runeMissile:current('单枚飞弹伤害'),runePower:skill.runicArcana?.spellPowerPerRune[star-1]??0,runeWave:current('能量波伤害'),
     inspireSpeed:(skill.inspiration?.attackSpeedBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
     inspireDuration:skill.inspiration?.durationSeconds??0,
     guardSlow:skill.lanternGuard?.maxAttackSpeedPenalty??0,

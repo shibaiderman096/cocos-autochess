@@ -8,8 +8,10 @@ const {buildSkillDescription,buildSkillStatRows}=require('../assets/scripts/ui/S
 const {sunlightTierText}=require('../assets/scripts/ui/SunlightPresentation.ts');
 const retired=require('./fixtures/retired-20261023.json');
 const roster=[...require('../assets/resources/config/units.json'),...retired.units],skills={...require('../assets/resources/config/skills.json'),...retired.skills},battle=structuredClone(require('../assets/resources/config/battle.json'));
+// A synthetic tenth carrier preserves trait-tier coverage without shipping a removed character.
+roster.push({...roster.find(u=>u.id==='helion'),id:'sunlight_fixture',name:'辉光占位'});
 // Historical skill regression fixtures retain their original faction membership.
-for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','seraphiel'];t.members=old;}
+for(const t of battle.traits)if(['shadow','sunlight'].includes(t.id)){const old=t.id==='shadow'?['abyss_iron_guard','blackfeather_hunter','nightmare_lamplighter','shadow_seam_assassin','soulcleaver_general','ghostflame_blade','eclipse_crossbow','nether_lantern_witch','blackstar_warlock','voidscar_reaver']:['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','sunlight_fixture'];t.members=old;}
 const clone=x=>JSON.parse(JSON.stringify(x)),trait=battle.traits.find(t=>t.id==='sunlight'),ids=trait.members;
 const dummy={id:'dummy',name:'target',hp:100000,atk:0,armor:0,mr:0,atkSpeed:.1,range:1,moveTicks:6,maxMana:0,startMana:0,manaPerHit:0,critChance:0};
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
@@ -24,7 +26,7 @@ function create(id,star=1,{source={x:3,y:2},enemies=[{x:3,y:3},{x:6,y:7}],friend
 }
 function activate(f,target=f.targets[0]){f.s.sunlight.activate(f.src,f.sk,target?.id);settle(f.s);}
 const hits=f=>f.s.events.filter(e=>e.t==='hit'&&e.source===f.src.id);
-assert.deepEqual(ids,['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','seraphiel']);
+assert.deepEqual(ids,['helion','saiph','bronda','kaeru','leon','phinia','aurelia','celine','oris','sunlight_fixture']);
 assert.equal(resolveTraits([trait],[...ids,...ids])[0].count,10);
 for(const side of [0,1])for(let n=1;n<=10;n++){
  const c=config([clone(trait)]),base={...dummy,hp:1000};
@@ -144,20 +146,7 @@ for(const star of [1,2,3]){
  const p=create('celine',star,{source:{x:6,y:0},enemies:[{x:0,y:1},{x:6,y:7}],friends:[{x:0,y:0},{x:1,y:0}],bonuses:{spellPower:50}});p.friends.forEach(u=>u.hp=100);activate(p);assert.equal(p.friends[0].shield,Math.round([180,270,1080][star-1]*1.5));advance(p.s,79);assert.equal(hits(p).length,0);advance(p.s,1);assert.equal(hits(p)[0].dmg,[300,450,1800][star-1]);assert.equal(p.s.events.find(e=>e.t==='stun').duration,[.75,1,2.5][star-1]);assert.equal(p.friends[0].hp,100+Math.round([100,150,600][star-1]*1.5));
  const j=create('oris',star,{enemies:[0,1,2,3,4,5].map(x=>({x,y:5})),bonuses:{spellPower:100}});activate(j);const expected=[3,4,6][star-1];assert.equal(j.s.events.filter(e=>e.t==='sun_pulse'&&e.effect==='warning').length,expected);advance(j.s,15);assert.equal(hits(j).length,0);advance(j.s,1);assert.equal(hits(j).length,expected*2);assert.equal(hits(j).find(e=>e.dmgType==='magic').dmg,[600,900,5000][star-1]);assert.equal(hits(j).find(e=>e.dmgType==='true').dmg,[100,150,2000][star-1]);
  assert.ok(j.targets.every(u=>!('sunlightJudged' in u.snapshot(j.s.tick))));
- const t=create('seraphiel',star,{enemies:[{x:2,y:5},{x:5,y:5}]});activate(t);assert.equal(t.src.skillUntargetable,false);advance(t.s,([2,4,10][star-1]-1)*4);assert.equal(t.src.skillUntargetable,false);
- assert.equal(hits(t).filter(e=>e.dmgType==='physical').length,[2,4,10][star-1]);assert.equal(hits(t).filter(e=>e.dmgType==='true').length,0,'end-of-transit mark damage and its bonus are removed');
- assert.equal(new Set(hits(t).map(e=>e.id)).size,1,'the whole combo locks one target');assert.equal(hits(t).at(-1).dmg,[450,675,600][star-1]);
- assert.ok(!t.s.events.some(e=>e.t==='sun_pulse'&&e.kind==='transit'&&e.effect==='burst'));
-}
-const solo=create('seraphiel',1,{enemies:[{x:3,y:5}]});activate(solo);advance(solo.s,16);assert.deepEqual(hits(solo).map(e=>e.dmg),[90,450]);assert.equal(solo.src.skillUntargetable,false);
-const interrupted=create('seraphiel');activate(interrupted);interrupted.s.sunlight.interrupt(interrupted.src);advance(interrupted.s,20);assert.deepEqual(hits(interrupted).map(e=>[e.dmgType,e.dmg]),[['physical',90]]);assert.equal(interrupted.src.skillUntargetable,false);
-const route=create('seraphiel',1,{enemies:[{x:1,y:5},{x:3,y:5},{x:5,y:5}]});activate(route);advance(route.s,16);assert.equal(new Set(hits(route).map(e=>e.id)).size,1,'surviving targets do not cause extra jumps');
-// A 10-trait judgment target grants neither removed skill bonus nor an end explosion.
-{
- const c=config([clone(trait)]),s=new BattleSim(c,[...ids.map((id,i)=>({cfg:{...dummy,id,hp:1000},side:0,x:i%7,y:Math.floor(i/7)})),{cfg:dummy,side:1,x:3,y:7}],{seed:19});
- s.start();advance(s,40);const bow=s.units[6],transit=s.units[9],target=s.units.at(-1);assert.equal(s.events.filter(e=>e.t==='hit').length,2);
- s.sunlight.activate(bow,c.getSkill('sunpiercer_lance'),target.id);settle(s);assert.ok(s.events.filter(e=>e.t==='hit'&&e.source===bow.id).every(e=>e.dmgType==='physical'));
- s.sunlight.activate(transit,c.getSkill('corona_transit'),target.id);settle(s);advance(s,16);const jumps=s.events.filter(e=>e.t==='hit'&&e.source===transit.id);assert.equal(jumps.length,2);assert.ok(jumps.every(e=>e.dmgType==='physical'));assert.equal(transit.skillUntargetable,false);
+
 }
 const timeout=create('phinia');activate(timeout);advance(timeout.s,120);assert.equal(timeout.src.skillAttackSpeedBonus,0);assert.equal(hits(timeout).length,0);
 // Shield groups cannot spend the same absorbed damage twice.
@@ -179,9 +168,9 @@ for(const id of ids){
 }
 for(const tier of trait.breakpoints)assert.doesNotMatch(sunlightTierText(tier),/undefined|NaN/);
 for(const tier of trait.breakpoints){assert.doesNotMatch(sunlightTierText(tier),/标记|印记|破盾|未受审判|5%的真实/);assert.doesNotMatch(JSON.stringify(tier.sunlight),/burstMaxHpFraction|burstRadius|continuous/);}
-assert.deepEqual(ids.map(id=>roster.find(u=>u.id===id).name),['赫利昂','赛芙','布隆达','凯鲁','雷昂','菲妮娅','艾蕾娅','瑟琳','奥瑞斯','塞拉菲尔']);
+assert.deepEqual(ids.map(id=>roster.find(u=>u.id===id).name),['赫利昂','赛芙','布隆达','凯鲁','雷昂','菲妮娅','艾蕾娅','瑟琳','奥瑞斯','辉光占位']);
 for(const id of ids){const skill=skills[roster.find(u=>u.id===id).skillId];assert.doesNotMatch(JSON.stringify(skill),/标记|印记|judgmentDamage|judgmentBonus|markSeconds|markDamage/);}
-for(const [id,modify] of [['solar_prayer',s=>s.sunlight.durationSeconds=0],['corona_transit',s=>s.sunlight.counts=[1,2,2.5]],['celestial_judgment',s=>s.sunlight.allEnemiesStar=4]]){const bad=clone(skills);modify(bad[id]);assert.throws(()=>new ConfigManager().setSkills(bad),/Invalid sunlight/);}
+for(const [id,modify] of [['solar_prayer',s=>s.sunlight.durationSeconds=0],['celestial_judgment',s=>s.sunlight.allEnemiesStar=4]]){const bad=clone(skills);modify(bad[id]);assert.throws(()=>new ConfigManager().setSkills(bad),/Invalid sunlight/);}
 for(const modify of [s=>s.shieldMaxHpFraction=-1,s=>s.formation.frontReduction=1.01,s=>s.judgment.intervalSeconds=0,s=>s.judgment.targetMaxHpFraction=-.1,s=>s.judgment.targetMaxHpFraction=1.1,s=>s.judgment.targetMaxHpFraction=NaN,s=>s.judgment.independentStatistics='yes',s=>s.judgment.statisticsStar=0,s=>s.judgment.statisticsStar=5,s=>s.judgment.statisticsStar=1.5,s=>s.judgment.statisticsStar=NaN,s=>s.battlefield=1]){
  const bad=clone(battle);modify(bad.traits.find(t=>t.id==='sunlight').breakpoints[3].sunlight);assert.throws(()=>new ConfigManager().setBattle(bad),/Invalid sunlight/);
 }

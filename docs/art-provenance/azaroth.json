@@ -1,0 +1,295 @@
+{
+  "route": "Built-in image_gen",
+  "sourceSha256": "c6c731d3259647965b4014ac6ec89b2d55a4171ebad83eacf645b5b01b391c48",
+  "portraitSourceSha256": "4f631d42d1221aad29268d87d4b154236c6551dcb80037c4203c4deb08fe8e18",
+  "grid": [
+    4,
+    4
+  ],
+  "cell": [
+    256,
+    256
+  ],
+  "padding": 40,
+  "frames": [
+    {
+      "index": 0,
+      "sourceRect": [
+        0,
+        0,
+        314,
+        314
+      ],
+      "size": [
+        166,
+        100
+      ],
+      "offset": [
+        45,
+        78
+      ]
+    },
+    {
+      "index": 1,
+      "sourceRect": [
+        314,
+        0,
+        627,
+        314
+      ],
+      "size": [
+        166,
+        112
+      ],
+      "offset": [
+        45,
+        72
+      ]
+    },
+    {
+      "index": 2,
+      "sourceRect": [
+        627,
+        0,
+        940,
+        314
+      ],
+      "size": [
+        176,
+        156
+      ],
+      "offset": [
+        40,
+        50
+      ]
+    },
+    {
+      "index": 3,
+      "sourceRect": [
+        940,
+        0,
+        1254,
+        314
+      ],
+      "size": [
+        164,
+        105
+      ],
+      "offset": [
+        46,
+        75
+      ]
+    },
+    {
+      "index": 4,
+      "sourceRect": [
+        0,
+        314,
+        314,
+        627
+      ],
+      "size": [
+        144,
+        135
+      ],
+      "offset": [
+        56,
+        60
+      ]
+    },
+    {
+      "index": 5,
+      "sourceRect": [
+        314,
+        314,
+        627,
+        627
+      ],
+      "size": [
+        158,
+        152
+      ],
+      "offset": [
+        49,
+        52
+      ]
+    },
+    {
+      "index": 6,
+      "sourceRect": [
+        627,
+        314,
+        940,
+        627
+      ],
+      "size": [
+        176,
+        169
+      ],
+      "offset": [
+        40,
+        43
+      ]
+    },
+    {
+      "index": 7,
+      "sourceRect": [
+        940,
+        314,
+        1254,
+        627
+      ],
+      "size": [
+        160,
+        149
+      ],
+      "offset": [
+        48,
+        53
+      ]
+    },
+    {
+      "index": 8,
+      "sourceRect": [
+        0,
+        627,
+        314,
+        940
+      ],
+      "size": [
+        124,
+        99
+      ],
+      "offset": [
+        66,
+        78
+      ]
+    },
+    {
+      "index": 9,
+      "sourceRect": [
+        314,
+        627,
+        627,
+        940
+      ],
+      "size": [
+        163,
+        99
+      ],
+      "offset": [
+        46,
+        78
+      ]
+    },
+    {
+      "index": 10,
+      "sourceRect": [
+        627,
+        627,
+        940,
+        940
+      ],
+      "size": [
+        176,
+        155
+      ],
+      "offset": [
+        40,
+        50
+      ]
+    },
+    {
+      "index": 11,
+      "sourceRect": [
+        940,
+        627,
+        1254,
+        940
+      ],
+      "size": [
+        154,
+        111
+      ],
+      "offset": [
+        51,
+        72
+      ]
+    },
+    {
+      "index": 12,
+      "sourceRect": [
+        0,
+        940,
+        314,
+        1254
+      ],
+      "size": [
+        145,
+        129
+      ],
+      "offset": [
+        55,
+        63
+      ]
+    },
+    {
+      "index": 13,
+      "sourceRect": [
+        314,
+        940,
+        627,
+        1254
+      ],
+      "size": [
+        158,
+        147
+      ],
+      "offset": [
+        49,
+        54
+      ]
+    },
+    {
+      "index": 14,
+      "sourceRect": [
+        627,
+        940,
+        940,
+        1254
+      ],
+      "size": [
+        176,
+        172
+      ],
+      "offset": [
+        40,
+        42
+      ]
+    },
+    {
+      "index": 15,
+      "sourceRect": [
+        940,
+        940,
+        1254,
+        1254
+      ],
+      "size": [
+        152,
+        137
+      ],
+      "offset": [
+        52,
+        59
+      ]
+    }
+  ],
+  "asset": {
+    "file": "assets/resources/art/fx/demon_azaroth.png",
+    "width": 1024,
+    "height": 1024,
+    "transparentFraction": 0.8266324996948242,
+    "sha256": "0d0662343299ee21afbfc6bffc95cc58d641f0951535f89e8897374e614f69fe"
+  }
+}

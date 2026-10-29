@@ -1,0 +1,17 @@
+{
+  "route": "Built-in image_gen",
+  "art_source": "host_image",
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frames": 16,
+    "transparent": true
+  },
+  "families": [
+    "grimoire charge",
+    "orbiting rune",
+    "rightward missile",
+    "rightward beam"
+  ],
+  "prompt": "Production transparent game VFX spritesheet. Square canvas, EXACT 4x4 regular grid, sixteen isolated SMALL THUMBNAIL sprites surrounded by very large EMPTY TRANSPARENT space. Each individual sprite occupies only the central HALF of its equal square cell, leaving the outside quarter of EACH cell fully empty on every side. Precise local centers; rows and columns evenly aligned. Absolutely NO haze between sprites. No particles outside the central HALF cell. NO fog, NO cloud, NO broad bloom, NO glow spilling into the gutters, NO backgrounds. Clean crisp hand-painted enamel-like magic silhouettes with a tiny contained light halo. Premium fantasy blue-white starlight, pale gold engraved lines, violet accent edges. These are EFFECTS ONLY, no characters. First row, four evolving casting-seal frames: small tilted elliptical astrolabe with an open spectral grimoire in the center; dim opening, bright opening, gathering starlight, full charged. Second row four loop frames of a single small diamond shaped star rune talisman; intricate gold and silver geometry, bright white center, slightly varying orientation. Third row four frames of a SINGLE pointed magical comet going RIGHT with tapered tail to LEFT; bright white core blue flame, same registration and small scale, no detached flecks. Bottom row four frames of a small horizontal rightward energy beam with an astrolabe emitter on the left, all inside the central HALF cell: ignition, full length, stronger white core, dissolving wisps. All four beam frames have the same length. Spell art never touches a cell edge. No borders, no grid lines, no labels, no numbers, no lettering, no watermark. Native RGBA TRANSPARENT background. Leave lots of blank space. Small sprites, enormous transparent gutters."
+}

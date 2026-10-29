@@ -44,7 +44,7 @@ const base={id:'test',name:'test',hp:10000,atk:100,armor:0,mr:0,atkSpeed:1,range
 let chest=false,shop=false;
 for(let seed=1;seed<=48&&(!chest||!shop);seed++){
  const s=make(undefined,false,seed),grant=s.stageProgression.grantExplorerReward(100,1,0,1000);chest ||=grant.equipmentIds.some(id=>id.startsWith('radiant_'));
- const value=grant.units.reduce((v,id)=>v+require('../assets/scripts/core/ShopConfig.ts').COST_PRICE[s.cfg.getUnit(id).cost],0)+grant.equipmentIds.reduce((v,id)=>v+s.cfg.equipmentPrice(id,input.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+grant.health*2+grant.gold;assert.equal(value,100);
+ const value=grant.units.reduce((v,u)=>v+s.cfg.getUnit(u.unitId).cost*3**(u.star-1)*u.star,0)+grant.equipmentIds.reduce((v,id)=>v+s.cfg.equipmentPrice(id,input.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]),0)+grant.health*2+grant.gold;assert.equal(value,100);
  merchant(s);shop ||=s.pendingStageReward.offers.some(o=>o.kind==='equipment'&&o.id.startsWith('radiant_'));
 }
 assert.ok(chest&&shop,'radiant gear is drawn from real mixed chests and travelling shops');

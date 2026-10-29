@@ -46,7 +46,7 @@ export class CollectionPanel {
   private entries(): Array<{ id: string; name: string }> {
     if (this.category === 'traits') return this.traits.map(t => t.config);
     if (this.category === 'equipment') return this.cfg.allEquipment();
-    return this.cfg.allUnits().slice().sort((a, b) => (a.cost ?? 1) - (b.cost ?? 1) || a.id.localeCompare(b.id));
+    return [...this.cfg.allUnits(),...this.cfg.allSummons()].sort((a, b) => (a.cost ?? 1) - (b.cost ?? 1) || a.id.localeCompare(b.id));
   }
   private picture(parent: Node, path: string | undefined, x: number, y: number, size: number): void {
     if (!path) return;
@@ -104,8 +104,8 @@ export class CollectionPanel {
       const detail = inspector.initUnitInspector(); detail.setPosition(285, -20, 0);
       const base = this.cfg.getUnit(entry.id), unit = this.cfg.scaleUnit(base, this.star);
       inspector.showUnitDetail(buildUnitDetailData(this.cfg, unit, this.star));
-      [1, 2, 3].forEach(star => {
-        button(host, `${star} 星`, 285 + (star - 2) * 100, -288, 86, 36,
+      (base.summonOnly?[1,2,3,4]:[1,2,3]).forEach(star => {
+        button(host, `${star} 星`, 285 + (star - (base.summonOnly?2.5:2)) * 100, -288, 86, 36,
           () => { this.star = star; this.render(); }, this.star === star).name = `collectionStar_${star}`;
       });
       return;

@@ -24,14 +24,23 @@ const SOUNDS = {
   chest: { gain: .65, cooldown: 400 }, reward: { gain: .65, cooldown: 160 },
   portal: { gain: .65, cooldown: 600 }, level_up: { gain: .7, cooldown: 400 },
   boss_start: { gain: .75, cooldown: 500 }, wave: { gain: .5, cooldown: 400 },
+  sword: { gain: .28, cooldown: 150 }, claw: { gain: .26, cooldown: 160 },
+  heavy: { gain: .3, cooldown: 210 }, mechanical_melee: { gain: .25, cooldown: 180 },
+  bite: { gain: .25, cooldown: 180 }, chain: { gain: .28, cooldown: 200 },
+  roar: { gain: .36, cooldown: 550 }, cast_fire: { gain: .38, cooldown: 320 },
+  cast_ice: { gain: .38, cooldown: 400 }, cast_corrosion: { gain: .34, cooldown: 350 },
+  cast_drain: { gain: .34, cooldown: 350 }, cast_rune: { gain: .36, cooldown: 350 },
+  cast_smash: { gain: .4, cooldown: 400 }, cast_stars: { gain: .35, cooldown: 400 },
+  cast_blessing: { gain: .35, cooldown: 450 }, cast_gravity: { gain: .38, cooldown: 450 },
 } as const;
 export type SoundId = keyof typeof SOUNDS;
 const VARIANTS: Partial<Record<SoundId, readonly string[]>> = {
   click: ['click', 'click_2', 'click_3'], melee: ['melee', 'melee_2', 'melee_3'], ranged: ['ranged', 'ranged_2'],
+  sword: ['sword', 'sword_2', 'sword_3'], claw: ['claw', 'claw_2'], cast_fire: ['cast_fire', 'cast_fire_2'],
 };
 type Lane = 'ui' | 'battle' | 'ability' | 'cue';
-const BATTLE = new Set<SoundId>(['melee', 'ranged', 'ranged_arrow', 'ranged_magic', 'ranged_mechanical', 'hit']);
-const ABILITIES = new Set<SoundId>(['cast', 'cast_shadow', 'cast_sunlight', 'cast_astral', 'cast_mechanical', 'heal', 'shield', 'stun', 'death', 'teleport', 'dash', 'meteor', 'explosion', 'rail']);
+const BATTLE = new Set<SoundId>(['melee', 'ranged', 'ranged_arrow', 'ranged_magic', 'ranged_mechanical', 'hit', 'sword', 'claw', 'heavy', 'mechanical_melee', 'bite', 'chain']);
+const ABILITIES = new Set<SoundId>(['cast', 'cast_shadow', 'cast_sunlight', 'cast_astral', 'cast_mechanical', 'heal', 'shield', 'stun', 'death', 'teleport', 'dash', 'meteor', 'explosion', 'rail', 'roar', 'cast_fire', 'cast_ice', 'cast_corrosion', 'cast_drain', 'cast_rune', 'cast_smash', 'cast_stars', 'cast_blessing', 'cast_gravity']);
 const CUES = new Set<SoundId>(['battle_start', 'boss_start', 'victory', 'defeat', 'portal', 'level_up']);
 const STORAGE_KEY = 'autochess.audioVolume';
 const MUSIC_STORAGE_KEY = 'autochess.musicVolume';

@@ -23,7 +23,7 @@ function make(count=3,save,mode='budget-v1',seed=71,run=inputs.run){
  return s;
 }
 const price=(s,id)=>s.cfg.equipmentPrice(id,inputs.run.stageEncounters.shop.equipmentPrices[deps.equipmentPolicy.tiers[id]]);
-const value=(s,g)=>g.units.reduce((sum,id)=>sum+COST_PRICE[validCost(s.cfg.getUnit(id).cost)],0)+g.equipmentIds.reduce((sum,id)=>sum+price(s,id),0)+g.health*2+g.gold;
+const value=(s,g)=>g.units.reduce((sum,u)=>sum+s.cfg.getUnit(u.unitId).cost*3**(u.star-1)*u.star,0)+g.equipmentIds.reduce((sum,id)=>sum+price(s,id),0)+g.health*2+g.gold;
 for(const [count,base,kill,multiplier]of [[3,10,2,2],[5,25,2,2],[7,50,3,2],[9,80,5,3]]){
  const s=make(count),trait=resolveTraits(s.cfg.battle.traits,s.owned.onBoard().map(u=>u.unitId),s.cfg.allUnits()).find(t=>t.config.id==='explorer');
  assert.equal(trait.active.count,count);assert.deepEqual(trait.active.explorer,{pointsPerBattle:base,pointsPerKill:kill,lossMultiplier:multiplier,rewardValuePerPoint:.1});
@@ -46,20 +46,14 @@ for(const [count,base,kill,multiplier]of [[3,10,2,2],[5,25,2,2],[7,50,3,2],[9,80
 console.log('PASS explorer: all four tiers, real credited kills, win/loss/draw multipliers, once-only settlement, cross-wave bank, deterministic claim and exact reward value');
 const inactive=make(2);assert.equal(inactive.explorerChestVisible,false);assert.equal(inactive.explorerPoints,0);
 const noEffect=freshExplorerProgress();settleExplorerProgress(noEffect,undefined,10,1,1);assert.equal(noEffect.points,0);
-const held=make(3);held.save.explorerProgress.points=32;held.save.stageProgress.unitCredit=2;held.save.stageProgress.equipmentCredit=1;
+const held=make(3);held.save.explorerProgress.points=32;
 assert.equal(held.explorerChestValue,4);assert.equal(held.stageProgression.grantExplorerReward(held.explorerChestValue,held.flow.wave.id,0).value,4);
-assert.equal(held.save.stageProgress.unitCredit,2);assert.equal(held.save.stageProgress.equipmentCredit,1,'explorer cannot consume unrelated stage credit');
 const failed=make(3);failed.save.explorerProgress.points=81;const fight=failed.startBattle();fight.end(1);failed.settleBattle();assert.equal(failed.explorerPoints,101);
 const full=make(3);full.save.explorerProgress.points=100;
 for(const u of full.cfg.allUnits())while(full.pool.take(u.id)){}
 const reward=full.openExplorerChest().stageReward;assert.deepEqual(reward.units,[]);assert.equal(reward.health,0);assert.equal(value(full,reward),10);
-const old=make(3).snapshot();delete old.explorerProgress;assert.equal(make(3,old).explorerPoints,0);
-const corrupt=clone(old);corrupt.explorerProgress={points:-1,lastSettledWaveId:0,lastOpenedWaveId:0};assert.throws(()=>make(3,corrupt),/explorer progress/);
-// Reserving an unassigned trait does not invalidate existing budget-generation saves.
-const cfg=new ConfigManager();cfg.setUnits(inputs.units);cfg.setSkills(inputs.skills);cfg.setEquipment(inputs.equipment);const oldBattle=clone(inputs.battle);oldBattle.traits=oldBattle.traits.filter(t=>t.id!=='explorer');cfg.setBattle(oldBattle);
-const legacy=new RunSession(cfg,inputs.run,inputs.waves,{...deps,runSeed:71,stageCount:6,enemyGenerationMode:'budget-v1'});cfg.setBattle({...inputs.battle,traits:inputs.battle.traits.map(t=>t.id==='explorer'?{...t,members:[],pendingMembers:true}:t)});
-assert.equal(new RunSession(cfg,inputs.run,inputs.waves,{...deps,save:legacy.snapshot(),enemyGenerationMode:'budget-v1'}).explorerPoints,0);
-console.log('PASS explorer safety: inactive tiers, upward rounding, unrelated-credit isolation, defeat banking, exhausted inventory, old-save adoption and invalid-save rejection');
+const corrupt=make(3).snapshot();corrupt.explorerProgress={points:-1,lastSettledWaveId:0,lastOpenedWaveId:0};assert.throws(()=>make(3,corrupt),/explorer progress/);
+console.log('PASS explorer safety: inactive tiers, upward rounding, defeat banking, exhausted inventory and invalid current-save rejection');
 for(const kind of ['monster','elite','boss','normal']){
  const s=make(3),w=s.waves.find(w=>w.stage===4&&w.encounterKind===kind);assert.ok(s.debugJump(w.stage,w.round));
  const sim=s.startBattle();assert.ok(sim);sim.end(1);s.settleBattle();assert.equal(s.explorerPoints,kind==='monster'?0:20);
@@ -80,9 +74,9 @@ assert.equal(twice.explorerChestVisible,true);assert.equal(twice.explorerChestOp
 assert.equal(twice.openExplorerChest().ok,false,'zeroing the bank prevents duplicate grants');
 
 // Gold participates in the full random budget above 30, rather than replacing a fixed excess.
-const legacyRun=clone(inputs.run);delete legacyRun.stageEncounters.chestReward.explorerGoldThreshold;
+const noGoldRun=clone(inputs.run);delete noGoldRun.stageEncounters.chestReward.explorerGoldThreshold;
 for(const budget of [1,4,29,30]){
- const a=make(3,undefined,'budget-v1',83),b=make(3,undefined,'budget-v1',83,legacyRun);
+ const a=make(3,undefined,'budget-v1',83),b=make(3,undefined,'budget-v1',83,noGoldRun);
  const grant=a.stageProgression.grantExplorerReward(budget,a.flow.wave.id,10);
  assert.deepEqual(grant,b.stageProgression.grantExplorerReward(budget,b.flow.wave.id,10),'30 and below retain the exact reward roll');
 }

@@ -1,4 +1,5 @@
 import type { OwnedUnit } from '../core/OwnedUnits';
+import type { ChestUnitReward } from '../core/StageProgression';
 
 export interface RewardDelivery {
   unitId: string;
@@ -7,7 +8,7 @@ export interface RewardDelivery {
 }
 
 /** Read actual claim results; never predict rewards, roll RNG, or choose an inventory slot. */
-export function rewardDeliveryPlan(rewards: readonly string[], before: readonly OwnedUnit[], after: readonly OwnedUnit[]): RewardDelivery[] {
+export function rewardDeliveryPlan(rewards: readonly ChestUnitReward[], before: readonly OwnedUnit[], after: readonly OwnedUnit[]): RewardDelivery[] {
   const copies = (unit: OwnedUnit): number => 3 ** (unit.star - 1);
   const old = new Map(before.map(unit => [unit.uid, unit]));
   const gain = new Map<string, number>();
@@ -16,10 +17,11 @@ export function rewardDeliveryPlan(rewards: readonly string[], before: readonly 
   const targets = after.filter(unit => !old.has(unit.uid) || unit.star > old.get(unit.uid)!.star)
     .sort((a, b) => Number(old.has(a.uid)) - Number(old.has(b.uid)) || a.uid - b.uid)
     .map(unit => ({unit, capacity: copies(unit) - (old.has(unit.uid) ? copies(old.get(unit.uid)!) : 0)}));
-  return rewards.map(unitId => {
-    const target = (gain.get(unitId) ?? 0) > 0 ? targets.find(t => t.unit.unitId === unitId && t.capacity > 0) : undefined;
+  return rewards.map(({unitId,star}) => {
+    const amount=3**(star-1);
+    const target = (gain.get(unitId) ?? 0) >= amount ? targets.find(t => t.unit.unitId === unitId && t.capacity >= amount) : undefined;
     if (!target) return {unitId};
-    target.capacity--; gain.set(unitId, gain.get(unitId)! - 1);
+    target.capacity-=amount; gain.set(unitId, gain.get(unitId)! - amount);
     return {unitId, uid: target.unit.uid};
   });
 }
