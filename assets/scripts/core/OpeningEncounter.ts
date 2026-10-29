@@ -52,7 +52,7 @@ export function openingEncounterChoices(rules: OpeningEncounterRules) {
       {id:'secondLife' as const,name:'再续前缘',description:`每场战斗首次友军阵亡，${e.reviveSeconds}秒后以${e.reviveHealthFraction*100}%生命复活一次。`},
       {id:'kindred' as const,name:'同道来援',description:`从第${e.giftStartStage}大阶段起，每阶段随机获得一张最高已激活羁绊的棋子；并列随机，满备战席暂存。`},
       {id:'compound' as const,name:'复利无穷',description:'利息无上限，仍按战斗开始前金币每10金币+1。'},
-      {id:'luckyRoll' as const,name:'好运连连',description:`棋子商店每次付费或关卡刷新有${e.freeRefreshChance*100}%概率获得一次免费刷新；消耗免费次数不再触发。`},
+      {id:'luckyRoll' as const,name:'好运连连',description:`棋子商店每次付费、免费或关卡刷新有${e.freeRefreshChance*100}%概率获得一次免费刷新；每次仅判定一次，不自动连刷。`},
     ] : []),
     { id: 'inspiration' as const, name: '灵感迸发', description: `每次升级获得${rules.refreshesPerLevel}次免费刷新，可累积使用。` },
     { id: 'stipend' as const, name: '行旅津贴', description: `从第${rules.incomeStartStage}阶段开始，每阶段获得${rules.incomePerStage}金币。` },

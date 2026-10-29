@@ -85,9 +85,19 @@ const lucky=make('luckyRoll');deploy(lucky);finish(lucky);lucky.nextWave();lucky
 for(let i=0;i<30;i++){
  const free=lucky.freeRefreshes,idx=lucky.save.shopRollIndex+1,gold=lucky.economy.gold;
  assert.ok(lucky.refreshShop().ok);
- const expected=free?free-1:(lucky.random.stream('encounter',lucky.flow.wave.id,4900+idx).next()<.5?1:0);
+ const expected=(free?free-1:0)+(lucky.random.stream('encounter',lucky.flow.wave.id,4900+idx).next()<.5?1:0);
  assert.equal(lucky.freeRefreshes,expected);assert.equal(lucky.economy.gold,gold-(free?0:2));
 }
+let freeHits=0,freeMisses=0;
+for(let i=0;i<20;i++){
+ lucky.save.openingEncounter.freeRefreshes=1;
+ const gold=lucky.economy.gold,index=lucky.save.shopRollIndex+1;
+ const hit=lucky.random.stream('encounter',lucky.flow.wave.id,4900+index).next()<.5;
+ assert.ok(lucky.refreshShop().ok);assert.equal(lucky.economy.gold,gold);
+ assert.equal(lucky.freeRefreshes,hit?1:0);assert.equal(lucky.save.shopRollIndex,index,'one click performs exactly one roll');
+ if(hit)freeHits++;else freeMisses++;
+}
+assert.ok(freeHits>0&&freeMisses>0,'free rolls can award coupons and can miss');
 assert.equal(make('luckyRoll',lucky.snapshot()).freeRefreshes,lucky.freeRefreshes);
 const locked=make('luckyRoll');deploy(locked);finish(locked);locked.shop.locked=true;const lf=locked.freeRefreshes;locked.nextWave();assert.equal(locked.freeRefreshes,lf);
 console.log('PASS uncapped entry-wallet interest, preview/overflow, seeded paid/free/locked round refresh');

@@ -527,7 +527,7 @@ export class RunSession {
     if (error) return fail(error);
     if (free) this.save.openingEncounter!.freeRefreshes--;
     this.save.shopRollIndex = index;
-    if(!free)this.rewardShopRoll(index);
+    this.rewardShopRoll(index);
     return ok();
   }
   toggleShopLock(): ActionResult {
