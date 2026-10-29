@@ -47,12 +47,12 @@ assert.equal(make(natural.snapshot()).freeRefreshes,2);
 console.log('PASS opening choice, invalid/stale guards, purchase/natural/multiple level-ups, zero-gold free rolls, persistence and once-only settlement');
 
 let stipend=make(undefined,'stipend');assert.ok(stipend.chooseOpeningEncounter('stipend').ok);
-for(let round=1;round<=3;round++){finish(stipend);claim(stipend);const gold=stipend.economy.gold;assert.ok(stipend.nextWave());assert.equal(stipend.economy.gold,gold+(round===3?10:0));}
+for(let round=1;round<=3;round++){finish(stipend);claim(stipend);const gold=stipend.economy.gold;assert.ok(stipend.nextWave());assert.equal(stipend.economy.gold,gold+(round===3?15:0));}
 claim(stipend);
 const at2=stipend.economy.gold;stipend=make(stipend.snapshot());assert.equal(stipend.economy.gold,at2,'reload does not re-grant stage income');
 assert.ok(stipend.debugJump(2,stipend.waves.find(w=>w.stage===2&&w.encounterKind==='normal').round));assert.equal(stipend.economy.gold,at2);
-assert.ok(stipend.debugJump(3,stipend.waves.find(w=>w.stage===3&&w.encounterKind==='normal').round));assert.equal(stipend.economy.gold,at2+10);
-assert.ok(stipend.debugJump(2,stipend.waves.find(w=>w.stage===2&&w.encounterKind==='normal').round));assert.ok(stipend.debugJump(3,stipend.waves.find(w=>w.stage===3&&w.encounterKind==='normal').round));assert.equal(stipend.economy.gold,at2+10,'revisiting a stage does not duplicate stipend');
+assert.ok(stipend.debugJump(3,stipend.waves.find(w=>w.stage===3&&w.encounterKind==='normal').round));assert.equal(stipend.economy.gold,at2+15);
+assert.ok(stipend.debugJump(2,stipend.waves.find(w=>w.stage===2&&w.encounterKind==='normal').round));assert.ok(stipend.debugJump(3,stipend.waves.find(w=>w.stage===3&&w.encounterKind==='normal').round));assert.equal(stipend.economy.gold,at2+15,'revisiting a stage does not duplicate stipend');
 console.log('PASS stage income: none during stage 1, +10 entering stage 2 and 3, no per-round/reload/revisit duplicate');
 
 const tempered=make(undefined,'tempered');assert.ok(tempered.chooseOpeningEncounter('tempered').ok);tempered.level.addExp(1000);
@@ -74,13 +74,13 @@ merged.mergeAll();assert.equal(merged.all().length,1);assert.equal(merged.all()[
 console.log('PASS survivor health: actual combat UID map, dead/reserve exclusion, draw, flat two-star bonus, reload, stacking and merge preservation');
 
 const seen=new Set(),combinations=new Set();
-for(let seed=1;seed<=1000;seed++){
+for(let seed=1;seed<=10000;seed++){
   const random=new RunRandomContext(seed),offers=drawOpeningEncounters(random.stream('encounter',1,4100));
   assert.equal(offers.length,3);assert.equal(new Set(offers).size,3);offers.forEach(id=>seen.add(id));
   assert.deepEqual(offers,drawOpeningEncounters(random.stream('encounter',1,4100)));
   combinations.add([...offers].sort().join(','));
 }
-assert.deepEqual([...seen].sort(),[...OPENING_ENCOUNTER_IDS].sort());assert.equal(combinations.size,20,'all six-choose-three combinations reachable');
+assert.deepEqual([...seen].sort(),[...OPENING_ENCOUNTER_IDS].sort());assert.equal(combinations.size,455,'all fifteen-choose-three combinations reachable');
 const offered=pending.save.openingEncounter.offered;
 assert.deepEqual(make(pending.snapshot()).save.openingEncounter.offered,offered);
 const unselected=make(),absent=OPENING_ENCOUNTER_IDS.find(id=>!unselected.save.openingEncounter.offered.includes(id));
@@ -89,7 +89,7 @@ assert.equal(JSON.stringify(unselected.snapshot()),untouched,'valid but unoffere
 for(const ids of [['inspiration','inspiration','study'],['inspiration','study'],['inspiration','study','invalid']]){
   const bad=make().snapshot();bad.openingEncounter.offered=ids;assert.throws(()=>make(bad),/Invalid saved opening encounter/);
 }
-console.log('PASS six-choice seeded pool: unique random three, all combinations, stable save/order, unoffered rejection and invalid choices');
+console.log('PASS fifteen-choice seeded pool: unique random three, all combinations, stable save/order, unoffered rejection and invalid choices');
 
 for(const winner of [0,1,-1]){
   const bounty=make(undefined,'bounty');assert.ok(bounty.chooseOpeningEncounter('bounty').ok);bounty.economy.add(9);
@@ -124,7 +124,7 @@ const ui=new BattleUI();ui.node=new Node('UI');new Node('Canvas').addChild(ui.no
 ui.setShopVisible(true);ui.setShopContentOccupied(true);
 const picked=[];const display=make(undefined,'tempered').openingEncounterOptions;
 ui.showOpeningEncounter(inputs.run.openingEncounter.name,display,id=>picked.push(id));
-const opening=ui.node.getChildByName('openingEncounter');
+const opening=ui.shopRewardDock.getChildByName('openingEncounter');
 assert.equal(opening.children.filter(n=>n.name.startsWith('encounter_')).length,3);
 assert.ok(ui.shopSlots.every(card=>!card.node.active));assert.equal(ui.economyControls.active,false);
 ui.showSellPreview('test',1,false);assert.equal(opening.active,false);

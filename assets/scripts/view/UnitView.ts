@@ -384,6 +384,12 @@ export class UnitView extends Component {
     });
   }
 
+  playRevive(): void {
+    const opacity=this.node.getComponent(UIOpacity);
+    if(opacity){Tween.stopAllByTarget(opacity);opacity.opacity=255;}
+    this.node.active=true;
+  }
+
   playDeath() {
     if (!this.node.active) return;
     this.animateStellar(false,null,0,50);

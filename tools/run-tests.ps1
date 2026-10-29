@@ -79,6 +79,7 @@ $taskTests = @(
   'tests/collection-unit-detail-tests.cjs'
   'tests/floating-ruins-scene-lifecycle-tests.cjs'
   'tests/opening-encounter-tests.cjs'
+  'tests/extended-encounter-tests.cjs'
   'tests/soul-lamp-and-overdrive-tests.cjs'
   'tests/stage-node-ui-tests.cjs'
   'tests/stage-advance-ui-tests.cjs'

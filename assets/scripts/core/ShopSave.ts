@@ -85,7 +85,7 @@ export function readRunSave(raw: unknown): RunSaveData {
   const invalid = () => { throw new Error('Invalid current run save'); };
   if (!d || d.version !== SAVE_VERSION || d.rulesVersion !== RUN_RULES_VERSION
     || !isRunSeed(d.runSeed) || d.enemyGenerationVersion !== 'budget-v1'
-    || !integer(d.stageCount, 3) || !integer(d.floor, 1) || !integer(d.gold, 0, 999999)
+    || !integer(d.stageCount, 3) || !integer(d.floor, 1) || !integer(d.gold)
     || !integer(d.level, 1, MAX_LEVEL) || !integer(d.exp) || !integer(d.winStreak) || !integer(d.loseStreak)
     || !integer(d.benchSlots, 1, 12) || !integer(d.shopRollIndex) || !integer(d.nextOwnedUid, 1)
     || typeof d.shopReserved !== 'boolean' || typeof d.shopLocked !== 'boolean'

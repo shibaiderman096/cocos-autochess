@@ -217,6 +217,23 @@ export class Unit {
     this.mana = cfg.startMana;
   }
 
+  /** Remove temporary combat state without replaying opening effects or resetting one-shot flags. */
+  reviveAt(pos: {x:number;y:number}, healthFraction: number): void {
+    this.x=pos.x;this.y=pos.y;this.alive=true;
+    this.hp=Math.max(1,Math.floor(this.cfg.hp*healthFraction));this.mana=0;this.manaFraction=0;
+    this.pendingCast=null;this.burns=[];this.shield=0;this.sunlightShield=0;
+    this.attackTargetId=null;this.priorityTarget=null;this.blockedTargetSinceTick=null;
+    this.atkCd=0;this.moveCd=0;this.retargetAtTick=0;
+    this.stunnedUntilTick=0;this.fearUntilTick=0;this.untargetableUntilTick=0;this.skillUntargetable=false;
+    this.manaLocked=false;this.domainUntilTick=0;this.domainRadius=0;
+    this.skillArmorBonus=0;this.skillMrBonus=0;this.skillAttackSpeedBonus=0;this.skillAttackSpeedPenalty=0;
+    this.shadowCorruption=undefined;this.shadowAttackSpeedBonus=0;
+    this.nebulaAttackSpeedPenalty=0;this.gravityResistanceBonus=0;this.tauntSourceId=null;
+    this.bloodAidUntilTick=0;this.bloodAidResistances.clear();this.bloodRebirth=null;this.bloodCleaveWindup=null;
+    this.ropeHunt=null;this.starLeap=null;this.spiderLeap=null;this.furnaceDash=null;
+    this.stellarCharge=null;this.stellarShield=null;this.hydraulicBulwark=null;
+  }
+
   get pos() { return { x: this.x, y: this.y }; }
 
   /** 快照给表现层 / 模拟器读取，防止外部直接改内部状态 */

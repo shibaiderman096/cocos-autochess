@@ -1138,7 +1138,14 @@
     "survivorMaxHp": 50,
     "victoryGold": 2,
     "battleExp": 1,
-    "victoryHeal": 3
+    "victoryHeal": 3,
+    "effects": {
+      "vacancyPerSlot": 0.1, "vacancyMaxStacks": 8,
+      "starDamageAmp": 0.4, "starDamageReduction": 0.2,
+      "monsterRewardMultiplier": 1.5,
+      "reviveSeconds": 3, "reviveHealthFraction": 0.3,
+      "giftStartStage": 2, "freeRefreshChance": 0.5
+    }
   },
   "enemyGoldBudget": {
     "version": "gold-v1",

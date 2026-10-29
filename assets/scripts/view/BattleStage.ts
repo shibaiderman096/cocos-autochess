@@ -1,7 +1,6 @@
 import { _decorator, Component, Node, resources, JsonAsset, Vec3, UITransform, EventTouch, director, sys } from 'cc';
 import { ConfigManager, BattleConfigData } from '../core/ConfigManager';
 import { BattleSim } from '../battle/BattleSim';
-import { resolveTraits } from '../battle/Traits';
 import { EquipmentConfigData } from '../battle/types';
 import { TickDriver } from '../core/TickDriver';
 import { CombatStatistics } from '../battle/CombatStatistics';
@@ -401,7 +400,7 @@ export class BattleStage extends Component {
     this.createSim(battle);
     this.createViews();
     this.ui.refreshFormation(this.owned.all(), this.cfgUnits());
-    this.ui.refreshTraits(resolveTraits(this.cfg.battle.traits ?? [], this.sim.units.filter(u => u.side === 0).map(u => u.cfg), this.cfgUnits()), this.cfgUnits());
+    this.ui.refreshTraits(this.sim.resolvedTraits[0], this.cfgUnits());
     const bv = this.boardNode.getComponent(BoardView)!;
     bv.showAstralFields(this.sim.astralFields);
     this.replayer.bind(this.sim, this.views, this.cellSize, bv, this.cfg.battle.tickMs);

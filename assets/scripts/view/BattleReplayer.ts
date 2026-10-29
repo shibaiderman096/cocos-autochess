@@ -320,6 +320,10 @@ export class BattleReplayer extends Component {
         }
         break;
       }
+      case 'revive': {
+        this.unitViews.get(e.id)?.playRevive();
+        break;
+      }
       case 'death': {
         GameAudio.play('death');
         this.stellarKnockups.delete(e.id);
