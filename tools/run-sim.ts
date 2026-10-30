@@ -76,8 +76,8 @@ let code = 0;
 try {
   const parsed = parse(process.argv.slice(2));
   if (parsed.help) {
-    console.log('npm.cmd run run-sim -- --seed 1 [--bot minimal|weak|medium|strong] [--stages 99] [--enemy-mode budget-v1] [--formation auto|L0|L1|L2|L3] [--equipment-policy auto|none] [--max-stage 6] [--max-waves 20] [--json temp/run-1.json]');
-    console.log('MinimalBaselineBot validates infrastructure only. Default campaign: 99 stages; no wall-clock waiting.');
+    console.log('npm.cmd run run-sim -- --seed 1 [--bot minimal|weak|medium|strong] [--stages 10] [--enemy-mode budget-v1] [--formation auto|L0|L1|L2|L3] [--equipment-policy auto|none] [--max-stage 6] [--max-waves 20] [--json temp/run-1.json]');
+    console.log('MinimalBaselineBot validates infrastructure only. Default campaign: 10 stages; use --stages 99 for long runs; no wall-clock waiting.');
   } else {
     let report: RunSimulationReport;
     try { report = runSimulation(loadRunInputs(), parsed.options); }

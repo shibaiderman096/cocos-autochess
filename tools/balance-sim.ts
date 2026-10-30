@@ -10,12 +10,13 @@ import type {SimulationOptions,RunInputs} from './run-simulation';
 import type {CompactRun} from './balance/metrics';
 import {compactRun,aggregateRuns} from './balance/metrics';
 import {loadBotConfigs} from './bots/factory';
+import {DEFAULT_STAGE_COUNT} from '../assets/scripts/core/RunSetup';
 
 const sha=(text:string|Buffer)=>createHash('sha256').update(text).digest('hex');
 interface Options {root:string;output:string;bot:'weak'|'medium'|'strong'|'all';seedStart:number;seedCount:number;stages:number;workers:number;
   partition:'smoke'|'development'|'baseline'|'training'|'validation'|'holdout'|'qualification'|'long-tail';formation?:SimulationOptions['formation'];config?:string;audit:boolean;experiment?:'bot-qualification-v2'|'bot-qualification-v2r1b'}
 function parse(args:string[]):Options {
-  const o:Options={root:process.cwd(),output:'',bot:'all',seedStart:1,seedCount:50,stages:99,workers:Math.min(4,cpus().length),partition:'smoke',audit:true},seen=new Set<string>();
+  const o:Options={root:process.cwd(),output:'',bot:'all',seedStart:1,seedCount:50,stages:DEFAULT_STAGE_COUNT,workers:Math.min(4,cpus().length),partition:'smoke',audit:true},seen=new Set<string>();
   const names=['--output','--bot','--seed-start','--seed-count','--stages','--workers','--partition','--formation','--config','--audit','--experiment'];
   for(let n=0;n<args.length;n++){const key=args[n],v=args[++n];if(!names.includes(key)||seen.has(key)||v===undefined)throw Error('Invalid or repeated balance argument: '+key);seen.add(key);
     if(key==='--output')o.output=v;else if(key==='--config')o.config=v;

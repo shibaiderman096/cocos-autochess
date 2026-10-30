@@ -22,6 +22,7 @@ import type { RunSaveData } from './ShopSave';
 import { RunRandomContext, RUN_RULES_VERSION, DEFAULT_RUN_SEED } from './RunRandomContext';
 import type { ActionResult, RunAction, RunPlayerPort, RunSessionOptions, RunSessionState, SessionSettlement } from './RunSessionTypes';
 import { stableEnemyJson, combatConfigurationIdentity } from './EnemyGenerationTypes';
+import { configIdentityHash, matchesConfigIdentity } from './ConfigIdentity';
 import type { EnemyGenerationOptions } from './RunSetup';
 import { EnemyFormation,staticFormation } from './EnemyFormation';
 import { FORMATION_VERSION } from './EnemyFormationTypes';
@@ -92,9 +93,10 @@ export class RunSession {
       const roster=cfg.allUnits().slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
       const skills=Object.fromEntries(Array.from(new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))).sort().map(id=>[id,cfg.getSkill(id)]));
       const identity=combatConfigurationIdentity({difficulty,run:runConfig,units:roster,battle:cfg.battle,skills,equipment:cfg.allEquipment().slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)});
-      if(this.save.difficultyConfigIdentity!==undefined&&this.save.difficultyConfigIdentity!==identity)throw new Error('Saved enemy difficulty configuration mismatch');
+      const identityHash=configIdentityHash(identity);
+      if(this.save.difficultyConfigIdentity!==undefined&&!matchesConfigIdentity(this.save.difficultyConfigIdentity,identity,identityHash))throw new Error('Saved enemy difficulty configuration mismatch');
       if(loaded&&this.save.difficultyConfigIdentity===undefined&&(this.save.round?.waveIndex??0)>0)throw new Error('Saved enemy difficulty identity missing');
-      this.save.difficultyConfigIdentity=identity;
+      this.save.difficultyConfigIdentity=identityHash;
     }
     this.generation={mode,runSeed:this.save.runSeed,replaceElitesWithBosses:this.save.openingEncounter?.selected==='bossHunt',difficulty:options.enemyDifficulty&&JSON.parse(JSON.stringify(options.enemyDifficulty)),
       traits: JSON.parse(JSON.stringify(cfg.battle.traits??[])),
@@ -175,9 +177,10 @@ export class RunSession {
     if(!c)throw new Error('Saved equipment rules require equipment policy configuration');
     validateEquipmentPolicy(c,this.cfg.allEquipment(),options.enemyPower);
     const identity=equipmentIdentity(c,this.cfg.allEquipment(),options.enemyRoles);
+    const identityHash=configIdentityHash(identity);
     const menuNewGame=loaded&&!this.save.round&&!this.save.owned.length&&!this.save.shopReserved&&this.save.equipmentConfigIdentity===undefined;
-    if(loaded&&!menuNewGame&&this.save.equipmentConfigIdentity!==identity)throw new Error('Saved equipment configuration mismatch');
-    this.save.equipmentConfigIdentity=identity;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
+    if(loaded&&!menuNewGame&&!matchesConfigIdentity(this.save.equipmentConfigIdentity,identity,identityHash))throw new Error('Saved equipment configuration mismatch');
+    this.save.equipmentConfigIdentity=identityHash;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
     if(this.save.enemyEquipmentVersion!=='none'){
       this.generation.equipmentPolicy=this.equipmentPolicy;
       this.generation.equipmentRoles=options.enemyRoles&&JSON.parse(JSON.stringify(options.enemyRoles));
@@ -373,16 +376,17 @@ export class RunSession {
     if(this.cfg.battle.boardWidth!==7||this.cfg.battle.boardHeight!==8||this.cfg.battle.ownRows!==4)throw new Error('Formation requires current 7x8 odd-r board');
     const roster=this.cfg.allUnits(),skills=Object.fromEntries(Array.from(new Set(roster.map(u=>u.skillId).filter((id):id is string=>!!id))).sort().map(id=>[id,this.cfg.getSkill(id)]));
     let savedFormationIdentity:string|undefined;
-    if(this.save.formationConfigIdentity!==undefined){
+    if(this.save.formationConfigIdentity!==undefined&&!this.save.formationConfigIdentity.startsWith('sha256:')){
       try{savedFormationIdentity=JSON.parse(this.save.formationConfigIdentity).formation;}catch{throw new Error('Saved formation configuration mismatch');}
       if(typeof savedFormationIdentity!=='string')throw new Error('Saved formation configuration mismatch');
     }
     const engine=new EnemyFormation(options.formationConfig,options.enemyRoles,roster,skills,new EnemyPowerModel(options.enemyPower),this.runConfig.enemyProgression.cells,savedFormationIdentity);
     const identity=stableEnemyJson({formation:engine.identity,templates:extractFormationTemplates(this.templates),override:requested,
       model:{version:options.enemyPower.version,calibrationHash:options.enemyPower.calibrationHash}});
-    if(this.save.formationConfigIdentity!==undefined&&this.save.formationConfigIdentity!==identity)throw new Error('Saved formation configuration mismatch');
+    const identityHash=configIdentityHash(identity);
+    if(this.save.formationConfigIdentity!==undefined&&!matchesConfigIdentity(this.save.formationConfigIdentity,identity,identityHash))throw new Error('Saved formation configuration mismatch');
     if(loaded&&!unbound&&this.save.formationConfigIdentity===undefined)throw new Error('Saved formation identity missing');
-    this.save.formationConfigIdentity=identity;this.formationEngine=engine;
+    this.save.formationConfigIdentity=identityHash;this.formationEngine=engine;
   }
   playerFormationSnapshot():PlayerFormationSnapshot {
     if(!this.formationEngine)throw new Error('Player formation snapshot requires formation configuration');

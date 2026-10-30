@@ -80,7 +80,7 @@ export interface RunSaveData {
   lastReward?: { breakdown: SettlementBreakdown; expGained: number; levelUps: number };
 }
 
-/** Current saves are validated and copied, never repaired or upgraded. */
+/** Validate and copy current saves. RunSession checks and migrates legacy configuration identities. */
 export function readRunSave(raw: unknown): RunSaveData {
   const d = raw as RunSaveData;
   const integer = (n: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): n is number => Number.isSafeInteger(n) && Number(n) >= min && Number(n) <= max;
@@ -98,6 +98,8 @@ export function readRunSave(raw: unknown): RunSaveData {
     || !Array.isArray(d.earlyGoldStages) || d.earlyGoldStages.some(stage => stage !== 2 && stage !== 3)
     || new Set(d.earlyGoldStages).size !== d.earlyGoldStages.length || !d.merchantServices || !d.explorerProgress || !d.stageProgress || !d.equipmentProgress) invalid();
   const ids = new Set<number>();
+  for (const key of ['difficultyConfigIdentity','formationConfigIdentity','equipmentConfigIdentity'] as const)
+    if (d[key] !== undefined && typeof d[key] !== 'string') invalid();
   if(d.demonPosition!==undefined&&(!d.demonPosition||!integer(d.demonPosition.x)||!integer(d.demonPosition.y)))invalid();
   for (const u of d.owned) {
     if (!u || !integer(u.uid, 1, d.nextOwnedUid - 1) || ids.has(u.uid) || typeof u.unitId !== 'string'

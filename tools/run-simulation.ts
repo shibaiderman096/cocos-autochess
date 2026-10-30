@@ -8,6 +8,7 @@ import { RunSession } from '../assets/scripts/core/RunSession';
 import { RUN_RULES_VERSION } from '../assets/scripts/core/RunRandomContext';
 import { COST_PRICE, COST_SELL } from '../assets/scripts/core/ShopConfig';
 import type { RunConfig } from '../assets/scripts/core/RunSetup';
+import { DEFAULT_STAGE_COUNT } from '../assets/scripts/core/RunSetup';
 import type { WaveConfig } from '../assets/scripts/core/RoundFlow';
 import type { RunSimulationReport, RunWaveReport } from '../assets/scripts/core/RunSessionTypes';
 import { MinimalBaselineBot } from './bots/minimal-baseline';
@@ -59,7 +60,7 @@ export function loadRunInputs(root = resolve(__dirname, '..')): RunInputs {
 export function createErrorReport(options: SimulationOptions, error: unknown): RunSimulationReport {
   return { schemaVersion: 1, runSeed: options.runSeed, rulesVersion: RUN_RULES_VERSION, bot: 'MinimalBaselineBot',
     enemyGenerationMode:options.enemyGenerationMode??'budget-v1',
-    stageCount: options.stageCount ?? 99, maxStage: options.maxStage ?? options.stageCount ?? 99,
+    stageCount: options.stageCount ?? DEFAULT_STAGE_COUNT, maxStage: options.maxStage ?? options.stageCount ?? DEFAULT_STAGE_COUNT,
     maxWaves: options.maxWaves ?? null, configHash: '', result: 'SIMULATION_ERROR', gameResult: null,
     endState: null, waves: [], error: error instanceof Error ? error.message : String(error) };
 }
@@ -70,7 +71,7 @@ export function runSimulation(inputs: RunInputs, options: SimulationOptions): Ru
   delete report.error;
   let session: RunSession | undefined;
   try {
-    const stageCount = options.stageCount ?? 99, maxStage = options.maxStage ?? stageCount;
+    const stageCount = options.stageCount ?? DEFAULT_STAGE_COUNT, maxStage = options.maxStage ?? stageCount;
     if (!Number.isInteger(stageCount) || stageCount < 3 || stageCount > 99) throw new Error('stageCount must be an integer from 3 to 99');
     if (!Number.isInteger(maxStage) || maxStage < 1 || maxStage > stageCount) throw new Error('maxStage must be an integer within the campaign');
     if (options.maxWaves !== undefined && (!Number.isSafeInteger(options.maxWaves) || options.maxWaves < 1)) throw new Error('maxWaves must be a positive integer');

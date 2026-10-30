@@ -1673,7 +1673,7 @@ export class BattleSim {
     return null;
   }
 
-  /** 最近敌人；平手取 id 小者（遍历有序保证确定性） */
+  /** 技能专用的最近敌人；普攻及其装备触发统一走 selectAttackTarget。 */
   private nearestEnemy(u: Unit): Unit | null {
     let best: Unit | null = null;
     let bd = Infinity;
@@ -1705,8 +1705,7 @@ export class BattleSim {
     if (manaDamage > 0 && unit.cfg.maxMana > 0) {
       const priority = this.units.find(enemy => enemy.id === unit.priorityTarget && this.targetable(enemy) && unit.canSelectEnemy(enemy)
         && enemy.side !== unit.side && dist(unit.pos, enemy.pos) <= unit.cfg.range);
-      const locked=unit.attackTargetId===null?null:this.attackTarget(unit,unit.attackTargetId);
-      const target = priority ?? locked ?? this.nearestEnemy(unit);
+      const target = this.selectAttackTarget(unit, priority ?? null);
       if (target) this.damage(unit, target, unit.cfg.maxMana * manaDamage, 'magic');
     }
     const effect = unit.spellblade;
