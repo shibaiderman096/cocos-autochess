@@ -75,6 +75,7 @@ export class TraitPanel {
   private states: TraitState[] = [];
   private roster: UnitConfigData[] = [];
   private key = '';
+  private rowKeys = new Map<string, string>();
 
   constructor(private parent: Node) {
     this.root = panel(parent, 'traits', -510, 45, 192, 390);
@@ -106,19 +107,32 @@ export class TraitPanel {
 
   refresh(states: TraitState[], roster: UnitConfigData[]): void {
     this.states = states.filter(state => state.count > 0); this.roster = roster;
-    const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds]));
+    const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds, state.count, state.active]));
     if (key === this.key) return;
     // The first native layout can report an offset from the pre-resize viewport.
     const offset = this.key ? this.scrollView.getScrollOffset().y : 0;
     this.key = key;
     this.scrollView.stopAutoScroll();
     this.closeCard();
-    for (const node of [...this.rows.children]) { node.active = false; node.destroy(); }
+    const ids = new Set(this.states.map(state => `trait_${state.config.id}`));
+    for (const node of [...this.rows.children]) if (!ids.has(node.name)) {
+      this.rowKeys.delete(node.name); node.removeFromParent(); node.destroy();
+    }
     this.rows.getComponent(UITransform)!.setContentSize(178,
       Math.max(this.viewportHeight, this.states.length * this.rowSpacing - 6));
     this.states.forEach((state, i) => {
-      const row = panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
+      const rowName = `trait_${state.config.id}`;
+      const existing = this.rows.getChildByName(rowName);
+      const rowKey = JSON.stringify([state.config, state.active]);
+      if (existing && this.rowKeys.get(rowName) === rowKey) {
+        existing.setPosition(0, -25 - i * this.rowSpacing, 0); existing.setSiblingIndex(i); return;
+      }
+      if (existing) for (const child of [...existing.children]) { child.removeFromParent(); child.destroy(); }
+      this.rowKeys.set(rowName, rowKey);
+      const row = existing ?? panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
         new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85), null);
+      row.setPosition(0, -25 - i * this.rowSpacing, 0); row.setSiblingIndex(i);
+      if (existing) paintPanel(row.getComponent(Graphics)!, 178, 50, new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85));
       badge(row, state, -61, 3, 34);
       left(row, state.config.name, -35, 9, sys.isMobile ? 17 : 14, 110, state.active ? TEXT : MUTED).isBold = true;
       state.config.breakpoints.forEach((tier, index) => {
@@ -126,13 +140,14 @@ export class TraitPanel {
           state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, 24);
         item.isBold = state.active?.count === tier.count;
       });
+      if (existing) return;
       row.on(Node.EventType.TOUCH_END, () => {
         if (this.scrollView.isScrolling() || this.scrollView.isAutoScrolling()) return;
         if (this.selected === state.config.id && this.detail?.active) this.hideDetail();
         else this.showDetail(state.config.id);
       });
       row.on(Node.EventType.MOUSE_ENTER, () => {
-        if (!this.selected && !this.scrollView.isScrolling() && !this.scrollView.isAutoScrolling()) this.renderDetail(state);
+        if (!this.selected && !this.scrollView.isScrolling() && !this.scrollView.isAutoScrolling()) this.renderDetail(this.states.find(current => current.config.id === state.config.id)!);
       });
       row.on(Node.EventType.MOUSE_LEAVE, () => { if (!this.selected) this.closeCard(); });
     });

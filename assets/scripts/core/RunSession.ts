@@ -164,7 +164,7 @@ export class RunSession {
     if(unfinishedBet&&!unfinishedBet.settled&&(!this.merchantAvailable()||unfinishedBet.waveId!==this.flow.wave.id))throw new Error('Invalid pending merchant bet');
     const forgedInventory=[...(this.save.equipmentReserve??[]),...this.save.owned.flatMap(u=>u.equipment??[])].filter(id=>!!this.save.merchantServices!.forged[id]);
     if(new Set(forgedInventory).size!==forgedInventory.length)throw new Error('Duplicate forged equipment instance');
-    this.snapshot();
+    this.syncSave();
   }
 
   private configureEquipment(options:RunSessionOptions,loaded:boolean):void {
@@ -265,7 +265,7 @@ export class RunSession {
       this.save.lastReward = { expGained: 0, levelUps: 0, breakdown: { winBonus: 0, interest: 0, streakBonus: 0, extraIncome: 0,
         total: 0, goldBefore: state.gold, goldAfter: state.gold, winStreak: state.winStreak, loseStreak: state.loseStreak } };
     }
-    this.snapshot(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
+    this.syncSave(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
   }
   private merchantAvailable(): boolean {
     return this.flow.phase === 'prepare' && this.flow.wave.encounterKind === 'specialShop'
@@ -289,7 +289,7 @@ export class RunSession {
     if (this.economy.gold < cost) return fail('not_enough_gold');
     if(radiant){
       if(!this.economy.spend(cost))return fail('not_enough_gold');
-      this.owned.equipmentReserve[reserveIndex]=radiant.id;this.snapshot();return ok();
+      this.owned.equipmentReserve[reserveIndex]=radiant.id;this.syncSave();return ok();
     }
     const id = previous ? expectedId : `forged_${state.nextUid}`;
     const record = { baseId: previous?.baseId ?? expectedId, upgrades: [...(previous?.upgrades ?? [])], spentGold:previous?.spentGold??0 };
@@ -305,7 +305,7 @@ export class RunSession {
     if (!this.economy.spend(cost)) return fail('not_enough_gold');
     state.forged[id] = record; state.forgeRoll+=count; if (!previous) state.nextUid++;
     this.cfg.registerRunEquipment(upgraded); this.owned.equipmentReserve[reserveIndex] = id;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   beginDiceBet(stake: number, picks: number[]): ActionResult {
     if (!this.merchantAvailable() || (this.merchantDice && !this.merchantDice.settled)) return fail('merchant_unavailable');
@@ -316,7 +316,7 @@ export class RunSession {
     if (!this.economy.spend(stake)) return fail('not_enough_gold');
     const face = this.random.stream('dice', this.flow.wave.id, state.diceRoll).int(1, 6);
     state.dice = { id: ++state.diceRoll, waveId: this.flow.wave.id, stake, picks: [...picks].sort((a,b)=>a-b), face, settled: false };
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   finishDiceBet(id: number): ActionResult {
     const bet = this.merchantDice;
@@ -324,7 +324,7 @@ export class RunSession {
     const payout = dicePayout(bet);
     if (!Number.isSafeInteger(this.economy.gold + payout)) return fail('attribute_overflow');
     this.save.merchantServices!.dice!.settled = true; this.economy.gold += payout;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   get explorerPoints(): number { return this.save.explorerProgress!.points; }
   get explorerChestQualityRates(): number[] {
@@ -348,7 +348,7 @@ export class RunSession {
     const reward=this.stageProgression.grantExplorerReward(this.explorerChestValue,this.flow.wave.id,this.cfg.battle.initialHealth-this.flow.health,this.explorerPoints);
     reward.health=this.flow.restoreHealth(reward.health);
     this.save.explorerProgress!.points=0;this.save.explorerProgress!.lastOpenedWaveId=this.flow.wave.id;
-    this.snapshot();return {ok:true,stageReward:reward};
+    this.syncSave();return {ok:true,stageReward:reward};
   }
   claimEquipmentReward(index:number):ActionResult {
     const progress=this.save.equipmentProgress,pending=progress.pending;
@@ -359,7 +359,7 @@ export class RunSession {
     this.owned.equipmentReserve.push(id);progress.lastClaimedWaveId=pending.waveId;progress.guaranteeSatisfied[pending.stage]=true;
     delete progress.pending;
     if(this.save.lastEquipmentReward)this.save.lastEquipmentReward.rewardChoice=id;
-    this.snapshot();return ok();
+    this.syncSave();return ok();
   }
 
   private configureFormation(options:RunSessionOptions,loaded:boolean):void {
@@ -444,7 +444,7 @@ export class RunSession {
       this.flow=new RoundFlow(this.waves,this.roundRules,this.flow.snapshot());
       this.previewFormation=undefined;
     }
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   private rewardLevelUps(count: number): void {
     if (this.save.openingEncounter?.selected === 'inspiration')
@@ -514,7 +514,7 @@ export class RunSession {
     const unit = this.owned.get(p.uid)!;
     unit.equipment![p.slot] = `${p.equipmentId}__${p.candidates[index]}`;
     delete this.save.pendingTraitChoice;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
 
   buyShopSlot(index: number): ActionResult {
@@ -799,7 +799,7 @@ export class RunSession {
       // Only explicit configured Elite/Boss victories qualify.
       this.save.lastEquipmentReward=createEquipmentReward(this.equipmentPolicy,this.random,w,sim.winner,this.save.equipmentProgress);
     }
-    this.snapshot();
+    this.syncSave();
     return { round, reward: this.save.lastReward };
   }
   nextWave(): boolean {
@@ -813,7 +813,7 @@ export class RunSession {
     this.save.floor = this.flow.wave.stage!; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
     this.save.lastEquipmentReward=undefined;
     this.shop.setRollRng(this.random.stream('shop', this.flow.wave.id));
-    const rerolled=!this.shop.locked; this.shop.nextRound(); if(rerolled)this.rewardShopRoll(0); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    const rerolled=!this.shop.locked; this.shop.nextRound(); if(rerolled)this.rewardShopRoll(0); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.syncSave(); return true;
   }
   /** Existing debug jump only; deliberately absent from the player/bot port. */
   debugJump(stage: number, round: number): boolean {
@@ -829,15 +829,22 @@ export class RunSession {
       health: this.flow.health || this.cfg.battle.initialHealth, result: null, lastSettlement: null });
     this.activeBattle = null;this.previewFormation=undefined;this.lockedFormation=undefined;
     this.save.floor = stage; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
-    this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.syncSave(); return true;
   }
-  snapshot(): RunSaveData {
+  private syncSave(): void {
     this.save.unlockedUnits = this.pool.unlockedSpecialUnits(this.cfg.allUnits());
     this.owned.mergeAll();
     this.stageProgression?.collect(this.flow.wave);
     Object.assign(this.save, this.economy.snapshot(), this.level.snapshot(), { shop: this.shop.snapshot(), shopReserved: true,
       owned: this.owned.snapshot(), nextOwnedUid: this.owned.nextUnitUid, equipmentReserve: [...this.owned.equipmentReserve],
       pool: this.pool.snapshot(), round: this.flow.snapshot(), shopLocked: this.shop.locked, floor: this.flow.wave.stage! });
+  }
+  /** Synchronous persistence can serialize directly without a throwaway detached copy. */
+  persist(write: (save: RunSaveData) => void): void {
+    this.syncSave(); write(this.save);
+  }
+  snapshot(): RunSaveData {
+    this.syncSave();
     // The exported snapshot is detached from the live session.
     return JSON.parse(JSON.stringify(this.save)) as RunSaveData;
   }
