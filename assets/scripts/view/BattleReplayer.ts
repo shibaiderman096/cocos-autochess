@@ -82,6 +82,12 @@ export class BattleReplayer extends Component {
     this.moves.clear(); this.renderTick = sim.tick;
   }
 
+  /** Preparation has no consumed battle events; retain idle FX and their live lookups. */
+  bindPreview(sim: BattleSim, views: Map<number, UnitView>): void {
+    this.sim = sim; this.unitViews = views;
+    this.eventCursor = 0; this.moves.clear(); this.renderTick = sim.tick;
+  }
+
   setFxRoot(root: Node): void {
     this.fxRoot = root;
     const demonAssets=this.sim?.units.flatMap(u=>{const asset=DemonRosterVfx.asset(u.cfg.skillId??'');return asset?[asset]:[];})??[];

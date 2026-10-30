@@ -4,10 +4,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const ts = require('typescript');
 const pending = [];
+const metrics = {created:0,destroyed:0,requests:0};
 class Node {
   set name(value) { if(!value.includes('/')) this.nodeName=value; }
   get name() { return this.nodeName; }
-  constructor(name) { this.name=name; this.children=[]; this.components=new Map(); this.events=new Map(); this.active=true; }
+  constructor(name) { metrics.created++; this.isValid=true; this.name=name; this.children=[]; this.components=new Map(); this.events=new Map(); this.active=true; }
   static EventType = { TOUCH_START:'start', TOUCH_END:'end', TOUCH_MOVE:'move', TOUCH_CANCEL:'cancel', MOUSE_ENTER:'enter', MOUSE_LEAVE:'leave', MOUSE_WHEEL:'wheel' };
   addChild(n) { n.parent=this; this.children.push(n); }
   removeFromParent() { if(this.parent) this.parent.children=this.parent.children.filter(n=>n!==this); this.parent=null; }
@@ -17,12 +18,13 @@ class Node {
     const c=new T(); c.node=this; if(!this.components.has(T)) this.components.set(T,c); return c;
   }
   getComponent(T) { return this.components.get(T); }
+  getComponentsInChildren(T) { return [this.getComponent(T),...this.children.flatMap(n=>n.getComponentsInChildren(T))].filter(Boolean); }
   setPosition(x,y,z) { this.position={x,y,z}; }
   setScale(x,y,z) { this.scale={x,y,z}; }
   setRotationFromEuler(x,y,z) { this.rotation={x,y,z}; }
   setSiblingIndex(i) { const list=this.parent.children; list.splice(list.indexOf(this),1); list.splice(i,0,this); }
   on(type,fn) { this.events.set(type,fn); }
-  destroy() { for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); this.parent.children=this.parent.children.filter(n=>n!==this); }
+  destroy() { metrics.destroyed++; this.isValid=false; for(const c of this.components.values()) c.isValid=false; for(const n of this.children) n.destroy(); if(this.parent)this.parent.children=this.parent.children.filter(n=>n!==this); }
 }
 class UITransform {
   contentSize={width:100,height:100};
@@ -87,13 +89,14 @@ const cc={game:{frameRate:60},Node,UITransform,Sprite,Label,LabelOutline:class L
   input,Input,isValid:(value,strict)=>!!value&&value.isValid!==false&&(!strict||!value.destroyQueued),
   sys:{isMobile:false},ResolutionPolicy:{EXACT_FIT:0,SHOW_ALL:1,FIXED_HEIGHT:2},view:{setDesignResolutionSize:(width,height,policy)=>Object.assign(screenSetup,{width,height,policy}),resizeWithBrowserSize:resize=>screenSetup.resize=resize},
   director:{loadScene:(name,callback)=>{sceneLoads.push(name); if(sceneError) callback(sceneError); return sceneAccepted;}},
-  resources:{load:(name,T,cb)=>{const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../../assets/resources',name+'.json'),'utf8'))}:{name,rect:{x:0,y:0,width:/trait_badges|trait_portrait_frames/.test(name)?2172:1536,height:/trait_badges|trait_portrait_frames/.test(name)?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{},executionOrder:()=>c=>c}};
+  resources:{load:(name,T,cb)=>{metrics.requests++;const finish=()=>cb(null,name.startsWith('config/')?{json:JSON.parse(fs.readFileSync(path.join(__dirname,'../../assets/resources',name+'.json'),'utf8'))}:{name,isValid:true,rect:{x:0,y:0,width:/trait_badges|trait_portrait_frames/.test(name)?2172:1536,height:/trait_badges|trait_portrait_frames/.test(name)?724:1024},texture:{}});finish.path=name;pending.push(finish);}},_decorator:{ccclass:()=>c=>c,property:()=>{},executionOrder:()=>c=>c}};
 const cache=new Map();
 function load(file) {
   file=path.resolve(file); if(cache.has(file)) return cache.get(file);
   const out={}; cache.set(file,out);
-  const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,experimentalDecorators:true}}).outputText;
+  const source = process.env.UI_BASELINE_REF ? require('node:child_process').execFileSync('git', ['show', `${process.env.UI_BASELINE_REF}:${path.relative(process.cwd(),file).replaceAll('\\','/')}`], {encoding:'utf8'}) : fs.readFileSync(file,'utf8');
+  const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,experimentalDecorators:true}}).outputText;
   new Function('require','exports',code)(id=>id==='cc'?cc:load(path.resolve(path.dirname(file),id+'.ts')),out); return out;
 }
 
-module.exports={cc,load,Node,Sprite,Label,RichText,UITransform,pending};
+module.exports={metrics,cc,load,Node,Sprite,Label,RichText,UITransform,pending};

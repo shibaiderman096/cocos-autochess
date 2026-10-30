@@ -43,7 +43,7 @@ const RUN_PROGRESS_WIDTH = 330;
 const SHOP_ICON_SIZE = 144;
 const TIERS = [MUTED,...QUALITY_COLORS.map(rgb=>new Color(...rgb))];
 const UNIT_ROLES: Record<string, string> = { frontline:'前排', ranged:'远程', caster:'法术', assassin:'物理刺客', fighter:'物理战士', tank:'物理坦克', magicTank:'魔法坦克', physicalCaster:'物理术士', physicalArcher:'物理射手', magicArcher:'魔法射手', support:'治疗辅助' };
-interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null }
+interface ShopCard { node: Node; portrait: Sprite; name: Label; price: Label; role: Label; border: Graphics; lockOverlay: Node; unitId: string | null; artKey?: string; artRequest?: number }
 export interface UnitDetailData extends Partial<CombatAttributes> {
   summonOnly?: boolean;
   name: string; star: number; cost?: number; artId: string; side: 0 | 1; tint?: string;
@@ -88,6 +88,10 @@ function picture(parent: Node, key: UISkinKey, x: number, y: number, w: number, 
 /** M2 texture HUD over the vector arena; portraits reuse the existing unit art. */
 @ccclass('BattleUI')
 export class BattleUI extends Component {
+  private waveTrackKey = '';
+  private waveLinks: Sprite[] = [];
+  private waveNodes: Sprite[] = [];
+  private waveRings: Sprite[] = [];
   private mobileLayout = false;
   private mobileShopUI = false;
   private shopExpanded = true;
@@ -1480,12 +1484,19 @@ export class BattleUI extends Component {
       paintPanel(card.border, this.layout.cardWidth, this.layout.cardHeight, new Color(25, 43, 50), TIERS[data?.cost ?? 1] ?? GOLD);
       const key: UISkinKey = id ? `card_cost${Math.max(1, Math.min(5, data.cost))}` as UISkinKey : 'card_empty';
       setUISkin(card.node, key, card.border);
-      card.portrait.spriteFrame = null;
       const artId = data?.artId ?? id ?? '';
-      const portrait = UNIT_PORTRAIT[artId];
-      if (id) loadArtSprite(portrait ?? UNIT_SPRITE[`${artId}_ally`], (err, sf) => {
-        if (!err && card.portrait.isValid && card.unitId === id) card.portrait.spriteFrame = sf;
-      });
+      const path = id ? UNIT_PORTRAIT[artId] ?? UNIT_SPRITE[`${artId}_ally`] : undefined;
+      const artKey = `${id ?? ''}:${path ?? ''}`;
+      if (card.artKey !== artKey) {
+        card.artKey = artKey;
+        const request = card.artRequest = (card.artRequest ?? 0) + 1;
+        if (!id) card.portrait.spriteFrame = null;
+        else if (path) loadArtSprite(path, (err, sf) => {
+          if (!isValid(card.node, true) || !isValid(card.portrait, true) || card.artRequest !== request) return;
+          if (err) { card.artKey = undefined; return; }
+          card.portrait.spriteFrame = sf;
+        });
+      }
     });
   }
   setShopVisible(v: boolean): void {
@@ -1534,7 +1545,6 @@ export class BattleUI extends Component {
     this.floorLabel.string = info?.stage ? `${info.stage}-${info.round}` : `${wave} / ${total}`;
     this.waveLabel.string = info?.stage ? `${name} · 阶段 ${info.stage} / ${stageCount}` : name;
     const current = info?.round ?? wave, count = info?.roundsInStage ?? total;
-    for (const child of [...this.waveTrack.children]) if (child.name !== 'skin') child.destroy();
     const width = this.waveTrack.getComponent(UITransform)!.contentSize.width;
     const spacing = count > 1 ? (width - 52) / (count - 1) : 0;
     const nodeScale = count > 1 ? Math.min(1, spacing / 36) : 1;
@@ -1544,20 +1554,37 @@ export class BattleUI extends Component {
       if (i + 1 === current && info?.encounterKind) return info.encounterKind;
       return !info?.encounterKind && i === count - 1 && info?.stage !== 1 ? 'boss' : 'normal';
     });
-    // Draw links first so their ends remain behind the node artwork.
-    for (let i = 1; i < count; i++) {
-      const key = i + 1 < current ? 'stage_link_done' : i + 1 === current ? 'stage_link_current' : 'stage_link_todo';
-      const gap = spacing - ((kinds[i - 1] === 'boss' ? 18 : 14) + (kinds[i] === 'boss' ? 18 : 14)) * nodeScale;
-      picture(this.waveTrack, key, (i - count / 2) * spacing, 0, Math.max(1, gap), 4);
+    const structure = JSON.stringify([info?.stage, count, width, kinds]);
+    if (this.waveTrackKey !== structure) {
+      this.waveTrackKey = structure;
+      for (const child of [...this.waveTrack.children]) if (child.name !== 'skin') { child.removeFromParent(); child.destroy(); }
+      this.waveLinks = []; this.waveNodes = []; this.waveRings = [];
+      // Links remain behind the node artwork.
+      for (let i = 1; i < count; i++) {
+        const gap = spacing - ((kinds[i - 1] === 'boss' ? 18 : 14) + (kinds[i] === 'boss' ? 18 : 14)) * nodeScale;
+        this.waveLinks.push(picture(this.waveTrack, 'stage_link_todo', (i - count / 2) * spacing, 0, Math.max(1, gap), 4));
+      }
+      for (let i = 0; i < count; i++) {
+        const boss = kinds[i] === 'boss', x = (i - (count - 1) / 2) * spacing;
+        const base = `stage_node_${kinds[i] === 'specialShop' ? 'shop' : kinds[i]}` as UISkinKey;
+        this.waveNodes.push(picture(this.waveTrack, base, x, 0, (boss ? 36 : 28) * nodeScale));
+        this.waveRings.push(picture(this.waveTrack, boss ? 'stage_node_ring_boss' : 'stage_node_ring', x, 0, (boss ? 48 : 38) * nodeScale));
+      }
     }
-    for (let i = 0; i < count; i++) {
-      const boss = kinds[i] === 'boss', x = (i - (count - 1) / 2) * spacing;
+    this.waveLinks.forEach((sprite, i) => {
+      const key = i + 2 < current ? 'stage_link_done' : i + 2 === current ? 'stage_link_current' : 'stage_link_todo';
+      sprite.node.parent!.name = key; setUISkin(sprite.node.parent!, key);
+    });
+    this.waveNodes.forEach((sprite, i) => {
       const base = `stage_node_${kinds[i] === 'specialShop' ? 'shop' : kinds[i]}`;
       const key = (i + 1 > current ? `${base}_locked` : base) as UISkinKey;
-      picture(this.waveTrack, key, x, 0, (boss ? 36 : 28) * nodeScale);
-      if (i + 1 === current) picture(this.waveTrack, boss ? 'stage_node_ring_boss' : 'stage_node_ring', x, 0, (boss ? 48 : 38) * nodeScale);
-    }
+      sprite.node.parent!.name = key; setUISkin(sprite.node.parent!, key);
+      const ring = this.waveRings[i].node.parent!;
+      ring.active = i + 1 === current;
+      ring.name = ring.active ? kinds[i] === 'boss' ? 'stage_node_ring_boss' : 'stage_node_ring' : 'stageRingCache';
+    });
   }
+
   setLocked(locked: boolean): void {
     this.locked = locked;
     setUISkin(this.lockIcon.node, locked ? 'btn_lock_on' : 'btn_lock_off');
@@ -1598,7 +1625,7 @@ export class BattleUI extends Component {
     for (const name of ['openingEncounter', 'stageReward', 'equipmentReward']) {
       const content = this.shopRewardDock.getChildByName(name); if (content) content.active = true;
     }
-    this.shopRoot.active = this.shopAvailable && !this.openingShopLocked; this.updateCap();
+    this.updateCap();
     this.syncShopVisibility();
   }
   showUnitDetail(data: UnitDetailData): void {

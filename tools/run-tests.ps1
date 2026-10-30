@@ -39,6 +39,8 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Copy-Item -Recurse -Force assets\resources .test-build\assets\
 $taskFailures = @()
 $taskTests = @(
+  'tests/ui-incremental-refresh-tests.cjs'
+  'tests/ui-persistence-tests.cjs'
   'tests/demon-roster-tests.cjs'
   'tests/demon-deployment-tests.cjs'
   'tests/runic-vfx-tests.cjs'

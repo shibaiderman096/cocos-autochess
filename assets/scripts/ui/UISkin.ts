@@ -1,6 +1,23 @@
 import { Node, Sprite, SpriteFrame, UITransform, Graphics, resources, Label, Color } from 'cc';
 import { M2_UI_SPRITE, UISkinKey } from '../view/ArtPaths';
 
+const loaded = new WeakMap<Sprite, UISkinKey>();
+const frames = new Map<string, SpriteFrame>();
+const loading = new Map<string, Array<(error: Error | null, frame?: SpriteFrame) => void>>();
+
+function loadSkin(path: string, ready: (error: Error | null, frame?: SpriteFrame) => void): void {
+  const frame = frames.get(path);
+  if (frame?.isValid) { ready(null, frame); return; }
+  const queue = loading.get(path);
+  if (queue) { queue.push(ready); return; }
+  loading.set(path, [ready]);
+  resources.load(path, SpriteFrame, (error, frame) => {
+    if (!error) frames.set(path, frame);
+    const callbacks = loading.get(path)!; loading.delete(path);
+    for (const callback of callbacks) callback(error, frame);
+  });
+}
+
 const requested = new WeakMap<Sprite, UISkinKey>();
 const sliced = new Set<UISkinKey>([
   'panel_ink', 'panel_side', 'panel_dock', 'panel_modal', 'tooltip_panel',
@@ -25,10 +42,14 @@ export function setUISkin(node: Node, key: UISkinKey, fallback?: Graphics, ready
   sprite.type = sliced.has(key) ? Sprite.Type.SLICED : Sprite.Type.SIMPLE;
   if (requested.get(sprite) !== key) sprite.spriteFrame = null;
   requested.set(sprite, key);
-  resources.load(M2_UI_SPRITE[key], SpriteFrame, (err, frame) => {
+  if (loaded.get(sprite) === key && sprite.spriteFrame?.isValid) {
+    if (fallback?.isValid) fallback.clear();
+    ready?.(sprite); return sprite;
+  }
+  loadSkin(M2_UI_SPRITE[key], (err, frame) => {
     if (!sprite.isValid || requested.get(sprite) !== key) return;
     if (err) { console.warn(`[UI] Cannot load ${key}: ${err.message}`); return; }
-    sprite.spriteFrame = frame;
+    sprite.spriteFrame = frame; loaded.set(sprite, key);
     if (fallback?.isValid) fallback.clear();
     ready?.(sprite);
   });

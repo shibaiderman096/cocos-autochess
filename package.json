@@ -12,6 +12,7 @@
   "scripts": {
     "check:resources": "node tools/check-resources.cjs",
     "test:ui": "node tests/ui-interaction-tests.cjs",
+    "test:ui-refresh": "node tests/ui-incremental-refresh-tests.cjs && node tests/ui-persistence-tests.cjs",
     "test:stages": "node tests/role-mana-and-start-tests.cjs && node tests/monster-drop-rate-tests.cjs",
     "build:web": "pwsh -NoProfile -File tools/build-web.ps1",
     "test:web": "node tests/web-build-tests.cjs",
