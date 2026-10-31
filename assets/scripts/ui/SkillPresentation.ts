@@ -28,7 +28,29 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
   const power = (u: UnitConfigData) => 1 + (skill.dmgType === 'physical' ? u.physicalPower ?? 0 : skill.dmgType === 'magic' ? u.spellPower ?? 0 : 0) / 100;
   const shadow = skill.shadow;
   const sunlight = skill.sunlight;
-  if(skill.thornPull){
+  if(skill.starCardCopy){
+    const s=skill.starCardCopy;
+    add('复制数量',(_u,i)=>i+1>=s.allEnemiesStar?'所有':String(s.counts[i]),'neutral');
+    add('复制体生命',(_u,i)=>`${number(s.healthFractions[i]*100)}%`,'healing');
+    add('附带装备',(_u,i)=>String(s.equipmentCounts[i]),'neutral');
+  } else if(skill.soulRealm){
+    const s=skill.soulRealm;
+    add('阵亡法术成长',(_u,i)=>`${s.spellPowerPerDeath[i]}%`,'magic');
+    addFixed('恐惧时长',u=>`${number(s.fearSeconds*(1+(u.spellPower??0)/100))}秒`,'neutral');
+    addFixed('固定移速降低',()=>`${s.moveSlow*100}%`,'speed');
+    addFixed('固定攻速降低',()=>`${s.attackSlow*100}%`,'speed');
+    add('每目标抽魂治疗',(u,i)=>String(Math.round(s.healPerEnemy[i]*(1+(u.spellPower??0)/100))),'healing');
+    add('每目标双攻窃取',(_u,i)=>`${s.stealPower[i]}%`,'magic');
+  } else if(skill.knightStance){
+    const k=skill.knightStance;
+    add('形态技能伤害',(u,i)=>String(Math.round(k.damage[i]*(1+(u.physicalPower??0)/100+(k.kind==='caster'?(u.spellPower??0)/100:0))*(1+(u.damageAmp??0)))),'physical');
+    if(k.kind==='caster')add('攻速削减',(u,i)=>`${number(Math.min(.8,k.slow[i]*(1+(u.spellPower??0)/100))*100)}%`,'speed');
+    if(k.kind==='warrior')addFixed('眩晕时长',()=>`${k.stunSeconds}秒`,'neutral');
+    if(k.kind==='tank'){
+      add('旋转时长',(u,i)=>`${number(Math.min(k.durationCap,k.duration[i]*(1+(u.spellPower??0)/100)))}秒`,'neutral');
+      add('旋转免伤',(u,i)=>`${number(Math.min(k.reductionCap,k.reduction[i]*(1+(u.spellPower??0)/100))*100)}%`,'neutral');
+    }
+  } else if(skill.thornPull){
     add('鞭击伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
   } else if(skill.demonGunfire){
     add('单发伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'physical');
@@ -52,6 +74,11 @@ export function buildSkillStatRows(configs: ConfigManager, unit: UnitConfigData,
     add('落地伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
     add('击飞持续',(_u,i)=>`${number(skill.stunSeconds![i])}秒`,'neutral');
     add('震击半径',(_u,i)=>`${number(skill.demonLeap!.radii[i])}格`,'neutral');
+  } else if(skill.dragonFlow){
+    add('化龙生命',(_u,i)=>String(skill.dragonFlow!.maxHp[i]),'healing');
+    add('化龙减伤',(u,i)=>`${number(Math.min(skill.dragonFlow!.reductionCap,skill.dragonFlow!.reduction[i]*(1+(u.spellPower??0)/100))*100)}%`,'neutral');
+    add('每次吐息伤害',(u,i)=>String(Math.round(skill.dragonFlow!.damage[i]*(1+(u.physicalPower??0)/100+(u.spellPower??0)/100)*(1+(u.damageAmp??0)))),'magic');
+    addFixed('每次削减双抗',()=>String(skill.dragonFlow!.resistanceShredPerHit),'neutral');
   } else if(skill.runicArcana){
     add('单枚飞弹伤害',(u,i)=>String(Math.round(skill.starDamage![i]*power(u)*(1+(u.damageAmp??0)))),'magic');
     add('每枚符文法术加成',(_u,i)=>`${number(skill.runicArcana!.spellPowerPerRune[i])}%`,'magic');
@@ -303,6 +330,10 @@ function skillCurrentValues(skill: SkillConfigData, rows: SkillStatRow[], star: 
     verdictDamage:current('重斩伤害'),verdictMissing:current('已损生命真伤'),verdictHeal:current('击杀治疗'),
     spinDamage:current('回旋伤害'),spinHeal:current('每目标治疗'),
     demonDamage:current('落地伤害'),demonRadius:skill.demonLeap?.radii[star-1]??0,demonKnockup:skill.stunSeconds?.[star-1]??0,
+    soulGrowth:current('阵亡法术成长'),soulFear:current('恐惧时长').replace(/秒$/,''),soulHeal:current('每目标抽魂治疗'),soulSteal:current('每目标双攻窃取'),
+    knightDamage:current('形态技能伤害'),knightSlow:current('攻速削减'),knightDuration:current('旋转时长').replace(/秒$/,''),knightReduction:current('旋转免伤'),
+    dragonHp:current('化龙生命'),dragonReduction:current('化龙减伤'),dragonDamage:current('每次吐息伤害'),
+    copyCount:current('复制数量')==='所有'?'所有':current('复制数量')+'名',copyHp:current('复制体生命'),copyEquipment:current('附带装备'),
     runeMissile:current('单枚飞弹伤害'),runePower:skill.runicArcana?.spellPowerPerRune[star-1]??0,runeWave:current('能量波伤害'),
     inspireSpeed:(skill.inspiration?.attackSpeedBonuses[star-1]??0)*(1+(unit?.spellPower??0)/100),
     inspireDuration:skill.inspiration?.durationSeconds??0,

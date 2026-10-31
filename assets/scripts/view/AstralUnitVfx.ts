@@ -9,7 +9,7 @@ interface Motion {
 }
 interface Slot extends AnimatedSprite { path: string; firstFrame: number; motion?: Motion }
 interface AnimatedSprite { node: Node; sprite: Sprite; frames: (SpriteFrame | undefined)[]; frameIndex: number }
-interface MoonSlot extends AnimatedSprite { source: number; start: number; from: Vec3; to: Vec3; active: boolean }
+interface MoonSlot extends AnimatedSprite { source: number; start: number; flightTicks:number; from: Vec3; to: Vec3; active: boolean }
 interface NebulaSlot extends AnimatedSprite { start: number; duration: number; active: boolean; gravity: boolean; source: number }
 
 /** Painted effects only. Damage, displacement and control are owned by BattleSim. */
@@ -44,14 +44,14 @@ export class AstralUnitVfx {
     slot.sprite.spriteFrame = slot.frames[index] ?? null;
   }
 
-  private moonArrow(source: number, tick: number, from: Vec3, to: Vec3): void {
+  private moonArrow(source: number, tick: number, from: Vec3, to: Vec3,flightTicks=240/this.tickMs): void {
     let slot = this.moonSlots.find(s=>!s.active);
     if (!slot) {
       if (this.moonSlots.length >= 24 || !this.root.isValid) return;
       slot = Object.assign(this.animatedSprite(this.root, 'moonArcArrow', FX_SPRITE.moonArrowSheet, this.cell*1.7, this.cell*1.1),
-        {source, start:tick, from, to, active:false}); this.moonSlots.push(slot);
+        {source, start:tick, flightTicks,from, to, active:false}); this.moonSlots.push(slot);
     }
-    Object.assign(slot,{source,start:tick,from:from.clone(),to:to.clone(),active:true});
+    Object.assign(slot,{source,start:tick,flightTicks,from:from.clone(),to:to.clone(),active:true});
     slot.node.active = false;
   }
 
@@ -97,7 +97,7 @@ export class AstralUnitVfx {
     if(this.ended||this.disposed)return;
     if(e.t==='nebula'||e.t==='gravity_field')this.nebula(e);
     if(e.t==='moon_arrow') {
-      this.moonArrow(e.id,e.tick,this.project(e.from.x,e.from.y),this.project(e.to.x,e.to.y));
+      this.moonArrow(e.id,e.tick,this.project(e.from.x,e.from.y),this.project(e.to.x,e.to.y),e.flightTicks);
     }else if(e.t==='attack'&&this.skill(e.id)==='moon_triple_arrow') {
       const from=this.owner(e.id)?.position,to=this.owner(e.target)?.position;
       if(from&&to)this.moonArrow(e.id,e.tick,from,to);
@@ -132,13 +132,13 @@ export class AstralUnitVfx {
     }
     for (const s of this.moonSlots) {
       if (!s.active) continue;
-      const p=(tick-s.start)/(240/this.tickMs),n=s.node;
+      const p=(tick-s.start)/s.flightTicks,n=s.node;
       if(p>=1){s.active=false;n.active=false;continue;}
       n.active=p>=0;if(p<0)continue;
       this.frame(s,Math.min(7,Math.floor(p*8)));
       const dx=s.to.x-s.from.x,dy=s.to.y-s.from.y;
       n.angle=Math.atan2(dy,dx)*180/Math.PI;
-      n.setPosition(s.from.x+dx*Math.min(1,p*1.2),s.from.y+dy*Math.min(1,p*1.2)+this.cell*.2,0);
+      n.setPosition(s.from.x+dx*p,s.from.y+dy*p+this.cell*.2,0);
       n.getComponent(UIOpacity)!.opacity=Math.round(255*Math.min(1,(1-p)*3));
     }
     for(const slot of this.slots){
@@ -162,7 +162,6 @@ export class AstralUnitVfx {
 
   cancel(source: number): void {
     for(const s of this.nebulaSlots)if(s.gravity&&s.source===source){s.active=false;s.node.active=false;}
-    for(const s of this.moonSlots)if(s.source===source){s.active=false;s.node.active=false;}
     for(const slot of this.slots)if(slot.motion?.source===source){slot.motion=undefined;slot.sprite.node.active=false;}
   }
   clear(): void {

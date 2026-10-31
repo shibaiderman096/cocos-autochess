@@ -5,6 +5,14 @@ import type { BloodfiendTraitEffect } from './types';
 import type { HydraulicBulwarkRuntime, SpiderLeapRuntime, FurnaceDashRuntime } from './types';
 
 export class Unit {
+  /** Fresh pre-equipment, pre-trait combat attributes; never a snapshot of temporary buffs. */
+  copyBase?: UnitConfigData;
+  temporaryCopy = false;
+  spawnedAtTick = -1;
+  deathManaOnly=false;
+  soulMoveSlow=0;
+  soulAttackSlow=0;
+  dragonFlow: import('./types').DragonFlowRuntime|null=null;
   hp: number;
   mana: number;
   manaPerSecond = 0;
@@ -51,6 +59,12 @@ export class Unit {
   overclockHealTick = 0;
   overclockEmergencyUsed = false;
   /** Updated by the fixed battle clock before any unit acts. */
+  knightLeap: import('./types').KnightLeapRuntime|null=null;
+  lifeVersion=0;
+  knightWave: import('./types').KnightWaveRuntime|null=null;
+  knightSpin: {until:number;next:number;reduction:number}|null=null;
+  knightSlowUntil=0;
+  knightSlow=0;
   combatTick = 0;
   get conquerorDamageAmp(): number {
     const effect = this.conqueror;
@@ -86,6 +100,7 @@ export class Unit {
   skillUntargetable = false;
   domainUntilTick = 0;
   domainRadius = 0;
+  soulFearUntilTick = 0;
   fearUntilTick = 0;
   fearOrigin = { x: 0, y: 0 };
   lanternGuard?: {maxArmor: number; maxSpeedPenalty: number; physicalPowerPerArmor: number};
@@ -103,7 +118,8 @@ export class Unit {
   get armor(): number { return (this.cfg.armor + this.lanternArmorBonus + this.skillArmorBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentHealthArmor + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   get mr(): number { return (this.cfg.mr + this.skillMrBonus + this.bloodAidResistanceBonus + this.gravityResistanceBonus + this.hydraulicResistanceBonus + this.equipmentStackResistance) * (1 - (this.shadowCorruption?.resistanceReduction ?? 0)); }
   private manaFraction = 0;
-  gainMana(amount: number): void {
+  gainMana(amount: number, source: 'normal'|'death' = 'normal'): void {
+    if(this.deathManaOnly&&source!=='death')return;
     if (!this.alive || this.hp <= 0 || this.cfg.maxMana <= 0 || this.manaLocked || this.windHuntActive || this.ropeHunt || this.pendingCast || !Number.isFinite(amount) || amount <= 0) return;
     this.manaFraction += amount;
     const whole = Math.floor(this.manaFraction + 1e-9);
@@ -111,12 +127,19 @@ export class Unit {
     this.mana = Math.min(this.cfg.maxMana, this.mana + whole);
     if (this.mana === this.cfg.maxMana) this.manaFraction = 0;
   }
-  atkCd = 0;
+  private attackCooldownTicks=0;
+  atkCdSetTick=-1;
+  get atkCd():number {return this.attackCooldownTicks;}
+  set atkCd(value:number){this.attackCooldownTicks=value;this.atkCdSetTick=this.combatTick;}
   attackTargetId: number | null = null;
   /** Absolute tick; ordinary target reacquisition uses the configured fixed delay. */
   retargetAtTick = 0;
   blockedTargetSinceTick: number | null = null;
   moveCd = 0;
+  /** Absolute end of an ordinary step, matching its move event interpolation. */
+  walkUntilTick = 0;
+  /** First basic after battle start/landing waits a full attack cycle; null while moving. */
+  basicAttackReadyTick: number | null = null;
   alive = true;
   star = 1;
   skillScale = 1;
@@ -165,7 +188,7 @@ export class Unit {
   baseMaxHp: number;
   demonLeap: import('./types').DemonLeapRuntime | null = null;
   equipmentCastSpeedUntil = new Map<number, number>();
-  get crowdControlImmune(): boolean { return this.cfg.controlImmune===true || this.equipment.some(item => item.crowdControlImmune); }
+  get crowdControlImmune(): boolean { return !!this.dragonFlow || this.cfg.controlImmune===true || this.equipment.some(item => item.crowdControlImmune); }
   get equipmentHealthArmor(): number {
     return this.equipment.reduce((sum, item) => sum + (item.healthStance && this.hp < this.cfg.hp * item.healthStance.threshold ? item.healthStance.armor : 0), 0);
   }
@@ -182,7 +205,7 @@ export class Unit {
   susanooUntilTick = 0;
   susanooReduction = 0;
   damageReductionAt(tick: number): number {
-    return Math.min(1, (this.cfg.damageReduction ?? 0) + this.equipmentStackDamageReduction + (tick < this.guardUntilTick ? this.guardReduction : 0)
+    return Math.min(1, (this.cfg.damageReduction ?? 0) + (this.dragonFlow?.reduction??0) + (this.knightSpin&&tick<this.knightSpin.until?this.knightSpin.reduction:0) + this.equipmentStackDamageReduction + (tick < this.guardUntilTick ? this.guardReduction : 0)
       + (tick < this.susanooUntilTick ? this.susanooReduction : 0) + this.traitDamageReductionAt(tick));
   }
   shield = 0;
@@ -214,7 +237,7 @@ export class Unit {
   }
 
   get attackSpeed(): number {
-    const penalty = this.crowdControlImmune ? 0 : Math.max(this.skillAttackSpeedPenalty, this.nebulaAttackSpeedPenalty);
+    const penalty = this.crowdControlImmune ? 0 : Math.max(this.skillAttackSpeedPenalty, this.nebulaAttackSpeedPenalty, this.soulAttackSlow, this.combatTick<this.knightSlowUntil?this.knightSlow:0);
     const speed = this.cfg.atkSpeed + this.attackSpeedBonus + this.equipmentAttackSpeedBonus + this.overtimeAttackSpeedBonus + this.shadowAttackSpeedBonus + this.skillAttackSpeedBonus + this.inspirationAttackSpeedBonus - penalty
       + (this.combatTick < this.spellbladeUntilTick ? this.spellblade?.attackSpeedBonus ?? 0 : 0)
       + this.swiftmartialistStacks * (this.swiftmartialist?.attackSpeedPerCast ?? 0)
@@ -240,12 +263,14 @@ export class Unit {
 
   /** Remove temporary combat state without replaying opening effects or resetting one-shot flags. */
   reviveAt(pos: {x:number;y:number}, healthFraction: number): void {
+    this.lifeVersion++;this.knightLeap=null;
     this.x=pos.x;this.y=pos.y;this.alive=true;
     this.hp=Math.max(1,Math.floor(this.cfg.hp*healthFraction));this.mana=0;this.manaFraction=0;
-    this.pendingCast=null;this.burns=[];this.shield=0;this.sunlightShield=0;
+    this.pendingCast=null;this.knightWave=null;this.burns=[];this.shield=0;this.sunlightShield=0;
     this.attackTargetId=null;this.priorityTarget=null;this.blockedTargetSinceTick=null;
     this.atkCd=0;this.moveCd=0;this.retargetAtTick=0;
-    this.stunnedUntilTick=0;this.fearUntilTick=0;this.untargetableUntilTick=0;this.skillUntargetable=false;
+    this.walkUntilTick=0;this.basicAttackReadyTick=null;
+    this.stunnedUntilTick=0;this.fearUntilTick=0;this.soulFearUntilTick=0;this.untargetableUntilTick=0;this.skillUntargetable=false;
     this.manaLocked=false;this.domainUntilTick=0;this.domainRadius=0;
     this.skillArmorBonus=0;this.skillMrBonus=0;this.skillAttackSpeedBonus=0;this.skillAttackSpeedPenalty=0;
     this.shadowCorruption=undefined;this.shadowAttackSpeedBonus=0;

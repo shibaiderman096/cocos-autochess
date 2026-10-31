@@ -83,11 +83,11 @@ export class DemonRosterVfx {
     }
     if(e.t==='demon_gunfire_end')this.effects.delete(`gunfire:${e.id}`);
     if(e.t==='demon_volley'){
-      const angle=this.angle(e.from,e.to),spread=Math.min(.4,.035*Math.max(0,e.count-1));
+      const angle=this.angle(e.from,e.to);
       for(let i=0;i<e.count;i++){
-        const start=e.tick+(e.count>1?i*spread/(e.count-1):0)*1000/this.tickMs;
+        const start=e.tick;
         this.add(e.id,start,'demonGunfire',1,.14,1.2,{point:e.from,angle});
-        this.add(e.id,start,'demonGunfire',2,.22,1.25,{point:e.to,from:e.from,angle,anchor:216/256,height:.7});
+        this.add(e.id,start,'demonGunfire',2,(e.flightTicks??4)*this.tickMs/1000,1.25,{point:e.to,from:e.from,angle,anchor:216/256,height:.7});
       }
     }
     if(e.t==='thorn_whip'){
@@ -97,7 +97,7 @@ export class DemonRosterVfx {
       this.add(e.target,e.tick,'thornPull',2,.55,1.7);
     }
     if(e.t==='death'){
-      for(const [key,effect]of this.effects)if(effect.id===e.id)this.effects.delete(key);
+      for(const [key,effect]of this.effects)if(effect.id===e.id&&!(effect.atlas==='demonGunfire'&&effect.row===2&&effect.from))this.effects.delete(key);
       this.update(this.lastTick);
     }
     if(e.t==='end'){this.ended=true;this.clear();}
@@ -142,7 +142,7 @@ export class DemonRosterVfx {
         }
       }
       const progress=Math.max(0,Math.min(1,(tick-effect.start)/(effect.end-effect.start)));
-      if(effect.from)Vec3.lerp(position,this.cellPoint(effect.from),position,Math.min(1,progress*1.6));
+      if(effect.from)Vec3.lerp(position,this.cellPoint(effect.from),position,effect.atlas==='demonGunfire'?progress:Math.min(1,progress*1.6));
       if(!effect.point)position.y+=this.cell*.3;
       if(effect.point&&((effect.atlas==='demonGunfire'&&effect.row>0)||(effect.atlas==='hellhoundBreath'&&effect.row===1)))position.y+=this.cell*.4;
       const phase=effect.loop?((tick-effect.start)*this.tickMs/250)%4:progress*3;

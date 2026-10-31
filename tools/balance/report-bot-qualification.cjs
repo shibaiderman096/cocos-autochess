@@ -48,16 +48,9 @@ function main(){
  ['tools/balance/capture-qualification.cjs','Capture exact game/history bytes, old bot source, seed reservations and pre-existing editor metadata drift'],
  ['tools/balance/replay-v1-economy.cjs','Ten exact historical Stage6 death replays with isolated old prices/source'],
  ['tools/balance/freeze-qualification-bots.cjs','Freeze bots after smoke/development economic gates'],
- ['tools/balance/verify-legacy-bots.cjs','Old/current Weak and Strong full-report/action equality'],
- ['tools/balance/verify-qualification-determinism.cjs','Real one/four worker SHA comparison'],
- ['tools/balance/pressure-test-bot-economy.cjs','Matched controlled Boss stress fixtures, separate from natural campaigns'],
  ['tools/balance/review-qualification-replays.cjs','Five full current qualification decision replays'],
  ['tools/balance/report-bot-qualification.cjs','This 15-section evidence report and protected-source decision'],
- ['tests/medium-economy-tests.cjs','Real-action A-E scenarios, excess/core tests, information traps and entry freeze protection'],
- ['tests/qualification-cli-tests.cjs','Reject old/reserved seeds, candidate/formation override, partial qualification and evidence overwrite'],
- ['tests/formal-bot-tests.cjs','Expect Medium-v2 while retaining real actions and determinism tests'],
- ['tests/enemy-power-tests.cjs','Protect editor-owned metadata against captured R1 entry bytes; other historical checks retained'],
- ['tools/run-tests.ps1','Compile audit tool and run the two new test files'],
+ ['Historical test and verification entries (removed 2026-10-29)','Recorded results remain historical evidence; these scripts are no longer executable project entries'],
  ];
  const sections=[];const add=(s,t)=>sections.push(`## ${s}\n\n${t}`);const table=(head,rows)=>[head.map(x=>`| ${x} `).join('')+'|','| '+head.map(()=> '---').join(' | ')+' |',...rows.map(r=>'| '+r.join(' | ')+' |')].join('\n');
  add('1. 为什么Medium-v1不合格',`第一次P4的正式结论仍是 **P4 FAILED / balance-v1 REJECTED**，没有部署候选。旧Validation中Stage6死亡${old.stage6Deaths}局，${old.deathsWith100PlusGold}局保留100+金，平均${fmt(old.averageDeathGold)}金、Lv${fmt(old.averageDeathLevel)}。Stage3累计100%，Stage6约55%并非已合格的平衡结论；Strong99阶段约98%及Stage12-5可行预算上限仍属于旧实验事实。\n\n[v1-diagnosis/summary.json](v1-diagnosis/summary.json)的10个死亡种子逐波动作SHA、金币与旧档完全一致。seed501还差28金升8，有候补却保留391金；固定阶段目标已达7级而停止购买经验。低血时虽允许目标+1，每波最多3次/12金经验购买仍限制即时人口转化；高2★占比使部分局不再刷新，没有Boss储备窗口。\n\n旧报告、Validation、Holdout、candidate和decision全部保持原字节。原1..1250及其他已登记P4分区不作为未见数据。初次诊断曾误读经验字段，已纠正并完整重放；\`v1-diagnosis-invalid-xp\`仅保留无效开发记录，不参与结论。`);

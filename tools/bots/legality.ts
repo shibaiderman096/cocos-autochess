@@ -15,6 +15,6 @@ export function assertLegalSession(s:RunSession):void {
   const pool=s.pool.snapshot(),shop=s.shop.snapshot();
   for(const cfg of s.cfg.allUnits()){
     const held=owned.filter(u=>u.unitId===cfg.id).reduce((n,u)=>n+3**(u.star-1),0),reserved=shop.filter(slot=>slot.unitId===cfg.id).length+(s.save.stageProgress?.unitReserve.filter(id=>id===cfg.id).length??0);
-    if((pool[cfg.id]??0)+held+reserved!==POOL_STOCK[validCost(cfg.cost??1)])fail('card conservation: '+cfg.id);
+    if((pool[cfg.id]??0)+held+reserved!==POOL_STOCK[validCost(cfg.cost??1)]+(s.save.createdUnitCopies?.[cfg.id]??0))fail('card conservation: '+cfg.id);
   }
 }

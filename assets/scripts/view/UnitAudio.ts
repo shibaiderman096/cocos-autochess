@@ -5,6 +5,8 @@ type AudioUnit = Partial<Pick<UnitConfigData, 'id' | 'artId' | 'range' | 'damage
 
 /** Sound identity belongs to presentation; shared art does not determine a unit's weapon. */
 const ATTACKS: Record<string, SoundId> = {
+  star_card_magician:'ranged_magic',
+  blueflame_soul_knight:'heavy',
   thornchain_succubus: 'chain', raven_succubus: 'claw', crimson_gunslinger: 'ranged_mechanical',
   infernal_axe_guard: 'sword', redhorn_imp: 'claw', hellflame_hound: 'bite', saien: 'heavy',
   star_ring_sage: 'ranged_magic', hushrope_ranger: 'ranged_arrow', sandsea_navigator: 'sword',
@@ -22,6 +24,8 @@ const ATTACKS: Record<string, SoundId> = {
 };
 
 const SKILLS: Record<string, SoundId> = {
+  star_card_show:'cast_stars',
+  soul_realm:'cast_drain',
   thornchain_pull: 'chain', raven_soul_theft: 'cast_drain', infernal_gunfire: 'ranged_mechanical',
   infernal_axe_spin: 'sword', redhorn_fervor: 'roar', hellhound_breath: 'cast_fire',
   abyss_verdict: 'cast_smash', infernal_cataclysm: 'cast_fire', runic_arcana: 'cast_rune',

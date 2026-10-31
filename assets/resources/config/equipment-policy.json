@@ -289,8 +289,16 @@
         "requiresMana": true
       },
       "trait_emblem": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 10
       },
       "spell_overdrive_armor": {
         "enabled": true,
@@ -413,120 +421,354 @@
         "roles": []
       },
       "expedition_command_crown": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 16
       },
       "stat_boost_health_small": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 2
       },
       "stat_boost_health_medium": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 4
       },
       "stat_boost_health_large": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 8
       },
       "stat_boost_health_super": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 12
       },
       "stat_boost_physical_small": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 2,
+        "damageTypes": [
+          "physical"
+        ]
       },
       "stat_boost_physical_medium": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 4,
+        "damageTypes": [
+          "physical"
+        ]
       },
       "stat_boost_physical_large": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 8,
+        "damageTypes": [
+          "physical"
+        ]
       },
       "stat_boost_physical_super": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 12,
+        "damageTypes": [
+          "physical"
+        ]
       },
       "stat_boost_spell_small": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 2,
+        "damageTypes": [
+          "magic"
+        ]
       },
       "stat_boost_spell_medium": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 4,
+        "damageTypes": [
+          "magic"
+        ]
       },
       "stat_boost_spell_large": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 8,
+        "damageTypes": [
+          "magic"
+        ]
       },
       "stat_boost_spell_super": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 12,
+        "damageTypes": [
+          "magic"
+        ]
       },
       "radiant_guinsoo": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "goldCost": 24
       },
       "radiant_totem_of_undying": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "goldCost": 24
       },
       "radiant_jeweled_gauntlet": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "requiresMana": true,
+        "goldCost": 24
       },
       "radiant_infinity_edge": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ],
+        "goldCost": 24
       },
       "radiant_arcane_sovereignty": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "assassin",
+          "support"
+        ],
+        "damageTypes": [
+          "magic"
+        ],
+        "requiresMana": true,
+        "goldCost": 24
       },
       "radiant_crimson_bloodclaw": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "goldCost": 24
       },
       "radiant_abyssal_plate": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 24
       },
       "radiant_divine_judgment": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ],
+        "goldCost": 24
       },
       "radiant_arcane_veil": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 24
       },
       "radiant_forest_sanctuary": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 24
       },
       "radiant_stonegrowth_bulwark": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 24
       },
       "radiant_blazing_feather": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "damageTypes": [
+          "physical"
+        ],
+        "goldCost": 24
       },
       "radiant_arcane_overflow_codex": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "mage",
+          "support",
+          "assassin"
+        ],
+        "requiresMana": true,
+        "goldCost": 24
       },
       "radiant_spell_overdrive_armor": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "mage",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "requiresMana": true,
+        "goldCost": 24
       },
       "radiant_divine_protection": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps",
+          "ranged_dps",
+          "assassin"
+        ],
+        "goldCost": 24
       },
       "radiant_thousand_forged_armor": {
-        "enabled": false,
-        "roles": []
+        "enabled": true,
+        "roles": [
+          "tank",
+          "melee_dps"
+        ],
+        "goldCost": 24
       }
     },
     "equipmentEconomy": {

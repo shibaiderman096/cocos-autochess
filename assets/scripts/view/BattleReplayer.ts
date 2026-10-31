@@ -1,4 +1,8 @@
-import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, UITransform, UIOpacity, resources, tween } from 'cc';
+import {ShadowGroundFog} from './ShadowGroundFog';
+import {RolePaintedVfx} from './RolePaintedVfx';
+import type {PaintedAtlas} from './RolePaintedVfx';
+import {basicAttackLook} from './BasicAttackArt';
+import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, UITransform, UIOpacity, resources } from 'cc';
 import { BattleSim } from '../battle/BattleSim';
 import { BattleEvent } from '../battle/types';
 import { UnitView } from './UnitView';
@@ -39,9 +43,14 @@ export class BattleReplayer extends Component {
   private fxRoot: Node;
   private boardView: BoardView;
   private moves = new Map<number, MoveVisual>();
+  private knightLeaps = new Set<number>();
   private renderTick = 0;
+  private eventTick=0;
+  private spriteFx:Array<{node:Node;sprite:Sprite;opacity:UIOpacity;lease:number;path?:string;start:number;duration:number;from:Vec3;to:Vec3;projectile:boolean}>=[];
+  private spriteFrames=new Map<string,SpriteFrame>();
+  private spriteLoads=new Map<string,Promise<SpriteFrame|null>>();
   private tickMs = 50;
-  private shadowFog: Node | null = null;
+  private shadowFog: ShadowGroundFog | null = null;
   private shadowSkillVfx: ShadowSkillVfx | null = null;
   private sunlightVfx: SunlightVfx | null = null;
   private sunlightSprites: SunlightSpriteVfx | null = null;
@@ -51,6 +60,7 @@ export class BattleReplayer extends Component {
   private astralUnitVfx: AstralUnitVfx | null = null;
   private explorerUnitVfx: ExplorerUnitVfx | null = null;
   private explorerSkillVfx: ExplorerSkillVfx | null = null;
+  private dragonVfx:RolePaintedVfx|null=null;
   private runicVfx: RunicArcanaVfx | null = null;
   private demonVfx: DemonVfx | null = null;
   private demonRosterVfx: DemonRosterVfx | null = null;
@@ -58,8 +68,10 @@ export class BattleReplayer extends Component {
   private stellarKnockups = new Map<number, {tick:number;duration:number}>();
 
   bind(sim: BattleSim, views: Map<number, UnitView>, cellSize: number, boardView: BoardView, tickMs = 50) {
+    this.clearSpriteFx(true);
     this.demonRosterVfx?.destroy();this.demonRosterVfx=null;
     this.demonVfx?.destroy();this.demonVfx=null;
+    this.dragonVfx?.destroy();this.dragonVfx=null;
     this.runicVfx?.destroy();this.runicVfx=null;
     this.explorerSprites?.destroy();this.explorerSprites=null;
     this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null;
@@ -73,13 +85,21 @@ export class BattleReplayer extends Component {
     this.shadowSkillVfx?.destroy(); this.shadowSkillVfx = null;
     this.sunlightVfx?.destroy(); this.sunlightVfx = null;
     this.sunlightSprites?.destroy(); this.sunlightSprites = null;
+    for(const v of views.values())v.resetCombatAnimation?.();
     this.sim = sim;
     this.unitViews = views;
     this.cellSize = cellSize;
     this.boardView = boardView;
     this.tickMs = tickMs;
     this.eventCursor = 0;
-    this.moves.clear(); this.renderTick = sim.tick;
+    this.moves.clear(); this.knightLeaps.clear(); this.renderTick = sim.tick;
+  }
+
+  /** Preparation has no consumed battle events; retain idle FX and their live lookups. */
+  bindPreview(sim: BattleSim, views: Map<number, UnitView>): void {
+    this.clearSpriteFx();for(const view of views.values())view.resetCombatAnimation?.();
+    this.sim = sim; this.unitViews = views;
+    this.eventCursor = 0; this.moves.clear(); this.knightLeaps.clear(); this.renderTick = sim.tick;
   }
 
   setFxRoot(root: Node): void {
@@ -90,6 +110,15 @@ export class BattleReplayer extends Component {
     if(this.sim?.units.some(u=>u.cfg.summonOnly))
       this.demonVfx=new DemonVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
         p=>this.boardView.cellToWorld(p.x,p.y),id=>this.sim.units.some(u=>u.id===id&&u.cfg.summonOnly&&u.hp>0&&u.shield>0));
+    const exclusive:PaintedAtlas[]=[];
+    for(const u of this.sim?.units??[]){const look=basicAttackLook(u.cfg.id);if(look)exclusive.push(look.atlas);}
+    if(this.sim?.units.some(u=>u.cfg.id==='blueflame_soul_knight'))exclusive.push('soul');
+    if(this.sim?.units.some(u=>u.cfg.id==='azure_oath_knight'))exclusive.push('knight');
+    if(this.sim?.units.some(u=>u.cfg.id==='cloud_dragon_priestess'))exclusive.push('dragon');
+    if(this.sim?.units.some(u=>u.cfg.id==='star_card_magician'))exclusive.push('starCards');
+    if(exclusive.length)this.dragonVfx=new RolePaintedVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
+      id=>this.sim.units.find(u=>u.id===id)?.cfg.id,p=>this.boardView.cellToWorld(p.x,p.y),
+      (from,to,length)=>this.boardView.lineEndToWorld(from,to,length),id=>!!this.sim.units.find(u=>u.id===id&&u.hp>0)?.knightSpin,exclusive,{columns:this.sim.w,rows:this.sim.h});
     if(this.sim?.units.some(u=>u.cfg.skillId==='runic_arcana'))
       this.runicVfx=new RunicArcanaVfx(root,this.cellSize,this.tickMs,id=>this.unitViews.get(id)?.node,
         p=>this.boardView.cellToWorld(p.x,p.y),id=>!!this.sim.units.find(u=>u.id===id)?.pendingCast,
@@ -124,10 +153,29 @@ export class BattleReplayer extends Component {
   }
 
   private play(e: BattleEvent) {
+    this.eventTick=e.tick;
+    if(e.t==='end')for(const unit of this.sim.units)if(unit.temporaryCopy){const view=this.unitViews.get(unit.id);if(view)view.node.active=false;}
+    if(e.t==='unit_copy'&&this.boardView&&this.fxRoot){
+      const unit=this.sim.units.find(u=>u.id===e.id);
+      if(unit&&!this.unitViews.has(e.id)){
+        const root=this.fxRoot.parent?.getChildByName('units')??this.fxRoot.parent;
+        if(root){
+          const node=new Node(`copy_${e.id}`);node.layer=root.layer;
+          node.addComponent(UITransform).setContentSize(this.cellSize,this.cellSize);root.addChild(node);
+          const view=node.addComponent(UnitView);
+          view.setup(unit.cfg.id,unit.side,unit.id,this.cellSize,unit.cfg.artId??unit.cfg.id,unit.cfg.tint,1.3);
+          view.setStar(unit.star);view.setEquipment(unit.equipment);view.sync(unit.snapshot(e.tick),this.cellSize);
+          node.setPosition(this.boardView.cellToWorld(e.pos.x,e.pos.y));this.unitViews.set(e.id,view);
+        }
+      }
+    }
     this.demonRosterVfx?.play(e);
     this.demonVfx?.play(e);
     if(e.t==='demon_leap'||e.t==='demon_impact')this.moves.delete(e.id);
     if(e.t==='raven_flight'||e.t==='raven_end')this.moves.delete(e.id);
+    this.dragonVfx?.play(e);
+    if(e.t==='knight_action'&&e.kind==='jump'&&this.moves.has(e.id))this.knightLeaps.add(e.id);
+    if(e.t==='dragon_form')this.unitViews.get(e.id)?.setDragonAppearance(e.active,e.tick);
     this.runicVfx?.play(e);
     this.explorerSprites?.play(e);
     this.explorerSkillVfx?.play(e);
@@ -187,7 +235,7 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'dash_stop': {
-        this.moves.delete(e.id);
+        this.moves.delete(e.id);this.knightLeaps.delete(e.id);
         if (this.boardView) this.unitViews.get(e.id)?.node.setPosition(this.boardView.cellToWorld(e.at.x, e.at.y));
         break;
       }
@@ -203,7 +251,7 @@ export class BattleReplayer extends Component {
             Math.sign(tv.node.position.y - uv.node.position.y),
             0,
           );
-          uv.playAttack(dir);
+          uv.playAttack(dir,e.tick);
           const attacker = this.sim.units.find(u => u.id === e.id);
           const shadowMelee = attacker && attacker.cfg.range <= 1 && UNIT_ART?.[attacker.cfg.artId ?? attacker.cfg.id]?.includes('/units/shadow/');
           const sunlight = attacker && UNIT_ART?.[attacker.cfg.artId ?? attacker.cfg.id]?.includes('/units/sunlight/');
@@ -230,7 +278,7 @@ export class BattleReplayer extends Component {
         if (!this.boardView || e.skillId === 'voidscar_transit') break;
         const pos = this.boardView.cellToWorld(e.center.x, e.center.y);
         const source = this.unitViews.get(e.id)?.node.position.clone();
-        this.shadowVfx()?.play(e.effect,e.id,source??pos,pos,e.tick,e.radius,e.duration,e.selfCast);
+        this.shadowVfx()?.play(e.effect,e.id,e.from?this.boardView.cellToWorld(e.from.x,e.from.y):source??pos,pos,e.tick,e.radius,e.duration,e.selfCast,e.flightTicks);
         break;
       }
       case 'fear': {
@@ -243,7 +291,7 @@ export class BattleReplayer extends Component {
         if (e.critical) GameAudio.play('hit');
         const tv = this.unitViews.get(e.id);
         if (tv) {
-          tv.playHit();
+          tv.playHit(e.tick);
           if (this.damageNumbers && this.fxRoot && tv.side !== 0) {
             const ft = FloatTextPool.get();
             const color = FloatText.colorForType(e.dmgType);
@@ -262,17 +310,18 @@ export class BattleReplayer extends Component {
         const caster = this.sim.units.find(unit => unit.id === e.id);
         const art = caster && UNIT_ART[caster.cfg.artId ?? caster.cfg.id];
         GameAudio.play(unitCastSound(e.skillId ?? caster?.cfg.skillId, art));
-        if (e.duration !== undefined) {
-          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty','startrail_inspiration','wayward_corrosion','windward_hunt','sand_compass','rope_shadow_hunt','runic_arcana','redhorn_fervor','hellhound_breath','abyss_verdict','infernal_axe_spin','raven_soul_theft','infernal_gunfire'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(e.duration);
+        const windup=e.windupTicks===undefined?e.duration:e.windupTicks*this.tickMs/1000;
+        if (windup !== undefined) {
+          if (!['crimson_upheaval','frostblood_roar','scarlet_aid_dance','blood_sovereignty','startrail_inspiration','wayward_corrosion','windward_hunt','sand_compass','rope_shadow_hunt','runic_arcana','redhorn_fervor','hellhound_breath','abyss_verdict','infernal_axe_spin','raven_soul_theft','infernal_gunfire'].includes(e.skillId??'')) this.unitViews.get(e.id)?.playCast(windup,e.tick,this.tickMs);
           const source = this.sim.units.find(unit => unit.id === e.id);
           const path = source && UNIT_ART[source.cfg.artId ?? source.cfg.id];
           const view = this.unitViews.get(e.id);
-          if (path?.includes('/units/shadow/') && view) this.shadowVfx()?.charge(e.id,view.node.position.clone(),e.tick,e.duration);
-          if (path?.includes('/units/sunlight/') && view) this.sunlightArt()?.charge(e.id,view.node.position.clone(),e.tick,e.duration);
+          if (path?.includes('/units/shadow/') && view) this.shadowVfx()?.charge(e.id,view.node.position.clone(),e.tick,windup);
+          if (path?.includes('/units/sunlight/') && view) this.sunlightArt()?.charge(e.id,view.node.position.clone(),e.tick,windup);
           break;
         }
         const tv = this.unitViews.get(e.target);
-        if (tv) tv.playHit();
+        if (tv) tv.playHit(e.tick);
         break;
       }
       case 'trait_mana': {
@@ -316,16 +365,14 @@ export class BattleReplayer extends Component {
       case 'stun': {
         GameAudio.play('stun');
         const uv = this.unitViews.get(e.id);
-        uv?.playCast(e.duration);
+        uv?.playCast(e.duration,e.tick,this.tickMs);
         if (uv && this.fxRoot) FloatTextPool.get().show('眩晕', new Color(204, 125, 255), uv.node.position.clone(), this.fxRoot);
         break;
       }
       case 'knockup': {
         GameAudio.play('stun');
         const uv = this.unitViews.get(e.id);
-        if(['stellar_bulwark','crimson_upheaval'].includes(this.sim.units.find(u=>u.id===e.source)?.cfg.skillId??''))
-          this.stellarKnockups.set(e.id,{tick:e.tick,duration:e.duration*1000/this.tickMs});
-        else uv?.playKnockup(e.duration);
+        this.stellarKnockups.set(e.id,{tick:e.tick,duration:e.duration*1000/this.tickMs});
         if (uv && this.fxRoot) FloatTextPool.get().show('击飞', new Color(240, 210, 135), uv.node.position.clone(), this.fxRoot);
         break;
       }
@@ -345,20 +392,21 @@ export class BattleReplayer extends Component {
         break;
       }
       case 'revive': {
+        this.moves.delete(e.id);this.knightLeaps.delete(e.id);
         this.unitViews.get(e.id)?.playRevive();
         break;
       }
       case 'death': {
         GameAudio.play('death');
         this.stellarKnockups.delete(e.id);
-        this.moves.delete(e.id);
+        this.moves.delete(e.id);this.knightLeaps.delete(e.id);
         this.shadowSkillVfx?.cancel(e.id);
         this.sunlightSprites?.cancel(e.id);
         const uv = this.unitViews.get(e.id);
-        if (uv) uv.playDeath();
+        if (uv) uv.playDeath(e.tick);
         break;
       }
-      case 'end': this.clearStellar(); this.astralVfx?.clear(); this.boardView?.stopAstralAnimation?.(); this.clearShadowFog(); this.shadowSkillVfx?.clear(); this.sunlightVfx?.clear(); this.sunlightSprites?.clear(); break;
+      case 'end': this.clearSpriteFx();this.clearStellar(); this.astralVfx?.clear(); this.boardView?.stopAstralAnimation?.(); this.clearShadowFog(); this.shadowSkillVfx?.clear(); this.sunlightVfx?.clear(); this.sunlightSprites?.clear(); break;
     }
   }
 
@@ -369,11 +417,7 @@ export class BattleReplayer extends Component {
       ? Math.max(this.renderTick, this.sim.tick) + Math.max(0, dt) * playbackSpeed * 1000 / this.tickMs
       : this.sim.tick + Math.max(0, Math.min(1, interpolation));
     // Derive motion from the simulation clock so pause and playback speed also govern mist.
-    if (this.shadowFog?.isValid) {
-      const phase = this.renderTick * this.tickMs / 1000;
-      this.shadowFog.setScale(1 + Math.sin(phase * 1.7) * 0.018, 1 + Math.cos(phase * 1.3) * 0.018, 1);
-      this.shadowFog.getComponent(UIOpacity)!.opacity = 220 + Math.round(Math.sin(phase * 2) * 20);
-    }
+    this.shadowFog?.update(this.renderTick);
     for (const u of this.sim.units) {
       const uv = this.unitViews.get(u.id);
       if (!uv) continue;
@@ -393,10 +437,12 @@ export class BattleReplayer extends Component {
         if (movement && !u.ropeHunt && !u.demonLeap && !u.ravenFlight) {
           const progress = Math.max(0, Math.min(1, (this.renderTick - movement.startTick) / movement.durationTicks));
           Vec3.lerp(target, movement.from, movement.to, progress);
-          if (progress === 1) this.moves.delete(u.id);
+          if(this.knightLeaps.has(u.id))target.y+=Math.sin(progress*Math.PI)*this.cellSize*1.4;
+          if (progress === 1) {this.moves.delete(u.id);this.knightLeaps.delete(u.id);}
         }
         uv.node.setPosition(target);
         uv.sync(u.snapshot(this.sim.tick), this.cellSize);
+        uv.syncCombatAnimation?.(this.renderTick,this.tickMs,!!u.pendingCast,this.sim.tick<u.stunnedUntilTick||this.sim.tick<u.fearUntilTick);
         if(u.ravenFlight&&this.demonRosterVfx?.ravenReady)uv.hideRavenBody?.();
         const airborne=this.stellarKnockups.get(u.id);
         const progress=airborne?(this.renderTick-airborne.tick)/airborne.duration:1;
@@ -409,7 +455,7 @@ export class BattleReplayer extends Component {
         uv.animateBloodCleave?.(cleave?Math.max(0,Math.min(1,(this.renderTick-cleave.startTick)/(cleave.endTick-cleave.startTick))):null,direction);
         if(u.cfg.skillId==='windward_hunt')uv.animateWindHunt?.(u.pendingCast?.skillId==='windward_hunt'
           ?1-u.pendingCast.remainingTicks/u.windHuntCastTicks:null);
-        if(['sand_compass','rope_shadow_hunt','runic_arcana'].includes(u.cfg.skillId??''))
+        if(['sand_compass','rope_shadow_hunt','runic_arcana','cloud_dragon_flow'].includes(u.cfg.skillId??''))
           uv.animateExpeditionCast?.(u.pendingCast?1-u.pendingCast.remainingTicks/u.expeditionCastTicks:null);
         if(DemonRosterVfx.asset(u.cfg.skillId??''))uv.animateDemonSpell?.(
           u.pendingCast?1-u.pendingCast.remainingTicks/u.expeditionCastTicks:null,
@@ -418,6 +464,8 @@ export class BattleReplayer extends Component {
           const charge=this.explorerSprites?.brewProgress(u.id,this.renderTick)??this.explorerUnitVfx?.brewProgress(u.id,this.renderTick)??null;
           uv.animateExpeditionCast?.(charge);
         }
+        if(u.cfg.id==='azure_oath_knight')uv.animateDemonSpell(null,u.knightSpin?this.renderTick*this.tickMs/500:null);
+        if(u.cfg.id==='cloud_dragon_priestess')uv.setDragonAppearance(!!u.dragonFlow,this.renderTick);
         uv.animateSunlight?.(this.renderTick,this.tickMs,this.cellSize);
         this.mechanicalSprites?.syncUnit(u.id,this.renderTick);
         const domain = uv.node.getChildByName('shadowDomain');
@@ -426,8 +474,9 @@ export class BattleReplayer extends Component {
           domain.setScale(breath,breath,1);
           domain.getComponent(UIOpacity)!.opacity = 160+Math.round(Math.sin(this.renderTick*this.tickMs/400)*20);
         }
-      }
+      }else uv.syncCombatAnimation?.(this.renderTick,this.tickMs,false,true);
     }
+    this.updateSpriteFx(this.renderTick);
     this.shadowSkillVfx?.update(this.renderTick);
     this.sunlightVfx?.update(this.renderTick);
     this.sunlightSprites?.update(this.renderTick);
@@ -436,6 +485,7 @@ export class BattleReplayer extends Component {
     this.boardView.animateAstralFields?.(this.renderTick, this.tickMs);
     this.astralVfx?.update(this.renderTick, this.sim);
     this.astralUnitVfx?.update(this.renderTick);
+    this.dragonVfx?.update(this.renderTick);
     this.runicVfx?.update(this.renderTick);
     this.demonVfx?.update(this.renderTick);
     this.demonRosterVfx?.update(this.renderTick);
@@ -493,43 +543,56 @@ export class BattleReplayer extends Component {
   }
 
   private showShadowFog(): void {
-    if (this.shadowFog?.isValid || !this.fxRoot?.isValid || !this.boardView) return;
-    const fog = new Node('shadowBoardFog');
-    fog.addComponent(UITransform).setContentSize(this.boardView.boardPixelW + 155, this.boardView.boardPixelH + 100);
-    const sprite = fog.addComponent(Sprite); sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
-    fog.addComponent(UIOpacity).opacity = 220;
-    this.fxRoot.addChild(fog); fog.setSiblingIndex(0); fog.setPosition(0, 0, 0); this.shadowFog = fog;
-    resources.load(FX_SPRITE.shadowBoardFog, SpriteFrame, (err, frame) => { if (!err && fog.isValid) sprite.spriteFrame = frame; });
+    if (this.shadowFog || !this.fxRoot?.isValid || !this.boardView) return;
+    const board=this.boardView;
+    this.shadowFog=new ShadowGroundFog(board.node,board.boardWidth,board.boardHeight,board.hexSize,this.tickMs);
+    this.shadowFog.update(this.renderTick);
   }
 
   private clearShadowFog(): void {
-    if (this.shadowFog?.isValid) this.shadowFog.destroy();
-    this.shadowFog = null;
+    this.shadowFog?.destroy();this.shadowFog=null;
   }
 
-  onDestroy(): void { this.demonRosterVfx?.destroy();this.demonRosterVfx=null; this.demonVfx?.destroy();this.demonVfx=null; this.runicVfx?.destroy();this.runicVfx=null; this.explorerSprites?.destroy();this.explorerSprites=null; this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null; this.explorerUnitVfx?.destroy(); this.explorerUnitVfx=null; this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
+  onDestroy(): void {this.clearSpriteFx(true);this.dragonVfx?.destroy();this.dragonVfx=null; this.demonRosterVfx?.destroy();this.demonRosterVfx=null; this.demonVfx?.destroy();this.demonVfx=null; this.runicVfx?.destroy();this.runicVfx=null; this.explorerSprites?.destroy();this.explorerSprites=null; this.explorerSkillVfx?.destroy();this.explorerSkillVfx=null; this.explorerUnitVfx?.destroy(); this.explorerUnitVfx=null; this.bloodfiendSprites?.destroy(); this.bloodfiendSprites=null; this.astralUnitVfx?.destroy(); this.astralUnitVfx=null; this.clearStellar(); this.astralVfx?.clear(); this.astralVfx=null; this.clearShadowFog(); this.shadowSkillVfx?.destroy(); this.shadowSkillVfx=null; this.sunlightVfx?.destroy(); this.sunlightVfx=null; this.sunlightSprites?.destroy(); this.sunlightSprites=null; this.mechanicalSprites?.destroy(); this.mechanicalSprites=null; }
 
-  private playSpriteFx(path: string, from: Vec3, to: Vec3, width: number, height: number, projectile = false, mirror = false, tint?: Color, rotate = false, angle?: number): void {
-    if (!this.fxRoot?.isValid) return;
-    const effect = new Node(projectile ? 'ravenProjectile' : 'ravenVortex');
-    effect.addComponent(UITransform).setContentSize(this.cellSize * width, this.cellSize * height);
-    const sprite = effect.addComponent(Sprite);
-    sprite.sizeMode = Sprite.SizeMode.CUSTOM; sprite.trim = false;
-    if (tint) sprite.color = tint;
-    this.fxRoot.addChild(effect); effect.setPosition(from);
-    if (angle !== undefined) effect.angle = angle;
-    else if (projectile && rotate) effect.angle = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
-    else if (mirror || (projectile && to.x < from.x)) effect.setScale(new Vec3(-1, 1, 1));
-    resources.load(path, SpriteFrame, (err, frame) => {
-      if (!effect.isValid) return;
-      if (err) { effect.destroy(); return; }
-      sprite.spriteFrame = frame;
-      if (projectile) {
-        tween(effect).to(0.25, { position: to }).call(() => { if (effect.isValid) effect.destroy(); }).start();
-      } else {
-        const opacity = effect.addComponent(UIOpacity);
-        tween(opacity).to(0.45, { opacity: 0 }).call(() => { if (effect.isValid) effect.destroy(); }).start();
-      }
+  private clearSpriteFx(destroy=false):void {
+    for(const slot of this.spriteFx){slot.path=undefined;slot.lease++;if(slot.node.isValid){slot.node.active=false;if(destroy)slot.node.destroy();}}
+    if(destroy){this.spriteFx=[];this.spriteFrames.clear();this.spriteLoads.clear();}
+  }
+  private updateSpriteFx(tick:number):void {
+    for(const slot of this.spriteFx){
+      if(!slot.path||!slot.node.isValid)continue;
+      const p=(tick-slot.start)/slot.duration;
+      if(p>=1){slot.path=undefined;slot.lease++;slot.node.active=false;continue;}
+      slot.node.active=p>=0&&!!slot.sprite.spriteFrame;
+      if(p<0)continue;
+      if(slot.projectile)slot.node.setPosition(slot.from.x+(slot.to.x-slot.from.x)*p,slot.from.y+(slot.to.y-slot.from.y)*p,0);
+      slot.opacity.opacity=slot.projectile?255:Math.round(255*(1-p));
+    }
+  }
+  private playSpriteFx(path:string,from:Vec3,to:Vec3,width:number,height:number,projectile=false,mirror=false,tint?:Color,rotate=false,angle?:number):void {
+    if(!this.fxRoot?.isValid)return;
+    let slot=this.spriteFx.find(s=>!s.path&&s.node.isValid);
+    if(!slot){
+      if(this.spriteFx.length>=96)return;
+      const node=new Node('basicSpriteFx');node.addComponent(UITransform);
+      const sprite=node.addComponent(Sprite);sprite.sizeMode=Sprite.SizeMode.CUSTOM;sprite.trim=false;
+      slot={node,sprite,opacity:node.addComponent(UIOpacity),lease:0,start:0,duration:1,from:new Vec3(),to:new Vec3(),projectile:false};this.spriteFx.push(slot);
+    }
+    const current=slot,lease=++current.lease;
+    Object.assign(current,{path,start:this.eventTick,duration:(projectile?250:450)/this.tickMs,from:from.clone(),to:to.clone(),projectile});
+    this.fxRoot.addChild(current.node);current.node.active=false;current.node.setPosition(from);
+    current.node.setScale(mirror||(projectile&&to.x<from.x&&!rotate)?-1:1,1,1);
+    current.node.angle=angle??(projectile&&rotate?Math.atan2(to.y-from.y,to.x-from.x)*180/Math.PI:0);
+    current.node.getComponent(UITransform)!.setContentSize(this.cellSize*width,this.cellSize*height);
+    current.sprite.color=tint??Color.WHITE;current.sprite.spriteFrame=this.spriteFrames.get(path)??null;current.opacity.opacity=255;
+    if(current.sprite.spriteFrame)return;
+    let loading=this.spriteLoads.get(path);
+    if(!loading){loading=new Promise(resolve=>resources.load(path,SpriteFrame,(err,frame)=>resolve(err?null:frame)));this.spriteLoads.set(path,loading);}
+    loading.then(frame=>{
+      this.spriteLoads.delete(path);
+      if(!current.node.isValid||current.lease!==lease||current.path!==path)return;
+      if(frame){this.spriteFrames.set(path,frame);current.sprite.spriteFrame=frame;}
     });
   }
 }

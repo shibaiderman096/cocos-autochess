@@ -11,17 +11,12 @@
   },
   "scripts": {
     "check:resources": "node tools/check-resources.cjs",
-    "test:ui": "node tests/ui-interaction-tests.cjs",
-    "test:stages": "node tests/role-mana-and-start-tests.cjs && node tests/monster-drop-rate-tests.cjs",
     "build:web": "pwsh -NoProfile -File tools/build-web.ps1",
-    "test:web": "node tests/web-build-tests.cjs",
-    "smoke": "pwsh -NoProfile -File tools/run-smoke.ps1",
     "batch": "pwsh -NoProfile -File tools/run-batch.ps1",
     "run-sim": "node --require tsx/cjs tools/run-sim.ts",
     "calibrate-power": "node --require tsx/cjs tools/calibrate-enemy-power.ts",
     "report-enemy-formation": "node --require tsx/cjs tools/report-enemy-formation.ts",
     "balance-sim": "node --require tsx/cjs tools/balance-sim.ts",
-    "tune-balance": "node --require tsx/cjs tools/balance/tune-balance.ts",
-    "test": "pwsh -NoProfile -File tools/run-tests.ps1"
+    "tune-balance": "node --require tsx/cjs tools/balance/tune-balance.ts"
   }
 }

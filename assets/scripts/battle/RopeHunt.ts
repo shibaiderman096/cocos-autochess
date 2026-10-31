@@ -26,6 +26,7 @@ export function ropeHuntEdge(from:Pos,width:number,height:number):Pos|undefined 
 }
 interface Host {
   units: Unit[];events: BattleEvent[];now():number;width():number;height():number;
+  flightTicks(skillId:string):number;
   targetable(unit:Unit):boolean;damage(source:Unit,target:Unit,raw:number,skillId:string):void;
 }
 export class RopeHunt {
@@ -54,7 +55,7 @@ export class RopeHunt {
         const enemy=this.host.units.filter(e=>e.side!==source.side&&e.hp>0&&this.host.targetable(e)&&source.canSelectEnemy(e))
           .sort((a,b)=>a.hp/a.cfg.hp-b.hp/b.cfg.hp||hexDist(source.pos,a.pos)-hexDist(source.pos,b.pos)||a.id-b.id)[0];
         if(enemy){
-          this.host.events.push({t:'rope_shot',tick,id:source.id,target:enemy.id,from:p,to:enemy.pos});
+          this.host.events.push({t:'rope_shot',tick,id:source.id,target:enemy.id,from:p,to:enemy.pos,flightTicks:this.host.flightTicks(state.skillId)});
           this.host.damage(source,enemy,state.raw,state.skillId);
         }
         state.shotsRemaining--;state.nextShot+=state.intervalTicks;

@@ -23,6 +23,10 @@ const GOLD = new Color(220, 187, 115), TEXT = new Color(231, 236, 223), MUTED = 
 /** Shop-dock presentation only: every mutation goes through the session's guarded action. */
 export class StageRewardPanel {
   private root: Node | null = null;
+  private merchantKey = '';
+  private currentGold = 0;
+  private currentPending: StagePending | undefined;
+  private merchantUpdates: Array<() => void> = [];
   private dockPopup = new ShopDockPopup();
   private services?: MerchantServicesPanel;
   constructor(private parent: Node, private cfg: ConfigManager, private choose: (action: StageChoice) => void, private close?: () => void,
@@ -34,7 +38,23 @@ export class StageRewardPanel {
   tryDropEquipment(index:number,event:any):boolean{return this.services?.tryDrop(index,event)??false;}
   get forging():boolean{return this.services?.forging??false;}
   update(dt:number):void{this.services?.update(dt);}
-  hide(reset = true): void { this.dockPopup.clear(reset); if (reset) this.inspectEquipment?.(undefined); if (this.root) { this.root.active = false; this.root.destroy(); this.root = null; } }
+  hide(reset = true): void { this.merchantKey = ''; this.currentPending = undefined; this.merchantUpdates = []; this.dockPopup.clear(reset); if (reset) this.inspectEquipment?.(undefined); if (this.root) { this.root.active = false; this.root.destroy(); this.root = null; } }
+  showProfessionChoice(uid:number,choose:(role:'warrior'|'caster'|'tank')=>void):void {
+    const key=`knight:${uid}`;if(this.root&&this.merchantKey===key)return;
+    this.hide(false);this.merchantKey=key;const a=SHOP_REWARD_AREA;
+    const root=panel(this.parent,'knightProfessionChoice',a.x,a.y,a.width,a.height,new Color(13,27,35),GOLD,null);this.root=root;
+    for(const type of [Node.EventType.TOUCH_START,Node.EventType.TOUCH_END])root.on(type,(e:any)=>{e.propagationStopped=true;});
+    label(root,'幽蓝誓刃 · 选择本次上阵职业',0,55,18,GOLD,700);
+    const roles=['warrior','caster','tank'] as const;
+    const captions=['物理战士 · 征战者 · 0/60','物理术士 · 法咏者 · 0/30','物理坦克 · 重甲坦克 · 20/80'];
+    const details=['跃入密集处 · 自身1格伤害和眩晕','位移1格 · 3格剑气和攻速削减','自身1格旋转 · 获得免伤'];
+    roles.forEach((role,i)=>{const card=panel(root,`profession_${role}`,(i-1)*260,-12,250,102);
+      label(card,details[i],0,19,12,TEXT,240);
+      const control=button(card,captions[i],0,-24,240,40,()=>{if(this.root===root)choose(role);},true);
+      const text=control.getChildByName('text')!.getComponent(Label)!;text.fontSize=16;text.enableWrapText=false;text.overflow=Label.Overflow.SHRINK;
+      text.node.getComponent(UITransform)!.setContentSize(230,32);
+    });
+  }
   showTraitChoice(pending: PendingTraitChoice, units: OwnedUnit[], choose: (index: number) => void): void {
     this.hide(false);
     const a=SHOP_REWARD_AREA;
@@ -60,7 +80,18 @@ export class StageRewardPanel {
     this.dockPopup.play(root, `trait:${pending.uid}:${pending.slot}:${pending.candidates.join(',')}`);
   }
   show(pending: StagePending | undefined, gold: number): void {
+    this.currentGold = gold;
+    // Retain merchant content while only gold or bought flags change.
+    const key = pending?.kind === 'specialShop'
+      ? JSON.stringify([pending.id, pending.refreshes, pending.offers.map(offer => [offer.kind, offer.id, offer.price]), this.services?.structureKey(pending.id)]) : '';
+    if (key && key === this.merchantKey && this.root?.isValid) {
+      this.currentPending = pending; this.root.active = true;
+      for (const update of this.merchantUpdates) update();
+      this.services?.refreshGold();
+      return;
+    }
     this.hide(!pending); if (!pending) return;
+    this.currentPending = pending; this.merchantKey = key;
     const merchant = pending.kind === 'specialShop';
     const compact = true;
     const a=SHOP_REWARD_AREA;
@@ -71,7 +102,9 @@ export class StageRewardPanel {
     for (const type of [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END]) overlay.on(type, (e: any) => { e.propagationStopped = true; });
     const body = panel(overlay, 'stageRewardBody', 0, 0, compact ? a.width : 1150, compact ? a.height : 600, new Color(13, 27, 35), GOLD, null);
     if (merchant) setUISkin(body, 'panel_dock', body.getComponent(Graphics)!);
-    if (merchant && this.services?.mount(body,pending.id)) {
+    const serviceTab = merchant && this.services?.mount(body,pending.id);
+    if (merchant) this.merchantKey = JSON.stringify([pending.id, pending.refreshes, pending.offers.map(offer => [offer.kind, offer.id, offer.price]), this.services?.structureKey(pending.id)]);
+    if (serviceTab) {
       this.dockPopup.play(overlay,`${pending.kind}:${pending.id}`); return;
     }
     if (!compact && this.close) button(body, '×', 530, 263, 34, 30, () => this.close!());
@@ -93,12 +126,13 @@ export class StageRewardPanel {
       const rates=stageShopQualityRates(pending.refreshes??0,{qualityRates:[...this.qualityRates],refreshQuality:this.qualityGrowth});
       rates.forEach((rate,index)=>{const text=label(odds,`${Math.round(rate)}%`,(index-2)*48,0,sys.isMobile ? 15 : 12,new Color(...QUALITY_COLORS[index]),48);text.node.name=`quality${index+1}`;text.node.getComponent(UITransform)!.setContentSize(48,22);text.enableWrapText=false;text.overflow=Label.Overflow.SHRINK;});
       const refreshPrice=stageShopRefreshPrice(pending.refreshes,this.refreshRules);
-      const refresh=button(body,`刷新 ${refreshPrice} 金币`,302,sys.isMobile ? 59 : 54,148,sys.isMobile ? 42 : 30,()=>{if(gold>=refreshPrice)act('refresh');},true);
+      const refresh=button(body,`刷新 ${refreshPrice} 金币`,302,sys.isMobile ? 59 : 54,148,sys.isMobile ? 42 : 30,()=>{if(this.currentGold>=refreshPrice)act('refresh');},true);
       refresh.name='stageShopRefresh';refresh.getChildByName('text')!.getComponent(Label)!.fontSize=sys.isMobile ? 18 : 13;
-      if(gold<refreshPrice)setUISkin(refresh,'btn_disabled');
+      this.merchantUpdates.push(() => setUISkin(refresh, this.currentGold < refreshPrice ? 'btn_disabled' : 'btn_primary'));
       const purse = panel(body, 'merchantPurse', 0, sys.isMobile ? 59 : 54, sys.isMobile ? 150 : 132, sys.isMobile ? 38 : 26, new Color(16, 31, 40), MUTED, 'panel_side');
       art(purse, UI_SPRITE.iconGold, -43, 0, 18);
       const balance = label(purse, `${gold} 金币`, 12, 0, sys.isMobile ? 19 : 14, GOLD, sys.isMobile ? 105 : 88); balance.isBold = true;
+      this.merchantUpdates.push(() => { balance.string = `${this.currentGold} 金币`; });
       purse.on(Node.EventType.TOUCH_END,(event:any)=>{if(event)event.propagationStopped=true;this.inspectIncome?.();});
     } else label(body, heading, compact ? -220 : 0, compact ? 55 : 235, compact ? 17 : 32, GOLD, compact ? 330 : 720);
     const subtitle = pending.kind === 'specialShop' ? `持有 ${gold} 金币 · 商品各限购一次，选购后点击下一关` : `总价值 ${pending.value} 金币 · 棋子/装备/生命混合发放`;
@@ -133,17 +167,28 @@ export class StageRewardPanel {
           });
           const enabled = !offer.bought && gold >= offer.price;
           const caption = offer.bought ? '已售罄' : enabled ? `${offer.price} 金币 · 购买` : `${offer.price} 金币 · 差${offer.price - gold}金`;
-          const control = button(card, caption, 0, -31, 132, sys.isMobile ? 40 : 32, () => { if (enabled) act('buy', i); }, true);
+          const control = button(card, caption, 0, -31, 132, sys.isMobile ? 40 : 32, () => { const latest = this.currentPending; if (latest?.kind === 'specialShop' && !latest.offers[i]?.bought && this.currentGold >= latest.offers[i].price) act('buy', i); }, true);
           control.name = `stageChoice_${i}`;
           if (!enabled) setUISkin(control, 'btn_disabled');
           const text = control.getChildByName('text')!.getComponent(Label)!;
           text.fontSize = sys.isMobile ? 17 : 13; text.color = enabled ? TEXT : MUTED;
           text.enableWrapText=false;text.overflow=Label.Overflow.SHRINK;
+          this.merchantUpdates.push(() => {
+            const latest = this.currentPending;
+            if (latest?.kind !== 'specialShop') return;
+            const current = latest.offers[i], available = !current.bought && this.currentGold >= current.price;
+            text.string = current.bought ? '已售罄' : available ? `${current.price} 金币 · 购买` : `${current.price} 金币 · 差${current.price - this.currentGold}金`;
+            text.color = available ? TEXT : MUTED;
+            name.color = current.bought ? MUTED : equipment ? new Color(...equipmentNameColor(equipment)) : GOLD;
+            sprite.color = current.bought ? new Color(140, 153, 151, 160) : Color.WHITE;
+            setUISkin(control, available ? 'btn_primary' : 'btn_disabled');
+          });
           return;
         }
       });
 
     }
+    for (const update of this.merchantUpdates) update();
     if (compact) this.dockPopup.play(overlay, `${pending.kind}:${pending.id}`);
   }
 }

@@ -21,6 +21,7 @@ export interface OwnedUnit extends ItemStatGrowth {
   uid: number;
   /** 棋子配置 id（如 helion） */
   unitId: string;
+  profession?: 'warrior'|'caster'|'tank';
   star: number;
   permanentMaxHp?: number;
   permanentSpellPower?: number;

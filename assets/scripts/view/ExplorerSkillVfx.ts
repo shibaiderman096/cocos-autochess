@@ -115,9 +115,9 @@ export class ExplorerSkillVfx {
         g.fillColor=new Color(125,214,209,Math.round(145*(1-n/8)));g.ellipse(q.x,q.y-this.cell*.22,this.cell*.18,this.cell*.07);g.fill();
       }
     }
-    this.shots=this.shots.filter(e=>(tick-e.tick)*this.tickMs<220);
+    this.shots=this.shots.filter(e=>tick-e.tick<(e.flightTicks??4));
     for(const shot of this.shots){
-      const p=Math.max(0,Math.min(1,(tick-shot.tick)*this.tickMs/220)),from=this.logical(shot.from),to=this.logical(offsetToWorld(shot.to.x,shot.to.y,1,0,0));
+      const p=Math.max(0,Math.min(1,(tick-shot.tick)/(shot.flightTicks??4))),from=this.logical(shot.from),to=this.logical(offsetToWorld(shot.to.x,shot.to.y,1,0,0));
       from.y+=this.cell*.25;to.y+=this.cell*.25;
       const x=from.x+(to.x-from.x)*p,y=from.y+(to.y-from.y)*p;
       g.lineWidth=3;g.strokeColor=new Color(255,224,152,240);g.moveTo(x-(to.x-from.x)*.13,y-(to.y-from.y)*.13);g.lineTo(x,y);g.stroke();

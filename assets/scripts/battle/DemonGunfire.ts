@@ -33,7 +33,7 @@ export class DemonGunfire {
       if(target&&this.host.valid(unit,target)){
         const baseSpeed=this.configs.getUnit(unit.cfg.id).atkSpeed;
         const count=Math.max(1,Math.round(e.baseBullets*unit.attackSpeed/baseSpeed));
-        this.host.events.push({t:'demon_volley',tick:now,id:unit.id,target:target.id,from:unit.pos,to:target.pos,count});
+        this.host.events.push({t:'demon_volley',tick:now,id:unit.id,target:target.id,from:unit.pos,to:target.pos,count,flightTicks:Math.max(1,Math.round((skill.projectile?.flightSeconds??.2)*1000/this.configs.battle.tickMs))});
         for(let i=0;i<count;i++)this.host.damage(unit,target,skill.starDamage![unit.star-1],skill.id);
       }
       if(unit.mana<e.manaPerSecond)this.interrupt(unit);

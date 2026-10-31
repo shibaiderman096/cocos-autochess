@@ -32,8 +32,16 @@ export class MerchantServicesPanel {
   private rollingId = 0;
   private elapsed = 0;
   constructor(private cfg: ConfigManager, private port: MerchantServicesPort) {}
+  private goldUpdates: Array<() => void> = [];
+  structureKey(id: string): string {
+    const state = this.port.read();
+    return JSON.stringify([id === this.merchantId ? this.tab : 'travel', this.selected, state.items, state.dice,
+      this.stake, this.picks, this.cfg.getEquipmentReserve(this.selected ? [this.selected] : [])]);
+  }
+  refreshGold(): void { for (const update of this.goldUpdates) update(); }
   get forging(): boolean { return this.tab === 'forge' && !!this.drop?.isValid && this.drop.activeInHierarchy; }
   mount(body: Node, id: string): boolean {
+    this.goldUpdates = [];
     if (id !== this.merchantId) { this.tab = 'travel'; this.selected = ''; this.merchantId = id; }
     const state = this.port.read(), rolling = !!state.dice && !state.dice.settled;
     if (rolling && this.rollingId !== state.dice!.id) { this.rollingId = state.dice!.id; this.elapsed = 0; this.tab = 'lucky'; }
@@ -53,9 +61,11 @@ export class MerchantServicesPanel {
     });
     if (this.tab === 'travel') return false;
     label(body, this.tab === 'forge' ? '铁匠商店' : '幸运商店', -275, 66, sys.isMobile ? 22 : 18, GOLD, 190).isBold = true;
-    label(body, `${state.gold} 金币`, 285, 65, sys.isMobile ? 22 : 18, GOLD, 170).isBold = true;
+    const balance = label(body, `${state.gold} 金币`, 285, 65, sys.isMobile ? 22 : 18, GOLD, 170); balance.isBold = true;
+    this.goldUpdates.push(() => { balance.string = `${this.port.read().gold} 金币`; });
     if (this.tab === 'forge') this.forge(body, state.items, state.gold);
     else this.lucky(body, state.dice, state.gold);
+    this.refreshGold();
     return true;
   }
   private forge(body: Node, ids: string[], gold: number): void {
@@ -82,16 +92,18 @@ export class MerchantServicesPanel {
     }
     const cost=forgePrice(this.port.level(this.selected),!!radiant), enabled=!!item&&this.port.eligible(item.id)&&gold>=cost;
     const bulk=!!item&&!radiant&&!item.radiantBaseId&&this.port.eligible(item.id);
-    const control=button(body,item?.radiantBaseId?'已完成沐光强化':item?`${radiant?'沐光强化':'强化'} · ${cost} 金币`:'等待放入装备',280,bulk?12:-13,190,bulk?(sys.isMobile?44:38):(sys.isMobile?52:44),()=>{if(enabled){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
+    const control=button(body,item?.radiantBaseId?'已完成沐光强化':item?`${radiant?'沐光强化':'强化'} · ${cost} 金币`:'等待放入装备',280,bulk?12:-13,190,bulk?(sys.isMobile?44:38):(sys.isMobile?52:44),()=>{if(item&&this.port.eligible(item.id)&&this.port.read().gold>=cost){this.selected=this.port.enhance(index,this.selected)??this.selected;this.port.refresh();}},true);
     control.name='forgeEnhance'; if(!enabled)setUISkin(control,'btn_disabled');
+    this.goldUpdates.push(() => setUISkin(control, item&&this.port.eligible(item.id)&&this.port.read().gold>=cost ? 'btn_primary' : 'btn_disabled'));
     if(bulk){
       const fit=(node:Node)=>{const text=node.getChildByName('text')!.getComponent(Label)!;text.fontSize=sys.isMobile?20:18;text.enableWrapText=false;text.overflow=Label.Overflow.SHRINK;node.getChildByName('text')!.getComponent(UITransform)!.setContentSize(180,sys.isMobile?44:38);};
       fit(control);
       const total=cost*10,canBulk=gold>=total;
       const ten=button(body,`强化10次 · ${total} 金币`,280,sys.isMobile?-39:-34,190,sys.isMobile?44:38,()=>{
-        if(canBulk){this.selected=this.port.enhance(index,this.selected,10)??this.selected;this.port.refresh();}
+        if(this.port.read().gold>=total&&this.port.eligible(this.selected)){this.selected=this.port.enhance(index,this.selected,10)??this.selected;this.port.refresh();}
       },true);
       ten.name='forgeEnhanceTen';fit(ten);if(!canBulk)setUISkin(ten,'btn_disabled');
+      this.goldUpdates.push(() => setUISkin(ten, this.port.read().gold>=total&&this.port.eligible(this.selected) ? 'btn_primary' : 'btn_disabled'));
     }
     label(body,item?.radiantBaseId?'每件仅限一次':radiant?'装备价值增加 18 金币':bulk?'攻速强化上限 500%':item?`每次固定 ${cost} 金币`:'特殊道具不能强化',280,bulk?-77:-53,sys.isMobile ? 17 : 14,MUTED,220);
   }
@@ -125,8 +137,13 @@ export class MerchantServicesPanel {
       control.name=`diceStake_${stake}`;
     });
     const enabled=!rolling&&this.picks.length>0&&gold>=this.stake;
-    const roll=button(body,rolling?'摇骰中…':this.picks.length?`摇骰 · ${this.stake} 金币 · ${diceMultiplier(this.picks.length)} 倍`:'请选择点数',235,-41,236,40,()=>{if(enabled)this.port.bet(this.stake,[...this.picks]);},true);
+    const roll=button(body,rolling?'摇骰中…':this.picks.length?`摇骰 · ${this.stake} 金币 · ${diceMultiplier(this.picks.length)} 倍`:'请选择点数',235,-41,236,40,()=>{
+      const current = this.port.read();
+      if (current.dice && !current.dice.settled) return;
+      if (this.picks.length > 0 && current.gold >= this.stake) this.port.bet(this.stake,[...this.picks]);
+    },true);
     roll.name='diceRoll';if(!enabled)setUISkin(roll,'btn_disabled');
+    this.goldUpdates.push(() => setUISkin(roll, !rolling&&this.picks.length>0&&this.port.read().gold>=this.stake ? 'btn_primary' : 'btn_disabled'));
     label(body,rolling?`已押 ${bet!.picks.join('、')} · 动画后结算`:`已选 ${this.picks.length} / 3 个点数`,-46,-75,sys.isMobile ? 16 : 12,MUTED,250);
   }
   private drawDie(face: number): void {

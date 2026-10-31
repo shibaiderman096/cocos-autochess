@@ -16,7 +16,7 @@ export function validateEquipmentPolicy(c:EquipmentPolicyConfig,items?:Pick<Equi
     const economy = e.equipmentEconomy, tags = e.itemTags;
     if (!economy || !tags || !Number.isSafeInteger(economy.startStage) || economy.startStage < (economy.normal ? 2 : 3)
       || !Number.isSafeInteger(economy.itemCost) || economy.itemCost < 1
-      || Object.keys(tags).some(id => !ids.has(id)) || [...ids].some(id => !tags[id])) bad();
+      || Object.keys(tags).some(id => !ids.has(id)) || Array.from(ids).some(id => !tags[id])) bad();
     for (const kind of ['elite', 'boss'] as const) {
       const rule = economy[kind];
       if (!rule || ![rule.initialGold, rule.goldPerStage].every(n => Number.isSafeInteger(n) && n >= 0)

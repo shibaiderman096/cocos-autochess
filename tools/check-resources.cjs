@@ -16,7 +16,20 @@ for (const resource of paths) {
   const file = path.join(root, 'assets/resources', resource.replace(/\/spriteFrame(?:#.*)?$/, '.png'));
   assert.ok(fs.existsSync(file), `Missing registered texture: ${resource}`);
   const meta = JSON.parse(fs.readFileSync(`${file}.meta`, 'utf8'));
-  assert.ok(Object.values(meta.subMetas ?? {}).some(v => v.importer === 'sprite-frame'), `Missing SpriteFrame: ${resource}`);
+  const frames = Object.values(meta.subMetas ?? {}).filter(v => v.importer === 'sprite-frame');
+  assert.ok(frames.length, `Missing SpriteFrame: ${resource}`);
+  const png = fs.readFileSync(file);
+  assert.equal(png.subarray(1, 4).toString(), 'PNG', `Invalid PNG: ${resource}`);
+  const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
+  for (const {userData} of frames) {
+    assert.deepEqual([userData.rawWidth, userData.rawHeight], [width, height], `Stale sprite geometry: ${resource}`);
+    assert.ok(userData.trimX + userData.width <= width && userData.trimY + userData.height <= height, `Sprite trim outside texture: ${resource}`);
+  }
+  const region = /#rawrect,(\d+),(\d+),(\d+),(\d+)$/.exec(resource);
+  if (region) {
+    const [x, y, w, h] = region.slice(1).map(Number);
+    assert.ok(w > 0 && h > 0 && x + w <= width && y + h <= height, `Portrait outside texture: ${resource}`);
+  }
 }
 const monsters = buildMonsterUnits(run, units);
 const playableIds = new Set(units.map(u => u.id));

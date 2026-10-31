@@ -20,13 +20,14 @@ export class CardPool {
     unitConfigs: UnitConfigData[],
     initialState?: Record<string, number>,
     unlocked: readonly string[] = [],
+    private createdCopies:Record<string,number> = {},
   ) {
     for (const u of unitConfigs) {
       if (u.specialShopUnlock && !unlocked.includes(u.id)) this.locked.add(u.id);
       const cost = validCost(u.cost ?? 1);
       this.costOf.set(u.id, cost);
       const n = initialState?.[u.id] ?? POOL_STOCK[cost];
-      this.stock.set(u.id, Number.isFinite(n) ? Math.max(0, Math.min(POOL_STOCK[cost], Math.floor(n))) : 0);
+      this.stock.set(u.id, Number.isFinite(n) ? Math.max(0, Math.min(POOL_STOCK[cost]+(createdCopies[u.id]??0), Math.floor(n))) : 0);
     }
   }
 
@@ -84,10 +85,17 @@ export class CardPool {
     const n = this.stock.get(unitId) ?? 0;
     const cost = this.costOf.get(unitId);
     if (cost === undefined) return false;
-    const max = POOL_STOCK[cost];
+    const max = POOL_STOCK[cost]+(this.createdCopies[unitId]??0);
     if (n >= max) return false; // 超过初始存量视为重复返还，拒绝
     this.stock.set(unitId, n + 1);
     return true;
+  }
+
+  /** A skill-created card is delivered directly to ownership/reserve, without drawing stock. */
+  createCopy(unitId:string):boolean {
+    const cost=this.costOf.get(unitId),next=(this.createdCopies[unitId]??0)+1;
+    if(cost===undefined||!Number.isSafeInteger(POOL_STOCK[cost]+next))return false;
+    this.createdCopies[unitId]=next;return true;
   }
 
   /** 存档快照 */

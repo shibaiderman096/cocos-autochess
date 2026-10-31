@@ -52,9 +52,9 @@ export class ShadowSkillVfx {
       width: large ? 2.8 : 1.8, height: large ? 1.4 : .9, angle: angle + 90 + tilt, spin: large ? 30 : -45,
       opacity: 230 });
   }
-  private bolt(from: Vec3, to: Vec3, tick: number, large = false, delay = 0): void {
+  private bolt(from: Vec3, to: Vec3, tick: number, large = false, delay = 0, seconds=large?.22:.32): void {
     this.add({ path: FX_SPRITE.shadowProjectile, motion: 'travel', from: from.clone(), to: to.clone(),
-      start: tick + delay * 1000 / this.tickMs, seconds: large ? .22 : .32, width: large ? 2.2 : 1.6, height: large ? .85 : .5,
+      start: tick + delay * 1000 / this.tickMs, seconds, width: large ? 2.2 : 1.6, height: large ? .85 : .5,
       angle: Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI, opacity: large ? 255 : 200 });
   }
 
@@ -80,7 +80,8 @@ export class ShadowSkillVfx {
       seconds: .45, width: width * 1.05, height: width * .62, opacity: 65 });
   }
 
-  play(effect: ShadowPulseEffect, owner: number, from: Vec3, pos: Vec3, tick: number, radius: number, duration = 0, selfCast?: boolean): void {
+  play(effect: ShadowPulseEffect, owner: number, from: Vec3, pos: Vec3, tick: number, radius: number, duration = 0, selfCast?: boolean,flightTicks?:number): void {
+    const flight=(flightTicks??0)*this.tickMs/1000;
     const self = selfCast ?? Math.hypot(pos.x-from.x,pos.y-from.y) < this.cell * .2;
     switch (effect) {
       case 'bulwark':
@@ -92,7 +93,7 @@ export class ShadowSkillVfx {
         this.cancel(owner,'domain');
         for(let i=0;i<3;i++)this.add({path:FX_SPRITE.shadowLantern,motion:'orbit',from:pos.clone(),start:tick,seconds:duration||4,
           width:.45,height:.6,follow:owner,phase:i*Math.PI*2/3,tag:'domain',opacity:210});break;
-      case 'piercing': this.bolt(from,pos,tick);this.bolt(from,pos,tick,false,.07);this.ring(pos,tick,.9,.4,.2);break;
+      case 'piercing': this.bolt(from,pos,tick,false,0,flight||.3);this.ring(pos,tick,.9,.4,flight);break;
       case 'flurry': this.slash(from,pos,tick,false,tick%2===0?-20:20);this.ring(pos,tick,.8,.3);break;
       case 'cleave': this.slash(from,pos,tick,true);this.ring(pos,tick,2.5,.55,.1);break;
       case 'empower':
@@ -102,15 +103,15 @@ export class ShadowSkillVfx {
             width:.7,height:.25,follow:owner,phase:i*Math.PI,tag:'empower',opacity:190});
         }else{this.slash(from,pos,tick);this.ring(pos,tick,1,.35);}break;
       case 'flameBurst': this.cancel(owner,'empower');this.ring(pos,tick,2*radius+1,.75);this.slash(from,pos,tick,true);break;
-      case 'execute': this.ring(pos,tick,1.5,.28,0,true);this.bolt(from,pos,tick,true);this.ring(pos,tick,2,.55,.16);break;
+      case 'execute': this.bolt(from,pos,tick,true,0,flight||.2);this.ring(pos,tick,1.5,.28,flight,true);this.ring(pos,tick,2,.55,flight);break;
       case 'lanterns': {
         const high=pos.clone();high.y+=this.cell*1.6;
-        this.add({path:FX_SPRITE.shadowLantern,motion:'travel',from:high,to:pos.clone(),start:tick,seconds:.25,width:1,height:1.3,opacity:245});
-        this.ring(pos,tick,2*radius+1,.65,.18);this.ring(pos,tick,1.5,.5,.25);break;
+        this.add({path:FX_SPRITE.shadowLantern,motion:'travel',from:high,to:pos.clone(),start:tick,seconds:flight||.25,width:1,height:1.3,opacity:245});
+        this.ring(pos,tick,2*radius+1,.65,flight);this.ring(pos,tick,1.5,.5,flight);break;
       }
       case 'blackstars': {
         const high=pos.clone();high.y+=this.cell*3;
-        this.bolt(high,pos,tick,true);this.ring(pos,tick,2*radius+1,.5,.12);break;
+        this.bolt(high,pos,tick,true,0,flight||.2);this.ring(pos,tick,2*radius+1,.5,flight);break;
       }
       case 'collapse': this.ring(pos,tick,2*radius+1,.35,0,true);this.ring(pos,tick,2*radius+1,.8,.2);
         this.slash(from,pos,tick,true,45);this.slash(from,pos,tick,true,-45);break;

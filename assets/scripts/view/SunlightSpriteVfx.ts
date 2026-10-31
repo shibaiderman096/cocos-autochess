@@ -102,10 +102,10 @@ export class SunlightSpriteVfx {
         if (e.kind === 'bastion') this.ring(pos, e.tick, 1.8, .6); break;
       case 'bolt': {
         const crossbow = e.kind === 'crossbow', final = e.kind === 'arrows' && e.step === 2;
-        this.add({ path: FX_SPRITE.sunlightArrow, motion: 'travel', from, to: pos, start: e.tick, seconds: e.duration,
-          width: crossbow ? 3.6 : final ? 2.1 : 1.45, height: crossbow ? 1.2 : final ? .7 : .48,
+        this.add({ path: FX_SPRITE.sunlightArrow, motion: crossbow?'slash':'travel', from:crossbow?new Vec3((from.x+pos.x)/2,(from.y+pos.y)/2,0):from, to: pos, start: e.tick, seconds: e.duration,
+          width: crossbow ? Math.hypot(pos.x-from.x,pos.y-from.y)/this.cell : final ? 2.1 : 1.45, height: crossbow ? 1.2 : final ? .7 : .48,
           angle: Math.atan2(pos.y-from.y, pos.x-from.x)*180/Math.PI, opacity: 245 });
-        this.ring(pos, e.tick, crossbow ? 1.7 : .9, .35, .1); break;
+        this.ring(pos, e.tick, crossbow ? 1.7 : .9, .35, crossbow?0:e.duration); break;
       }
       case 'slash':
         this.slash(from, pos, e.tick, e.kind === 'cleave' || e.finisher === true, e.step);
@@ -174,7 +174,7 @@ export class SunlightSpriteVfx {
       let x = base.x, y = base.y, sx = 1, sy = 1, angle = layer.angle ?? 0, spin = 0, alpha = layer.opacity ?? 200;
       const fade = Math.min(1, age/.08, (1-p)*8);
       if (layer.motion === 'travel') {
-        x += (layer.to!.x-layer.from.x)*Math.min(1,p*1.15); y += (layer.to!.y-layer.from.y)*Math.min(1,p*1.15);
+        x += (layer.to!.x-layer.from.x)*p; y += (layer.to!.y-layer.from.y)*p;
         sx = sy = .8 + p*.3; alpha *= Math.min(1,(1-p)*5);
       } else if (layer.motion === 'slash') {
         sx = sy = .6+ease*.55; angle += (layer.spin ?? 0)*p; alpha *= Math.sin(Math.PI*Math.min(1,p*1.1));

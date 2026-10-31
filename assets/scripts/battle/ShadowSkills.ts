@@ -11,6 +11,7 @@ export interface ShadowSkillHost {
   height(): number;
   targetable(unit: Unit): boolean;
   damage(source: Unit, target: Unit, raw: number, type: DmgType, typeBonusApplied?: boolean): void;
+  defer(seconds:number,run:()=>void):void;
   fear(source: Unit, target: Unit, seconds: number, origin: Pos): void;
   cooldown(unit: Unit): number;
 }
@@ -38,8 +39,8 @@ export class ShadowSkills {
   private rank(unit: Unit): number { return unit.star - 1; }
   private pulse(source: Unit, skill: SkillConfigData, effect: ShadowPulseEffect, center: Pos, radius = skill.radius): void {
     const duration = skill.shadow && 'durationSeconds' in skill.shadow ? skill.shadow.durationSeconds : undefined;
-    this.host.events.push({ t: 'skill_pulse', tick: this.tick, id: source.id, skillId: skill.id, effect, center: { ...center }, radius,
-      ...(duration === undefined ? {} : { duration }), ...(effect === 'empower' ? { selfCast: center.x === source.x && center.y === source.y } : {}) });
+    this.host.events.push({ t: 'skill_pulse', tick: this.tick, id: source.id, skillId: skill.id, effect, center: { ...center },from:source.pos, radius,
+      ...(duration === undefined ? {} : { duration }),...(skill.projectile?{flightTicks:this.ticks(skill.projectile.flightSeconds)}:{}), ...(effect === 'empower' ? { selfCast: center.x === source.x && center.y === source.y } : {}) });
   }
   private area(source: Unit, center: Pos, radius: number): Unit[] { return this.enemies(source).filter(unit => hexDist(unit.pos, center) <= radius); }
 
@@ -89,12 +90,14 @@ export class ShadowSkills {
       }
       case 'piercing': {
         if (!target) break;
-        const cells = this.ray(source.pos, target.pos);
-        const victims = this.enemies(source).filter(unit => cells.has(`${unit.x},${unit.y}`))
-          .sort((a, b) => hexDist(source.pos, a.pos) - hexDist(source.pos, b.pos) || a.id - b.id);
-        victims.forEach((unit, i) => this.host.damage(source, unit, i === 0 ? baseDamage : spec.secondaryDamage[rank], skill.dmgType));
-        const last = Array.from(cells).pop()?.split(',').map(Number);
-        this.pulse(source, skill, 'piercing', last ? { x: last[0], y: last[1] } : target.pos, 0);
+        const from=source.pos,to=target.pos,cells=this.ray(from,to);
+        this.host.defer(skill.projectile?.flightSeconds??0,()=>{
+          const victims=this.enemies(source).filter(unit=>unit.hp>0&&cells.has(`${unit.x},${unit.y}`))
+            .sort((a,b)=>hexDist(from,a.pos)-hexDist(from,b.pos)||a.id-b.id);
+          victims.forEach((unit,i)=>this.host.damage(source,unit,i===0?baseDamage:spec.secondaryDamage[rank],skill.dmgType));
+        });
+        const last=Array.from(cells).pop()?.split(',').map(Number);
+        this.pulse(source,skill,'piercing',last?{x:last[0],y:last[1]}:to,0);
         break;
       }
       case 'cleave': {
@@ -108,7 +111,11 @@ export class ShadowSkills {
       }
       case 'execute': {
         if (!target) break;
-        this.host.damage(source, target, baseDamage * (target.hp / target.cfg.hp < spec.healthThreshold ? spec.damageMultiplier : 1), skill.dmgType);
+        const life=target.lifeVersion;
+        this.host.defer(skill.projectile?.flightSeconds??0,()=>{
+          if(target.lifeVersion===life&&target.hp>0&&this.host.targetable(target))
+            this.host.damage(source,target,baseDamage*(target.hp/target.cfg.hp<spec.healthThreshold?spec.damageMultiplier:1),skill.dmgType);
+        });
         this.pulse(source, skill, 'execute', target.pos, 0);
         break;
       }
@@ -262,18 +269,22 @@ export class ShadowSkills {
     const center = spec.kind === 'lanterns' ? job.centers[index] : this.densest(source, skill.radius, []);
     if (!center) { job.remaining = 0; return; }
     job.lastCenter = center;
-    for (const unit of this.area(source, center, skill.radius)) {
-      const hits = job.hits.get(unit.id) ?? 0;
-      this.host.damage(source, unit, skill.starDamage![this.rank(source)] * (hits > 0 ? spec.repeatMultiplier : 1), skill.dmgType);
-      job.hits.set(unit.id, hits + 1);
-      if (spec.kind === 'lanterns') this.host.fear(source, unit, spec.fearSeconds[this.rank(source)], center);
-    }
-    this.pulse(source, skill, spec.kind, center);
-    job.remaining--; job.next = this.tick + this.ticks(spec.intervalSeconds);
-    if (job.remaining === 0 && spec.kind === 'blackstars') {
-      for (const unit of this.area(source, center, spec.collapseRadius)) this.host.damage(source, unit, spec.collapseDamage[this.rank(source)], skill.dmgType);
-      this.pulse(source, skill, 'collapse', center, spec.collapseRadius);
-    }
+    const last=job.remaining===1;
+    this.host.defer(skill.projectile?.flightSeconds??0,()=>{
+      for(const unit of this.area(source,center,skill.radius)){
+        if(unit.hp<=0)continue;
+        const hits=job.hits.get(unit.id)??0;
+        this.host.damage(source,unit,skill.starDamage![this.rank(source)]*(hits>0?spec.repeatMultiplier:1),skill.dmgType);
+        job.hits.set(unit.id,hits+1);
+        if(spec.kind==='lanterns')this.host.fear(source,unit,spec.fearSeconds[this.rank(source)],center);
+      }
+      if(last&&spec.kind==='blackstars'){
+        for(const unit of this.area(source,center,spec.collapseRadius))if(unit.hp>0)this.host.damage(source,unit,spec.collapseDamage[this.rank(source)],skill.dmgType);
+        this.pulse(source,skill,'collapse',center,spec.collapseRadius);
+      }
+    });
+    this.pulse(source,skill,spec.kind,center);
+    job.remaining--;job.next=this.tick+this.ticks(spec.intervalSeconds);
   }
 
   interrupt(source: Unit): void { this.channels.delete(source.id); source.skillUntargetable = false; }

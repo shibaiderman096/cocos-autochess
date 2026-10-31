@@ -8,6 +8,11 @@ export const ENCOUNTER_SPRITE: Record<string, string> = Object.fromEntries(
 );
 /** Each configured unit has its own asset. Faction rings and bars identify sides. */
 export const UNIT_ART: Record<string, string> = {
+  star_card_magician:'art/units/astral/star_card_magician/spriteFrame',
+  blueflame_soul_knight:'art/units/astral/blueflame_soul_knight/spriteFrame',
+  azure_oath_knight:'art/units/astral/azure_oath_knight/spriteFrame',
+  cloud_dragon_priestess:'art/units/astral/cloud_dragon_priestess/spriteFrame',
+  cloud_dragon_form:'art/units/astral/cloud_dragon_form/spriteFrame',
   thornchain_succubus: 'art/units/demon/thornchain_succubus/spriteFrame',
   raven_succubus: 'art/units/demon/raven_succubus/spriteFrame',
   crimson_gunslinger: 'art/units/demon/crimson_gunslinger/spriteFrame',
@@ -72,6 +77,9 @@ export const UNIT_SPRITE: Record<string, string> = Object.fromEntries(
 
 /** Head portraits reuse the original artwork through runtime atlas regions. */
 export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.entries({
+  star_card_magician:'485,160,290,290',
+  blueflame_soul_knight:'590,60,300,300',
+  azure_oath_knight:'650,60,300,300',
   thornchain_succubus:'327,87,173,173',
   raven_succubus:'293,67,200,200',
   crimson_gunslinger:'293,40,200,200',
@@ -80,6 +88,7 @@ export const UNIT_PORTRAIT: Record<string, string> = Object.fromEntries(Object.e
   saien:'394,0,260,260',
   infernal_axe_guard:'311,14,248,248',
   azaroth:'245,65,210,210',
+  cloud_dragon_priestess:'180,25,180,180',
   star_ring_sage:'375,78,219,219',
   wayward_alchemist:'343,119,261,261',
   sandsea_navigator:'290,0,240,240',
@@ -119,7 +128,22 @@ export const UI_SPRITE = {
   iconGold:     'art/ui/icon_gold/spriteFrame',
 };
 
+/** Only the used regions of the former trait sheets are shipped. */
+export const TRAIT_BADGE_SPRITE = Object.fromEntries(
+  ['bronze', 'silver', 'gold', 'prismatic', 'inactive'].map(tier =>
+    [tier, `art/ui/trait_badge_${tier}/spriteFrame`]),
+);
+export const TRAIT_PORTRAIT_FRAME_SPRITE = Object.fromEntries(
+  [1, 2, 3, 4, 5].map(cost => [cost, `art/ui/trait_portrait_cost${cost}/spriteFrame`]),
+);
+
 export const FX_SPRITE = {
+  starCards:'art/fx/star_cards/spriteFrame',
+  soulRealmBorder:'art/fx/soul_realm_border/spriteFrame',
+  basicDemon: 'art/fx/basic_demon/spriteFrame',
+  basicArcane: 'art/fx/basic_arcane/spriteFrame',
+  basicMechanical: 'art/fx/basic_mechanical/spriteFrame',
+  basicBlood: 'art/fx/basic_blood/spriteFrame',
   ravenTheft: 'art/fx/raven_soul_theft/spriteFrame',
   demonGunfire: 'art/fx/infernal_gunfire/spriteFrame',
   thornPull: 'art/fx/thornchain_pull/spriteFrame',
@@ -150,10 +174,6 @@ export const FX_SPRITE = {
   moonArrowSheet: 'art/fx/moon_arrow_sheet/spriteFrame',
   nebulaTideSheet: 'art/fx/nebula_tide_sheet/spriteFrame',
   gravityCollapseSheet: 'art/fx/gravity_collapse_sheet/spriteFrame',
-  stellarBarrier: 'art/fx/stellar_barrier/spriteFrame',
-  stellarRush: 'art/fx/stellar_rush/spriteFrame',
-  miluStarTrail: 'art/fx/milu_star_trail/spriteFrame',
-  miluStarImpact: 'art/fx/milu_star_impact/spriteFrame',
   astralTile: 'art/fx/astral_tile/spriteFrame',
   astralRing: 'art/fx/astral_ring/spriteFrame',
   astralMeteor: 'art/fx/astral_meteor/spriteFrame',
@@ -175,9 +195,6 @@ export const FX_SPRITE = {
   monsterBlast: 'art/fx/monster_blast/spriteFrame',
   arrow:    'art/fx/fx_arrow/spriteFrame',
   fireball: 'art/fx/fx_fireball/spriteFrame',
-  hit:      'art/fx/fx_hit/spriteFrame',
-  ring:     'art/fx/fx_ring/spriteFrame',
-  slash:    'art/fx/fx_slash/spriteFrame',
 };
 
 /** cfgId + side → 棋子贴图 key */

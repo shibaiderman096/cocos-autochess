@@ -5,7 +5,7 @@ import type { EnemyUpgradeDiagnostics } from './EquipmentPolicyTypes';
 
 export type RoundPhase = 'prepare' | 'battle' | 'settlement' | 'ended';
 export type RunResult = 'victory' | 'defeat' | null;
-export interface WaveEnemy { unitId: string; x: number; y: number; star: number; statMultiplier: number; healthMultiplier?: number; damageAmp?: number; damageReduction?: number; equipment?: string[] }
+export interface WaveEnemy { permanentMaxHp?: number; permanentPhysicalPower?: number; permanentSpellPower?: number; unitId: string; x: number; y: number; star: number; statMultiplier: number; healthMultiplier?: number; damageAmp?: number; damageReduction?: number; equipment?: string[] }
 export interface WaveConfig {
   goldBudget?: import('./EnemyGoldArmy').EnemyGoldDiagnostics;
   id: number; name: string; enemies: WaveEnemy[];

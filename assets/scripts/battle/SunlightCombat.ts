@@ -9,7 +9,7 @@ interface Host {
   units: Unit[]; events: BattleEvent[];
   now(): number; width(): number; height(): number;
   targetable(unit: Unit): boolean;
-  damage(source: Unit, target: Unit, raw: number, type: DmgType, skillId: string): void;
+  damage(source: Unit, target: Unit, raw: number, type: DmgType, skillId: string, projectile?:SkillConfigData): void;
   fixedDamage(source: Unit, target: Unit, raw: number, sunlightJudgmentSide?: Side, sunlightJudgmentStar?: number): void;
   stun(source: Unit, target: Unit, seconds: number): void;
   randomIndex(length: number): number;
@@ -39,8 +39,8 @@ export class SunlightCombat {
     details: { kind?: SunlightSkillData['kind']; targetId?: number; trait?: boolean; step?: number; finisher?: boolean } = {}): void {
     this.host.events.push({ t: 'sun_pulse', tick: this.tick, id: source.id, effect, center: { ...center }, radius, duration, ...(from ? { from: { ...from } } : {}), ...details });
   }
-  private hit(source: Unit, target: Unit, skill: SkillConfigData, raw = skill.starDamage![source.star - 1], type = skill.dmgType): void {
-    this.host.damage(source, target, raw, type, skill.id);
+  private hit(source: Unit, target: Unit, skill: SkillConfigData, raw = skill.starDamage![source.star - 1], type = skill.dmgType, projectile=false): void {
+    this.host.damage(source, target, raw, type, skill.id,projectile?skill:undefined);
   }
   register(side: Side, members: Unit[], spec: SunlightTraitEffect): void {
     if (!members.length) return;
@@ -212,8 +212,8 @@ export class SunlightCombat {
       if (job.index === 0 && target.shield > 0) raw *= 1 + spec.shieldBonus;
       this.huntWatches.set(source.id, { skill, tick: this.tick });
     }
-    this.hit(source, target, skill, raw);
-    this.pulse(source, spec.kind === 'arrows' ? 'bolt' : 'slash', target.pos, 0, .25, source.pos,
+    this.hit(source, target, skill, raw,skill.dmgType,spec.kind==='arrows');
+    this.pulse(source, spec.kind === 'arrows' ? 'bolt' : 'slash', target.pos, 0, spec.kind==='arrows'?this.ticks(skill.projectile?.flightSeconds??.25)*this.configs.battle.tickMs/1000:.25, source.pos,
       { kind: spec.kind, targetId: target.id, step: job.index, ...(finisher ? { finisher: true } : {}) });
     if (spec.kind === 'arrows' && job.index === 2) {
       const a = offsetToWorld(source.x, source.y, 1, 0, 0), b = offsetToWorld(target.x, target.y, 1, 0, 0);
@@ -222,7 +222,7 @@ export class SunlightCombat {
         return score(q) - score(p) || p.y - q.y || p.x - q.x;
       })[0];
       const victim = this.enemies(source).find(u => u.x === behind.x && u.y === behind.y);
-      if (victim) this.hit(source, victim, skill, raw * spec.pierceMultiplier);
+      if (victim) this.hit(source, victim, skill, raw * spec.pierceMultiplier,skill.dmgType,true);
     }
     job.index++; job.next = this.tick + this.ticks(spec.intervalSeconds);
     // Transit must wait for the actual hit result, including lethal protection, before ending or restarting.

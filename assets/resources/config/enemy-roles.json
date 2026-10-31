@@ -1,6 +1,9 @@
 {
   "version": "enemy-roles-v1",
   "units": {
+"blueflame_soul_knight":{"role":"melee_dps","tags":["sustain","aoe"],"source":"explicit","confidence":"high","reason":"7费魔法战士，阵亡成长、全场领域与抽魂续航。"},
+"azure_oath_knight":{"role":"melee_dps","tags":["aoe"],"source":"explicit","confidence":"high","reason":"7费物理近战，玩家上阵选择职业；敌方默认战士。"},
+    "cloud_dragon_priestess":{"role": "mage", "tags": ["aoe"], "source": "explicit", "confidence": "high", "reason": "7费术士，化龙游走持续吐息。"},
     "thornchain_succubus":{"role":"melee_dps","tags":["control"],"source":"explicit","confidence":"high","reason":"2费魔法战士，以棘链鞭击并拉取单体至身旁空格，固定眩晕1秒。"},
     "raven_succubus":{"role":"assassin","tags":["teleport","burst"],"source":"explicit","confidence":"high","reason":"4费魔法刺客，化鸦跃向3格内最低生命目标并窃取法术加成。"},
     "crimson_gunslinger":{"role":"ranged_dps","tags":["burst"],"source":"explicit","confidence":"high","reason":"2费物理神射手，逐秒耗蓝连射，子弹数量受攻速提升。"},

@@ -94,7 +94,7 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
     const cost=pool[rng.int(0,pool.length-1)].cost??1;
     drawnCosts.push(cost);costDraws[validCost(cost)-1]++;remaining-=unitPrice(cost);
   }
-  const costs=[...new Set(drawnCosts)].sort((a,b)=>a-b);
+  const costs=Array.from(new Set(drawnCosts)).sort((a,b)=>a-b);
   type Purchase = {cost:number;star:number;gold:number};
   type Allocation = {purchases:Purchase[];squares:number};
   let states=new Map<number,Allocation>([[0,{purchases:[],squares:0}]]);
@@ -113,7 +113,7 @@ export function generateGoldArmy(rules: EnemyGoldRules, stage: number, completed
     states=next;
   }
   if(!states.size)throw new Error('Enemy gold budget cannot fund supported shop costs');
-  const spent=Math.max(...states.keys()),allocation=states.get(spent)!;
+  const spent=Math.max(...Array.from(states.keys())),allocation=states.get(spent)!;
   const slotsByCost=costs.map(cost=>({cost,count:allocation.purchases.filter(p=>p.cost===cost).length}));
   const themeCoverage=(candidate:typeof theme)=>slotsByCost.reduce((n,{cost,count})=>n+Math.min(count,
     sorted.filter(u=>(u.cost??1)===cost&&candidate?.members.has(u.id)).length),0);

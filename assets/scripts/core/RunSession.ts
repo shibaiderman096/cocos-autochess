@@ -1,3 +1,4 @@
+import { professionConfig } from './KnightProfession';
 import { BattleSim } from '../battle/BattleSim';
 import { restoreMerchantServices, forgedItem, forgeCandidates, forgePrice, dicePayout, validDicePicks, diceMultiplier } from './MerchantServices';
 import type { DiceBet } from './MerchantServices';
@@ -134,14 +135,15 @@ export class RunSession {
     if (this.save.unlockedUnits !== undefined && (!Array.isArray(this.save.unlockedUnits)
       || new Set(this.save.unlockedUnits).size !== this.save.unlockedUnits.length
       || this.save.unlockedUnits.some(id => !cfg.allUnits().some(u => u.id === id && u.specialShopUnlock)))) throw new Error('Invalid unlocked unit save');
-    this.pool = new CardPool(cfg.allUnits(), this.save.pool, this.save.unlockedUnits);
+    this.pool = new CardPool(cfg.allUnits(), this.save.pool, this.save.unlockedUnits, this.save.createdUnitCopies??={});
     this.owned = new OwnedUnits(this.save.owned, this.save.nextOwnedUid, () => this.flow.phase !== 'battle',units=>{
       const deployed=units.filter(u=>u.location==='board');
-      return deployed.length<=this.level.level+deployed.reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
+      return this.populationOf(deployed)<=this.level.level+deployed.reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
     });
     this.owned.equipmentReserve = [...(this.save.equipmentReserve ?? [])];
     this.level.populationBonus=()=>this.owned.onBoard().reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
     if(this.owned.all().some(u=>this.cfg.getEquipment(u.equipment).some(item=>item.consumable)))throw new Error('Consumables cannot occupy equipment slots');
+    for(const u of this.owned.all())if(u.profession&&!this.cfg.getUnit(u.unitId).professionChoice?.[u.profession])throw new Error('Invalid saved profession');
     this.validateTraitChoice();
     if (needsStarter) {
       const candidates = cfg.allUnits().filter(u => u.cost === 1 && this.pool.count(u.id) > 0).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
@@ -166,7 +168,7 @@ export class RunSession {
     if(unfinishedBet&&!unfinishedBet.settled&&(!this.merchantAvailable()||unfinishedBet.waveId!==this.flow.wave.id))throw new Error('Invalid pending merchant bet');
     const forgedInventory=[...(this.save.equipmentReserve??[]),...this.save.owned.flatMap(u=>u.equipment??[])].filter(id=>!!this.save.merchantServices!.forged[id]);
     if(new Set(forgedInventory).size!==forgedInventory.length)throw new Error('Duplicate forged equipment instance');
-    this.snapshot();
+    this.syncSave();
   }
 
   private configureEquipment(options:RunSessionOptions,loaded:boolean):void {
@@ -183,6 +185,7 @@ export class RunSession {
     this.save.equipmentConfigIdentity=identityHash;this.equipmentPolicy=JSON.parse(JSON.stringify(c));
     if(this.save.enemyEquipmentVersion!=='none'){
       this.generation.equipmentPolicy=this.equipmentPolicy;
+      this.generation.equipmentCatalogue=JSON.parse(JSON.stringify(this.cfg.allEquipment()));
       this.generation.equipmentRoles=options.enemyRoles&&JSON.parse(JSON.stringify(options.enemyRoles));
     }
   }
@@ -268,7 +271,7 @@ export class RunSession {
       this.save.lastReward = { expGained: 0, levelUps: 0, breakdown: { winBonus: 0, interest: 0, streakBonus: 0, extraIncome: 0,
         total: 0, goldBefore: state.gold, goldAfter: state.gold, winStreak: state.winStreak, loseStreak: state.loseStreak } };
     }
-    this.snapshot(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
+    this.syncSave(); return { ok: true, ...(result.stageReward ? { stageReward: result.stageReward } : {}) };
   }
   private merchantAvailable(): boolean {
     return this.flow.phase === 'prepare' && this.flow.wave.encounterKind === 'specialShop'
@@ -292,7 +295,7 @@ export class RunSession {
     if (this.economy.gold < cost) return fail('not_enough_gold');
     if(radiant){
       if(!this.economy.spend(cost))return fail('not_enough_gold');
-      this.owned.equipmentReserve[reserveIndex]=radiant.id;this.snapshot();return ok();
+      this.owned.equipmentReserve[reserveIndex]=radiant.id;this.syncSave();return ok();
     }
     const id = previous ? expectedId : `forged_${state.nextUid}`;
     const record = { baseId: previous?.baseId ?? expectedId, upgrades: [...(previous?.upgrades ?? [])], spentGold:previous?.spentGold??0 };
@@ -308,7 +311,7 @@ export class RunSession {
     if (!this.economy.spend(cost)) return fail('not_enough_gold');
     state.forged[id] = record; state.forgeRoll+=count; if (!previous) state.nextUid++;
     this.cfg.registerRunEquipment(upgraded); this.owned.equipmentReserve[reserveIndex] = id;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   beginDiceBet(stake: number, picks: number[]): ActionResult {
     if (!this.merchantAvailable() || (this.merchantDice && !this.merchantDice.settled)) return fail('merchant_unavailable');
@@ -319,7 +322,7 @@ export class RunSession {
     if (!this.economy.spend(stake)) return fail('not_enough_gold');
     const face = this.random.stream('dice', this.flow.wave.id, state.diceRoll).int(1, 6);
     state.dice = { id: ++state.diceRoll, waveId: this.flow.wave.id, stake, picks: [...picks].sort((a,b)=>a-b), face, settled: false };
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   finishDiceBet(id: number): ActionResult {
     const bet = this.merchantDice;
@@ -327,7 +330,7 @@ export class RunSession {
     const payout = dicePayout(bet);
     if (!Number.isSafeInteger(this.economy.gold + payout)) return fail('attribute_overflow');
     this.save.merchantServices!.dice!.settled = true; this.economy.gold += payout;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   get explorerPoints(): number { return this.save.explorerProgress!.points; }
   get explorerChestQualityRates(): number[] {
@@ -351,7 +354,7 @@ export class RunSession {
     const reward=this.stageProgression.grantExplorerReward(this.explorerChestValue,this.flow.wave.id,this.cfg.battle.initialHealth-this.flow.health,this.explorerPoints);
     reward.health=this.flow.restoreHealth(reward.health);
     this.save.explorerProgress!.points=0;this.save.explorerProgress!.lastOpenedWaveId=this.flow.wave.id;
-    this.snapshot();return {ok:true,stageReward:reward};
+    this.syncSave();return {ok:true,stageReward:reward};
   }
   claimEquipmentReward(index:number):ActionResult {
     const progress=this.save.equipmentProgress,pending=progress.pending;
@@ -362,7 +365,7 @@ export class RunSession {
     this.owned.equipmentReserve.push(id);progress.lastClaimedWaveId=pending.waveId;progress.guaranteeSatisfied[pending.stage]=true;
     delete progress.pending;
     if(this.save.lastEquipmentReward)this.save.lastEquipmentReward.rewardChoice=id;
-    this.snapshot();return ok();
+    this.syncSave();return ok();
   }
 
   private configureFormation(options:RunSessionOptions,loaded:boolean):void {
@@ -390,7 +393,7 @@ export class RunSession {
   }
   playerFormationSnapshot():PlayerFormationSnapshot {
     if(!this.formationEngine)throw new Error('Player formation snapshot requires formation configuration');
-    return {units:this.owned.onBoard().map(u=>{const cfg=this.cfg.getUnit(u.unitId),skill=cfg.skillId?{[cfg.skillId]:this.cfg.getSkill(cfg.skillId)}:{};
+    return {units:this.owned.onBoard().map(u=>{const cfg=this.ownedConfig(u),skill=cfg.skillId?{[cfg.skillId]:this.cfg.getSkill(cfg.skillId)}:{};
       const role=resolveEnemyRole(cfg,skill,this.formationEngine!.roles);
       return {unitId:u.unitId,star:u.star,equipment:[...(u.equipment??[])],x:u.x,y:u.y,role:role.role,range:cfg.range,tags:role.tags};})
       .sort((a,b)=>a.y-b.y||a.x-b.x||(a.unitId<b.unitId?-1:a.unitId>b.unitId?1:0))};
@@ -448,7 +451,7 @@ export class RunSession {
       this.flow=new RoundFlow(this.waves,this.roundRules,this.flow.snapshot());
       this.previewFormation=undefined;
     }
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
   private rewardLevelUps(count: number): void {
     if (this.save.openingEncounter?.selected === 'inspiration')
@@ -469,7 +472,7 @@ export class RunSession {
     state.lastIncomeStage = this.flow.wave.stage!;
   }
   private rawPlayerTraits() {
-    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits());
+    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.ownedConfig(u),u.equipment)),this.cfg.allUnits());
   }
   private get bonusTraitId(): string | undefined {
     if(this.save.openingEncounter?.selected!=='resonance')return undefined;
@@ -477,7 +480,7 @@ export class RunSession {
     return ties.length?ties[this.random.stream('encounter',this.flow.wave.id,4800).int(0,ties.length-1)].config.id:undefined;
   }
   get playerTraits() {
-    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.cfg.getUnit(u.unitId),u.equipment)),this.cfg.allUnits(),this.bonusTraitId);
+    return resolveTraits(this.cfg.battle.traits??[],this.owned.onBoard().map(u=>this.cfg.equipmentStats(this.ownedConfig(u),u.equipment)),this.cfg.allUnits(),this.bonusTraitId);
   }
   private rewardShopRoll(index: number): void {
     const state=this.save.openingEncounter;
@@ -518,7 +521,7 @@ export class RunSession {
     const unit = this.owned.get(p.uid)!;
     unit.equipment![p.slot] = `${p.equipmentId}__${p.candidates[index]}`;
     delete this.save.pendingTraitChoice;
-    this.snapshot(); return ok();
+    this.syncSave(); return ok();
   }
 
   buyShopSlot(index: number): ActionResult {
@@ -554,6 +557,8 @@ export class RunSession {
     if (!this.economy.spend(EXP_PURCHASE.gold)) return fail('not_enough_gold');
     this.rewardLevelUps(this.level.addExp(EXP_PURCHASE.exp).length); return ok();
   }
+  private populationOf(units:readonly {unitId:string}[]):number {return units.reduce((sum,u)=>sum+(this.cfg.getUnit(u.unitId).populationCost??1),0);}
+  get deployedPopulation():number{return this.populationOf(this.owned.onBoard());}
   private equipmentPopulationBonus(ids: string[] = []): number {
     return this.cfg.getEquipment(ids).reduce((sum,item)=>sum+(item.unitCapBonus??0),0);
   }
@@ -563,6 +568,12 @@ export class RunSession {
     const other=to.location==='board'?this.owned.atBoard(to.x,to.y):this.owned.atBench(to.y);
     const difference=this.equipmentPopulationBonus(u.equipment)-this.equipmentPopulationBonus(other?.equipment);
     return this.level.unitCap+(to.location==='board'?difference:-difference);
+  }
+  ownedConfig(unit:import('./OwnedUnits').OwnedUnit){return professionConfig(this.cfg.getUnit(unit.unitId),unit);}
+  get pendingProfession(){return this.flow.phase==='prepare'?this.owned.onBoard().filter(u=>this.cfg.getUnit(u.unitId).professionChoice&&!u.profession).sort((a,b)=>a.uid-b.uid)[0]:undefined;}
+  chooseProfession(uid:number,profession:'warrior'|'caster'|'tank'):ActionResult {
+    const u=this.pendingProfession;if(!u||u.uid!==uid||!this.cfg.getUnit(u.unitId).professionChoice?.[profession])return fail('invalid_choice');
+    u.profession=profession;return ok();
   }
   moveUnit(uid: number, to: { location: 'board' | 'bench'; x: number; y: number }): ActionResult {
     const u = this.owned.get(uid);
@@ -577,14 +588,17 @@ export class RunSession {
       if (to.x < 0 || to.x >= this.cfg.battle.boardWidth || to.y < 0 || to.y >= this.cfg.battle.ownRows) return fail('invalid_position');
     }
     const other=to.location==='board'?this.owned.atBoard(to.x,to.y):this.owned.atBench(to.y);
-    const population=this.owned.onBoard().length+(u.location===to.location||other?0:to.location==='board'?1:-1);
+    const delta=(this.cfg.getUnit(u.unitId).populationCost??1)-(other?(this.cfg.getUnit(other.unitId).populationCost??1):0);
+    const population=this.deployedPopulation+(u.location===to.location?0:to.location==='board'?delta:-delta);
     if(population>this.unitCapAfterMove(uid,to))return fail('population_cap');
     const summon=to.location==='board'&&this.flow.phase==='prepare'?this.createPreview().sim.units.find(unit=>unit.side===0&&unit.cfg.summonOnly):undefined;
     const swapSummon=summon&&summon.x===to.x&&summon.y===to.y&&u.location==='board'?{x:u.x,y:u.y}:undefined;
     try {
       const result=this.owned.transaction(()=>{
+        const entering=this.owned.all().filter(v=>v.location==='bench').map(v=>v.uid);
         if(!this.owned.move(uid,to))return fail('invalid_position');
-        if(this.owned.onBoard().length>this.level.unitCap)throw new Error('population_cap');
+        for(const id of entering){const v=this.owned.get(id);if(v?.location==='board'&&this.cfg.getUnit(v.unitId).professionChoice)delete v.profession;}
+        if(this.deployedPopulation>this.level.unitCap)throw new Error('population_cap');
         return ok();
       });
       if(result.ok&&swapSummon)this.save.demonPosition=swapSummon;
@@ -604,7 +618,7 @@ export class RunSession {
     if (this.unitSellingLocked) return fail('opening_sell_locked');
     const unit = this.owned.get(uid);
     if (!this.canTrade || (this.flow.phase === 'battle' && unit?.location === 'board')) return fail('fighting');
-    if(unit?.location==='board'&&this.owned.onBoard().length-1>this.level.unitCap-this.equipmentPopulationBonus(unit.equipment))return fail('population_cap');
+    if(unit?.location==='board'&&this.deployedPopulation-(this.cfg.getUnit(unit.unitId).populationCost??1)>this.level.unitCap-this.equipmentPopulationBonus(unit.equipment))return fail('population_cap');
     const sold = this.shop.sell(uid);
     return sold ? { ok: true, gold: sold.gold } : fail('not_owned');
   }
@@ -639,7 +653,7 @@ export class RunSession {
       const projected=new OwnedUnits(this.owned.snapshot(),this.owned.nextUnitUid,()=>true,this.owned.canMergeResult);projected.equipmentReserve=[...this.owned.equipmentReserve];
       try{deliver(projected);}catch{return fail('bench_full');}
       const projectedCap=this.level.level+projected.onBoard().reduce((sum,u)=>sum+this.equipmentPopulationBonus(u.equipment),0);
-      if(projected.onBoard().length>projectedCap)return fail('population_cap');
+      if(this.populationOf(projected.onBoard())>projectedCap)return fail('population_cap');
       this.owned.transaction(()=>deliver(this.owned));
       if(!this.pool.take(target.unitId))throw new Error('Copy target stock changed');
       return {ok:true,copiedUnitId:target.unitId};
@@ -659,7 +673,7 @@ export class RunSession {
     if (this.save.pendingTraitChoice) return fail('trait_choice_pending');
     if (this.flow.phase !== 'prepare') return fail('fighting');
     const unit=this.owned.get(uid),id=unit?.equipment?.[slot];
-    if(id&&unit?.location==='board'&&this.owned.onBoard().length>this.level.unitCap-this.equipmentPopulationBonus([id]))return fail('population_cap');
+    if(id&&unit?.location==='board'&&this.deployedPopulation>this.level.unitCap-this.equipmentPopulationBonus([id]))return fail('population_cap');
     return this.owned.unequip(uid, slot) ? ok() : fail('invalid_equipment');
   }
   equipmentRecycleGold(reserveIndex: number): number {
@@ -738,13 +752,13 @@ export class RunSession {
   /** Preview creates a throwaway BattleSim. It never consumes any stream or replaces an active battle. */
   createPreview(): { sim: BattleSim; battleIds: Map<number, number> } {
     const placements: Placement[] = this.currentFormation().placements.map(e => ({ cfg: this.cfg.getUnit(e.unitId), side: 1,
-      x: e.x, y: e.y, star: e.star, statMultiplier: e.statMultiplier, healthMultiplier: e.healthMultiplier, damageAmp: e.damageAmp, damageReduction: e.damageReduction, equipment:e.equipment }));
+      x: e.x, y: e.y, star: e.star, statMultiplier: e.statMultiplier, healthMultiplier: e.healthMultiplier, damageAmp: e.damageAmp, damageReduction: e.damageReduction, equipment:e.equipment, permanentMaxHp:e.permanentMaxHp, permanentPhysicalPower:e.permanentPhysicalPower, permanentSpellPower:e.permanentSpellPower }));
     const battleIds = new Map<number, number>();
     const selected=this.save.openingEncounter?.selected,e=this.runConfig.openingEncounter?.effects;
-    const vacancy=selected==='vacancy'?Math.min(e!.vacancyMaxStacks,Math.max(0,this.level.unitCap-this.owned.onBoard().length))*e!.vacancyPerSlot:0;
+    const vacancy=selected==='vacancy'?Math.min(e!.vacancyMaxStacks,Math.max(0,this.level.unitCap-this.deployedPopulation))*e!.vacancyPerSlot:0;
     for (const u of this.owned.onBoard().slice().sort((a, b) => a.uid - b.uid)) {
       battleIds.set(u.uid, placements.length + 1);
-      placements.push({ cfg: this.cfg.getUnit(u.unitId), side: 0, x: u.x, y: u.y, star: u.star, damageAmp:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageAmp:0), damageReduction:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageReduction:0), equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower, permanentPhysicalPower:u.permanentPhysicalPower });
+      placements.push({ cfg: this.ownedConfig(u), side: 0, x: u.x, y: u.y, star: u.star, damageAmp:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageAmp:0), damageReduction:vacancy+(selected==='ascension'&&u.star===3?e!.starDamageReduction:0), equipment: u.equipment, permanentMaxHp: u.permanentMaxHp, soulLampHealth: u.soulLampHealth, permanentSpellPower: u.permanentSpellPower, permanentPhysicalPower:u.permanentPhysicalPower });
     }
     return { sim: new BattleSim(this.cfg, placements, { seed: this.battleSeed, astralSeed: this.save.runSeed, w: this.cfg.battle.boardWidth,
       h: this.cfg.battle.boardHeight, maxTicks: this.cfg.battle.maxTicks, bonusTraitId:this.bonusTraitId, summonPositions:this.save.demonPosition?{0:this.save.demonPosition}:undefined,
@@ -752,7 +766,7 @@ export class RunSession {
   }
   startBattle(): BattleSim | null {
     if (this.pendingOpeningEncounter) return null;
-    if (this.save.pendingTraitChoice||this.pendingStageReward||this.flow.wave.encounterKind==='specialShop'||this.save.equipmentProgress.pending||this.flow.phase !== 'prepare' || !this.owned.onBoard().length || this.owned.onBoard().length > this.level.unitCap) return null;
+    if (this.pendingProfession||this.save.pendingTraitChoice||this.pendingStageReward||this.flow.wave.encounterKind==='specialShop'||this.save.equipmentProgress.pending||this.flow.phase !== 'prepare' || !this.owned.onBoard().length || this.deployedPopulation > this.level.unitCap) return null;
     this.lockedFormation={waveId:this.flow.wave.id,result:this.solveFormation(true)};
     const { sim, battleIds } = this.createPreview();
     if (!this.flow.startBattle()) return null;
@@ -782,6 +796,16 @@ export class RunSession {
         owned.soulLampHealth = (owned.soulLampHealth ?? 0) + combat.permanentHealthGained;
       }
     }
+    // Original owned participants trigger even when dead; temporary copies never enter this map.
+    const copyTargets=sim.units.filter(u=>u.side===1&&!u.temporaryCopy&&!u.cfg.summonOnly&&this.cfg.allUnits().some(cfg=>cfg.id===u.cfg.id)).sort((a,b)=>a.id-b.id);
+    for(const [uid,battleId] of this.activeBattleIds){
+      const caster=sim.units.find(u=>u.id===battleId&&u.side===0);
+      if(!caster?.cfg.skillId||!this.cfg.getSkill(caster.cfg.skillId).starCardCopy||!copyTargets.length)continue;
+      const rng=this.random.stream('reward',this.flow.wave.id,6200+uid),id=copyTargets[rng.int(0,copyTargets.length-1)].cfg.id;
+      if(!this.pool.createCopy(id))continue;
+      this.pool.unlock(id);
+      if(!this.owned.addToBench(id,this.save.benchSlots))this.save.stageProgress.unitReserve.push(id);
+    }
     if (this.save.openingEncounter?.selected === 'tempered') {
       for (const [uid, battleId] of this.activeBattleIds) {
         const unit = this.owned.get(uid);
@@ -803,7 +827,7 @@ export class RunSession {
       // Only explicit configured Elite/Boss victories qualify.
       this.save.lastEquipmentReward=createEquipmentReward(this.equipmentPolicy,this.random,w,sim.winner,this.save.equipmentProgress);
     }
-    this.snapshot();
+    this.syncSave();
     return { round, reward: this.save.lastReward };
   }
   nextWave(): boolean {
@@ -817,7 +841,7 @@ export class RunSession {
     this.save.floor = this.flow.wave.stage!; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
     this.save.lastEquipmentReward=undefined;
     this.shop.setRollRng(this.random.stream('shop', this.flow.wave.id));
-    const rerolled=!this.shop.locked; this.shop.nextRound(); if(rerolled)this.rewardShopRoll(0); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    const rerolled=!this.shop.locked; this.shop.nextRound(); if(rerolled)this.rewardShopRoll(0); this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.syncSave(); return true;
   }
   /** Existing debug jump only; deliberately absent from the player/bot port. */
   debugJump(stage: number, round: number): boolean {
@@ -833,15 +857,22 @@ export class RunSession {
       health: this.flow.health || this.cfg.battle.initialHealth, result: null, lastSettlement: null });
     this.activeBattle = null;this.previewFormation=undefined;this.lockedFormation=undefined;
     this.save.floor = stage; this.save.lastReward = undefined; this.save.shopRollIndex = 0;
-    this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.snapshot(); return true;
+    this.enterEncounterStage(); this.stageProgression?.enter(this.flow.wave); this.syncSave(); return true;
   }
-  snapshot(): RunSaveData {
+  private syncSave(): void {
     this.save.unlockedUnits = this.pool.unlockedSpecialUnits(this.cfg.allUnits());
     this.owned.mergeAll();
     this.stageProgression?.collect(this.flow.wave);
     Object.assign(this.save, this.economy.snapshot(), this.level.snapshot(), { shop: this.shop.snapshot(), shopReserved: true,
       owned: this.owned.snapshot(), nextOwnedUid: this.owned.nextUnitUid, equipmentReserve: [...this.owned.equipmentReserve],
       pool: this.pool.snapshot(), round: this.flow.snapshot(), shopLocked: this.shop.locked, floor: this.flow.wave.stage! });
+  }
+  /** Synchronous persistence can serialize directly without a throwaway detached copy. */
+  persist(write: (save: RunSaveData) => void): void {
+    this.syncSave(); write(this.save);
+  }
+  snapshot(): RunSaveData {
+    this.syncSave();
     // The exported snapshot is detached from the live session.
     return JSON.parse(JSON.stringify(this.save)) as RunSaveData;
   }

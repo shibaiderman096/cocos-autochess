@@ -1,4 +1,18 @@
 {
+  "star_card_show": {
+    "id":"star_card_show","name":"星牌空中秀","effect":"starCardCopy","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.6,
+    "description":"被动：每次战斗结束，随机复制一名敌方棋子，获得其1星版本并放入备战席。\n\n主动：复制{控制:copyCount}敌方棋子，临时加入我方直到本场战斗结束。复制体拥有原棋子{治疗:copyHp}的生命，并随机附带{控制:copyEquipment}件适合自身的装备。",
+    "statRows":[{"label":"复制数量","value":"{控制:copyCount}","stars":"1 / 1 / 所有"},{"label":"复制体生命","value":"{治疗:copyHp}","stars":"40% / 60% / 100%"},{"label":"附带装备","value":"{控制:copyEquipment}","stars":"1 / 1 / 3"}],
+    "mechanics":["战后被动仅限参战的持有棋子，阵亡亦触发；目标为敌方正式可持有棋子，复制成1星且不带装备。","主动以释放时存活且可选中的敌方非临时复制体为目标，继承星级、开战基础属性与技能，不继承原装备、临时增益、伤势或敌方羁绊加成。","生命比例同时作用于最大生命和初始生命，装备生命也计入比例；不参与重算羁绊人数；无空位时停止生成。","前摇0.6秒，释放后按普通攻击间隔恢复行动；前摇死亡或受硬控会取消。复制体及其装备不写入持有列表和装备库存。"],
+    "starCardCopy":{"counts":[1,1,1],"allEnemiesStar":3,"healthFractions":[0.4,0.6,1],"equipmentCounts":[1,1,3],"equipmentPools":{
+      "physical":["guinsoo","infinity_edge","crimson_bloodclaw","divine_judgment","blazing_feather"],
+      "magic":["jeweled_gauntlet","arcane_sovereignty","arcane_overflow_codex","spell_overdrive_armor"],
+      "tank":["abyssal_plate","arcane_veil","forest_sanctuary","stonegrowth_bulwark","thousand_forged_armor","divine_protection"]}}
+  },
+  "soul_realm": {"id": "soul_realm", "name": "冥焰魂域", "dmgType": "magic", "effect": "soulRealm", "power": 0, "radius": 0, "targeting": "nearest", "description": "被动：场上每有一名棋子阵亡，回复15法力并获得{魔法:soulGrowth}法术加成，普攻造成魔法伤害。\n\n首次施法：展开覆盖整个棋盘的领域，恐惧所有敌人{控制+:soulFear}秒，并固定降低25%移动速度与25%攻击速度，持续至战斗结束。法力上限降低120。\n\n后续施法：向所有存活敌人抽魂，每名敌人回复自身{治疗+:soulHeal}生命，并窃取最多{物理:soulSteal}物理加成与{魔法:soulSteal}法术加成，持续至战斗结束。", "mechanics": ["敌我双方及召唤物的真实阵亡均触发；仅存活者获得，每次阵亡最多一次。", "初始0/150；普通回蓝、受击及装备羁绊回蓝无效；首次施法后0/30。", "领域不叠加；施法者阵亡不撤销；遵循控制免疫。", "窃取不超过目标现有对应加成，不产生负加成；同次抽魂治疗使用施法前法术加成。"], "soulRealm": {"manaPerDeath": 15, "spellPowerPerDeath": [8, 12, 60], "fearSeconds": 1, "moveSlow": 0.25, "attackSlow": 0.25, "manaReduction": 120, "healPerEnemy": [100, 150, 1200], "stealPower": [5, 8, 50]}},
+"azure_knight_warrior":{"id": "azure_knight_warrior", "name": "幽蓝跃斩", "effect": "knightStance", "dmgType": "physical", "radius": 1, "power": 0, "knightStance": {"kind": "warrior", "damage": [240, 360, 2800], "radius": 1, "length": 3, "width": 1, "stunSeconds": 1.5, "slow": [0.2, 0.25, 0.35], "slowSeconds": 3, "duration": [3, 3.5, 5], "durationCap": 8, "reduction": [0.25, 0.3, 0.45], "reductionCap": 0.75, "intervalSeconds": 0.5}, "description": "被动：每次从备战席上阵时选择战士、术士或坦克职业，获得对应职业羁绊并切换技能与法力。\n主动：跃向敌人最密集处，对周围1格敌人造成{物理+:knightDamage}物理伤害并眩晕1.5秒。", "mechanics": ["伤害基础值乘以1+物理加成/100；术士额外加法术加成/100。", "术士攻速削减为绝对攻速，乘以1+法术加成/100，上限80%，同目标取最强效果并刷新3秒。", "坦克时长与免伤乘以1+法术加成/100，时长上限8秒、免伤上限75%。旋转期间不普攻、不回蓝，受眩晕时打断。"], "statRows": [{"label": "形态技能伤害", "value": "{物理+:knightDamage}", "stars": "240 / 360 / 2800"}, {"label": "眩晕时长", "value": "1.5秒", "stars": "1.5 / 1.5 / 1.5秒"}]},
+"azure_knight_caster":{"id": "azure_knight_caster", "name": "冥刃剑气", "effect": "knightStance", "dmgType": "physical", "radius": 1, "power": 0, "knightStance": {"kind": "caster", "stepSeconds": 0.35, "damage": [160, 240, 1800], "radius": 1, "length": 3, "width": 1, "stunSeconds": 1.5, "slow": [0.2, 0.25, 0.5], "slowSeconds": 3, "duration": [3, 3.5, 5], "durationCap": 8, "reduction": [0.25, 0.3, 0.45], "reductionCap": 0.75, "intervalSeconds": 0.5}, "description": "被动：每次从备战席上阵时选择战士、术士或坦克职业，获得对应职业羁绊并切换技能与法力。\n主动：先位移1格，完成位移后向目标释放长3格、宽1格剑气，造成{物理++:knightDamage}物理伤害，降低{攻速+:knightSlow}攻速，持续3秒。", "mechanics": ["伤害基础值乘以1+物理加成/100；术士额外加法术加成/100。", "术士攻速削减为绝对攻速，乘以1+法术加成/100，上限80%，同目标取最强效果并刷新3秒。", "坦克时长与免伤乘以1+法术加成/100，时长上限8秒、免伤上限75%。旋转期间不普攻、不回蓝，受眩晕时打断。"], "statRows": [{"label": "形态技能伤害", "value": "{物理++:knightDamage}", "stars": "160 / 240 / 1800"}, {"label": "攻速削减", "value": "{攻速+:knightSlow}", "stars": "20% / 25% / 50%"}]},
+"azure_knight_tank":{"id": "azure_knight_tank", "name": "亡魂刃旋", "effect": "knightStance", "dmgType": "physical", "radius": 1, "power": 0, "knightStance": {"kind": "tank", "damage": [70, 105, 600], "radius": 1, "length": 3, "width": 1, "stunSeconds": 1.5, "slow": [0.2, 0.25, 0.35], "slowSeconds": 3, "duration": [3, 3.5, 6], "durationCap": 8, "reduction": [0.25, 0.3, 0.6], "reductionCap": 0.75, "intervalSeconds": 0.5}, "description": "被动：每次从备战席上阵时选择战士、术士或坦克职业，获得对应职业羁绊并切换技能与法力。\n主动：旋转{控制+:knightDuration}秒，获得{控制+:knightReduction}免伤，每0.5秒对周围1格敌人造成{物理+:knightDamage}物理伤害。", "mechanics": ["伤害基础值乘以1+物理加成/100；术士额外加法术加成/100。", "术士攻速削减为绝对攻速，乘以1+法术加成/100，上限80%，同目标取最强效果并刷新3秒。", "坦克时长与免伤乘以1+法术加成/100，时长上限8秒、免伤上限75%。旋转期间不普攻、不回蓝，受眩晕时打断。"], "statRows": [{"label": "形态技能伤害", "value": "{物理+:knightDamage}", "stars": "70 / 105 / 600"}, {"label": "旋转时长", "value": "{控制+:knightDuration}秒", "stars": "3 / 3.5 / 6秒"}, {"label": "旋转免伤", "value": "{控制+:knightReduction}", "stars": "25% / 30% / 60%"}]},
   "thornchain_pull": {
     "id":"thornchain_pull","name":"棘链牵引","effect":"demonSkill","dmgType":"magic","power":0,"radius":0,"targeting":"nearest",
     "castSeconds":0.4,"starDamage":[160,240,360],"thornPull":{"stunSeconds":1,"pullSeconds":0.3},
@@ -53,6 +67,7 @@
     ]
   },
   "infernal_gunfire": {
+    "projectile": {"flightSeconds": 0.2},
     "id": "infernal_gunfire",
     "name": "狱火连射",
     "effect": "demonSkill",
@@ -317,6 +332,7 @@
     ]
   },
   "runic_arcana": {
+    "projectile": {"flightSeconds": 0.4, "staggerSeconds": 0.05},
     "id": "runic_arcana",
     "name": "秘典·星环咏叹",
     "dmgType": "magic",
@@ -356,6 +372,7 @@
     "mechanics": ["羁绊排除自身的同名角色；准备阶段更新，开战锁定；并列按羁绊配置顺序。", "符文仅本场保留；成功施法后获取/消耗，控制打断保留符文，已消耗法力不返还。"]
   },
   "rope_shadow_hunt": {
+    "projectile": {"flightSeconds": 0.2},
     "id":"rope_shadow_hunt","name":"索影巡猎","effect":"ropeHunt","dmgType":"physical","power":0,"radius":0,"targeting":"nearest","castSeconds":0.4,
     "starDamage":[90,135,400],"ropeHunt":{"durationSeconds":3,"intervalSeconds":0.3,"shotCount":10},
     "description":"抛索蓄势{控制:ropeCast}秒后，先向较远的斜向棋盘边缘发射飞钩，钩住后收绳拉动自身沿弧线移动，再返回起点，持续{控制:ropeDuration}秒。\n期间每{控制:ropeInterval}秒向生命百分比最低的敌人射击，共{控制:ropeCount}发，每发造成{物理+:dmg}物理伤害。",
@@ -628,6 +645,7 @@
     ]
   },
   "moon_triple_arrow": {
+    "projectile": {"flightSeconds": 0.2},
     "id": "moon_triple_arrow",
     "name": "月痕三连矢",
     "effect": "arrowVolley",
@@ -752,6 +770,7 @@
     ]
   },
   "sky_annihilation": {
+    "projectile": {"flightSeconds": 0.25},
     "id": "sky_annihilation",
     "name": "天穹歼灭协议",
     "dmgType": "physical",
@@ -945,6 +964,7 @@
     ]
   },
   "repair_protocol": {
+    "projectile": {"flightSeconds": 0.25},
     "id": "repair_protocol",
     "name": "维修协议",
     "dmgType": "magic",
@@ -1110,6 +1130,7 @@
     ]
   },
   "nightfeather_pierce": {
+    "projectile": {"flightSeconds": 0.3},
     "id": "nightfeather_pierce",
     "name": "夜羽贯星",
     "dmgType": "physical",
@@ -1264,6 +1285,7 @@
     ]
   },
   "eclipse_execution": {
+    "projectile": {"flightSeconds": 0.2},
     "id": "eclipse_execution",
     "name": "蚀月处决",
     "dmgType": "physical",
@@ -1300,6 +1322,7 @@
     ]
   },
   "hundred_nether_lanterns": {
+    "projectile": {"flightSeconds": 0.25},
     "id": "hundred_nether_lanterns",
     "name": "百鬼冥灯",
     "dmgType": "magic",
@@ -1349,6 +1372,7 @@
     ]
   },
   "blackstar_annihilation": {
+    "projectile": {"flightSeconds": 0.2},
     "id": "blackstar_annihilation",
     "name": "黑星坠灭",
     "dmgType": "magic",
@@ -1499,6 +1523,7 @@
     ]
   },
   "dawn_feather_arrows": {
+    "projectile": {"flightSeconds": 0.25},
     "id": "dawn_feather_arrows",
     "name": "曦羽连星",
     "dmgType": "physical",
@@ -2006,5 +2031,35 @@
       "强化仅保留一次，不叠加；普攻就绪且目标进入射程后蓄力0.5秒，期间不移动、不攻击；被硬控打断、目标丢失或移出射程时重新蓄力，强化次数保留。普通攻击仅命中当前目标，额外物理伤害按前方长2格宽1格直线逐敌全额结算，仅受物理加成及正常伤害修正影响。",
       "强化期间不会再次主动施法，普攻后消耗；目标死亡或换目标不提前消耗，恢复被动不消耗已准备的强化普攻。"
     ]
-  }
+  },
+  "cloud_dragon_flow":{
+  "id": "cloud_dragon_flow",
+  "name": "流云化龙",
+  "effect": "dragonFlow",
+  "dmgType": "magic",
+  "radius": 3,
+  "starDamage": [60, 90, 800],
+  "castSeconds": 0.6,
+  "dragonFlow": {
+    "maxHp": [600, 900, 4000],
+    "reduction": [0.2, 0.25, 0.5],
+    "damage": [60, 90, 800],
+    "reductionCap": 0.75,
+    "manaPerSecond": 15,
+    "resistanceShredPerHit": 2,
+    "intervalSeconds": 0.25,
+    "length": 3,
+    "width": 1,
+    "moveCellsPerSecond": 2,
+    "permanentFromStar": 3
+  },
+  "description": "主动：化为云龙，增加{生命:dragonHp}最大生命和当前生命，获得{控制+:dragonReduction}减伤（上限75%）并免疫控制。\n游走吐息，每0.25秒对前方直线敌人造成{魔法++:dragonDamage}魔法伤害；每次造成伤害后使目标护甲和魔抗各降低2点，可叠加至战斗结束（最低0）。\n每秒消耗15法力，可正常回蓝；一、二星耗尽法力后恢复人形。\n三星·永恒龙躯：本场不再退出化龙，法力耗尽仍可游走和吐息。",
+  "statRows": [
+    { "label": "化龙生命", "value": "{生命:dragonHp}", "stars": "600 / 900 / 4000" },
+    { "label": "化龙减伤", "value": "{控制+:dragonReduction}", "stars": "20% / 25% / 50%" },
+    { "label": "每次吐息伤害", "value": "{魔法++:dragonDamage}", "stars": "60 / 90 / 800" }
+  ],
+  "mechanics": ["化龙期间保留所有回蓝，每秒消耗15法力；吐息按基础值×(1+物理加成/100+法术加成/100)。", "吐息每次造成伤害（含护盾吸收）后削减目标护甲和魔抗各2点，最低0，持续至本场战斗结束。", "三星化龙后本场不再变回人形，法力耗尽不影响龙形增益、游走及吐息。", "龙形增益结束只降低生命上限并钳制当前生命，不额外扣除当前生命。"],
+  "power": 0
+}
 }

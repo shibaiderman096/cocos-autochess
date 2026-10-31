@@ -12,6 +12,8 @@ export function combatAttributes(cfg: Partial<CombatAttributes>): CombatAttribut
 
 export interface UnitConfigData extends Partial<CombatAttributes> {
   summonOnly?: boolean;
+  professionChoice?: Partial<Record<'warrior'|'caster'|'tank', {role:UnitConfigData['role'];classTraitId:string;skillId:string;startMana:number;maxMana:number}>>;
+  populationCost?: number;
   controlImmune?: boolean;
   starStats?: { hp: number[]; atk: number[]; armor: number[]; mr: number[] };
   specialShopUnlock?: boolean;
@@ -55,6 +57,8 @@ export interface UnitConfigData extends Partial<CombatAttributes> {
 }
 
 export interface SkillConfigData {
+  starCardCopy?: import('../battle/types').StarCardCopyConfig;
+  projectile?: import('../battle/types').ProjectileTiming;
   redhornFervor?: import('../battle/types').RedhornFervorConfig;
   hellhoundBreath?: import('../battle/types').HellhoundBreathConfig;
   abyssVerdict?: import('../battle/types').AbyssVerdictConfig;
@@ -81,7 +85,7 @@ export interface SkillConfigData {
   power: number;
   radius: number;        // 0 = 单体
   targeting: 'nearest' | 'lowestHp';
-  effect?: 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign' | 'inspiration' | 'lanternGuard' | 'windHunt' | 'stackingCorrosion' | 'sandCompass' | 'ropeHunt' | 'runicArcana' | 'demonLeap' | 'demonSkill';
+  effect?: 'starCardCopy' | 'soulRealm' | 'knightStance' | 'dragonFlow' | 'teleportEmpower' | 'damageBurn' | 'healChannel' | 'hybridSpell' | 'damageStun' | 'knockupGuard' | 'selfShield' | 'splitPhysical' | 'delayedDamage' | 'delayedArea' | 'healAlly' | 'susanoo' | 'shadow' | 'sunlight' | 'hydraulicBulwark' | 'strikeHealOnKill' | 'lowestHealthHeal' | 'railShot' | 'spiderLeap' | 'furnaceDash' | 'atlasMissiles' | 'stellarBulwark' | 'starLeap' | 'arrowVolley' | 'nebula' | 'gravity' | 'chargedKnockup' | 'bloodDrain' | 'lineFear' | 'bloodAid' | 'bloodReign' | 'inspiration' | 'lanternGuard' | 'windHunt' | 'stackingCorrosion' | 'sandCompass' | 'ropeHunt' | 'runicArcana' | 'demonLeap' | 'demonSkill';
   chargedKnockup?: import('../battle/types').ChargedKnockupConfig;
   bloodDrain?: import('../battle/types').BloodDrainConfig;
   lineFear?: import('../battle/types').LineFearConfig;
@@ -116,6 +120,9 @@ export interface SkillConfigData {
   guard?: { durations: number[]; reductions: number[] };
   spellMultipliers?: number[];
   stunSeconds?: number[];
+  soulRealm?: import('../battle/types').SoulRealmConfig;
+  knightStance?: import('../battle/types').KnightStanceConfig;
+  dragonFlow?: import('../battle/types').DragonFlowConfig;
   hybrid?: { physicalDamage: number[]; magicDamage: number[] };
   heal?: { intervalSeconds: number; maxHpFractions: number[]; bonusAmounts?: number[] };
   castSeconds?: number;
@@ -362,12 +369,23 @@ export class ConfigManager {
   };
 
   setUnits(data: UnitConfigData[]): void {
+    for(const u of data)if(u.professionChoice){
+      const choices=u.professionChoice;
+      if(Object.keys(choices).length!==3||!(['warrior','caster','tank'] as const).every(role=>{
+        const c=choices[role];return !!c&&c.role===role&&typeof c.classTraitId==='string'&&typeof c.skillId==='string'
+          &&Number.isSafeInteger(c.startMana)&&Number.isSafeInteger(c.maxMana)&&c.startMana>=0&&c.maxMana>0&&c.startMana<=c.maxMana;
+      }))throw new Error('Invalid profession choice');
+    }
+
+    if(data.some(u=>u.populationCost!==undefined&&(!Number.isSafeInteger(u.populationCost)||u.populationCost<1)))throw new Error('Invalid unit population cost');
     this.units = {};
     for (const u of data) this.units[u.id] = u;
   }
 
   setSkills(data: Record<string, SkillConfigData>): void {
     for (const skill of Object.values(data)) {
+      if(skill.projectile&&(!Number.isFinite(skill.projectile.flightSeconds)||skill.projectile.flightSeconds<=0
+        ||!Number.isFinite(skill.projectile.staggerSeconds??0)||(skill.projectile.staggerSeconds??0)<0))throw new Error(`Invalid projectile timing: ${skill.id}`);
       if(skill.thornPull){
         const e=skill.thornPull;
         if(skill.effect!=='demonSkill'||skill.dmgType!=='magic'||![skill.castSeconds,e.stunSeconds,e.pullSeconds].every(n=>Number.isFinite(n)&&n!>0)
@@ -410,6 +428,30 @@ export class ConfigManager {
           || ![skill.starDamage,e.healthGains].every(v=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&n>0))
           || ![e.length,e.width,e.attackWindupSeconds,e.rebirthSeconds,e.rebirthHealMaxHpFraction].every(n=>Number.isFinite(n)&&n>0)
           || !Number.isFinite(e.rebirthThreshold) || e.rebirthThreshold<=0 || e.rebirthThreshold>=1) throw new Error('Invalid blood reign skill');
+      }
+      if(skill.effect==='starCardCopy'){
+        const s=skill.starCardCopy;
+        if(!s||!Number.isFinite(skill.castSeconds)||skill.castSeconds!<=0
+          ||![s.counts,s.equipmentCounts].every(a=>Array.isArray(a)&&a.length===3&&a.every(n=>Number.isInteger(n)&&n>0))
+          ||s.equipmentCounts.some(n=>n>3)||!Array.isArray(s.healthFractions)||s.healthFractions.length!==3||s.healthFractions.some(n=>!Number.isFinite(n)||n<=0||n>1)
+          ||!Number.isInteger(s.allEnemiesStar)||s.allEnemiesStar<1||s.allEnemiesStar>3
+          ||!s.equipmentPools||!['physical','magic','tank'].every(k=>Array.isArray(s.equipmentPools[k])&&s.equipmentPools[k].length>=Math.max(...s.equipmentCounts)&&new Set(s.equipmentPools[k]).size===s.equipmentPools[k].length&&s.equipmentPools[k].every(id=>typeof id==='string'&&id.length>0)))throw new Error('Invalid star card copy');
+      }
+      if(skill.effect==='soulRealm'){
+        const s=skill.soulRealm;
+        if(!s||skill.dmgType!=='magic'||![s.spellPowerPerDeath,s.healPerEnemy,s.stealPower].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0))
+          ||![s.manaPerDeath,s.fearSeconds,s.moveSlow,s.attackSlow,s.manaReduction].every(v=>Number.isFinite(v)&&v>0)||s.moveSlow>=1)throw new Error('Invalid soul realm');
+      }
+      if(skill.effect==='knightStance'){
+        const k=skill.knightStance;
+        if(!k||!['warrior','caster','tank'].includes(k.kind)||![k.damage,k.slow,k.duration,k.reduction].every(a=>Array.isArray(a)&&a.length===3&&a.every(v=>Number.isFinite(v)&&v>=0))
+          ||![k.radius,k.length,k.width,k.stunSeconds,k.slowSeconds,k.durationCap,k.reductionCap,k.intervalSeconds].every(v=>Number.isFinite(v)&&v>0)||k.reductionCap>1||(k.kind==='caster'&&(!Number.isFinite(k.stepSeconds)||k.stepSeconds!<=0)))throw new Error('Invalid knight stance');
+      }
+      if(skill.effect==='dragonFlow'){
+        const d=skill.dragonFlow;
+        if(!d||![d.maxHp,d.reduction,d.damage].every(a=>a.length===3&&a.every(n=>Number.isFinite(n)&&n>=0))
+          ||![d.manaPerSecond,d.resistanceShredPerHit,d.intervalSeconds,d.length,d.width,d.moveCellsPerSecond,d.reductionCap,skill.castSeconds!].every(n=>Number.isFinite(n)&&n>0)||d.reductionCap>1
+          ||!Number.isInteger(d.permanentFromStar)||d.permanentFromStar<1||d.permanentFromStar>3)throw new Error('Invalid dragon flow');
       }
       if (skill.effect === 'runicArcana') {
         const e=skill.runicArcana;

@@ -6,7 +6,7 @@ if(!existsSync(resolve(root,'docs/p4-balance/baseline/baseline-completed.json'))
 const c=frozen.configs,rows=[];
 for(const growthRate of [1.02,1.04,1.06]){
  const difficulty={...c['enemy-difficulty'],growthRate};
- const waves=buildRunWaves(6,c.run,c.waves,c.units,{mode:'budget-v1',runSeed:12345,difficulty,power:c['enemy-power'],equipmentPolicy:c['equipment-policy'],equipmentRoles:c['enemy-roles']});
+ const waves=buildRunWaves(6,c.run,c.waves,c.units,{mode:'budget-v1',runSeed:12345,difficulty,power:c['enemy-power'],equipmentPolicy:c['equipment-policy'],equipmentCatalogue:c.equipment,traits:c.battle.traits,equipmentRoles:c['enemy-roles']});
  rows.push({growthRate,stage3:waves.filter(w=>w.stage===3).map(w=>({round:w.round,requested:w.budget!.requestedBudget,effective:w.budget!.effectiveBudget,maxFeasible:w.budget!.maxFeasibleBudget,
    stars:w.enemies.map(e=>e.star),costs:w.enemies.map(e=>c.units.find((u:any)=>u.id===e.unitId).cost)})),stage6:waves.filter(w=>w.stage===6).map(w=>({round:w.round,effective:w.budget!.effectiveBudget}))});
 }

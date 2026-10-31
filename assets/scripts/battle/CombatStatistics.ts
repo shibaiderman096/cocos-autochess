@@ -18,7 +18,11 @@ export class CombatStatistics {
     let changed = false;
     while (this.cursor < events.length) {
       const event = events[this.cursor++];
-      if (event.t === 'hit') {
+      if(event.t==='unit_copy'){
+        this.rows.set(event.id,{id:event.id,name:event.name,side:event.side,star:event.star,damage:0,taken:0,healing:0,shielding:0,
+          damageByType:{physical:0,magic:0,true:0},takenByType:{physical:0,magic:0,true:0}});
+        changed=true;
+      } else if (event.t === 'hit') {
         let source = this.rows.get(event.source);
         const target = this.rows.get(event.id);
         if (event.shadowBoardSide !== undefined || event.sunlightJudgmentSide !== undefined || event.astralMeteorSide !== undefined) {

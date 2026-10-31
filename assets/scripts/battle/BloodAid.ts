@@ -67,19 +67,19 @@ export class BloodAid {
   update():void {
     for(const u of this.host.units)for(const [id,buff] of u.bloodAidResistances)
       if(!u.alive||u.hp<=0||this.tick>=buff.untilTick)u.bloodAidResistances.delete(id);
-    for(const visit of [...this.visits.values()])
+    for(const visit of Array.from(this.visits.values()))
       if(!visit.source.alive||visit.source.hp<=0)this.finish(visit,false);
       else if(this.tick>=visit.end||!visit.target.alive||visit.target.hp<=0)this.finish(visit);
   }
   interrupt(source:Unit):void {const visit=this.visits.get(source.id);if(visit)this.finish(visit);}
   onDeath(unit:Unit):void {
     unit.bloodAidResistances.clear();
-    for(const visit of [...this.visits.values()])if(visit.source===unit)this.finish(visit,false);else if(visit.target===unit)this.finish(visit);
+    for(const visit of Array.from(this.visits.values()))if(visit.source===unit)this.finish(visit,false);else if(visit.target===unit)this.finish(visit);
   }
   onBasicAttack(source:Unit,target:Unit):void {
     const visit=this.visits.get(source.id);if(!visit||this.tick>=visit.end)return;
     this.host.damage(source,target,visit.skill.bloodAid!.attackBonusDamage[source.star-1],visit.skill.id);
     this.host.events.push({t:'skill_impact',tick:this.tick,id:source.id,target:target.id,skillId:visit.skill.id});
   }
-  clear():void {for(const visit of [...this.visits.values()])this.finish(visit);for(const unit of this.host.units)unit.bloodAidResistances.clear();}
+  clear():void {for(const visit of Array.from(this.visits.values()))this.finish(visit);for(const unit of this.host.units)unit.bloodAidResistances.clear();}
 }

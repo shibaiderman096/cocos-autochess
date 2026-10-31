@@ -114,10 +114,13 @@ export class MechanicalVfx {
         start:e.tick,seconds:.48,size:e.skillId==='turbo_hunt'?2:2.6,angle:from?angleTo(from,to):0});
       else if(e.skillId==='repair_protocol'){
         this.burst(2,to,e.tick,1.9,.65);
-        if(from)this.add({row:2,motion:'missile',from:from.clone(),to:to.clone(),start:e.tick,seconds:.25,size:.65});
+
       }else if(e.skillId==='rending_hunt'){
         this.burst(4,to,e.tick,2.8,.6,true);this.burst(4,to,e.tick+2,1.7,.45);
       }
+    }else if(e.t==='repair_shot'){
+      const from=this.project(e.from.x,e.from.y),to=this.project(e.to.x,e.to.y);
+      this.add({row:2,motion:'missile',from,to,start:e.tick,seconds:e.flightTicks*this.tickMs/1000,size:.65});
     }else if(e.t==='rail_shot'){
       const from=this.project(e.from.x,e.from.y),to=this.project(e.to.x,e.to.y);
       const distance=Math.hypot(to.x-from.x,to.y-from.y),mid=new Vec3((from.x+to.x)/2,(from.y+to.y)/2,0);
@@ -129,8 +132,8 @@ export class MechanicalVfx {
         angle:angleTo(from,to),source:e.id,tag:'dash'});
     }else if(e.t==='missile'){
       const from=this.project(e.from.x,e.from.y),to=this.project(e.to.x,e.to.y);
-      this.add({row:6,motion:'missile',from,to,start:e.tick,seconds:.25,size:1.1,angle:angleTo(from,to)-90});
-      this.burst(6,to,e.tick+250/this.tickMs,2.2,.55);
+      this.add({row:6,motion:'missile',from,to,start:e.tick,seconds:(e.flightTicks??5)*this.tickMs/1000,size:1.1,angle:angleTo(from,to)-90});
+      this.burst(6,to,e.tick+(e.flightTicks??5),2.2,.55);
     }else if(e.t==='burn'&&this.state(e.source)?.skillId==='sky_annihilation'){
       const pos=this.owner(e.id)?.position;if(pos)this.add({row:5,motion:'burn',from:pos.clone(),start:e.tick,seconds:Infinity,
         size:1.05,opacity:160,follow:e.id,source:e.id,tag:'burn',key:`burn:${e.id}`,ground:true});

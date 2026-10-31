@@ -67,6 +67,17 @@ export function combatEquipmentIdentity(items: unknown): unknown {
   });
 }
 
+const initialProjectileTiming:Record<string,[number,number?]>={
+  sky_annihilation:[.25],moon_triple_arrow:[.2],runic_arcana:[.4,.05],rope_shadow_hunt:[.2],
+  dawn_feather_arrows:[.25],nightfeather_pierce:[.3],eclipse_execution:[.2],hundred_nether_lanterns:[.25],
+  blackstar_annihilation:[.2],repair_protocol:[.25],infernal_gunfire:[.2],
+};
+function initialTimingRepair(id:string,value:unknown):boolean {
+  const baseline=initialProjectileTiming[id],p=value as {flightSeconds?:number;staggerSeconds?:number};
+  return !!baseline&&!!p&&typeof p==='object'&&Object.keys(p).every(k=>k==='flightSeconds'||k==='staggerSeconds')
+    &&p.flightSeconds===baseline[0]&&p.staggerSeconds===baseline[1];
+}
+
 /** Display copy and table templates do not change difficulty or formation rules. */
 export function combatConfigurationIdentity(value: Record<string, unknown>): string {
   if (!value || typeof value !== 'object' || !value.skills || typeof value.skills !== 'object' || Array.isArray(value.skills)) {
@@ -74,7 +85,9 @@ export function combatConfigurationIdentity(value: Record<string, unknown>): str
   }
   const skills = Object.fromEntries(Object.entries(value.skills).map(([id, skill]) => {
     if (!skill || typeof skill !== 'object' || Array.isArray(skill)) throw new Error('Invalid skill identity');
-    return [id, Object.fromEntries(Object.entries(skill).filter(([key]) => key !== 'description' && key !== 'statRows'))];
+    return [id, Object.fromEntries(Object.entries(skill).filter(([key]) => key !== 'description' && key !== 'statRows'
+      // This initial timing repair preserves saved campaign identities and formation seeds.
+      && !(key==='projectile'&&initialTimingRepair(id,(skill as Record<string,unknown>)[key]))))];
   }));
   const battle = value.battle as { traits?: Array<{ id?: string; pendingMembers?: boolean; members?: unknown[]; selector?: unknown;
     breakpoints?: Array<{ sunlight?: { judgment?: Record<string, unknown> } }> }> } | undefined;

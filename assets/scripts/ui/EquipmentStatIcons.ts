@@ -59,7 +59,7 @@ export function createEquipmentDescription(parent: Node, width: number, fontSize
 export function setEquipmentDescription(body: RichText, item: EquipmentDisplayItem, resized?: () => void): void {
   const version = (descriptionVersions.get(body) ?? 0) + 1; descriptionVersions.set(body, version);
   const markup = equipmentDescriptionRichText(item, body.fontSize + 1), atlas = body.imageAtlas ?? new SpriteAtlas();
-  const icons = [...new Set([...markup.matchAll(/<img src='([^']+)'/g)].map(match => match[1] as UISkinKey))];
+  const icons = Array.from(new Set(Array.from(markup.matchAll(/<img src='([^']+)'/g)).map(match => match[1] as UISkinKey)));
   body.imageAtlas = atlas;
   const render = () => {
     if (!isValid(body, true) || !isValid(body.node, true) || descriptionVersions.get(body) !== version) return;

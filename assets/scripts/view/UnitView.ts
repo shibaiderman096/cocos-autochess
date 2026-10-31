@@ -1,5 +1,5 @@
 import { loadArtSprite } from './ArtSpriteLoader';
-import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, Tween, tween, UIOpacity, Graphics, Color, Label, LabelOutline } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, UITransform, Vec3, resources, Tween, UIOpacity, Graphics, Color, Label, LabelOutline } from 'cc';
 import { UnitRuntime, EquipmentConfigData } from '../battle/types';
 import { UNIT_SPRITE, UI_SPRITE, FX_SPRITE, unitSpriteKey } from './ArtPaths';
 import { drawFactionRing } from './FactionRing';
@@ -58,6 +58,37 @@ export class UnitView extends Component {
   private windPreparing = false;
   private expeditionPreparing = false;
   private demonPreparing=false;
+  private baseBodyColor=new Color(255,255,255);
+  private attackStart=-Infinity;
+  private attackDirection=new Vec3();
+  private hitStart=-Infinity;
+  private castUntil=-Infinity;
+  private deathStart:number|null=null;
+
+  resetCombatAnimation():void {
+    this.attackStart=this.hitStart=this.castUntil=-Infinity;this.deathStart=null;
+    if(this.attackMotion){Tween.stopAllByTarget(this.attackMotion);this.attackMotion.setPosition(0,0,0);this.attackMotion.angle=0;this.attackMotion.setScale(1,1,1);}
+    this.cleaveWinding=this.windPreparing=this.expeditionPreparing=this.demonPreparing=false;
+    if(this.bodySprite){Tween.stopAllByTarget(this.bodySprite);this.bodySprite.color=this.baseBodyColor;}
+    const opacity=this.node.getComponent(UIOpacity);if(opacity){Tween.stopAllByTarget(opacity);opacity.opacity=255;}
+  }
+
+  syncCombatAnimation(tick:number,tickMs:number,casting:boolean,controlled:boolean):void {
+    if(!this.loaded)return;
+    if(controlled){this.attackStart=-Infinity;this.castUntil=-Infinity;}
+    if(!casting)this.castUntil=-Infinity;
+    this.bodySprite.color=tick-this.hitStart<120/tickMs?new Color(255,90,90,255):tick<this.castUntil?new Color(195,70,255,255):this.baseBodyColor;
+    if(!this.cleaveWinding&&!this.windPreparing&&!this.expeditionPreparing&&!this.demonPreparing){
+      const p=(tick-this.attackStart)*tickMs/80;
+      const rise=p>=0&&p<2?1-Math.abs(p-1):0;
+      this.attackMotion.setPosition(this.attackDirection.x*6*rise,this.attackDirection.y*6*rise,0);
+    }
+    if(this.deathStart!==null){
+      const p=Math.max(0,(tick-this.deathStart)*tickMs/350);
+      this.node.getComponent(UIOpacity)!.opacity=Math.round(255*Math.max(0,1-p));
+      if(p>=1)this.node.active=false;
+    }
+  }
 
   /** A separate overlay never changes the drag, attack, or replay transforms. */
   playStarUpgrade(): void {
@@ -189,11 +220,16 @@ export class UnitView extends Component {
       if (err) { this.loadError = err.message; console.warn(`[UnitView] load failed: ${path}`, err.message); return; }
       this.bodySprite.spriteFrame = sf;
       if (path.includes('/units/shadow/') || path.includes('/units/sunlight/') || path.includes('/units/mechanical/') || path.includes('/units/astral/') || path.includes('/units/bloodfiend/')) body.getComponent(UITransform)!.setContentSize(portraitSize * (sf.originalSize?.width ?? sf.rect.width) / (sf.originalSize?.height ?? sf.rect.height), portraitSize);
+      if(this.cfgId==='cloud_dragon_priestess'){
+        this.humanFrame=sf;
+        if(this.dragonAppearance){this.dragonAppearance=false;this.setDragonAppearance(true,0);}
+      }
       this.loaded = true;
       this.refreshBarsColor();
     });
     this.bodySprite.color = Color.WHITE;
     if (tint) { const color = new Color(); color.fromHEX(tint); this.bodySprite.color = color; }
+    this.baseBodyColor=this.bodySprite.color.clone();
   }
 
 
@@ -207,6 +243,22 @@ export class UnitView extends Component {
   setVitalsVisible(visible: boolean): void {
     this.hpBarBg.active = visible;
     for (const icon of this.equipmentIcons) icon.setPosition(icon.position.x, this.hpBarBg.position.y - (visible ? 17 : 0), 0);
+  }
+
+  private dragonAppearance=false;
+  private humanFrame:SpriteFrame|null=null;
+  setDragonAppearance(active:boolean,tick:number):void {
+    if(this.cfgId!=='cloud_dragon_priestess'||!this.bodySprite)return;
+    if(active!==this.dragonAppearance){
+      this.dragonAppearance=active;
+      if(!this.humanFrame)this.humanFrame=this.bodySprite.spriteFrame;
+      const apply=(frame:SpriteFrame)=>{if(!this.isValid||this.dragonAppearance!==active)return;
+        this.bodySprite.spriteFrame=frame;this.bodySprite.node.getComponent(UITransform)!.setContentSize(this.portraitHeight*(frame.originalSize.width/frame.originalSize.height),this.portraitHeight);};
+      if(active)loadArtSprite('art/units/astral/cloud_dragon_form/spriteFrame',(error,frame)=>{if(!error)apply(frame);});
+      else if(this.humanFrame)apply(this.humanFrame);
+    }
+    if(active){this.bodySprite.node.angle=Math.sin(tick*.14)*3;this.bodySprite.node.setPosition(0,this.bodyBaseY+Math.sin(tick*.18)*this.cellSize*.05,0);}
+    else {this.bodySprite.node.angle=0;this.bodySprite.node.setPosition(0,this.bodyBaseY,0);}
   }
 
   /** Grow artwork about its feet; keep root movement/hit area and UI dimensions independent. */
@@ -409,12 +461,14 @@ export class UnitView extends Component {
   }
 
   playRevive(): void {
+    this.resetCombatAnimation();
     const opacity=this.node.getComponent(UIOpacity);
     if(opacity){Tween.stopAllByTarget(opacity);opacity.opacity=255;}
     this.node.active=true;
   }
 
-  playDeath() {
+  playDeath(tick=0) {
+    this.resetCombatAnimation();this.deathStart=tick;
     if (!this.node.active) return;
     this.animateStellar(false,null,0,50);
     this.animateBloodCleave(null);
@@ -423,32 +477,12 @@ export class UnitView extends Component {
     if (this.sunlightAura) this.sunlightAura.active = false;
     let op = this.node.getComponent(UIOpacity);
     if (!op) op = this.node.addComponent(UIOpacity);
-    tween(op)
-      .to(0.35, { opacity: 0 })
-      .call(() => { this.node.active = false; })
-      .start();
   }
 
-  playHit() {
-    if (!this.bodySprite || !this.loaded) return;
-    const orig = this.bodySprite.color.clone();
-    this.bodySprite.color = new Color(255, 90, 90, 255);
-    tween(this.bodySprite)
-      .to(0.12, {})
-      .call(() => { if (this.bodySprite) this.bodySprite.color = orig; })
-      .start();
-  }
+  playHit(tick=0) {this.hitStart=tick;}
 
-  playAttack(dirToTarget: Vec3) {
-    if (!this.loaded) return;
-    this.cleaveWinding=false;this.attackMotion.angle=0;
-    const motion = this.attackMotion;
-    Tween.stopAllByTarget(motion); motion.setPosition(0, 0, 0);
-    const lunge = new Vec3(dirToTarget.x * 6, dirToTarget.y * 6, 0);
-    tween(motion)
-      .to(0.08, { position: lunge })
-      .to(0.08, { position: new Vec3() })
-      .start();
+  playAttack(dirToTarget: Vec3,tick=0) {
+    this.attackStart=tick;this.attackDirection.set(dirToTarget);
   }
 
   /** Preparation pose follows the fixed replay tick, including pause and interruption. */
@@ -503,21 +537,5 @@ export class UnitView extends Component {
       const p=Math.max(0,Math.min(1,progress!));this.attackMotion.angle=-12*p;this.attackMotion.setPosition(-4*p,-3*p,0);
     }
   }
-  playCast(seconds: number) {
-    if (!this.bodySprite || !this.loaded) return;
-    const orig = this.bodySprite.color.clone();
-    this.bodySprite.color = new Color(195, 70, 255, 255);
-    tween(this.bodySprite).to(seconds, {}).call(() => {
-      if (this.bodySprite) this.bodySprite.color = orig;
-    }).start();
-  }
-
-  playKnockup(seconds: number) {
-    if (!this.bodySprite) return;
-    const body = this.bodySprite.node;
-    const original = body.position.clone();
-    tween(body).to(seconds / 2, { position: new Vec3(original.x, original.y + this.cellSize * 0.6, original.z) })
-      .to(seconds / 2, { position: original }).start();
-  }
-
+  playCast(seconds:number,tick=0,tickMs=50) {this.castUntil=tick+seconds*1000/tickMs;}
 }

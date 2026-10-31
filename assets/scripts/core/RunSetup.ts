@@ -10,7 +10,7 @@ import type { StageEncounterRules } from './StageProgression';
 import { applyEnemyUpgrades } from './EnemyUpgrades';
 import { generateGoldArmy, validateEnemyGoldRules } from './EnemyGoldArmy';
 import type { EnemyGoldRules } from './EnemyGoldArmy';
-import type { TraitConfigData } from '../battle/types';
+import type { EquipmentConfigData, TraitConfigData } from '../battle/types';
 
 export const MIN_STAGE_COUNT = 3;
 export const DEFAULT_STAGE_COUNT = 10;
@@ -118,6 +118,7 @@ export interface EnemyGenerationOptions { mode:EnemyGenerationMode; runSeed?:num
   traits?: TraitConfigData[];
   replaceElitesWithBosses?: boolean;
   equipmentPolicy?:EquipmentPolicyConfig;
+  equipmentCatalogue?:EquipmentConfigData[];
   equipmentRoles?:EnemyRoleConfig;
   /** Optional offline timing observer. Timing is never read by the generator or serialized into waves. */
   onWave?: (globalWaveId:number,phase:'start'|'end')=>void }
@@ -200,7 +201,7 @@ export function buildRunWaves(stageCount:number,config:RunConfig,templates:WaveC
   };
   const decorate = (wave: WaveConfig): WaveConfig => {
     const encounter = decorateEncounter(wave);
-    const result = generation?.equipmentPolicy ? applyEnemyUpgrades(encounter, generation.equipmentPolicy, roster, encounterRandom, generation.equipmentRoles) : encounter;
+    const result = generation?.equipmentPolicy ? applyEnemyUpgrades(encounter, generation.equipmentPolicy, roster, encounterRandom, generation.equipmentRoles, generation.equipmentCatalogue, generation.traits) : encounter;
     if (!endless || wave.stage! < endless.startStage) return result;
     let rounds = progressionRounds(wave.stage!,wave.round!);
     for (let stage = endless.startStage; stage < wave.stage!; stage++) rounds += progressionRounds(stage,stageRoundCount(stage,config));

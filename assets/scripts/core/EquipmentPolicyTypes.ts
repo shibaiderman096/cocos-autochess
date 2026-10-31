@@ -13,6 +13,7 @@ export interface EnemyEquipmentEconomy {
   boss: { initialGold: number; goldPerStage: number; maxGold?: number; healthMultiplier: number };
 }
 export interface EnemyUpgradeDiagnostics {
+  baseGoldBudget?: number; unitGoldCarryover?: number; reinforcementGold?: number; consumableIds?: string[]; qualityRates?: number[];
   goldBudget: number; goldSpent: number; goldRemaining: number; itemCount: number; healthMultiplier: number;
   /** Budget diagnostics describe the base army; this bonus has its own gold account. */
   equipmentIds: string[];

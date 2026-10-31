@@ -1,3 +1,10 @@
+export interface SoulRealmConfig {manaPerDeath:number;spellPowerPerDeath:number[];fearSeconds:number;moveSlow:number;attackSlow:number;manaReduction:number;healPerEnemy:number[];stealPower:number[];}
+export interface ProjectileTiming { flightSeconds: number; staggerSeconds?: number; }
+export interface KnightLeapRuntime { landTick:number; skillId:string; from:Pos; to:Pos; toward:Pos; }
+export interface KnightWaveRuntime {releaseTick:number;skillId:string;toward:Pos;}
+export interface KnightStanceConfig { stepSeconds?:number; kind:'warrior'|'caster'|'tank'; damage:number[]; radius:number; length:number; width:number; stunSeconds:number; slow:number[]; slowSeconds:number; duration:number[]; durationCap:number; reduction:number[]; reductionCap:number; intervalSeconds:number; }
+export interface DragonFlowConfig { maxHp:number[]; reduction:number[]; damage:number[]; reductionCap:number; manaPerSecond:number; resistanceShredPerHit:number; intervalSeconds:number; length:number; width:number; moveCellsPerSecond:number; permanentFromStar:number; }
+export interface DragonFlowRuntime { bonusHp:number; reduction:number; nextPulse:number; }
 /** 逻辑层公共类型（不含渲染概念） */
 
 export interface BackpackItem { id: string; name: string; icon: string; description?: string; kind: 'equipment' | 'consumable'; }
@@ -334,6 +341,13 @@ export interface EquipmentConfigData {
 }
 
 export type Side = 0 | 1; // 0 = 己方（下 4 行），1 = 敌方（上 4 行）
+export interface StarCardCopyConfig {
+  counts: number[];
+  allEnemiesStar: number;
+  healthFractions: number[];
+  equipmentCounts: number[];
+  equipmentPools: { physical: string[]; magic: string[]; tank: string[] };
+}
 export interface Pos { x: number; y: number }
 export type DmgType = 'physical' | 'magic' | 'true';
 
@@ -361,11 +375,19 @@ export interface CombatAttributes {
 }
 
 export type BattleEvent =
+  | { t:'unit_copy'; tick:number; id:number; source:number; original:number; unitId:string; name:string; side:Side; star:number; pos:Pos }
+  | {t:'soul_realm';tick:number;id:number;side:Side}
+  | {t:'soul_gain';tick:number;id:number;from:Pos;to:Pos}
+  | {t:'soul_drain';tick:number;id:number;target:number;from:Pos;to:Pos;physical:number;spell:number}
   | { t:'thorn_whip';tick:number;id:number;target:number;from:Pos;to:Pos }
   | { t:'thorn_pull';tick:number;id:number;source:number;from:Pos;to:Pos;durationTicks:number }
+  | {t:'knight_action';tick:number;id:number;kind:'jump'|'leap'|'wave'|'spin';at:Pos;toward:Pos;durationTicks:number}
+  | {t:'dragon_shred';tick:number;id:number;target:number}
+  | {t:'dragon_form';tick:number;id:number;active:boolean}
+  | {t:'dragon_breath';tick:number;id:number;from:Pos;to:Pos;durationTicks:number}
   | { t:'demon_gunfire';tick:number;id:number;durationTicks:number }
   | { t:'demon_gunfire_end';tick:number;id:number }
-  | { t:'demon_volley';tick:number;id:number;target:number;from:Pos;to:Pos;count:number }
+  | { t:'demon_volley';tick:number;id:number;target:number;from:Pos;to:Pos;count:number;flightTicks?:number }
   | { t:'raven_flight';tick:number;id:number;from:Pos;to:Pos;durationTicks:number }
   | { t:'raven_end';tick:number;id:number;to:Pos;interrupted:boolean }
   | { t:'raven_theft';tick:number;id:number;target:number;from:Pos;to:Pos;amount:number }
@@ -378,10 +400,10 @@ export type BattleEvent =
   | { t:'abyss_verdict'; tick:number; id:number; target:number; from:Pos; to:Pos }
   | { t:'abyss_siphon'; tick:number; id:number; target:number; from:Pos; to:Pos }
   | { t:'runic_runes'; tick:number; id:number; count:number }
-  | { t:'runic_missiles'; tick:number; id:number; target:number; from:Pos; to:Pos; count:number }
+  | { t:'runic_missiles'; tick:number; id:number; target:number; from:Pos; to:Pos; count:number; flightTicks?:number; staggerTicks?:number }
   | { t:'runic_wave'; tick:number; id:number; from:Pos; toward:Pos; length:number; width:number }
   | { t: 'rope_swing'; tick: number; id: number; from: Pos; edge: Pos; hookTicks: number; durationTicks: number }
-  | { t: 'rope_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'rope_shot'; tick: number; id: number; target: number; from: Pos; to: Pos; flightTicks?: number }
   | { t: 'rope_return'; tick: number; id: number; to: Pos }
   | { t: 'sand_compass'; tick: number; id: number; from: Pos; toward: Pos; cells: Pos[]; radius: number }
   | { t: 'compass_guard'; tick: number; id: number; source: number; serial: number; untilTick: number }
@@ -400,7 +422,7 @@ export type BattleEvent =
   | { t: 'shadow_mark'; tick: number; id: number; source: number }
   | { t: 'shadow_board'; tick: number; side: Side }
   | { t: 'shadow_pulse'; tick: number; side: Side; damage?: boolean; attackSpeed?: boolean }
-  | { t: 'skill_pulse'; tick: number; id: number; skillId: string; effect: ShadowPulseEffect; center: Pos; radius: number; duration?: number; selfCast?: boolean }
+  | { t: 'skill_pulse'; tick: number; id: number; skillId: string; effect: ShadowPulseEffect; center: Pos; radius: number; duration?: number; selfCast?: boolean; flightTicks?:number; from?:Pos }
   | { t: 'fear'; tick: number; id: number; source: number; duration: number }
   | { t: 'hit';    tick: number; id: number; source: number; actualDamage: number; dmg: number; hp: number; dmgType: DmgType; shadowBoardSide?: Side; sunlightJudgmentSide?: Side; sunlightJudgmentStar?: number; astralMeteorSide?: Side; critical?: boolean; executed?: boolean }
   | { t: 'bloodfiend_revel'; tick: number; id: number; untilTick: number; attackSpeedBonus: number }
@@ -415,7 +437,7 @@ export type BattleEvent =
   | { t: 'mechanical_overclock'; tick: number; id: number; untilTick: number; emergency: boolean }
   | { t: 'shield'; tick: number; id: number; source?: number; equipmentId?: string; amount: number; shield: number }
   | { t: 'equipment_trigger'; tick: number; id: number; equipmentId: string; shield: number }
-  | { t: 'cast';   tick: number; id: number; skillId: string; target: number; duration?: number }
+  | { t: 'cast';   tick: number; id: number; skillId: string; target: number; duration?: number; windupTicks?:number }
   | { t: 'burn'; tick: number; id: number; source: number; duration: number }
   | { t: 'stun'; tick: number; id: number; source: number; duration: number }
   | { t: 'knockup'; tick: number; id: number; source: number; duration: number }
@@ -426,12 +448,13 @@ export type BattleEvent =
   | { t: 'blood_rebirth'; tick: number; id: number; skillId: string; untilTick: number }
   | { t: 'blood_cleave'; tick: number; id: number; skillId: string; from: Pos; toward: Pos; length: number; width: number }
   | { t: 'rail_shot'; tick: number; id: number; target: number; from: Pos; to: Pos }
-  | { t: 'moon_arrow'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t: 'moon_arrow'; tick: number; id: number; target: number; from: Pos; to: Pos; flightTicks?: number }
   | { t: 'nebula'; tick: number; id: number; center: Pos; radius: number; durationTicks: number }
   | { t: 'gravity_field'; tick: number; id: number; center: Pos; radius: number; durationTicks: number }
   | { t: 'dash'; tick: number; id: number; from: Pos; to: Pos; durationTicks: number }
   | { t: 'dash_stop'; tick: number; id: number; at: Pos }
-  | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos }
+  | { t:'repair_shot';tick:number;id:number;target:number;from:Pos;to:Pos;flightTicks:number }
+  | { t: 'missile'; tick: number; id: number; target: number; from: Pos; to: Pos; flightTicks?: number }
   | { t: 'inspiration'; tick: number; id: number; targets: number[]; durationTicks: number; bonus: number }
   | { t: 'revive'; tick: number; id: number; hp: number; x: number; y: number }
   | { t: 'death';  tick: number; id: number }

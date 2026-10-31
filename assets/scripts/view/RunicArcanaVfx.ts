@@ -111,18 +111,19 @@ export class RunicArcanaVfx {
       const from=this.cellPoint(e.from),to=this.cellPoint(e.to),dx=to.x-from.x,dy=to.y-from.y;
       const len=Math.max(1,Math.hypot(dx,dy));
       for(let shot=0;shot<e.count;shot++){
-        const age=(tick-e.tick)*this.tickMs-shot*70;
-        if(age<0||age>=600)continue;
+        const flight=(e.flightTicks??8)*this.tickMs,stagger=(e.staggerTicks??1)*this.tickMs;
+        const age=(tick-e.tick)*this.tickMs-shot*stagger;
+        if(age<0||age>=flight+180)continue;
         const bend=(shot-1)*this.cell*.8;
-        if(age<420){
-          const p=age/420,curve=Math.sin(p*Math.PI);
+        if(age<flight){
+          const p=age/flight,curve=Math.sin(p*Math.PI);
           const x=from.x+dx*p-dy/len*curve*bend,y=from.y+dy*p+this.cell*.4+dx/len*curve*bend;
           const tangentX=dx-dy/len*Math.cos(p*Math.PI)*Math.PI*bend;
           const tangentY=dy+dx/len*Math.cos(p*Math.PI)*Math.PI*bend;
           this.paint(`missile:${e.id}:${e.tick}:${shot}`,2,Math.min(3,p*4),x,y,this.cell*1.45,this.cell*1.45,
             Math.min(1,age/60),Math.atan2(tangentY,tangentX)*180/Math.PI,COMET_TIP);
         }else{
-          const p=(age-420)/180,size=this.cell*(.75+p*.45);
+          const p=(age-flight)/180,size=this.cell*(.75+p*.45);
           this.paint(`impact:${e.id}:${e.tick}:${shot}`,1,p*3,to.x,to.y+this.cell*.4,size,size,1-p,shot*35);
         }
       }

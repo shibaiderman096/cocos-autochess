@@ -1170,6 +1170,9 @@
     "bossGoldPerStage": 2,
     "maxShopRolls": 200,
     "themeTraits": [
+      "demon",
+      "explorer",
+      "bloodfiend",
       "astral",
       "mechanical_pioneer",
       "shadow",

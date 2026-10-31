@@ -207,9 +207,9 @@ export class ExplorerSpriteVfx {
         g.moveTo(edge.x-uy*hook,edge.y+ux*hook);g.quadraticCurveTo(edge.x-ux*hook*1.2,edge.y-uy*hook*1.2,edge.x+uy*hook,edge.y-ux*hook);g.stroke();
       }
     }
-    this.shots=this.shots.filter(s=>(tick-s.tick)*this.tickMs<240);
+    this.shots=this.shots.filter(s=>tick-s.tick<(s.flightTicks??4));
     for(const s of this.shots){
-      const p=Math.max(0,(tick-s.tick)*this.tickMs/240),a=this.logical(s.from),b=this.logical(offsetToWorld(s.to.x,s.to.y,1,0,0));
+      const p=Math.max(0,(tick-s.tick)/(s.flightTicks??4)),a=this.logical(s.from),b=this.logical(offsetToWorld(s.to.x,s.to.y,1,0,0));
       const x=a.x+(b.x-a.x)*p,y=a.y+(b.y-a.y)*p+this.cell*.25;
       g.lineWidth=2.5;g.strokeColor=new Color(255,239,184,235);g.moveTo(x-(b.x-a.x)*.14,y-(b.y-a.y)*.14);g.lineTo(x,y);g.stroke();
     }

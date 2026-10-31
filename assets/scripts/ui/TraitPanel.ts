@@ -2,7 +2,7 @@ import { Node, Sprite, Label, RichText, SpriteAtlas, UITransform, Color, Graphic
 import type { UnitConfigData } from '../core/ConfigManager';
 import type { TraitState } from '../battle/Traits';
 import { loadArtSprite } from '../view/ArtSpriteLoader';
-import { UNIT_ART, UNIT_PORTRAIT, M2_UI_SPRITE, FX_SPRITE } from '../view/ArtPaths';
+import { UNIT_ART, UNIT_PORTRAIT, M2_UI_SPRITE, FX_SPRITE, TRAIT_BADGE_SPRITE, TRAIT_PORTRAIT_FRAME_SPRITE } from '../view/ArtPaths';
 import { panel, label, button, paintPanel } from './BattleUI';
 import { sunlightTierText } from './SunlightPresentation';
 import { setUISkin } from './UISkin';
@@ -13,14 +13,10 @@ const COLORS = {
   bronze: new Color(219, 158, 105), silver: new Color(207, 221, 237),
   gold: new Color(255, 206, 80), prismatic: new Color(198, 172, 255), inactive: MUTED,
 };
-export const TRAIT_BADGES = Object.fromEntries(Object.entries({
-  bronze: '40,148,406,404', silver: '460,147,405,405', gold: '874,147,407,406',
-  prismatic: '1293,141,425,414', inactive: '1731,148,405,403',
-}).map(([tier, rect]) => [tier, `art/ui/trait_badges/spriteFrame#rect,${rect}`]));
+export const TRAIT_BADGES = TRAIT_BADGE_SPRITE;
 
 /** Authored white/green/blue/purple/orange frames, indexed by unit cost. */
-export const TRAIT_PORTRAIT_FRAMES = [20, 456, 885, 1315, 1747].map(x =>
-  `art/ui/trait_portrait_frames/spriteFrame#rect,${x},128,410,410`);
+export const TRAIT_PORTRAIT_FRAMES = [1, 2, 3, 4, 5].map(cost => TRAIT_PORTRAIT_FRAME_SPRITE[cost]);
 
 function art(parent: Node, path: string, x: number, y: number, size: number): Sprite {
   const node = new Node('traitArt'); node.addComponent(UITransform).setContentSize(size, size);
@@ -75,6 +71,7 @@ export class TraitPanel {
   private states: TraitState[] = [];
   private roster: UnitConfigData[] = [];
   private key = '';
+  private rowKeys = new Map<string, string>();
 
   constructor(private parent: Node) {
     this.root = panel(parent, 'traits', -510, 45, 192, 390);
@@ -106,19 +103,32 @@ export class TraitPanel {
 
   refresh(states: TraitState[], roster: UnitConfigData[]): void {
     this.states = states.filter(state => state.count > 0); this.roster = roster;
-    const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds]));
+    const key = JSON.stringify(this.states.map(state => [state.config, state.memberIds, state.count, state.active]));
     if (key === this.key) return;
     // The first native layout can report an offset from the pre-resize viewport.
     const offset = this.key ? this.scrollView.getScrollOffset().y : 0;
     this.key = key;
     this.scrollView.stopAutoScroll();
     this.closeCard();
-    for (const node of [...this.rows.children]) { node.active = false; node.destroy(); }
+    const ids = new Set(this.states.map(state => `trait_${state.config.id}`));
+    for (const node of [...this.rows.children]) if (!ids.has(node.name)) {
+      this.rowKeys.delete(node.name); node.removeFromParent(); node.destroy();
+    }
     this.rows.getComponent(UITransform)!.setContentSize(178,
       Math.max(this.viewportHeight, this.states.length * this.rowSpacing - 6));
     this.states.forEach((state, i) => {
-      const row = panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
+      const rowName = `trait_${state.config.id}`;
+      const existing = this.rows.getChildByName(rowName);
+      const rowKey = JSON.stringify([state.config, state.active]);
+      if (existing && this.rowKeys.get(rowName) === rowKey) {
+        existing.setPosition(0, -25 - i * this.rowSpacing, 0); existing.setSiblingIndex(i); return;
+      }
+      if (existing) for (const child of [...existing.children]) { child.removeFromParent(); child.destroy(); }
+      this.rowKeys.set(rowName, rowKey);
+      const row = existing ?? panel(this.rows, `trait_${state.config.id}`, 0, -25 - i * this.rowSpacing, 178, 50,
         new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85), null);
+      row.setPosition(0, -25 - i * this.rowSpacing, 0); row.setSiblingIndex(i);
+      if (existing) paintPanel(row.getComponent(Graphics)!, 178, 50, new Color(19, 30, 42), state.active ? COLORS[state.active.tier] : new Color(63, 75, 85));
       badge(row, state, -61, 3, 34);
       left(row, state.config.name, -35, 9, sys.isMobile ? 17 : 14, 110, state.active ? TEXT : MUTED).isBold = true;
       state.config.breakpoints.forEach((tier, index) => {
@@ -126,13 +136,14 @@ export class TraitPanel {
           state.active?.count === tier.count ? COLORS[tier.tier] : MUTED, 24);
         item.isBold = state.active?.count === tier.count;
       });
+      if (existing) return;
       row.on(Node.EventType.TOUCH_END, () => {
         if (this.scrollView.isScrolling() || this.scrollView.isAutoScrolling()) return;
         if (this.selected === state.config.id && this.detail?.active) this.hideDetail();
         else this.showDetail(state.config.id);
       });
       row.on(Node.EventType.MOUSE_ENTER, () => {
-        if (!this.selected && !this.scrollView.isScrolling() && !this.scrollView.isAutoScrolling()) this.renderDetail(state);
+        if (!this.selected && !this.scrollView.isScrolling() && !this.scrollView.isAutoScrolling()) this.renderDetail(this.states.find(current => current.config.id === state.config.id)!);
       });
       row.on(Node.EventType.MOUSE_LEAVE, () => { if (!this.selected) this.closeCard(); });
     });
