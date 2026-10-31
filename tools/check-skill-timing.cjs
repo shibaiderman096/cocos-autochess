@@ -119,6 +119,3 @@ const changed=structuredClone(inputs.skills);changed.sky_annihilation.projectile
 const damageChanged=structuredClone(inputs.skills);damageChanged.sky_annihilation.starDamage[0]++;assert.notEqual(combatConfigurationIdentity({skills:damageChanged,units:inputs.units,battle:inputs.battle}),current);
 for(const value of [0,-1,NaN,Infinity]){const bad=structuredClone(inputs.skills);bad.sky_annihilation.projectile.flightSeconds=value;assert.throws(()=>new ConfigManager().setSkills(bad),/projectile/i);}
 console.log(JSON.stringify({passed:true,focused:checks,deterministic,interruptions,basics,chargedRunes,legacyIdentity:true,invalidTiming:true},null,2));
-
-
-
